@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import TradingView from "@/components/TradingView";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,9 +7,13 @@ import MarketSelector from "./MarketSelector";
 import OrderBox from "./OrderBox";
 import RiskTools from "./RiskTools";
 import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 export default function TradingPage() {
   const t = useTranslations('trading');
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   // mocks simples
   const orderBook = {
     asks: [

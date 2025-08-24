@@ -6,6 +6,7 @@ import { getWalletBalances } from "@/lib/soroban";
 import { useAppStore } from "@/store/app";
 import { useTranslations } from "next-intl";
 import WalletDebug from "@/components/WalletDebug";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 export default function WalletPage() {
   const t = useTranslations("wallet");
@@ -14,6 +15,9 @@ export default function WalletPage() {
   const setBalances = useAppStore((s) => s.setBalances);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
 
   useEffect(() => {
     let active = true;

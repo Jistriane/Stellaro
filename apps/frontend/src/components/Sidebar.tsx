@@ -27,7 +27,7 @@ const nav = [
 ];
 
 export default function Sidebar() {
-  const t = useTranslations();
+  const t = useTranslations("routes");
   const pathname = usePathname() || "/";
 
   return (
@@ -42,7 +42,7 @@ export default function Sidebar() {
             const active = pathname === i.href || pathname.startsWith(i.href + "/");
             const label = (() => {
               try {
-                const l = t(`routes.${i.key}`) as unknown;
+                const l = t(i.key) as unknown;
                 return typeof l === "string" && l ? l : i.key;
               } catch {
                 return i.key;

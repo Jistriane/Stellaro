@@ -135,7 +135,81 @@
       "proposal": "Action Proposal",
       "execution": "Execution Result"
     },
-    "empty": "No data"
+    "empty": "No data",
+    "header": {
+      "title": "Risk Management",
+      "intro": "Monitor your exposure and manage security settings in real time."
+    },
+    "alerts": {
+      "report": "Report",
+      "report_alert_aria": "Report this alert as suspicious or incorrect",
+      "dismiss": "Dismiss",
+      "dismiss_alert_aria": "Dismiss this alert"
+    },
+    "limits": {
+      "title": "Transaction Limits",
+      "pix_daily": "Pix Daily Limit",
+      "aria_pix_daily": "Edit daily Pix transaction limit",
+      "withdraw_daily": "Daily Withdrawal Limit",
+      "aria_withdraw_daily": "Edit daily withdrawal limit",
+      "trade_daily": "Daily Trading Limit", 
+      "aria_trade_daily": "Edit daily trading limit",
+      "review_limits": "Review Limits"
+    },
+    "fraud": {
+      "title": "Fraud Protection",
+      "tips": "Anti-fraud tips",
+      "tips_aria": "View anti-fraud security tips",
+      "warning": "Alert: Never share your passwords or verification codes with anyone."
+    },
+    "market": {
+      "title": "Market Conditions",
+      "alert": "High volatility detected in your portfolio assets",
+      "link": "View details"
+    },
+    "compliance": {
+      "title": "Compliance Status",
+      "badge": "Compliant",
+      "last_review": "Last review",
+      "view_report": "View Report"
+    },
+    "sidebar": {
+      "score_label": "Risk Score",
+      "score": "Risk Score",
+      "level_low": "Low Risk",
+      "level_medium": "Medium Risk", 
+      "level_high": "High Risk",
+      "improve_btn": "How to Improve"
+    },
+    "events": {
+      "title": "Recent Events",
+      "view_all": "View All",
+      "severity_low": "Low",
+      "severity_medium": "Medium",
+      "severity_high": "High",
+      "report_activity": "Report Suspicious Activity",
+      "block_now": "Block Now"
+    },
+    "edu": {
+      "title": "Risk Education",
+      "q1": "What is risk management?",
+      "q1_desc": "It's the process of identifying, assessing and mitigating financial and operational risks.",
+      "q2": "How to protect my portfolio?",
+      "q2_desc": "Diversify investments, set stop-loss limits and monitor market conditions regularly.",
+      "q3": "What are the main indicators?",
+      "q3_desc": "VaR (Value at Risk), correlation, volatility and exposure concentration by asset."
+    },
+    "quick": {
+      "title": "Quick Actions",
+      "contact_team": "Contact Team",
+      "view_faq": "View FAQ",
+      "block_now": "Block Account",
+      "escalated_feedback": "Request escalated to risk team",
+      "open_chat_feedback": "Opening chat support"
+    },
+    "footer": {
+      "warning": "Risk management involves monitoring and analysis. Always consult our team for important decisions."
+    }
   }
   ,
   "events": {
@@ -303,64 +377,66 @@
   }
   ,
   "login": {
-    "title": "Welcome to Stelato",
-    "subtitle": "\u201cYour bridge between blockchain and the real world.\u201d",
-    "auth": "Authentication",
-    "passkey_login": "Sign in with Passkey",
-    "passkey_login_loading": "Verifying passkey...",
-    "passkey_register": "Register Passkey",
-    "passkey_register_loading": "Registering...",
-    "passkey_hint": "Fast, secure, passwordless. Use biometrics or a trusted device.",
-    "wallets_title": "Sign in with Blockchain Wallet",
-    "freighter_button": "Sign in with Freighter",
-    "freighter_install": "Install Freighter",
-    "albedo_button": "Sign in with Albedo",
-    "ledger_button": "Sign in with Ledger",
-    "divider_or": "Or",
-    "email_placeholder": "you@email.com",
-    "email_button": "Sign in with email",
-    "email_loading": "Sending...",
-    "email_helper": "Use email if you can't access passkeys or wallet. We'll send a code or magic link.",
-    "help_onboarding": "No wallet?",
-    "help_link": "Learn more",
-    "kyc_banner": "Verify your identity to enjoy all features.",
-    "footer_help": "Help",
-    "footer_terms": "Terms",
-    "footer_privacy": "Privacy",
-    "errors": {
-      "need_api": "API not configured (missing NEXT_PUBLIC_API_URL)",
-      "need_email_register": "Enter your email to register a passkey",
-      "need_email_login": "Enter your email to sign in with passkey",
-      "passkey_init_fail": "Failed to start passkey login",
-      "passkey_verify_fail": "Failed to verify passkey",
-      "passkey_register_init_fail": "Failed to start passkey registration",
-      "passkey_register_verify_fail": "Failed to verify passkey registration",
-      "freighter_not_found": "Freighter not detected. Install the extension and try again.",
-      "freighter_no_pubkey": "Couldn't get Freighter public key",
-      "albedo_not_found": "Albedo not detected. Install or open Albedo and allow pop-ups.",
-      "albedo_no_pubkey": "Couldn't get Albedo public key",
-      "albedo_no_signmessage": "Albedo version does not support signMessage",
-      "wallet_connect_fail": "Failed to connect wallet",
-      "rabet_not_found": "Rabet not found",
-      "xbull_not_found": "xBull not found",
-      "ledger_unsupported": "Ledger support requires extra dependencies (WebHID)",
-      "soroban_no_compat": "No compatible wallet found for Soroban",
-      "chainlink_not_ready": "Chainlink Bridge integration not configured",
-      "email_required": "Enter a valid email",
-      "email_init_fail": "Failed to send code to your email",
-      "email_verify_fail": "Invalid or expired code. Try again.",
-      "email_code_required": "Enter the verification code from your email"
-    },
-    "albedo_install": "Install/Open Albedo",
-    "passkey_credential_create_fail": "Passkey credential not created",
-    "passkey_credential_missing": "Passkey credential not returned",
-    "email_prompt": "Enter the 6-digit code sent to your email",
-    "connecting": "Connecting...",
-    "waiting": "Waiting...",
-    "wallets_hint": "Support for icons and descriptions will be added. Real integrations will come in the next step.",
-    "freighter_desc": "Stellar browser extension wallet",
-    "albedo_desc": "Albedo web wallet",
-    "ledger_desc": "Hardware wallet via WebHID (coming soon)"
+    "login": {
+      "title": "Welcome to Stelato",
+      "subtitle": "\u201cYour bridge between blockchain and the real world.\u201d",
+      "auth": "Authentication",
+      "passkey_login": "Sign in with Passkey",
+      "passkey_login_loading": "Verifying passkey...",
+      "passkey_register": "Register Passkey",
+      "passkey_register_loading": "Registering...",
+      "passkey_hint": "Fast, secure, passwordless. Use biometrics or a trusted device.",
+      "wallets_title": "Sign in with Blockchain Wallet",
+      "freighter_button": "Sign in with Freighter",
+      "freighter_install": "Install Freighter",
+      "albedo_button": "Sign in with Albedo",
+      "albedo_install": "Install/Open Albedo",
+      "ledger_button": "Sign in with Ledger",
+      "ledger_desc": "Hardware wallet via WebHID (coming soon)",
+      "wallets_hint": "Support for icons and descriptions will be added. Real integrations will come in the next step.",
+      "divider_or": "Or",
+      "email_placeholder": "you@email.com",
+      "email_button": "Sign in with email",
+      "email_loading": "Sending...",
+      "email_helper": "Use email if you can't access passkeys or wallet. We'll send a code or magic link.",
+      "help_onboarding": "No wallet?",
+      "help_link": "Learn more",
+      "kyc_banner": "Verify your identity to enjoy all features.",
+      "footer_help": "Help",
+      "footer_terms": "Terms",
+      "footer_privacy": "Privacy",
+      "connecting": "Connecting...",
+      "waiting": "Waiting...",
+      "freighter_desc": "Stellar browser extension wallet",
+      "albedo_desc": "Albedo web wallet",
+      "passkey_credential_create_fail": "Passkey credential not created",
+      "passkey_credential_missing": "Passkey credential not returned",
+      "email_prompt": "Enter the 6-digit code sent to your email",
+      "errors": {
+        "need_api": "API not configured (missing NEXT_PUBLIC_API_URL)",
+        "need_email_register": "Enter your email to register a passkey",
+        "need_email_login": "Enter your email to sign in with passkey",
+        "passkey_init_fail": "Failed to start passkey login",
+        "passkey_verify_fail": "Failed to verify passkey",
+        "passkey_register_init_fail": "Failed to start passkey registration",
+        "passkey_register_verify_fail": "Failed to verify passkey registration",
+        "freighter_not_found": "Freighter not detected. Install the extension and try again.",
+        "freighter_no_pubkey": "Couldn't get Freighter public key",
+        "albedo_not_found": "Albedo not detected. Install or open Albedo and allow pop-ups.",
+        "albedo_no_pubkey": "Couldn't get Albedo public key",
+        "albedo_no_signmessage": "Albedo version does not support signMessage",
+        "wallet_connect_fail": "Failed to connect wallet",
+        "rabet_not_found": "Rabet not found",
+        "xbull_not_found": "xBull not found",
+        "ledger_unsupported": "Ledger support requires extra dependencies (WebHID)",
+        "soroban_no_compat": "No compatible wallet found for Soroban",
+        "chainlink_not_ready": "Chainlink Bridge integration not configured",
+        "email_required": "Enter a valid email",
+        "email_init_fail": "Failed to send code to your email",
+        "email_verify_fail": "Invalid or expired code. Try again.",
+        "email_code_required": "Enter the verification code from your email"
+      }
+    }
   }
   ,
   "help": {

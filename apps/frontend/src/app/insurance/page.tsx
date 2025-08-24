@@ -1,11 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InsuranceSimulator from "./InsuranceSimulator";
+import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
-import { getTranslations } from "next-intl/server";
-
-export default async function InsurancePage() {
-  const t = await getTranslations("insurance");
+export default function InsurancePage() {
+  const t = useTranslations("insurance");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   const offers = [
     { key: 'saldo' },
     { key: 'cartao' },

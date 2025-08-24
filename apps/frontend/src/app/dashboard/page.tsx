@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -7,17 +9,63 @@ import {
   viewGovernance,
   getWalletBalances,
 } from "@/lib/soroban";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
+import { useEffect, useState } from "react";
 
-export default async function DashboardPage() {
-  const t = await getTranslations("dashboard");
+export default function DashboardPage() {
+  const t = useTranslations("dashboard");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
+  
+  const [data, setData] = useState<{
+    loans: any;
+    portfolio: any;
+    gov: any;
+    balances: any;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    async function loadData() {
+      const ids = getContractIds();
+      const [loans, portfolio, gov, balances] = await Promise.all([
+        viewLoansPool(),
+        viewPortfolio(),
+        viewGovernance(),
+        getWalletBalances(),
+      ]);
+      
+      setData({ loans, portfolio, gov, balances });
+      setLoading(false);
+    }
+    
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Erro ao carregar dados</div>
+        </div>
+      </div>
+    );
+  }
+
+  const { loans, portfolio, gov, balances } = data;
   const ids = getContractIds();
-  const [loans, portfolio, gov, balances] = await Promise.all([
-    viewLoansPool(),
-    viewPortfolio(),
-    viewGovernance(),
-    getWalletBalances(),
-  ]);
 
   // Mocks locais para UI (i18n)
   const recentActivities = [

@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 
 export default function WalletPanel() {
   const t = useTranslations("wallet");
-  const tLoginErr = useTranslations("login.errors");
+  const tLoginErr = useTranslations("login.login.errors");
   const { connected, address, balance, loading, error, available, activeType, connectByType, connectFreighter, disconnect, refreshBalance, refreshAvailable, network, invokeContract } = useWalletStore();
   const [selected, setSelected] = useState<string>("");
   const [testing, setTesting] = useState(false);
@@ -52,6 +52,11 @@ export default function WalletPanel() {
   useEffect(() => {
     // Atualiza saldo periodicamente quando conectado
     if (!connected) return;
+    
+    // Atualização inicial imediata
+    refreshBalance();
+    
+    // Intervalo para atualizações periódicas
     const id = setInterval(() => {
       refreshBalance();
     }, 15000);
@@ -62,19 +67,38 @@ export default function WalletPanel() {
     setMounted(true);
     // Recalcula carteiras disponíveis quando o componente monta
     refreshAvailable();
+    
+    // Listener para conexões de carteira
+    const onWalletConnected = (event: CustomEvent) => {
+      console.log('[WalletPanel] Wallet connected event received:', event.detail);
+      // Força atualização imediata do saldo
+      setTimeout(() => {
+        refreshBalance();
+      }, 500);
+    };
+
+    const onWalletDisconnected = (event: CustomEvent) => {
+      console.log('[WalletPanel] Wallet disconnected event received:', event.detail);
+    };
+    
     // E sempre que a aba voltar a ficar visível (após instalar ou habilitar extensões)
     const onVis = () => {
       if (document.visibilityState === "visible") refreshAvailable();
     };
     const onFocus = () => refreshAvailable();
+    
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("focus", onFocus);
-    // Removido: aviso sobre MetaMask
+    window.addEventListener("wallet:connected", onWalletConnected as EventListener);
+    window.addEventListener("wallet:disconnected", onWalletDisconnected as EventListener);
+    
     return () => {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("focus", onFocus);
+      window.removeEventListener("wallet:connected", onWalletConnected as EventListener);
+      window.removeEventListener("wallet:disconnected", onWalletDisconnected as EventListener);
     };
-  }, [refreshAvailable]);
+  }, [refreshAvailable, refreshBalance]);
 
   // Removido: não auto-selecionar carteira. Usuário deve escolher explicitamente.
 

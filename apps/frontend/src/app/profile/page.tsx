@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 type UserProfile = {
   id?: string;
@@ -18,6 +19,9 @@ type UserProfile = {
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   const tc = useTranslations("common");
   // Perfil real via backend
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL, []);

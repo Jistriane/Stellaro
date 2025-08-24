@@ -37,7 +37,7 @@ export default function LoanSimulator({ ltvBps, interestAprBps, wallet }: LoanSi
   const maxLtv = ltvBps / 10000; // 0.6
   const collateralNeededUnits = (amount / (prices[collateralType] * maxLtv)) || 0;
 
-  const walletAvailable = collateralType === 'XLM' ? Number(wallet.xlm) : Number(wallet.stlt || 0);
+  const walletAvailable = collateralType === 'XLM' ? Number(wallet?.xlm || 0) : Number(wallet?.stlt || 0);
   const hasCollateral = walletAvailable >= collateralNeededUnits;
   const maxBorrow = walletAvailable * prices[collateralType] * maxLtv;
   const nearLimit = hasCollateral && amount > 0.8 * maxBorrow; // alerta suave se próximo do limite

@@ -1,21 +1,52 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContractIds, viewStablecoin, getWalletBalances } from "@/lib/soroban";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
+import { useEffect, useState } from "react";
 
-export default async function StablecoinPage() {
-  const t = await getTranslations("stablecoin");
-  const tc = await getTranslations("common");
-  const ids = getContractIds();
-  const [info, wallet] = await Promise.all([
-    viewStablecoin(),
-    getWalletBalances(),
-  ]);
+export default function StablecoinPage() {
+  const t = useTranslations("stablecoin");
+  const tc = useTranslations("common");
+  const [info, setInfo] = useState<any>(null);
+  const [wallet, setWallet] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
+  
+  useEffect(() => {
+    async function loadData() {
+      const ids = getContractIds();
+      const [infoData, walletData] = await Promise.all([
+        viewStablecoin(),
+        getWalletBalances(),
+      ]);
+      setInfo(infoData);
+      setWallet(walletData);
+      setLoading(false);
+    }
+    
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
 
   // Saldos (mock): usamos saldo STLT do usuário e exibimos equivalentes
-  const stlt = Number.parseFloat(wallet.stlt || "0");
+  const stlt = Number.parseFloat(wallet?.stlt || "0");
   const rateBRL = 1.0; // 1 STLT ≈ 1 BRL (mock)
   const rateUSD = 0.2; // mock
+  const ids = getContractIds();
   const stltBRL = stlt * rateBRL;
   const stltUSD = stlt * rateUSD;
 

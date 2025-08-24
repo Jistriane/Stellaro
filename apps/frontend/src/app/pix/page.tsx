@@ -3,9 +3,13 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 export default function PixPage() {
   const t = useTranslations("pix");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   // Estado das abas e formulários (mock)
   const [tab, setTab] = useState<"deposit" | "withdraw">("deposit");
   const [amountDep, setAmountDep] = useState<string>("");

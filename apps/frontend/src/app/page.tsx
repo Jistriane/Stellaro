@@ -6,13 +6,13 @@ import LanguageToggle from "../components/LanguageToggle";
 import BalanceChart from "../components/BalanceChart";
 import { useLocale, useTranslations } from "next-intl";
 import HomeHero from "../components/HomeHero";
-
 export default function Home() {
   const locale = useLocale();
   const t = useTranslations("home");
   const lc: "pt" | "en" = locale === "en" ? "en" : "pt";
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-0 sm:p-0 pb-20 gap-0">
+      
       {/* Hero */}
       <HomeHero />
 

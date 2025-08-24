@@ -1,16 +1,36 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContractIds, viewPortfolio, getWalletBalances } from "@/lib/soroban";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
+import { useEffect, useState } from "react";
 
-export default async function PortfolioPage() {
-  const t = await getTranslations("portfolio");
-  const tc = await getTranslations("common");
-  const ids = getContractIds();
-  const [portfolio, wallet] = await Promise.all([
-    viewPortfolio(),
-    getWalletBalances(),
-  ]);
+export default function PortfolioPage() {
+  const t = useTranslations("portfolio");
+  const tc = useTranslations("common");
+  const [portfolio, setPortfolio] = useState<any>(null);
+  const [wallet, setWallet] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
+  
+  useEffect(() => {
+    async function loadData() {
+      const ids = getContractIds();
+      const [portfolioData, walletData] = await Promise.all([
+        viewPortfolio(),
+        getWalletBalances(),
+      ]);
+      setPortfolio(portfolioData);
+      setWallet(walletData);
+      setLoading(false);
+    }
+    
+    loadData();
+  }, []);
 
   // Conversões mock para estimativas
   const rateSTLT_BRL = 1.0; // 1 STLT ≈ 1 BRL (mock)
@@ -18,8 +38,8 @@ export default async function PortfolioPage() {
   const rateXLM_BRL = 1.75; // mock para exibição
   const rateXLM_USD = 0.35; // mock
 
-  const stlt = Number.parseFloat(wallet.stlt || "0");
-  const xlm = Number.parseFloat(wallet.xlm || "0");
+  const stlt = Number.parseFloat(wallet?.stlt || "0");
+  const xlm = Number.parseFloat(wallet?.xlm || "0");
 
   const stltBRL = stlt * rateSTLT_BRL;
   const stltUSD = stlt * rateSTLT_USD;
@@ -47,6 +67,18 @@ export default async function PortfolioPage() {
       href: "/wallet",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
+  
+  const ids = getContractIds();
 
   return (
     <div className="p-6 space-y-6">

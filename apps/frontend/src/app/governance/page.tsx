@@ -1,13 +1,42 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContractIds, viewGovernance } from "@/lib/soroban";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
+import { useEffect, useState } from "react";
 
-export default async function GovernancePage() {
-  const t = await getTranslations("governance");
-  const tc = await getTranslations("common");
+export default function GovernancePage() {
+  const t = useTranslations("governance");
+  const tc = useTranslations("common");
+  const [governance, setGovernance] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
+  
+  useEffect(() => {
+    async function loadData() {
+      const governanceData = await viewGovernance();
+      setGovernance(governanceData);
+      setLoading(false);
+    }
+    
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
+
   const ids = getContractIds();
-  const g = await viewGovernance();
 
   // Propostas abertas (mock)
   const openProposals = [
@@ -19,7 +48,7 @@ export default async function GovernancePage() {
       remaining: "2 dias",
       badge: "nova",
       votes: { yes: 65, no: 35 },
-      author: g.admin,
+      author: governance?.admin || "GAY3LAQYJDER5XXZLM3XFCZNFEZAY26G3JXZV7GAXF7IDEQR3DKDK2TJ",
     },
     {
       id: "P-002",
@@ -29,7 +58,7 @@ export default async function GovernancePage() {
       remaining: "5 dias",
       badge: "em destaque",
       votes: { yes: 52, no: 48 },
-      author: g.admin,
+      author: governance?.admin || "GAY3LAQYJDER5XXZLM3XFCZNFEZAY26G3JXZV7GAXF7IDEQR3DKDK2TJ",
     },
   ];
 
@@ -70,7 +99,7 @@ export default async function GovernancePage() {
             </div>
             <div>
               <div className="text-xs text-slate-500">{t("summary.current_admin")}</div>
-              <div className="truncate text-slate-200 max-w-[32ch]">{g.admin}</div>
+              <div className="truncate text-slate-200 max-w-[32ch]">{governance?.admin || "GAY3LAQYJDER5XXZLM3XFCZNFEZAY26G3JXZV7GAXF7IDEQR3DKDK2TJ"}</div>
             </div>
             <div>
               <div className="text-xs text-slate-500">{t("summary.open_proposals")}</div>

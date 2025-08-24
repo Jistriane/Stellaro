@@ -77,6 +77,19 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
       const session = await connector.connect();
       set({ connected: true, address: session.address, network: session.network, activeType: type });
+      
+      // Dispara evento personalizado para notificar conexão
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent('wallet:connected', { 
+          detail: { 
+            type, 
+            address: session.address, 
+            network: session.network 
+          } 
+        }));
+        console.log(`[wallet] Dispatched wallet:connected event for ${type}`, session);
+      }
+      
       await get().refreshBalance();
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
@@ -116,6 +129,75 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     window.addEventListener('xbull:ready', handleWalletEvent);
     window.addEventListener('albedo:ready', handleWalletEvent);
 
+    // Observer para mudanças no DOM que podem indicar injeção de extensões
+    const observer = new MutationObserver((mutations) => {
+      let foundWalletInjection = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as Element;
+              // Verifica se o script pode ser de uma extensão de carteira
+              if (element.tagName === 'SCRIPT' && element.hasAttribute('src')) {
+                const src = element.getAttribute('src') || '';
+                if (src.includes('freighter') || src.includes('xbull') || src.includes('albedo') || src.includes('rabet')) {
+                  foundWalletInjection = true;
+                }
+              }
+            }
+          });
+        }
+      });
+      
+      if (foundWalletInjection) {
+        if (typeof console !== "undefined") console.debug('[wallet] detected wallet script injection, re-checking...');
+        setTimeout(() => {
+          const updated = detectAvailable();
+          set({ available: updated });
+        }, 500);
+      }
+    });
+
+    // Observa mudanças no document.head e document.body
+    observer.observe(document.head, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Monitora mudanças nas propriedades do window object
+    const checkWindowChanges = () => {
+      const currentKeys = Object.keys(window).filter(key => {
+        const lowerKey = key.toLowerCase();
+        return lowerKey.includes('freighter') || 
+               lowerKey.includes('albedo') || 
+               lowerKey.includes('rabet') || 
+               lowerKey.includes('xbull');
+      });
+      
+      // Verifica se há novas propriedades relacionadas a carteiras
+      if (currentKeys.length > 0) {
+        if (typeof console !== "undefined") {
+          console.debug('[wallet] Found new wallet properties on window:', currentKeys);
+        }
+        const updated = detectAvailable();
+        set({ available: updated });
+      }
+    };
+
+    // Verifica periodicamente por novas propriedades (backup do observer)
+    const windowCheckInterval = setInterval(checkWindowChanges, 2000);
+    
+    // Cleanup function
+    const cleanup = () => {
+      observer.disconnect();
+      clearInterval(windowCheckInterval);
+      window.removeEventListener('freighter:ready', handleWalletEvent);
+      window.removeEventListener('rabet:connected', handleWalletEvent);
+      window.removeEventListener('xbull:ready', handleWalletEvent);
+      window.removeEventListener('albedo:ready', handleWalletEvent);
+    };
+
+    // Store cleanup function for potential future use
+    (window as any).__walletDetectionCleanup = cleanup;
+
     // Verificação assíncrona adicional: Freighter via pacote oficial
     // Algumas vezes o Chrome não injeta window.freighterApi, mas a extensão está ativa.
     (async () => {
@@ -139,26 +221,49 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     // Fazemos várias tentativas para capturar a injeção tardia de diferentes carteiras.
     const interesting = (arr: { id: WalletType; available: boolean }[]) =>
       arr.some((w) => w.available && (w.id === "freighter" || w.id === "xbull" || w.id === "albedo" || w.id === "rabet"));
-    if (interesting(list)) return;
+    
+    // Se já encontrou carteiras, ainda faz algumas tentativas para encontrar mais
+    const initialWallets = list.filter(w => w.available).length;
+    if (interesting(list) && initialWallets > 0) {
+      if (typeof console !== "undefined") {
+        console.debug('[wallet] Found wallets initially, doing short poll for more:', initialWallets);
+      }
+    }
+    
     let attempts = 0;
-    const maxAttempts = 30; // ~10s com 300ms - mais tempo para carteiras lentas
-    const interval = 300; // intervalo maior para não sobrecarregar
+    const maxAttempts = 60; // ~20s com 350ms - muito mais tempo para extensões lentas
+    const interval = 350; // intervalo um pouco maior
+    
     const timer = setInterval(() => {
       attempts++;
       const next = detectAvailable();
       const foundWallets = next.filter(w => w.available).map(w => w.id);
+      
       if (typeof console !== "undefined") {
         console.debug(`[wallet] detectAvailable retry ${attempts}/${maxAttempts}`, { 
           foundWallets, 
           totalAvailable: foundWallets.length,
-          visibilityState: document.visibilityState 
+          visibilityState: document.visibilityState,
+          initialWallets 
         });
       }
+      
       set({ available: next });
-      if (interesting(next) || attempts >= maxAttempts || document.visibilityState !== "visible") {
+      
+      // Para mais cedo se encontrou carteiras OU se chegou no limite OU se página não está visível
+      const shouldStop = attempts >= maxAttempts || 
+                        document.visibilityState !== "visible" ||
+                        (foundWallets.length > initialWallets && attempts > 10); // Para se encontrou mais carteiras após 10 tentativas
+      
+      if (shouldStop) {
         clearInterval(timer);
         if (typeof console !== "undefined") {
-          console.debug('[wallet] polling finished:', { attempts, finalWallets: foundWallets });
+          console.debug('[wallet] polling finished:', { 
+            attempts, 
+            finalWallets: foundWallets, 
+            reason: attempts >= maxAttempts ? 'max_attempts' : 
+                   document.visibilityState !== 'visible' ? 'not_visible' : 'found_more_wallets'
+          });
         }
       }
     }, interval);
@@ -175,6 +280,15 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       const conn = AllConnectors.find((c) => c.id === type);
       await conn?.disconnect?.();
     } catch {}
+    
+    // Dispara evento personalizado para notificar desconexão
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent('wallet:disconnected', { 
+        detail: { type: get().activeType } 
+      }));
+      console.log('[wallet] Dispatched wallet:disconnected event');
+    }
+    
     set({ connected: false, address: null, balance: null, activeType: null });
   },
 

@@ -5,9 +5,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();

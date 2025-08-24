@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRealTimeUpdates } from '@/hooks/useRealTimeUpdates';
 
 type RiskLevel = 'low' | 'medium' | 'high';
 
@@ -28,6 +29,9 @@ interface LimitsState {
 
 export default function RiskPage() {
   const t = useTranslations('risk');
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   // Mock: score e nível
   const [score, setScore] = useState<number>(62); // 0-100
   const level: RiskLevel = useMemo(() => {

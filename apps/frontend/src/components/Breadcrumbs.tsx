@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 export default function Breadcrumbs() {
-  const t = useTranslations();
+  const t = useTranslations("routes");
   const pathname = usePathname();
   // Divide o caminho e remove primeiro segmento se for um locale
   const rawSegments = (pathname || "/").split("/").filter(Boolean);
@@ -17,12 +17,12 @@ export default function Breadcrumbs() {
     const key = !seg ? "home" : seg.toLowerCase();
     // Tenta traduzir via next-intl; se não houver chave, faz fallback para capitalização
     try {
-      const translated = t(`routes.${key}`) as string;
+      const translated = t(key) as string;
       if (translated) return String(translated);
     } catch {}
     if (!seg) {
       try {
-        const home = t("routes.home");
+        const home = t("home");
         if (home) return String(home);
       } catch {}
       return "Home";
@@ -47,7 +47,7 @@ export default function Breadcrumbs() {
                   <span className="text-slate-200 font-medium">{labelFromSegment(seg)}</span>
                 ) : (
                   <Link href={href} className="hover:text-slate-200 transition-colors">
-                    {idx === 0 ? (t("routes.home") as string) : labelFromSegment(seg)}
+                    {idx === 0 ? (t("home") as string) : labelFromSegment(seg)}
                   </Link>
                 )}
               </li>

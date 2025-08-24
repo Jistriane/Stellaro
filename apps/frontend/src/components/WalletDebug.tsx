@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { detectAvailable, forceWalletDetection } from "../lib/wallets/connectors";
+import { detectAvailable, forceWalletDetection, debugXBullDetection } from "../lib/wallets/connectors";
 import type { WalletConnectorInfo } from "../lib/wallets/connectors";
 
 export default function WalletDebug() {
@@ -35,7 +35,7 @@ export default function WalletDebug() {
     <div className="p-6 bg-gray-100 dark:bg-gray-900 rounded-lg border">
       <h3 className="text-lg font-semibold mb-4">🔧 Wallet Detection Debug</h3>
       
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4 flex gap-2 flex-wrap">
         <button 
           onClick={updateWallets}
           className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
@@ -48,6 +48,47 @@ export default function WalletDebug() {
           className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50"
         >
           {isDetecting ? 'Detecting...' : 'Force Detection'}
+        </button>
+        <button 
+          onClick={debugXBullDetection}
+          className="px-3 py-1 bg-orange-500 text-white rounded text-sm hover:bg-orange-600"
+        >
+          Debug xBull
+        </button>
+        <button 
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              const allKeys = Object.keys(window).filter(key => 
+                key.toLowerCase().includes('bull') || 
+                key.toLowerCase().includes('stellar') ||
+                key.toLowerCase().includes('wallet')
+              );
+              console.log('🔍 Wallet-related window properties:', allKeys);
+              allKeys.forEach(key => {
+                const value = (window as Record<string, unknown>)[key];
+                console.log(`window.${key}:`, typeof value, value);
+              });
+            }
+          }}
+          className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+        >
+          Debug Window
+        </button>
+        <button 
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              // Simula a presença do xBull para teste
+              (window as Record<string, unknown>).xbullWallet = {
+                getPublicKey: async () => 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789',
+                connect: async () => ({ publicKey: 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789' })
+              };
+              console.log('🎭 Simulated xBull wallet injected into window.xbullWallet');
+              updateWallets();
+            }
+          }}
+          className="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600"
+        >
+          Simulate xBull
         </button>
       </div>
 
@@ -96,6 +137,12 @@ export default function WalletDebug() {
           <li>Install wallet extensions and refresh this page</li>
           <li>Check if wallet extensions are enabled and unlocked</li>
           <li>Some wallets may need to be opened/activated before detection</li>
+          <li><strong>xBull specific:</strong> Try clicking "Debug xBull" to see detailed info</li>
+          <li><strong>xBull:</strong> Check if xBull shows as &quot;xbullWallet&quot; or &quot;xBull&quot; in window</li>
+          <li>Run <code>window.debugXBull()</code> in console for xBull troubleshooting</li>
+          <li>Try <code>Object.keys(window).filter(k =&gt; k.includes(&apos;bull&apos;))</code> in console</li>
+          <li><strong>Testing:</strong> Click &quot;Simulate xBull&quot; to test detection without real extension</li>
+          <li><strong>Installation:</strong> If xBull not found, install from Chrome Web Store</li>
         </ul>
       </div>
     </div>

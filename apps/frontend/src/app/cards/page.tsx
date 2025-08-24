@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 type CardItem = {
   id: string;
@@ -19,6 +20,9 @@ type CardItem = {
 
 export default function CardsPage() {
   const t = useTranslations("cards");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
   const [showDetails, setShowDetails] = useState<Record<string, boolean>>({});
   const [cards, setCards] = useState<CardItem[]>([
     {

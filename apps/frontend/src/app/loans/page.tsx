@@ -1,17 +1,63 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContractIds, viewLoansPool, getWalletBalances } from "@/lib/soroban";
 import LoanSimulator from "./LoanSimulator";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
+import { useEffect, useState } from "react";
 
-export default async function LoansPage() {
-  const t = await getTranslations("loans");
-  const tc = await getTranslations("common");
+export default function LoansPage() {
+  const t = useTranslations("loans");
+  const tc = useTranslations("common");
+  
+  // Ativa atualizações em tempo real quando carteira conecta
+  useRealTimeUpdates();
+  
+  const [data, setData] = useState<{
+    pool: any;
+    wallet: any;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    async function loadData() {
+      const ids = getContractIds();
+      const [pool, wallet] = await Promise.all([
+        viewLoansPool(),
+        getWalletBalances(),
+      ]);
+      
+      setData({ pool, wallet });
+      setLoading(false);
+    }
+    
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Carregando...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">Erro ao carregar dados</div>
+        </div>
+      </div>
+    );
+  }
+
+  const { pool, wallet } = data;
   const ids = getContractIds();
-  const [pool, wallet] = await Promise.all([
-    viewLoansPool(),
-    getWalletBalances(),
-  ]);
 
   // Mocks de empréstimos ativos do usuário
   const activeLoans = [
@@ -171,8 +217,8 @@ export default async function LoansPage() {
         </CardHeader>
         <CardContent>
           <div className="text-sm text-slate-400 mb-2">{t("simulator.subtitle")}</div>
-          <LoanSimulator ltvBps={pool.ltv_bps ?? 0} interestAprBps={pool.interest_bps ?? 0} wallet={{ xlm: wallet.xlm ?? 0, stlt: wallet.stlt }} />
-          <div className="text-xs text-slate-500 mt-3">{t("simulator.balance", { xlm: wallet.xlm, stlt: Number(wallet.stlt || 0).toLocaleString("pt-BR") })}</div>
+          <LoanSimulator ltvBps={pool.ltv_bps ?? 0} interestAprBps={pool.interest_bps ?? 0} wallet={{ xlm: wallet?.xlm ?? 0, stlt: wallet?.stlt }} />
+          <div className="text-xs text-slate-500 mt-3">{t("simulator.balance", { xlm: wallet?.xlm, stlt: Number(wallet?.stlt || 0).toLocaleString("pt-BR") })}</div>
         </CardContent>
       </Card>
 
