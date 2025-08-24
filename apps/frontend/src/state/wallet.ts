@@ -94,6 +94,28 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     if (typeof console !== "undefined") console.debug("[wallet] detectAvailable (initial)", list);
     set({ available: list });
 
+    // Escuta eventos customizados das carteiras para detecção em tempo real
+    const handleWalletEvent = (event: Event) => {
+      if (typeof console !== "undefined") console.debug('[wallet] wallet event received:', event.type);
+      setTimeout(() => {
+        const updated = detectAvailable();
+        if (typeof console !== "undefined") console.debug('[wallet] updated after event:', updated);
+        set({ available: updated });
+      }, 100); // pequeno delay para garantir que a carteira foi inicializada
+    };
+
+    // Remove listeners existentes para evitar duplicação
+    window.removeEventListener('freighter:ready', handleWalletEvent);
+    window.removeEventListener('rabet:connected', handleWalletEvent);
+    window.removeEventListener('xbull:ready', handleWalletEvent);
+    window.removeEventListener('albedo:ready', handleWalletEvent);
+
+    // Adiciona listeners para eventos de carteiras
+    window.addEventListener('freighter:ready', handleWalletEvent);
+    window.addEventListener('rabet:connected', handleWalletEvent);
+    window.addEventListener('xbull:ready', handleWalletEvent);
+    window.addEventListener('albedo:ready', handleWalletEvent);
+
     // Verificação assíncrona adicional: Freighter via pacote oficial
     // Algumas vezes o Chrome não injeta window.freighterApi, mas a extensão está ativa.
     (async () => {
@@ -113,21 +135,31 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         }
       } catch {}
     })();
-    // Polling curto: algumas extensões injetam o provider levemente após o load
-    // Fazemos algumas tentativas rápidas para capturar a injeção tardia.
+    // Polling robusto: algumas extensões injetam o provider tardiamente após o load
+    // Fazemos várias tentativas para capturar a injeção tardia de diferentes carteiras.
     const interesting = (arr: { id: WalletType; available: boolean }[]) =>
       arr.some((w) => w.available && (w.id === "freighter" || w.id === "xbull" || w.id === "albedo" || w.id === "rabet"));
     if (interesting(list)) return;
     let attempts = 0;
-    const maxAttempts = 15; // ~3s com 200ms
-    const interval = 200;
+    const maxAttempts = 30; // ~10s com 300ms - mais tempo para carteiras lentas
+    const interval = 300; // intervalo maior para não sobrecarregar
     const timer = setInterval(() => {
       attempts++;
       const next = detectAvailable();
-      if (typeof console !== "undefined") console.debug(`{wallet} detectAvailable retry ${attempts}`, next);
+      const foundWallets = next.filter(w => w.available).map(w => w.id);
+      if (typeof console !== "undefined") {
+        console.debug(`[wallet] detectAvailable retry ${attempts}/${maxAttempts}`, { 
+          foundWallets, 
+          totalAvailable: foundWallets.length,
+          visibilityState: document.visibilityState 
+        });
+      }
       set({ available: next });
       if (interesting(next) || attempts >= maxAttempts || document.visibilityState !== "visible") {
         clearInterval(timer);
+        if (typeof console !== "undefined") {
+          console.debug('[wallet] polling finished:', { attempts, finalWallets: foundWallets });
+        }
       }
     }, interval);
   },

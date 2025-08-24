@@ -86,8 +86,12 @@ export const FreighterConnector: WalletConnector = {
   name: "Freighter",
   isAvailable() {
     const w = getWindow();
-    const ok = !!w?.freighterApi; // somente quando a API real estiver disponível
-    if (typeof console !== 'undefined') console.debug('[wallet][detect] freighter available:', ok);
+    // Verifica múltiplas propriedades do Freighter
+    const hasFreighterApi = !!w?.freighterApi;
+    const hasFreighter = !!w?.freighter;
+    const hasFreighterGlobal = typeof window !== "undefined" && 'freighterApi' in window;
+    const ok = hasFreighterApi || hasFreighter || hasFreighterGlobal;
+    if (typeof console !== 'undefined') console.debug('[wallet][detect] freighter available:', { hasFreighterApi, hasFreighter, hasFreighterGlobal, result: ok });
     return ok;
   },
   async connect() {
@@ -138,7 +142,11 @@ export const AlbedoConnector: WalletConnector = {
   name: "Albedo",
   isAvailable() {
     const w = getWindow();
-    return !!w?.albedo;
+    const hasAlbedo = !!w?.albedo;
+    const hasAlbedoGlobal = typeof window !== "undefined" && 'albedo' in window;
+    const ok = hasAlbedo || hasAlbedoGlobal;
+    if (typeof console !== 'undefined') console.debug('[wallet][detect] albedo available:', { hasAlbedo, hasAlbedoGlobal, result: ok });
+    return ok;
   },
   async connect() {
     const w = getWindow();
@@ -155,7 +163,11 @@ export const RabetConnector: WalletConnector = {
   name: "Rabet",
   isAvailable() {
     const w = getWindow();
-    return !!w?.rabet;
+    const hasRabet = !!w?.rabet;
+    const hasRabetGlobal = typeof window !== "undefined" && 'rabet' in window;
+    const ok = hasRabet || hasRabetGlobal;
+    if (typeof console !== 'undefined') console.debug('[wallet][detect] rabet available:', { hasRabet, hasRabetGlobal, result: ok });
+    return ok;
   },
   async connect() {
     const w = getWindow();
@@ -172,15 +184,24 @@ export const XBullConnector: WalletConnector = {
   name: "xBull",
   isAvailable() {
     const w = getWindow();
-    const ok = !!w?.xbullWallet; // somente quando a API real estiver disponível
-    if (typeof console !== 'undefined') console.debug('[wallet][detect] xbull available:', ok);
+    // Verifica múltiplas propriedades do xBull
+    const hasXbullWallet = !!w?.xbullWallet;
+    const hasXbull = !!(w as any)?.xBull;
+    const hasXbullGlobal = typeof window !== "undefined" && ('xbullWallet' in window || 'xBull' in window);
+    const ok = hasXbullWallet || hasXbull || hasXbullGlobal;
+    if (typeof console !== 'undefined') console.debug('[wallet][detect] xbull available:', { hasXbullWallet, hasXbull, hasXbullGlobal, result: ok });
     return ok;
   },
   async connect() {
     const w = getWindow();
+    // Tenta diferentes APIs do xBull
     const api = w?.xbullWallet as XBullApi | undefined;
-    if (!api) throw new Error("ERR_XBULL_NOT_FOUND");
-    const res = await api.getPublicKey();
+    const xbullApi = (w as any)?.xBull as XBullApi | undefined;
+    
+    const activeApi = api || xbullApi;
+    if (!activeApi) throw new Error("ERR_XBULL_NOT_FOUND");
+    
+    const res = await activeApi.getPublicKey();
     const address = normalizeAddress(res);
     return { address, network: "public" };
   },
@@ -242,6 +263,32 @@ export const AllConnectors: WalletConnector[] = [
 ];
 
 export function detectAvailable(): WalletConnectorInfo[] {
-  return AllConnectors.map((c) => ({ id: c.id, name: c.name, available: c.isAvailable() }))
+  const results = AllConnectors.map((c) => ({ id: c.id, name: c.name, available: c.isAvailable() }))
     .sort((a, b) => Number(b.available) - Number(a.available));
+  
+  if (typeof console !== 'undefined') {
+    const available = results.filter(r => r.available);
+    const unavailable = results.filter(r => !r.available);
+    console.debug('[wallet][detectAvailable] summary:', {
+      available: available.map(a => a.name),
+      unavailable: unavailable.map(u => u.name),
+      total: results.length
+    });
+  }
+  
+  return results;
+}
+
+// Função adicional para forçar re-detecção com delay
+export function forceWalletDetection(): Promise<WalletConnectorInfo[]> {
+  return new Promise((resolve) => {
+    // Aguarda um pouco para extensões lentas
+    setTimeout(() => {
+      const results = detectAvailable();
+      if (typeof console !== 'undefined') {
+        console.debug('[wallet][forceDetection] results:', results);
+      }
+      resolve(results);
+    }, 500);
+  });
 }

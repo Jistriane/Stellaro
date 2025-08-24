@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getWalletBalances } from "@/lib/soroban";
 import { useAppStore } from "@/store/app";
 import { useTranslations } from "next-intl";
+import WalletDebug from "@/components/WalletDebug";
 
 export default function WalletPage() {
   const t = useTranslations("wallet");
@@ -38,6 +39,10 @@ export default function WalletPage() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">{t("title")}</h1>
+      
+      {/* Debug component for wallet detection */}
+      <WalletDebug />
+      
       <Card>
         <CardHeader>
           <CardTitle>{t("section_my_wallet")}</CardTitle>

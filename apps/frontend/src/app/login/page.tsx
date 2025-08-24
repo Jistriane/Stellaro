@@ -55,94 +55,26 @@ export default function LoginPage() {
   }, [refreshWalletAvailable]);
 
   useEffect(() => {
-    // Reflete disponibilidade da Freighter/Albedo do store, com fallback para detecção local abaixo
+    // Reflete disponibilidade das carteiras do store atualizado
     const foundF = walletAvailable.find((w) => w.id === "freighter");
-    if (foundF) setFreighterAvailable(Boolean(foundF.available));
+    if (foundF) {
+      const isAvailable = Boolean(foundF.available);
+      setFreighterAvailable(isAvailable);
+      if (typeof console !== 'undefined') console.debug('[login] Freighter availability from store:', isAvailable);
+    }
     const foundA = walletAvailable.find((w) => w.id === "albedo");
-    if (foundA) setAlbedoAvailable(Boolean(foundA.available));
+    if (foundA) {
+      const isAvailable = Boolean(foundA.available);
+      setAlbedoAvailable(isAvailable);
+      if (typeof console !== 'undefined') console.debug('[login] Albedo availability from store:', isAvailable);
+    }
   }, [walletAvailable]);
 
-  useEffect(() => {
-    // Detecta Freighter: considera API global e checagem via pacote oficial (isConnected)
-    if (typeof window === "undefined") return;
-    const w = window as unknown as { freighterApi?: FreighterApi; freighter?: unknown };
+  // Detecção de Freighter agora é feita inteiramente pelo wallet store
+  // O useEffect acima já sincroniza o estado local com o store
 
-    let disposed = false;
-
-    const checkGlobals = () => !!(w.freighterApi || w.freighter);
-
-    const apply = (has: boolean) => {
-      if (!disposed) setFreighterAvailable(Boolean(has));
-    };
-
-    const checkAll = async () => {
-      try {
-        // 1) globals já injetados
-        if (checkGlobals()) return apply(true);
-        // 2) fallback via pacote oficial (algumas versões não injetam window.freighterApi)
-        const mod = (await import("@stellar/freighter-api")) as unknown as { isConnected?: () => Promise<boolean> };
-        const ok = await mod.isConnected?.();
-        apply(Boolean(ok));
-      } catch {
-        apply(checkGlobals());
-      }
-    };
-
-    // Primeira checagem imediata (fallback caso o store ainda não tenha detectado)
-    if (!freighterAvailable) checkAll();
-
-    // Ouve evento customizado de readiness, se existir
-    const onReady = () => checkAll();
-    window.addEventListener("freighter:ready", onReady);
-
-    // Polling curto: algumas extensões anunciam tardiamente (fallback)
-    let attempts = 0;
-    const maxAttempts = 20; // ~10s com 500ms
-    const timer = window.setInterval(async () => {
-      attempts++;
-      if (!freighterAvailable) await checkAll();
-      if (attempts >= maxAttempts || document.visibilityState !== "visible") {
-        window.clearInterval(timer);
-      }
-    }, 500);
-
-    return () => {
-      disposed = true;
-      window.removeEventListener("freighter:ready", onReady);
-      window.clearInterval(timer);
-    };
-  }, [freighterAvailable]);
-
-  useEffect(() => {
-    // Detecta Albedo: checa objeto global e faz polling curto (fallback)
-    if (typeof window === "undefined") return;
-    const w = window as unknown as { albedo?: unknown };
-    let disposed = false;
-
-    const check = () => Boolean(w.albedo);
-    const apply = (has: boolean) => {
-      if (!disposed) setAlbedoAvailable(Boolean(has));
-    };
-
-    // Checagem imediata caso o store ainda não tenha refletido
-    if (!albedoAvailable) apply(check());
-
-    // Polling curto para capturar injeção tardia
-    let attempts = 0;
-    const maxAttempts = 20; // ~10s com 500ms
-    const timer = window.setInterval(() => {
-      attempts++;
-      if (!albedoAvailable) apply(check());
-      if (attempts >= maxAttempts || document.visibilityState !== "visible") {
-        window.clearInterval(timer);
-      }
-    }, 500);
-
-    return () => {
-      disposed = true;
-      window.clearInterval(timer);
-    };
-  }, [albedoAvailable]);
+  // Detecção de Albedo agora é feita inteiramente pelo wallet store
+  // O useEffect acima já sincroniza o estado local com o store
 
   function base64urlToArrayBuffer(base64url: string): ArrayBuffer {
     const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
@@ -165,6 +97,12 @@ export default function LoginPage() {
     setError("");
     setLoadingPasskeyReg(true);
     try {
+      // Verifica compatibilidade do WebAuthn
+      if (!navigator.credentials || !window.PublicKeyCredential) {
+        setError("WebAuthn não é suportado neste navegador.");
+        return;
+      }
+
       if (!apiUrl) {
         setError(t("login.errors.need_api"));
         return;
@@ -173,14 +111,22 @@ export default function LoginPage() {
         setError(t("login.errors.need_email_register"));
         return;
       }
+
+      console.log("[passkey] Starting registration for email:", email);
       // 1) Inicia registro no backend
+      console.log("[passkey] Calling register init endpoint:", `${apiUrl}/auth/passkey/register/init`);
       const initRes = await fetch(`${apiUrl}/auth/passkey/register/init`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ userId: email, email }),
       });
-      if (!initRes.ok) throw new Error(t("login.errors.passkey_register_init_fail"));
+      console.log("[passkey] Register init response status:", initRes.status);
+      if (!initRes.ok) {
+        const errorText = await initRes.text();
+        console.error("[passkey] Register init failed:", errorText);
+        throw new Error(t("login.errors.passkey_register_init_fail"));
+      }
       const initJson: { challenge: string; rpId?: string; user?: { id: string; name?: string } } = await initRes.json();
 
       const publicKey: PublicKeyCredentialCreationOptions = {
@@ -238,6 +184,12 @@ export default function LoginPage() {
     setError("");
     setLoadingPasskey(true);
     try {
+      // Verifica compatibilidade do WebAuthn
+      if (!navigator.credentials || !window.PublicKeyCredential) {
+        setError("WebAuthn não é suportado neste navegador.");
+        return;
+      }
+
       if (!apiUrl) {
         setError(t("login.errors.need_api"));
         return;
@@ -246,14 +198,22 @@ export default function LoginPage() {
         setError(t("login.errors.need_email_login"));
         return;
       }
+
+      console.log("[passkey] Starting login for email:", email);
       // 1) Inicia desafio de login WebAuthn no backend
+      console.log("[passkey] Calling login init endpoint:", `${apiUrl}/auth/passkey/login/init`);
       const initRes = await fetch(`${apiUrl}/auth/passkey/login/init`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email }),
       });
-      if (!initRes.ok) throw new Error(t("login.errors.passkey_init_fail"));
+      console.log("[passkey] Login init response status:", initRes.status);
+      if (!initRes.ok) {
+        const errorText = await initRes.text();
+        console.error("[passkey] Login init failed:", errorText);
+        throw new Error(t("login.errors.passkey_init_fail"));
+      }
       const initJson: { ok: boolean; challenge: string; allowCredentials?: Array<{ id: string; type: PublicKeyCredentialType; transports?: AuthenticatorTransport[] }> } = await initRes.json();
 
       const cred = (await navigator.credentials.get({
@@ -309,115 +269,97 @@ export default function LoginPage() {
     const localApiUrl = apiUrl;
 
     try {
-      if (kind === "freighter") {
-        const w = (globalThis as unknown as { freighterApi?: FreighterApi }).freighterApi;
-        if (!w) {
-          setError(t("login.errors.freighter_not_found"));
-          return;
-        }
-        const pubkey = await w.getPublicKey();
-        if (!pubkey) {
-          setError(t("login.errors.freighter_no_pubkey"));
-          return;
-        }
-        if (!localApiUrl) {
-          setError(t("login.errors.need_api"));
-          return;
-        }
-        // 1) Solicita nonce ao backend
-        const nres = await fetch(`${localApiUrl}/auth/nonce`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pubkey }),
-        });
-        if (!nres.ok) throw new Error(t("login.errors.wallet_connect_fail"));
-        const { nonce } = await nres.json();
-        // 2) Assina o nonce via Freighter
-        let signature: string | undefined;
-        try {
-          signature = await w.signMessage(nonce);
-        } catch {
-          try {
-            signature = await (w as unknown as { signMessage: (args: { address: string; message: string }) => Promise<string> }).signMessage({ address: pubkey, message: nonce });
-          } catch {
-            signature = undefined;
-          }
-        }
-        if (!signature) throw new Error(t("login.errors.wallet_connect_fail"));
-        // 3) Verifica no backend
-        const vres = await fetch(`${localApiUrl}/auth/verify`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ pubkey, nonce, signature, provider: "freighter" }),
-        });
-        if (!vres.ok) throw new Error(t("login.errors.wallet_connect_fail"));
-        // 4) Atualiza estado e saldos
-        setLoggedIn(true, pubkey);
-        pushEvent("WALLET_CONNECTED");
-        pushEvent("LOGGED_IN");
-        try {
-          const b = await getWalletBalances(pubkey);
-          setBalances({ xlm: b.xlm, stlt: b.stlt });
-        } catch {}
+      // Usar os conectores atualizados do wallet store
+      const { AllConnectors } = await import("@/lib/wallets/connectors");
+      const connector = AllConnectors.find(c => c.id === kind);
+      
+      if (!connector) {
+        setError(t("login.errors.wallet_connect_fail"));
         return;
       }
 
-      if (kind === "albedo") {
+      if (!connector.isAvailable()) {
+        setError(t(`login.errors.${kind}_not_found`));
+        return;
+      }
+
+      if (!localApiUrl) {
+        setError(t("login.errors.need_api"));
+        return;
+      }
+
+      // Conectar usando o conector atualizado
+      const session = await connector.connect();
+      const pubkey = session.address;
+
+      if (!pubkey) {
+        setError(t(`login.errors.${kind}_no_pubkey`));
+        return;
+      }
+
+      console.log(`[login] Connected to ${kind} wallet:`, { address: pubkey, network: session.network });
+
+      // 1) Solicita nonce ao backend
+      const nres = await fetch(`${localApiUrl}/auth/nonce`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pubkey }),
+      });
+      if (!nres.ok) throw new Error(t("login.errors.wallet_connect_fail"));
+      const { nonce } = await nres.json();
+
+      // 2) Assina o nonce (implementação específica por carteira)
+      let signature: string | undefined;
+      
+      if (kind === "freighter") {
+        const w = (globalThis as unknown as { freighterApi?: FreighterApi }).freighterApi;
+        if (w && w.signMessage) {
+          try {
+            signature = await w.signMessage(nonce);
+          } catch {
+            try {
+              signature = await (w as unknown as { signMessage: (args: { address: string; message: string }) => Promise<string> }).signMessage({ address: pubkey, message: nonce });
+            } catch {
+              signature = undefined;
+            }
+          }
+        }
+      } else if (kind === "albedo") {
         type AlbedoApi = {
-          publicKey: (opts: unknown) => Promise<{ pubkey: string }>;
           signMessage?: (args: { message: string; pubkey: string }) => Promise<{ signature: string } | string>;
         };
         const w = (globalThis as unknown as { albedo?: AlbedoApi }).albedo;
-        if (!w) {
-          setError(t("login.errors.albedo_not_found"));
-          return;
+        if (w && w.signMessage) {
+          const sigRes = await w.signMessage({ message: nonce, pubkey });
+          signature = typeof sigRes === "string" ? sigRes : (sigRes as { signature?: string })?.signature;
         }
-        const keyRes = await w.publicKey({});
-        const pubkey = keyRes?.pubkey;
-        if (!pubkey) {
-          setError(t("login.errors.albedo_no_pubkey"));
-          return;
-        }
-        if (!localApiUrl) {
-          setError(t("login.errors.need_api"));
-          return;
-        }
-        // 1) nonce
-        const nres = await fetch(`${localApiUrl}/auth/nonce`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pubkey }),
-        });
-        if (!nres.ok) throw new Error(t("login.errors.wallet_connect_fail"));
-        const { nonce } = await nres.json();
-        // 2) assinar com Albedo
-        if (!w.signMessage) throw new Error(t("login.errors.albedo_no_signmessage"));
-        const sigRes = await w.signMessage({ message: nonce, pubkey });
-        const signature = typeof sigRes === "string" ? sigRes : (sigRes as { signature?: string })?.signature;
-        if (!signature) throw new Error(t("login.errors.wallet_connect_fail"));
-        // 3) verificar no backend (enviar provider)
-        const vres = await fetch(`${localApiUrl}/auth/verify`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ pubkey, nonce, signature, provider: "albedo" }),
-        });
-        if (!vres.ok) throw new Error(t("login.errors.wallet_connect_fail"));
-        // 4) estado e saldos
-        setLoggedIn(true, pubkey);
-        pushEvent("WALLET_CONNECTED");
-        pushEvent("LOGGED_IN");
-        try {
-          const b = await getWalletBalances(pubkey);
-          setBalances({ xlm: b.xlm, stlt: b.stlt });
-        } catch {}
-        return;
       }
 
-      // Outros conectores ainda não implementados
-      setError(t("login.errors.wallet_connect_fail"));
+      if (!signature) throw new Error(t("login.errors.wallet_connect_fail"));
+
+      // 3) Verifica no backend
+      const vres = await fetch(`${localApiUrl}/auth/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ pubkey, nonce, signature, provider: kind }),
+      });
+      if (!vres.ok) throw new Error(t("login.errors.wallet_connect_fail"));
+
+      // 4) Atualiza estado e saldos
+      setLoggedIn(true, pubkey);
+      pushEvent("WALLET_CONNECTED");
+      pushEvent("LOGGED_IN");
+      
+      try {
+        const b = await getWalletBalances(pubkey);
+        setBalances({ xlm: b.xlm, stlt: b.stlt });
+      } catch (balanceError) {
+        console.warn("[login] Failed to fetch balances:", balanceError);
+      }
+
     } catch (e: unknown) {
+      console.error(`[login] Wallet connection failed for ${kind}:`, e);
       const maybeMsg =
         e && typeof e === "object" && "message" in e
           ? (e as { message?: unknown }).message
