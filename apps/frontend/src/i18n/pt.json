@@ -1,0 +1,31 @@
+{
+  "hero_title": "Stelato",
+  "hero_subtitle": "Stellar-first. Conecte sua carteira e acompanhe saldo em tempo real via Horizon.",
+  "deploy_now": "Deploy agora",
+  "docs": "Documentação",
+  "learn": "Aprenda",
+  "examples": "Exemplos",
+  "go_next": "Ir para nextjs.org →",
+  "connect": "Conectar",
+  "disconnect": "Desconectar",
+  "balance": "Saldo",
+  "address": "Endereço",
+  "market": "Mercado",
+  "chart_title": "Saldo (placeholder)",
+  "risk": {
+    "title": "Agente de Risco",
+    "userId": "ID do usuário",
+    "jwt": "JWT",
+    "actions": {
+      "summary": "Obter resumo",
+      "decide": "Propor ações",
+      "execute": "Executar"
+    },
+    "sections": {
+      "summary": "Resumo de risco",
+      "proposal": "Proposta de decisão",
+      "execution": "Resultado da execução"
+    },
+    "empty": "Sem dados"
+  }
+}

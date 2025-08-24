@@ -1,0 +1,233 @@
+// Prisma schema for Stelato backend
+// Location: apps/backend/prisma/schema.prisma
+
+// Datasource uses DATABASE_URL from environment
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Generator for Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Enums
+enum WebhookSource {
+  celcoin
+  dock
+  sumsub
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+}
+
+// Models
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  name       String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  passkeys   Passkey[]
+  wallets    Wallet[]
+  kycProfiles KycProfile[]
+  auditLogs   AuditLog[]
+}
+
+model Passkey {
+  id            String   @id @default(uuid())
+  userId        String
+  credentialId  String   @unique
+  publicKey     Bytes
+  signCount     Int      @default(0)
+  transports    String?
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model Wallet {
+  id         String   @id @default(uuid())
+  userId     String
+  address    String   @unique
+  provider   String   // freighter | albedo | ledger | other
+  network    String   // testnet | mainnet
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model WebhookEvent {
+  id          String         @id @default(uuid())
+  source      WebhookSource
+  eventId     String         @unique
+  signature   String?
+  payload     Json
+  receivedAt  DateTime       @default(now())
+  processedAt DateTime?
+  status      WebhookStatus  @default(RECEIVED)
+
+  @@index([source, eventId])
+}
+
+// =========================
+// RiskAgent Off-chain Store
+// =========================
+
+enum RiskEventType {
+  SIGNAL_INGEST
+  DECISION_MADE
+  ACTION_EXECUTED
+}
+
+model RiskEvent {
+  id        String        @id @default(uuid())
+  userId    String
+  type      RiskEventType
+  payload   Json
+  createdAt DateTime      @default(now())
+
+  @@index([userId, type, createdAt])
+}
+
+model RiskProposal {
+  id          String   @id @default(uuid())
+  userId      String
+  proposalId  String   @unique
+  confidence  Float
+  actions     Json
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model RiskExecution {
+  id          String   @id @default(uuid())
+  userId      String
+  proposalId  String?
+  action      String
+  params      Json
+  executed    Boolean  @default(false)
+  // Auditoria on-chain
+  txHash      String?
+  contractId  String?
+  method      String?
+  network     String? // testnet | mainnet
+  dryRun      Boolean? @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// =========================
+// Dados & Persistência (7)
+// =========================
+
+enum KycStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum KycProvider {
+  SUMSUB
+  MANUAL
+  OTHER
+}
+
+enum AuditChannel {
+  OFFCHAIN
+  ONCHAIN
+  BOTH
+}
+
+enum AuditLevel {
+  INFO
+  WARN
+  ERROR
+  SECURITY
+}
+
+model KycProfile {
+  id           String      @id @default(uuid())
+  userId       String
+  provider     KycProvider @default(SUMSUB)
+  status       KycStatus   @default(PENDING)
+  referenceId  String?     // ID no provedor externo
+  data         Json?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, status])
+}
+
+model AuditLog {
+  id           String       @id @default(uuid())
+  userId       String?
+  channel      AuditChannel @default(OFFCHAIN)
+  level        AuditLevel   @default(INFO)
+  action       String
+  resourceType String?
+  resourceId   String?
+  metadata     Json?
+  // Referências on-chain quando aplicável
+  network      String?
+  contractId   String?
+  method       String?
+  txHash       String?
+  createdAt    DateTime     @default(now())
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([channel, level, createdAt])
+}
+
+// Ingestão de eventos do ledger (Soroban/Horizon) para consultas rápidas e auditoria
+model OnchainEvent {
+  id           String   @id @default(uuid())
+  network      String   // testnet | mainnet
+  contractId   String
+  topic0       String?  // flatten de tópicos p/ filtros
+  topic1       String?
+  topic2       String?
+  topic3       String?
+  payload      Json
+  txHash       String
+  ledgerSeq    Int
+  ts           DateTime  // timestamp do ledger
+
+  @@index([network, contractId, ledgerSeq])
+  @@index([txHash])
+}
+
+// Espelho genérico de estados/contagens para dashboards e queries <200ms
+model LedgerMirror {
+  id           String   @id @default(uuid())
+  scope        String   // ex: "stablecoin:<contractId>"
+  key          String   // ex: "totalSupply", "paused", "mint_enabled"
+  value        Json
+  updatedAt    DateTime @default(now())
+
+  @@unique([scope, key])
+  @@index([scope])
+}
+
+// Pré-agregações/snapshots para dashboards em tempo real (consumidos via Redis também)
+model DashboardSnapshot {
+  id           String   @id @default(uuid())
+  key          String   // ex: "tvl", "volume24h", "mint_burn_ratio"
+  windowStart  DateTime
+  windowEnd    DateTime
+  value        Json
+  createdAt    DateTime @default(now())
+
+  @@index([key, windowStart, windowEnd])
+}

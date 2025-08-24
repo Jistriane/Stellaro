@@ -1,0 +1,5 @@
+error: unexpected value 'SALYTJPX2QS3QT276X2EXO4T72XFS3BTHUDT6CMUFJYWEHKFRAPMVVKT' for '--secret-key' found; no more were expected
+
+Usage: soroban keys add --secret-key <NAME>
+
+For more information, try '--help'.

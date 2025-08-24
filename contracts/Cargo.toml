@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "portfolio",
+    "stablecoin",
+    "risklock",
+    "loans_pool",
+    "governance",
+]
+resolver = "2"

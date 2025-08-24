@@ -1,0 +1,1129 @@
+{
+  "deploy_now": "Deploy agora",
+  "docs": "Documentação",
+  "learn": "Aprenda",
+  "examples": "Exemplos",
+  "go_next": "Ir para o site do Next.js",
+  "hero_title": "Infra de crédito DeFi na Stellar",
+  "hero_subtitle": "Financie, gerencie risco e opere carteiras tokenizadas com transparência e automação.",
+
+  "routes": {
+    "home": "Início",
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "wallet": "Carteira",
+    "stablecoin": "Stablecoin",
+    "loans": "Empréstimos",
+    "portfolio": "Portfólio",
+    "governance": "Governança",
+    "profile": "Perfil",
+    "pix": "Pix",
+    "cards": "Cartões",
+    "settings": "Configurações",
+    "help": "Ajuda",
+    "insurance": "Seguros",
+    "trading": "Trading",
+    "chat": "Chat",
+    "risk": "Risco",
+    "docs": "Docs"
+  },
+
+  "common": {
+    "soon": "Em breve"
+  },
+
+  "trading": {
+    "header": {
+      "title": "Trading",
+      "platform_normal": "Plataforma normal"
+    },
+    "intro": {
+      "title": "Introdução rápida",
+      "p1": "O trading permite comprar e vender ativos como cripto, ações ou moedas. Você pode usar ordens a mercado, limitadas ou com stop. Operações envolvem riscos: nunca invista mais do que pode perder."
+    },
+    "market": {
+      "title": "Mercado e 24h"
+    },
+    "chart": {
+      "title": "Gráfico"
+    },
+    "orderbook": {
+      "title": "Livro de ofertas",
+      "asks": "Vendas (asks)",
+      "bids": "Compras (bids)"
+    },
+    "recent": {
+      "title": "Negócios recentes"
+    },
+    "order_box": {
+      "title": "Caixa de ordem"
+    },
+    "risk_tools": {
+      "title": "Gerenciamento de risco"
+    },
+    "balances": {
+      "title": "Resumo de saldos",
+      "btc_label": "Saldo BTC",
+      "brl_label": "Saldo BRL",
+      "deposit": "Depositar",
+      "withdraw": "Sacar",
+      "transfer": "Transferir"
+    },
+    "open_orders": {
+      "title": "Ordens abertas",
+      "empty": "Nenhuma ordem aberta.",
+      "table": {
+        "id": "ID",
+        "type": "Tipo",
+        "qty": "Qtde",
+        "price": "Preço",
+        "status": "Status"
+      },
+      "status": {
+        "open": "Aberta"
+      },
+      "actions": {
+        "edit": "Editar",
+        "cancel": "Cancelar"
+      }
+    },
+    "history": {
+      "title": "Histórico",
+      "quick_filters": "Filtros rápidos: Últimos 7d",
+      "export_csv": "Exportar CSV",
+      "table": {
+        "id": "ID",
+        "side": "Lado",
+        "pair": "Par",
+        "qty": "Qtde",
+        "price": "Preço",
+        "date": "Data"
+      },
+      "dates": {
+        "today": "Hoje",
+        "yesterday": "Ontem"
+      }
+    },
+    "info": {
+      "title": "Informações e atalhos",
+      "fees": "Taxas",
+      "fees_line": "Maker 0.1% • Taker 0.15% (mock)",
+      "fees_link": "Tabela completa de taxas",
+      "market": "Mercado",
+      "market_24h": "24h: +2.43% • Vol: {vol} • Máx/Mín: {max} / {min}",
+      "depth_soon": "Gráfico de profundidade em breve",
+      "shortcuts": "Atalhos",
+      "shortcuts_news": "Noticias",
+      "shortcuts_view_fees": "Ver taxas",
+      "shortcuts_support": "Suporte",
+      "shortcuts_dark_mode": "Dark Mode",
+      "tips": "Dicas: spoofing, manipulação e golpes de engenharia social são riscos reais. Proteja-se."
+    }
+  },
+
+  "risk": {
+    "title": "Painel de Risco",
+    "userId": "ID do usuário",
+    "jwt": "Token JWT (opcional)",
+    "actions": {
+      "summary": "Resumo",
+      "decide": "Decidir",
+      "execute": "Executar"
+    },
+    "sections": {
+      "summary": "Resumo de Exposição",
+      "proposal": "Proposta de Ação",
+      "execution": "Resultado da Execução"
+    },
+    "empty": "Sem dados"
+  }
+  ,
+  "events": {
+    "BALANCE_UPDATED": "Seu saldo foi atualizado",
+    "ORDER_FILLED": "Uma ordem foi executada",
+    "ORDER_UPDATED": "Sua ordem foi atualizada",
+    "RISK_SCORE": "Seu score de risco mudou",
+    "WALLET_CONNECTED": "Carteira conectada",
+    "LOGGED_IN": "Login realizado com sucesso"
+  }
+  ,
+  "wallet": {
+    "title": "Carteira Stellar",
+    "select_wallet": "Selecione uma carteira",
+    "not_detected": "não detectada",
+    "detecting_wallets": "Detectando carteiras...",
+    "recheck": "Rechecar",
+    "recalc_title": "Recalcular carteiras disponíveis",
+    "disconnect": "Desconectar",
+    "connecting": "Conectando...",
+    "connect": "Conectar",
+    "connect_with": "Conectar {name}",
+    "wallet": "Carteira",
+    "address": "Endereço",
+    "xlm_balance_horizon": "Saldo XLM (Horizon)",
+    "section_my_wallet": "Minha Carteira",
+    "login_to_view": "Faça login para visualizar os saldos.",
+    "public_key": "Chave Pública",
+    "xlm_balance": "Saldo XLM",
+    "stlt_balance": "Saldo STLT",
+    "testing": "Testando...",
+    "test_soroban": "Testar Soroban",
+    "prompt_contract_id": "Contract ID (ex.: C...)",
+    "prompt_function_name": "Function name (ex.: hello)",
+    "invoke_success": "Invocação enviada com sucesso. Veja o console para detalhes.",
+    "invoke_error_prefix": "Erro ao invocar contrato: ",
+    "error_balances": "Erro ao obter saldos."
+  }
+  ,
+  "cards": {
+    "header": {
+      "title": "Cartões",
+      "subtitle": "Gerencie seus cartões virtuais e físicos com segurança."
+    },
+    "summary": {
+      "title": "Meus Cartões",
+      "request_virtual": "Solicitar novo (Virtual)",
+      "request_physical": "Solicitar novo (Físico)"
+    },
+    "card": {
+      "type_virtual": "Virtual",
+      "type_physical": "Físico",
+      "status_active": "Ativo",
+      "status_blocked": "Bloqueado",
+      "status_pending": "Pendente",
+      "status_canceled": "Cancelado",
+      "show_data": "Exibir Dados",
+      "hide_data": "Esconder Dados",
+      "block": "Bloquear",
+      "unblock": "Desbloquear",
+      "cancel_virtual": "Cancelar Cartão Virtual",
+      "number": "Número",
+      "expiry": "Validade",
+      "cvv": "CVV",
+      "copy": "Copiar",
+      "show": "Mostrar",
+      "security_note": "Por segurança, exibimos parcialmente até autenticação adicional (mock).",
+      "available_balance": "Saldo disponível",
+      "daily_limit": "Limite diário",
+      "status": "Status",
+      "cvv_reveal": "CVV: {cvv} (mock - proteção visual)."
+    },
+    "transactions": {
+      "title": "Transações Recentes",
+      "empty": "Sem transações.",
+      "intl": "Intl"
+    },
+    "settings": {
+      "title": "Configurações & Segurança",
+      "instant_lock": "Bloqueio instantâneo",
+      "toggle_international": "Alternar uso internacional",
+      "notifications": "Notificações",
+      "tip": "Dica: não compartilhe o número completo do cartão. Em caso de perda/roubo, bloqueie imediatamente.",
+      "docs_link": "Saiba como proteger seu cartão"
+    },
+    "delivery": {
+      "title": "Status de Entrega (Cartão Físico)",
+      "steps": "Etapas: Produção → Postagem → Em trânsito → Entregue",
+      "tracking": "Rastreamento (mock): BR-1234567890-XX"
+    },
+    "help": {
+      "title": "Ajuda & FAQ",
+      "how_to_use": "Como usar meu cartão?",
+      "dispute": "Contestar transação",
+      "quick_support": "Suporte rápido"
+    },
+    "actions": {
+      "request_sent": "Solicitação de cartão {kind} enviada (mock). Status: Em análise.",
+      "virtual_canceled": "Cartão virtual cancelado (mock)."
+    }
+  }
+  ,
+  "pix": {
+    "header": {
+      "title": "Pix",
+      "subtitle": "Aqui você pode depositar ou sacar via Pix."
+    },
+    "service": {
+      "status_title": "Status do serviço",
+      "available": "Disponível",
+      "unavailable": "Indisponível",
+      "maintenance": "Manutenção",
+      "note_ok": "Operando normalmente"
+    },
+    "ops": {
+      "title": "Operações Pix",
+      "deposit": "Depositar",
+      "withdraw": "Sacar"
+    },
+    "deposit": {
+      "how_much": "Quanto deseja depositar?",
+      "placeholder_amount": "0,00",
+      "auto_credit": "Ao enviar Pix para a chave abaixo, seu saldo em STLT-BRL será creditado automaticamente.",
+      "temp_key": "Sua chave Pix temporária",
+      "copy": "Copiar",
+      "copied": "Copiado!",
+      "qr": "QR (mock)",
+      "qr_generated": "QR Code (mock) gerado para a chave Pix: {key}",
+      "instructions_title": "Instruções:",
+      "i1": "Copie a chave Pix acima.",
+      "i2": "Abra seu aplicativo bancário, faça o Pix e aguarde a confirmação.",
+      "avg_time": "Tempo médio de confirmação: até 5 minutos.",
+      "limits": "Limites: diário R$ {daily} • Taxa: {fee}%"
+    },
+    "withdraw": {
+      "how_much": "Quanto deseja sacar?",
+      "placeholder_amount": "0,00",
+      "to_which_key": "Para qual chave Pix?",
+      "placeholder_key": "e-mail, telefone, CPF ou chave aleatória",
+      "balances": "Saldo disponível: R$ {balance} • Limite diário: R$ {daily} • Taxa: {fee}%",
+      "request": "Solicitar Saque",
+      "confirm": "Confirmar",
+      "status_pending": "Status do saque: Aguardando aprovação (mock).",
+      "need_valid": "Informe valor e chave Pix válidos.",
+      "request_sent": "Solicitação de saque enviada (mock). Status: Aguardando aprovação."
+    },
+    "history": {
+      "title": "Transações Recentes",
+      "empty": "Sem transações recentes.",
+      "type_deposit": "Depósito",
+      "type_withdraw": "Saque",
+      "status_done": "Concluído",
+      "status_pending": "Pendente"
+    },
+    "alerts": {
+      "title": "Alertas",
+      "a1": "Nunca envie Pix para terceiros em nome do Stelato.",
+      "a2": "Sempre confira a chave antes de transferir valores.",
+      "a3": "Em caso de manutenção, comunicaremos por este canal."
+    },
+    "help": {
+      "title": "Ajuda & Suporte",
+      "faq_pix": "Dúvidas sobre Pix",
+      "support": "Falar com suporte"
+    }
+  }
+  ,
+  "login": {
+    "title": "Bem-vindo ao Stelato",
+    "subtitle": "\u201cSua ponte entre blockchain e o mundo real.\u201d",
+    "auth": "Autenticação",
+    "passkey_login": "Entrar com Passkey",
+    "passkey_login_loading": "Verificando passkey...",
+    "passkey_register": "Registrar Passkey",
+    "passkey_register_loading": "Registrando...",
+    "passkey_hint": "Rápido, seguro, sem senha. Use biometria ou dispositivo confiável.",
+    "wallets_title": "Entrar com Carteira Blockchain",
+    "freighter_button": "Entrar com Freighter",
+    "freighter_install": "Instale a Freighter",
+    "albedo_button": "Entrar com Albedo",
+    "ledger_button": "Entrar com Ledger",
+    "divider_or": "Ou",
+    "email_placeholder": "voce@email.com",
+    "email_button": "Entrar com e-mail",
+    "email_loading": "Enviando...",
+    "email_helper": "Use e-mail caso não consiga acessar passkeys ou carteira. Enviaremos um código ou link mágico.",
+    "help_onboarding": "Não tem carteira?",
+    "help_link": "Saiba mais",
+    "kyc_banner": "Verifique sua identidade para aproveitar todos os recursos.",
+    "footer_help": "Ajuda",
+    "footer_terms": "Termos",
+    "footer_privacy": "Privacidade",
+    "errors": {
+      "need_api": "API não configurada (NEXT_PUBLIC_API_URL ausente)",
+      "need_email_register": "Informe seu e-mail para registrar a passkey",
+      "need_email_login": "Informe seu e-mail para entrar com passkey",
+      "passkey_init_fail": "Falha ao iniciar login por passkey",
+      "passkey_verify_fail": "Falha na verificação da passkey",
+      "passkey_register_init_fail": "Falha ao iniciar registro de passkey",
+      "passkey_register_verify_fail": "Falha na verificação do registro de passkey",
+      "freighter_not_found": "Freighter não detectada. Instale a extensão e tente novamente.",
+      "freighter_no_pubkey": "Não foi possível obter a chave pública da Freighter",
+      "albedo_not_found": "Albedo não detectado. Instale/abra o Albedo e permita pop-ups.",
+      "albedo_no_pubkey": "Não foi possível obter a chave pública da Albedo",
+      "albedo_no_signmessage": "Albedo não suporta assinatura de mensagem neste ambiente",
+      "wallet_connect_fail": "Falha ao conectar à carteira. Tente novamente.",
+      "rabet_not_found": "Rabet não encontrado",
+      "xbull_not_found": "xBull não encontrado",
+      "ledger_unsupported": "Suporte a Ledger requer dependências extras (WebHID)",
+      "soroban_no_compat": "Nenhuma carteira compatível encontrada para Soroban",
+      "chainlink_not_ready": "Integração com Chainlink Bridge não configurada",
+      "email_required": "Informe um e-mail válido",
+      "email_init_fail": "Falha ao enviar o código para seu e-mail",
+      "email_verify_fail": "Código inválido ou expirado. Tente novamente.",
+      "email_code_required": "Informe o código de verificação recebido por e-mail"
+    },
+    "passkey_credential_create_fail": "Credencial de passkey não criada",
+    "passkey_credential_missing": "Credencial de passkey não retornada",
+    "albedo_install": "Instalar/Abrir Albedo",
+    "email_prompt": "Digite o código de 6 dígitos enviado ao seu e-mail",
+    "connecting": "Conectando...",
+    "waiting": "Aguardando...",
+    "wallets_hint": "Suporte a ícones e descrições será adicionado. Integrações reais virão no próximo passo.",
+    "freighter_desc": "Carteira extensão de navegador da Stellar",
+    "albedo_desc": "Carteira web da Albedo",
+    "ledger_desc": "Carteira hardware via WebHID (em breve)"
+  }
+  ,
+  "help": {
+    "title": "Ajuda, FAQ & Suporte",
+    "subtitle": "Encontre respostas rápidas ou fale com nosso time (08h–22h).",
+    "search_title": "Qual sua dúvida?",
+    "search_placeholder": "Busque por palavras-chave (ex: Pix, senha, cartão)",
+    "popular": "Sugestões populares",
+    "status_title": "Status dos Serviços",
+    "status_incidents": "Em caso de incidentes, exibiremos avisos aqui (mock).",
+    "faq_title": "Perguntas Frequentes por Categoria",
+    "no_results": "Sem resultados para sua busca. Tente outras palavras.",
+    "helpful": "Esta resposta ajudou?",
+    "tutorials_title": "Tutoriais, Passo a Passo e Vídeos",
+    "tutorials_pix": "Como depositar via Pix",
+    "tutorials_cards": "Solicitar e desbloquear cartão",
+    "tutorials_denied": "O que fazer se uma transação for negada",
+    "tutorials_docs": "Ver vídeos/guia visual (mock)",
+    "support_title": "Precisa de suporte? Fale conosco",
+    "open_chat": "Abrir Chat",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "telegram": "Telegram",
+    "hours": "Atendimento: 08h às 22h (horário local)",
+    "protocol": "Ao abrir um chamado, um número de protocolo será gerado (mock). Você poderá anexar prints/documentos.",
+    "security_title": "Dicas de Segurança",
+    "sec_tip1": "O Stelato NUNCA pede sua senha por WhatsApp, e-mail ou redes sociais.",
+    "sec_tip2": "Confira sempre o domínio oficial antes de inserir dados: stelato.app (mock).",
+    "sec_tip3": "Ative o 2FA em Configurações > Segurança.",
+    "sec_tip4": "Desconfie de promessas de ganhos fáceis e nunca compartilhe códigos de verificação.",
+    "fraud_docs": "Veja também nossos artigos de prevenção a fraudes em Documentação.",
+    "quick_access_title": "Acesso Rápido",
+    "recover_account": "Recuperar Conta",
+    "report_suspicious": "Reportar transação suspeita",
+    "cancel_card": "Cancelar Cartão",
+    "categories": {
+      "account": {
+        "title": "Minha conta e segurança",
+        "qas": [
+          { "q": "Como recuperar minha senha?", "a": "Use a opção 'Esqueci minha senha' na tela de login. Você receberá um e-mail para redefini-la (mock)." },
+          { "q": "Como ativar autenticação de dois fatores (2FA)?", "a": "Vá em Configurações > Segurança e ative o 2FA. Escolha SMS, e-mail ou app autenticador (mock)." },
+          { "q": "Como bloquear minha conta?", "a": "Vá em Configurações > Segurança > Bloqueio de Emergência. Em casos suspeitos, contate o suporte imediatamente (mock)." }
+        ]
+      },
+      "pix": {
+        "title": "Depósitos e saques (Pix)",
+        "qas": [
+          { "q": "Como depositar via Pix?", "a": "Na página de Pix, gere um QR Code ou use a chave Pix exibida. O crédito é instantâneo na maioria dos casos (mock)." },
+          { "q": "Por que meu Pix ainda não chegou?", "a": "Verifique o status do Pix em Ajuda > Status dos Serviços. Durante manutenção/instabilidade pode haver atraso (mock)." },
+          { "q": "Quais são os limites e taxas?", "a": "Veja Configurações > Limites de Conta e a Política de Taxas na seção Legal (mock)." }
+        ]
+      },
+      "cards": {
+        "title": "Cartões",
+        "qas": [
+          { "q": "Como solicitar um cartão?", "a": "Acesse Cartões e clique em 'Solicitar'. Siga as instruções para emissão (mock)." },
+          { "q": "Como desbloquear meu cartão?", "a": "Na página de Cartões, use a ação 'Desbloquear' após receber o cartão físico (mock)." },
+          { "q": "Como pedir 2ª via?", "a": "Na página de Cartões, selecione o cartão e escolha 'Solicitar 2ª via'. Custos podem se aplicar (mock)." }
+        ]
+      },
+      "kyc": {
+        "title": "KYC e privacidade",
+        "qas": [
+          { "q": "Por que precisamos de KYC?", "a": "Para cumprir exigências regulatórias e prevenir fraudes. Protegemos seus dados conforme a LGPD (mock)." },
+          { "q": "Quais documentos são aceitos?", "a": "Documento oficial com foto (RG, CNH, passaporte) e comprovante de residência recente (mock)." },
+          { "q": "Meu KYC foi recusado, e agora?", "a": "Verifique a legibilidade dos documentos e tente novamente. Se persistir, contate o suporte (mock)." }
+        ]
+      },
+      "gov": {
+        "title": "Governança",
+        "qas": [
+          { "q": "Como votar em propostas?", "a": "Vá à página de Governança, veja as propostas ativas e confirme o voto com sua carteira (mock)." },
+          { "q": "Quem pode participar?", "a": "Detentores de tokens de governança conforme as regras da DAO (mock)." },
+          { "q": "Qual é o cronograma?", "a": "Cada proposta exibe prazos de discussão, votação e execução (mock)." }
+        ]
+      },
+      "tokens": {
+        "title": "Tokens, saldo e performance",
+        "qas": [
+          { "q": "Como meu saldo é calculado?", "a": "Com base em posições, preços de referência e histórico de transações (mock)." },
+          { "q": "Há limites de movimentação?", "a": "Sim. Veja Configurações > Limites de Conta para valores diários e mensais (mock)." },
+          { "q": "Posso exportar meu histórico?", "a": "Sim. Em Configurações > Privacidade, solicite a exportação dos seus dados (mock)." }
+        ]
+      }
+    }
+  },
+  "governance": {
+    "common": {
+      "soon": "Em breve"
+    },
+    "header": {
+      "title": "Governança",
+      "updated_now": "Atualizado agora"
+    },
+    "summary": {
+      "title": "Admin & Contrato",
+      "contract": "Contrato",
+      "current_admin": "Admin atual",
+      "open_proposals": "Propostas abertas",
+      "view_explorer": "Ver contrato no explorer",
+      "docs": "Documentação"
+    },
+    "open": {
+      "title": "Propostas Abertas",
+      "empty": "Não há propostas abertas no momento.",
+      "author": "Autor: {author}",
+      "end": "Fim",
+      "remaining": "Tempo restante",
+      "partial_results": "Resultados parciais",
+      "yes_no": "Sim {yes}% • Não {no}%",
+      "you_voted": "Você votou \"{vote}\".",
+      "vote_now": "Vote agora",
+      "details": "Detalhes",
+      "discussion": "Discussão"
+    },
+    "history": {
+      "title": "Histórico de Propostas",
+      "empty": "Sem propostas anteriores.",
+      "status_voters": "{status} • {voters} votantes"
+    },
+    "education": {
+      "title": "Como funciona a governança?",
+      "item1": "Qualquer usuário elegível pode propor e votar (conforme regras).",
+      "item2": "Quorum mínimo (mock): 500 votos.",
+      "item3": "Periodicidade sugerida: propostas mensais.",
+      "learn_more": "Aprenda como sua voz impacta o projeto",
+      "view_contracts": "Ver contratos"
+    },
+    "notices": {
+      "title": "Comunicados",
+      "item1": "[Alerta] Proposta sobre taxas (P-001) encerra hoje às 23h59!",
+      "item2": "Dica: Nunca compartilhe sua chave privada para votar."
+    }
+  },
+  "chat": {
+    "header_title": "elizaos · Suporte por Chat",
+    "status_online": "Atendimento automático",
+    "status_handover": "Transferindo para humano",
+    "status_offline": "Fora do horário",
+    "eta": " · Espera estimada {eta}",
+    "hours": "Horário humano: 08h–22h",
+    "conversation": "Conversa",
+    "suggestions": [
+      "Como faço um Pix?",
+      "Cartão bloqueado, e agora?",
+      "Falar com atendente humano",
+      "Ver status do Pix"
+    ],
+    "assistant_started": "Olá, {name}! Eu sou o elizaos. Como posso ajudar você hoje?",
+    "hint_pix": "Veja também: Ajuda > Pix e Status dos Serviços.",
+    "hint_cards": "Dica: Página de Cartões tem desbloqueio e 2ª via.",
+    "assistant_reply": "(mock) Entendi: \"{text}\". Posso te guiar pelas etapas ou transferir para um atendente.",
+    "attach": "Anexar arquivo",
+    "selected_file": "Selecionado: {file} (mock)",
+    "placeholder": "Digite sua mensagem…",
+    "send": "Enviar",
+    "escalate": "Falar com atendente",
+    "who_answers": "Quem responde agora: ",
+    "who_online": "elizaos",
+    "who_handover": "transferindo…",
+    "who_offline": "indisponível",
+    "human_available": "Atendimento humano disponível 08h–22h",
+    "links": {
+      "help": "Central de Ajuda",
+      "faq": "FAQ",
+      "articles": "Artigos e Tutoriais",
+      "pix_status": "Ver Status do Pix"
+    },
+    "privacy": "Nunca compartilhe sua senha ou dados bancários completos aqui. Veja nossa ",
+    "privacy_link": "Política de Privacidade",
+    "feedback_title": "Este atendimento te ajudou?",
+    "thanks": "Obrigado pelo feedback (mock)",
+    "footnote": "Mock UI. Integração real com ElizaOS (tools/eliza/config.json) em etapa futura.",
+    "system_handover_start": "Você solicitou atendimento humano. Estamos direcionando seu chamado...",
+    "system_handover_connected": "Atendente conectado (mock). Horário de atendimento: 08h às 22h.",
+    "typing": "digitando…",
+    "system_label": "sistema",
+    "feedback_placeholder": "Escreva um comentário (opcional)"
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Personalize sua conta, segurança e preferências.",
+    "account": {
+      "title": "Dados da Conta",
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefone",
+      "user_id": "ID do Usuário",
+      "kyc": "KYC: {status}",
+      "save": "Salvar alterações",
+      "save_alert": "Alterações salvas (mock)",
+      "loading": "Carregando seu perfil...",
+      "profile_error": "Não foi possível carregar seu perfil agora. Tente novamente."
+    },
+    "security": {
+      "title": "Segurança",
+      "change_password": "Alterar/Redefinir Senha",
+      "twofa": "2FA: {state}",
+      "twofa_method": "Método 2FA: {method}",
+      "biometrics": "Biometria: {state}",
+      "emergency_lock": "Bloqueio de Emergência",
+      "devices_title": "Dispositivos conectados / Sessões ativas",
+      "current": "• atual",
+      "last_access": "Último acesso: {date}",
+      "end_session": "Encerrar sessão",
+      "change_password_alert": "Link de redefinição de senha enviado (mock)",
+      "end_session_alert": "Sessão encerrada neste dispositivo (mock)",
+      "emergency_lock_alert": "Conta bloqueada em modo de emergência (mock)"
+    },
+    "prefs": {
+      "title": "Notificações & Preferências",
+      "push": "Push",
+      "email": "Email",
+      "sms": "SMS",
+      "on": "Ligado",
+      "off": "Desligado",
+      "email_opts": ["Todas", "Somente Segurança", "Nenhuma"],
+      "tx_alert": "Alertar transações acima de"
+    },
+    "privacy": {
+      "title": "Privacidade",
+      "lgpd": "Consentimento LGPD: {state}",
+      "marketing": "Permissão Marketing: {state}",
+      "analytics": "Permissão Analytics: {state}",
+      "export": "Baixar/Exportar meus dados",
+      "export_alert": "Arquivo de dados gerado para download (mock)",
+      "summary": "Resumo: Coletamos dados de uso para melhoria do serviço. Veja nossa Política de Privacidade."
+    },
+    "lang_theme": {
+      "title": "Idioma e Tema",
+      "language": "Idioma",
+      "theme": "Tema",
+      "dark": "Escuro",
+      "light": "Claro",
+      "note": "MVP: Seleções não persistem e não alteram o tema real."
+    },
+    "integrations": {
+      "title": "Integrações",
+      "external_wallet": "Carteira Externa: {state}",
+      "google": "Google: {state}",
+      "apple": "Apple: {state}",
+      "auto_sync": "Sincronização automática de saldo: {state}"
+    },
+    "limits": {
+      "title": "Limites de Conta",
+      "daily": "Limite diário",
+      "monthly": "Limite mensal",
+      "request_increase": "Solicitar aumento",
+      "reset": "Redefinir (mock)",
+      "history": "Histórico de solicitações",
+      "from_to": "{from} → {to}",
+      "status": "{status}",
+      "request_increase_alert": "Solicitação de aumento enviada (mock)"
+    },
+    "support": {
+      "title": "Suporte & Ajuda",
+      "help_center": "Central de Ajuda / FAQ",
+      "open_ticket": "Abrir ticket",
+      "report_bug": "Reportar bug"
+    },
+    "legal": {
+      "title": "Informações Legais",
+      "terms": "Termos de Uso",
+      "privacy": "Política de Privacidade",
+      "fees": "Política de Taxas",
+      "contracts": "Contratos",
+      "transparency": "Transparência & Auditoria"
+    },
+    "close": {
+      "title": "Encerramento de Conta",
+      "warn": "Atenção: o encerramento remove o acesso e pode ter retenção de dados conforme lei aplicável.",
+      "close": "Encerrar Conta",
+      "close_alert": "Conta encerrada (mock)"
+    },
+    "about": {
+      "title": "Sobre o Aplicativo",
+      "version": "Versão: {version} ({releasedAt})",
+      "notes": "Notas de release (mock): melhorias de performance e correções na experiência de login."
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "welcome_back": "Bem-vindo de volta!",
+      "stellar_key": "Chave Stellar:",
+      "updated_now": "Atualizado agora"
+    },
+    "balances": {
+      "estimated_stlt_balance": "Estimado — saldo STLT: {amount}",
+      "estimated_mock": "Estimado (mock)",
+      "available": "Disponível"
+    },
+    "quick_access": {
+      "title": "Acesso Rápido",
+      "deposit_pix": "Depositar (Pix)",
+      "swap_stablecoins": "Swap Stablecoins",
+      "request_loan": "Solicitar Empréstimo",
+      "governance": "Governança",
+      "profile_kyc": "Perfil / KYC"
+    },
+    "recent": {
+      "title": "Atividades Recentes",
+      "view_all": "Ver todas as transações",
+      "items": {
+        "received_stlt_brl": "Recebeu {amount} {asset}",
+        "requested_loan": "Solicitou empréstimo",
+        "voted_proposal": "Votou em proposta {id}"
+      }
+    },
+    "status": {
+      "completed": "concluída",
+      "pending": "pendente"
+    },
+    "notifications": {
+      "title": "Notificações & Alertas",
+      "view": "ver",
+      "items": {
+        "open_proposal": "Proposta de voto aberta",
+        "kyc_selfie_pending": "Selfie KYC pendente",
+        "review_collateral": "Atenção: revise seu colateral"
+      }
+    },
+    "loans": {
+      "title": "Empréstimos Ativos",
+      "pool_ltv_interest": "Pool LTV: {ltv} bps • Juros: {interest} bps",
+      "status": "Status",
+      "collateral_due": "Colateral: {collateral} • Venc.: {due}",
+      "view_details": "Ver detalhes",
+      "renegotiate": "Negociar",
+      "prepay": "Antecipar",
+      "on_time": "em dia"
+    },
+    "portfolio": {
+      "title": "Resumo de Portfolio",
+      "contract": "Contrato",
+      "history_mock": "Histórico (mock): últimos 30 dias estável."
+    },
+    "governance": {
+      "title": "Painel de Governança",
+      "open_proposals": "Propostas abertas: {count}",
+      "view_proposals": "Ver propostas"
+    },
+    "profile": {
+      "title": "Informações do Perfil",
+      "user": "Usuário",
+      "kyc_pending": "pendente",
+      "complete_kyc": "Completar KYC"
+    }
+  },
+  "loans": {
+    "header": {
+      "title": "Empréstimos",
+      "updated_now": "Atualizado agora"
+    },
+    "intro": {
+      "title": "Crédito simples, transparente e seguro",
+      "p1": "Pegue crédito usando seus tokens/real como garantia, sem burocracia. Use com consciência — empréstimos envolvem custos e riscos. Simule valores e prazos e veja todos os custos antes de contratar.",
+      "responsibility": "Responsabilidade financeira: utilize crédito para construir patrimônio. Evite comprometer seu orçamento."
+    },
+    "pool": {
+      "title": "Parâmetros do Pool",
+      "contract": "Contrato",
+      "ltv_max": "LTV Máx.",
+      "apr": "Juros (APR)",
+      "accounts": "Contas",
+      "total_deposits": "Total Deposits",
+      "total_borrowed": "Total Borrowed"
+    },
+    "active": {
+      "title": "Empréstimos Ativos",
+      "none": "Você não possui empréstimos ativos.",
+      "effective_rate": "Taxa efetiva: {apr}% APR",
+      "value": "Valor",
+      "collateral": "Colateral",
+      "balance_due": "Saldo Devedor",
+      "due_in": "Vence em",
+      "days": "{days} dias",
+      "risk": "Risco",
+      "monitor_collateral": "Monitorar colateral",
+      "pay": "Pagar",
+      "add_collateral": "Adicionar Colateral",
+      "details": "Detalhes",
+      "summary_mock": "Resumo: cronograma simplificado e últimos pagamentos (mock)."
+    },
+    "common": {
+      "soon": "Em breve"
+    },
+    "history": {
+      "title": "Histórico",
+      "none": "Sem registros de histórico.",
+      "paid_at": "Pago em {date} • {status}"
+    },
+    "simulator": {
+      "title": "Simulador",
+      "subtitle": "Defina valor, prazo e garantia. Cálculos são instantâneos.",
+      "balance": "Seu saldo: {xlm} XLM / {stlt} STLT."
+    },
+    "conditions": {
+      "title": "Condições e Requisitos",
+      "fees": "Taxas",
+      "apr_line": "APR: {apr}% • CET mensal estimado exibido no simulador",
+      "limits": "Limites",
+      "range": "Valores entre R$ 100 e R$ 5.000 (mock)",
+      "collateral": "Garantias",
+      "ltv_assets": "LTV máx.: {ltv}% • ativos aceitos: XLM, STLT",
+      "note_iof": "IOF e tarifas administrativas podem se aplicar conforme legislação (mock).",
+      "note_late": "Em atraso, podem incidir multa e juros adicionais (mock).",
+      "note_liquidation": "Liquidação automática pode ocorrer se a garantia cair (risco de mercado)."
+    },
+    "steps": {
+      "title": "Como contratar",
+      "s1": "Simule seu empréstimo no bloco acima.",
+      "s2": "Confira os dados e aceite as condições.",
+      "s3": "Envie a garantia (tokens) e conclua KYC, se solicitado.",
+      "s4": "Aguarde aprovação e liberação dos recursos.",
+      "apply": "Solicitar empréstimo",
+      "track": "Acompanhar solicitação"
+    },
+    "collateral": {
+      "title": "Garantias e Limite",
+      "limit_available": "Limite disponível (mock)",
+      "deposited": "Garantia depositada",
+      "avg_ltv": "LTV médio",
+      "risk_attention": "57% • atenção ao risco",
+      "add": "Adicionar garantia",
+      "remove": "Retirar garantia",
+      "renegotiate": "Renegociar",
+      "note_ltv": "Se o LTV subir além do limite, pode ocorrer liquidação parcial automática."
+    },
+    "alerts": {
+      "title": "Status, Alertas e Recomendações",
+      "item1": "⚠ Colateral de L-002 próximo do mínimo. Considere reforçar.",
+      "item2": "⏰ Empréstimo L-002 vence em 2 dias."
+    },
+    "faq": {
+      "title": "Como funciona o empréstimo?",
+      "text": "Você deposita um colateral (ex.: XLM) e recebe crédito em STLT-BRL/USD. Enquanto o empréstimo estiver ativo, mantenha o colateral acima do mínimo e acompanhe prazos e juros. Em caso de queda do colateral, pode haver liquidação parcial.",
+      "view_faq": "Ver FAQ",
+      "need_help": "Precisa de ajuda?",
+      "security_note": "Mensagens de segurança: nunca compartilhe suas chaves. Operações on-chain são irreversíveis."
+    },
+    "legal": {
+      "title": "Termos e Documentos",
+      "loan_contract": "Contrato de Empréstimo",
+      "loan_terms": "Termos do Empréstimo",
+      "loan_faq": "FAQ de Empréstimo",
+      "read_first": "Leia atentamente os documentos antes de contratar."
+    },
+    "education": {
+      "title": "Educação e Alertas",
+      "item1": "Use crédito para investir de forma consciente; evite parcelar dívidas com juros maiores.",
+      "item2": "Evite golpes: o Stelato nunca pede pagamento antecipado para liberar crédito.",
+      "item3": "Assista: “Como contratar seu primeiro empréstimo no Stelato?” (em breve)"
+    },
+    "quick": {
+      "apply": "Solicitar",
+      "simulate": "Simular",
+      "track": "Acompanhar",
+      "prepay": "Antecipar pagamento",
+      "support": "Suporte"
+    }
+  },
+  "home": {
+    "getting_started": {
+      "edit_file": "Edite {file} para começar.",
+      "save_and_view": "Salve e veja as mudanças instantaneamente."
+    },
+    "footer": {
+      "brand": "Stelato"
+    }
+  },
+  "insurance": {
+    "header": {
+      "title": "Seguros",
+      "updated_now": "Atualizado agora"
+    },
+    "intro": {
+      "title": "Proteja-se com os Seguros Stelato",
+      "p1": "Por que ter seguro? Para aumentar sua segurança financeira contra eventos imprevistos. Proteja seu saldo, cartão, celular, cripto e até operações DeFi. O seguro não substitui práticas seguras: ative 2FA, use senhas fortes e desconfie de contatos desconhecidos.",
+      "warning": "Aviso: o seguro é complementar. Mantenha sempre ativas suas medidas pessoais de segurança."
+    },
+    "offers": {
+      "title": "Coberturas disponíveis",
+      "items": {
+        "saldo": {
+          "title": "Seguro de saldo",
+          "desc": "Proteja seus fundos digitais contra fraudes por até R$ 10.000.",
+          "price": "R$ 6,99/mês"
+        },
+        "cartao": {
+          "title": "Seguro de cartão",
+          "desc": "Compras não reconhecidas, perda/roubo. Cobertura até R$ 5.000.",
+          "price": "R$ 4,99/mês"
+        },
+        "cyber": {
+          "title": "Seguro cyber",
+          "desc": "Proteção contra invasão e perda de dados pessoais.",
+          "price": "R$ 9,99/mês"
+        },
+        "defi": {
+          "title": "Seguro DeFi (Beta)",
+          "desc": "Cobertura automatizada para pools e staking.",
+          "price": "R$ 14,99/mês"
+        }
+      },
+      "simulate": "Simular"
+    },
+    "quick_sim": {
+      "title": "Simule seu seguro",
+      "subtitle": "Defina valor coberto e selecione coberturas para ver o preço estimado."
+    },
+    "coverage": {
+      "title": "O que cobre e o que não cobre",
+      "covers": "Cobre",
+      "doesnt_cover": "Não cobre",
+      "covers_items": [
+        "Transações não reconhecidas (cartão)",
+        "Fraude/Phishing (saldo/token)",
+        "Assistência cyber (invasões, perda de dados)",
+        "Eventos DeFi conforme contrato (beta)"
+      ],
+      "doesnt_cover_items": [
+        "Negligência proposital, fraude do segurado",
+        "Perdas fora do escopo das condições gerais",
+        "Atos ilícitos e sanções internacionais aplicáveis"
+      ]
+    },
+    "details": {
+      "limit": "Limite de cobertura",
+      "limit_value": "Até R$ 10.000 (mock)",
+      "waiting": "Carência",
+      "waiting_value": "7 dias (mock)",
+      "deductible": "Franquia",
+      "deductible_value": "5% do valor reclamado (mock)",
+      "payment": "Pagamento",
+      "payment_value": "Débito automático ou tokens",
+      "docs_link": "Condições gerais do seguro [PDF]"
+    },
+    "howto": {
+      "title": "Como contratar",
+      "steps": [
+        "Simule o seguro ideal para você.",
+        "Confira e aceite as condições.",
+        "Cadastre dados mínimos (nome, identificação, contrato digital).",
+        "Confirme adesão."
+      ],
+      "hire": "Contratar",
+      "view_terms": "Ver contrato/termo"
+    },
+    "mine": {
+      "title": "Meus Seguros",
+      "policy_view": "Ver apólice",
+      "policy_change": "Alterar coberturas",
+      "policy_cancel": "Cancelar",
+      "policy_claim": "Abrir sinistro",
+      "validity": "Vigência",
+      "premium": "Prêmio"
+    },
+    "claims": {
+      "title": "Sinistros",
+      "none": "Você não possui sinistros.",
+      "send_docs": "Enviar documentos",
+      "track": "Acompanhar"
+    },
+    "faq_edu": {
+      "title": "FAQ e Educação",
+      "faq_title": "Dúvidas frequentes",
+      "faq_items": [
+        "Quando posso usar? Após a carência indicada.",
+        "Quais documentos? Documento pessoal e evidências do evento.",
+        "Cobertura internacional? Consulte as condições gerais."
+      ],
+      "edu_title": "Educação e prevenção",
+      "edu_items": [
+        "O que é franquia? Parte de responsabilidade do cliente.",
+        "Dicas: não compartilhe códigos, confirme remetentes.",
+        "Vídeo: Como acionar seu seguro (em breve)"
+      ],
+      "alert": "Atenção: nunca pague terceiros para receber o seguro. O suporte oficial é feito pela plataforma."
+    },
+    "docs_support": {
+      "title": "Documentos e Suporte",
+      "full_terms": "Condições completas",
+      "tech_notes": "Notas técnicas (mock)",
+      "insurer": "Seguradora/CNPJ/Susep (mock)",
+      "support_title": "Atendimento especializado: chat, telefone ou formulário.",
+      "support_hours": "Seg–Sex, 9h–18h • Resposta média: 30min"
+    }
+  }
+  ,
+  "portfolio": {
+    "header": {
+      "title": "Portfólio",
+      "updated": "Atualizado em {when}"
+    },
+    "common": {
+      "soon": "Em breve"
+    },
+    "summary": {
+      "title": "Resumo Global",
+      "total_brl": "Total em Ativos (BRL)",
+      "total_usd": "Total em Ativos (USD)",
+      "estimate": "Estimativa (mock)",
+      "contract": "Contrato"
+    },
+    "distribution": {
+      "title": "Distribuição dos Ativos",
+      "composition_label": "Composição por valor (BRL) • gráfico de barras (mock)",
+      "qty_label": "Qtde: {qty} • R$ {brl} • $ {usd}",
+      "protocol_ref_title": "Composição referência do protocolo (mock)"
+    },
+    "history": {
+      "title": "Histórico e Variação",
+      "last30": "Últimos 30 dias (mock)",
+      "performance": "Performance: {value} ({pct} no período)",
+      "note_filters": "Filtros por período e ativo serão adicionados futuramente."
+    },
+    "reports": {
+      "title": "Extrato e Relatórios",
+      "view_full": "Ver extrato completo",
+      "download_csv": "Baixar CSV",
+      "download_pdf": "Baixar PDF"
+    },
+    "notices": {
+      "title": "Avisos e Recomendações",
+      "n1": "Considere diversificar entre moedas e colaterais.",
+      "n2": "Tokens podem apresentar volatilidade elevada. Avalie seu perfil de risco.",
+      "n3": "Mantenha práticas de segurança: proteja suas chaves e ative 2FA quando disponível."
+    }
+  }
+  ,
+  "stablecoin": {
+    "header": {
+      "title": "Stablecoin",
+      "updated": "Atualizado em {when}"
+    },
+    "common": {
+      "soon": "Em breve"
+    },
+    "balances": {
+      "common": {
+        "balance": "Saldo: {amount} STLT"
+      },
+      "brl": {
+        "title": "STLT-BRL",
+        "value": "{value}"
+      },
+      "usd": {
+        "title": "STLT-USD",
+        "value": "{value}",
+        "note_mock": "Estimado em USD (mock)"
+      }
+    },
+    "contract": {
+      "title": "Contrato",
+      "id": "ID",
+      "symbol": "Símbolo",
+      "asset": "Ativo",
+      "status": "Status",
+      "status_active": "ativo",
+      "status_paused": "pausado"
+    },
+    "actions": {
+      "title": "Ações",
+      "mint": "Emitir",
+      "burn": "Queimar",
+      "send": "Enviar",
+      "receive": "Receber",
+      "note_mvp": "No MVP, ações permanecem desabilitadas enquanto a integração real é finalizada."
+    },
+    "movements": {
+      "title": "Movimentações Recentes",
+      "item_line": "{date} • {type} {amount} {asset}",
+      "status": "Status: {status}",
+      "view_wallet": "ver"
+    },
+    "edu": {
+      "title": "Sobre as Stablecoins do Stelato",
+      "p1": "STLT é uma stablecoin 1:1 desenhada para transparência e segurança no ecossistema Stelato. Emissão e queima seguem políticas claras e auditáveis, mantendo lastro e paridade continuamente.",
+      "li1": "Paridade 1:1 e transparência de oferta.",
+      "li2": "Relatórios e auditorias periódicas (quando disponíveis).",
+      "li3": "Papel central no ecossistema: meio de troca e colateral.",
+      "docs": "Ver FAQ / Documentação",
+      "view_explorer": "Ver contrato no explorer"
+    },
+    "fees": {
+      "title": "Taxas e Políticas",
+      "mint_burn": "Emissão/Queima",
+      "transfer": "Transferência",
+      "limits": "Limites",
+      "limits_value": "conforme KYC e política vigente",
+      "note_governance": "Alterações podem ocorrer via governança."
+    },
+    "status": {
+      "title": "Status e Transparência",
+      "contract": "Contrato",
+      "supply_mock": "Oferta (mock)",
+      "last_update": "Última atualização",
+      "now": "agora",
+      "note_explorer": "Confira no explorer os detalhes on-chain."
+    },
+    "help": {
+      "need_help": "Precisa de ajuda?",
+      "warning": "Algumas operações podem ficar indisponíveis enquanto a integração é concluída."
+    }
+  }
+  ,
+  "profile": {
+    "header": {
+      "title": "Perfil & KYC",
+      "updated_now": "Atualizado agora"
+    },
+    "identity": {
+      "title": "Identidade do Usuário",
+      "nickname": "Apelido",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "dob": "Data de nascimento",
+      "dob_optional": "(opcional no início)",
+      "public_key": "Chave pública"
+    },
+    "kyc": {
+      "title": "Status do KYC & AML",
+      "status_label": "Status atual",
+      "level_label": "Nível de verificação",
+      "limit_current": "(limite R$ {value}/mês)",
+      "progress": "Progresso",
+      "next_step": "Próxima etapa",
+      "benefits_label": "Benefícios ao avançar",
+      "unlock_until": "Conclua para desbloquear até R$ {value}"
+    },
+    "docs": {
+      "title": "Documentos",
+      "accepted": "Aceitos: RG, CNH ou Passaporte. Use fotos nítidas, sem cortes e sem reflexos.",
+      "status": "Status",
+      "preview": "Pré-visualização",
+      "no_preview": "Sem preview",
+      "upload": "Upload",
+      "view_example": "Ver exemplo"
+    },
+    "steps": {
+      "title": "Etapas Pendentes",
+      "start_continue": "Começar/Continuar KYC",
+      "review_personal": "Revisar dados pessoais"
+    },
+    "history": {
+      "title": "Histórico de Submissão"
+    },
+    "limits": {
+      "title": "Limites & Benefícios",
+      "current": "Limite atual",
+      "with_kyc": "Com KYC completo"
+    },
+    "privacy": {
+      "title": "Privacidade & Segurança",
+      "text": "Seus dados são criptografados e usados somente para validação de identidade. Nunca compartilhamos para fins comerciais.",
+      "policy_full": "Política completa",
+      "tip": "Dica: nunca envie documentos fora da plataforma oficial."
+    },
+    "support": {
+      "title": "Suporte & FAQ",
+      "contact": "Falar com suporte",
+      "faq": "FAQ: KYC e prazos"
+    }
+  }
+}

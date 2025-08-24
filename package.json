@@ -1,0 +1,27 @@
+{
+  "name": "stelato",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@10.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "eliza": "elizaos",
+    "eliza:help": "elizaos --help",
+    "eliza:version": "elizaos --version",
+    "eliza:agent:start": "elizaos run -c tools/eliza/config.json",
+    "eliza:agent:chat": "elizaos chat -c tools/eliza/config.json"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "dependencies": {
+    "stellar-sdk": "^13.3.0"
+  }
+}

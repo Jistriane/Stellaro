@@ -1,0 +1,32 @@
+{
+  "hero_title": "Stelato",
+  "hero_subtitle": "Stellar-first. Connect your wallet and track balance in real time via Horizon.",
+  "deploy_now": "Deploy now",
+  "docs": "Documentation",
+  "learn": "Learn",
+  "examples": "Examples",
+  "go_next": "Go to nextjs.org →",
+  "connect": "Connect",
+  "disconnect": "Disconnect",
+  "balance": "Balance",
+  "address": "Address",
+  "market": "Market",
+  "chart_title": "Balance (placeholder)"
+,
+  "risk": {
+    "title": "Risk Agent",
+    "userId": "User ID",
+    "jwt": "JWT",
+    "actions": {
+      "summary": "Get summary",
+      "decide": "Propose actions",
+      "execute": "Execute"
+    },
+    "sections": {
+      "summary": "Risk summary",
+      "proposal": "Decision proposal",
+      "execution": "Execution result"
+    },
+    "empty": "No data"
+  }
+}
