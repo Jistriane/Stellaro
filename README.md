@@ -41,6 +41,44 @@ Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para
 - **`infra/`**: Docker files, deployment scripts, and CI/CD configurations.
   - *Arquivos Docker, scripts de deploy e configurações de CI/CD.*
 
+## Deployed Smart Contracts / Contratos Inteligentes Deployados
+
+The Stellaro platform includes 5 core smart contracts deployed on Stellar Testnet:
+
+A plataforma Stellaro inclui 5 contratos inteligentes principais deployados na Stellar Testnet:
+
+| Contract / Contrato | Contract ID | Purpose / Propósito |
+|-------------------|-------------|-------------------|
+| **Stablecoin** | `CA2QGUHYWINO4JYADA3P4CUJC25DSMM6LPOYVFM63T5VFHGMDF3JQITA` | STLT token management and transfers |
+| **RiskLock** | `CAKSLX55PXBULHZ4W4Z5VGAE35J3OUF3VUCG7IL22LTN3DTGMVNQIQFB` | Risk management and account locking |
+| **LoansPool** | `CC2NDM5ZPXNET6LUVKKBUAAO75MMP2ISJWKF27X6WWJVC4HD3HU7344M` | Lending and borrowing operations |
+| **Portfolio** | `CCI4AQ3LMYJYTNNU2354VJ37EIC3SKV2UBXDMIA4OLPINOI6ZSOPNRKP` | Asset portfolio management |
+| **Governance** | `CA47ANKVNAFNO4EOCC3S3EJ2HKQ5DR4X55QQQ5ETCLKWXF76G5M5JBGF` | DAO governance and voting |
+
+### Network Configuration / Configuração da Rede
+- **Network**: Stellar Testnet
+- **RPC URL**: `https://soroban-testnet.stellar.org`
+- **Horizon URL**: `https://horizon-testnet.stellar.org`
+
+### Deploying Contracts / Deployando Contratos
+
+To deploy or update the smart contracts, use the automated deployment script:
+
+Para fazer deploy ou atualizar os contratos inteligentes, use o script de deploy automatizado:
+
+```bash
+# Deploy with default settings / Deploy com configurações padrão
+./infra/deploy_soroban.sh <ALIAS_DA_CONTA>
+
+# Deploy with custom parameters / Deploy com parâmetros customizados
+./infra/deploy_soroban.sh <ALIAS_DA_CONTA> <ADMIN_PUBKEY> <RISK_BPS> <LTV_BPS> <INTEREST_BPS>
+```
+
+**Prerequisites / Pré-requisitos:**
+- `soroban-cli` installed and configured
+- Rust target `wasm32v1-none` added
+- Stellar account imported with alias
+
 ## Documentation / Documentação
 
 **For a complete guide to the project's architecture, setup, development, and features, please see the full documentation in the `docs/` directory.**
