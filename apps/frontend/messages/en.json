@@ -365,7 +365,7 @@
     },
     "alerts": {
       "title": "Alerts",
-      "a1": "Never send Pix to third parties on behalf of Stelato.",
+      "a1": "Never send Pix to third parties on behalf of Stellaro.",
       "a2": "Always check the key before transferring values.",
       "a3": "In case of maintenance, we will notify you on this channel."
     },
@@ -378,7 +378,7 @@
   ,
   "login": {
     "login": {
-      "title": "Welcome to Stelato",
+      "title": "Welcome to Stellaro",
       "subtitle": "\u201cYour bridge between blockchain and the real world.\u201d",
       "auth": "Authentication",
       "passkey_login": "Sign in with Passkey",
@@ -463,7 +463,7 @@
     "hours": "Service hours: 08:00 to 22:00 (local time)",
     "protocol": "When you open a ticket, a protocol number will be generated (mock). You can attach screenshots/documents.",
     "security_title": "Security Tips",
-    "sec_tip1": "Stelato NEVER asks for your password via WhatsApp, email or social networks.",
+    "sec_tip1": "Stellaro NEVER asks for your password via WhatsApp, email or social networks.",
     "sec_tip2": "Always check the official domain before entering data: stelato.app (mock).",
     "sec_tip3": "Enable 2FA at Settings > Security.",
     "sec_tip4": "Beware of promises of easy gains and never share verification codes.",
@@ -887,8 +887,8 @@
     "education": {
       "title": "Education and Alerts",
       "item1": "Use credit to invest responsibly; avoid refinancing higher interest debts.",
-      "item2": "Avoid scams: Stelato never asks for upfront payment to release credit.",
-      "item3": "Watch: “How to take your first loan on Stelato?” (coming soon)"
+      "item2": "Avoid scams: Stellaro never asks for upfront payment to release credit.",
+      "item3": "Watch: "How to take your first loan on Stellaro?" (coming soon)"
     },
     "quick": {
       "apply": "Apply",
@@ -904,7 +904,7 @@
       "save_and_view": "Save and see changes instantly."
     },
     "footer": {
-      "brand": "Stelato"
+      "brand": "Stellaro"
     }
   },
   "insurance": {
@@ -913,7 +913,7 @@
       "updated_now": "Updated just now"
     },
     "intro": {
-      "title": "Protect yourself with Stelato Insurance",
+      "title": "Protect yourself with Stellaro Insurance",
       "p1": "Why have insurance? To increase your financial security against unforeseen events. Protect your balance, card, phone, crypto and even DeFi operations. Insurance does not replace safe practices: enable 2FA, use strong passwords and beware of unknown contacts.",
       "warning": "Notice: insurance is complementary. Keep your personal security measures always active."
     },
@@ -1113,8 +1113,8 @@
     "view_wallet": "view"
   },
   "edu": {
-    "title": "About Stelato Stablecoins",
-    "p1": "STLT is a 1:1 stablecoin designed for transparency and security in the Stelato ecosystem. Issuance and burning follow clear, auditable policies, maintaining backing and parity continuously.",
+    "title": "About Stellaro Stablecoins",
+    "p1": "STLT is a 1:1 stablecoin designed for transparency and security in the Stellaro ecosystem. Issuance and burning follow clear, auditable policies, maintaining backing and parity continuously.",
     "li1": "1:1 parity and supply transparency.",
     "li2": "Periodic reports and audits (when available).",
     "li3": "Central role in the ecosystem: medium of exchange and collateral.",

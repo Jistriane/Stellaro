@@ -129,7 +129,7 @@ export default function WalletPanel() {
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Stelato" width={42} height={42} className="rounded-md" />
+            <Image src="/logo.png" alt="Stellaro" width={42} height={42} className="rounded-md" />
             <div>
               <CardTitle className="text-slate-700 dark:text-foreground">{t("title")}</CardTitle>
               <div className="flex items-center gap-2 mt-1">

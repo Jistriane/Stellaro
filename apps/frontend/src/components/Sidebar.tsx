@@ -33,8 +33,8 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-60 bg-slate-950 text-slate-200 border-r border-slate-800 flex flex-col">
       <div className="h-16 px-4 flex items-center gap-3 border-b border-slate-800">
-        <Image src="/logo.png" alt="Stelato" width={56} height={56} className="h-14 w-14" />
-        <span className="font-semibold text-xl tracking-tight">Stelato</span>
+        <Image src="/logo.png" alt="Stellaro" width={56} height={56} className="h-14 w-14" />
+        <span className="font-semibold text-xl tracking-tight">Stellaro</span>
       </div>
       <nav className="flex-1 overflow-auto py-3">
         <ul className="flex flex-col gap-1 px-2">

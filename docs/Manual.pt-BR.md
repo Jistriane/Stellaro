@@ -1,10 +1,10 @@
-# Manual do Projeto Stelato (PT-BR)
+# Manual do Projeto Stellaro (PT-BR)
 
-Este documento fornece um guia completo para o monorepo Stelato, cobrindo sua arquitetura, configuração, desenvolvimento e principais funcionalidades. Destina-se a desenvolvedores, administradores de sistemas e todos os envolvidos no ciclo de vida do projeto.
+Este documento fornece um guia completo para o monorepo Stellaro, cobrindo sua arquitetura, configuração, desenvolvimento e principais funcionalidades. Destina-se a desenvolvedores, administradores de sistemas e todos os envolvidos no ciclo de vida do projeto.
 
 ## 1. Visão Geral da Arquitetura
 
-Stelato é um monorepo Turborepo projetado para serviços financeiros, integrando tecnologias tradicionais e blockchain.
+Stellaro é um monorepo Turborepo projetado para serviços financeiros, integrando tecnologias tradicionais e blockchain.
 
 - **`apps/frontend`**: Uma aplicação Next.js 14 usando o App Router, i18n (PT-BR padrão, EN), shadcn/ui, Zustand e React Query.
 - **`apps/backend`**: Uma aplicação NestJS (Node 20) com Prisma (Postgres), Redis/BullMQ para cache e filas, OpenAPI para documentação de API e OpenTelemetry/Sentry para observabilidade.
@@ -41,7 +41,7 @@ Opcional para integrações específicas:
 1.  **Clone o repositório**:
     ```bash
     git clone <url-do-seu-repositorio>
-    cd Stelato
+    cd Stellaro
     ```
 
 2.  **Instale as dependências**:

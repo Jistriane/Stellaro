@@ -1,4 +1,4 @@
-// Prisma schema for Stelato backend
+// Prisma schema for Stellaro backend
 // Location: apps/backend/prisma/schema.prisma
 
 // Datasource uses DATABASE_URL from environment

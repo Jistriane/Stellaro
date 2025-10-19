@@ -28,8 +28,8 @@ async function bootstrap() {
   // Swagger only in non-production
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('Stelato API')
-      .setDescription('Stelato backend API')
+      .setTitle('Stellaro API')
+      .setDescription('Stellaro backend API')
       .setVersion('0.1.0')
       .addBearerAuth()
       .build();

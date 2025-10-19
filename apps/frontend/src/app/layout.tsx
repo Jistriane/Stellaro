@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stelato",
-  description: "Aplicação frontend Stelato",
+  title: "Stellaro",
+  description: "Aplicação frontend Stellaro",
 };
 
 export default async function RootLayout({

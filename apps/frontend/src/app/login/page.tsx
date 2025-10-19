@@ -131,7 +131,7 @@ export default function LoginPage() {
 
       const publicKey: PublicKeyCredentialCreationOptions = {
         challenge: base64urlToArrayBuffer(initJson.challenge),
-        rp: { name: "Stelato", id: initJson.rpId ?? window.location.hostname },
+        rp: { name: "Stellaro", id: initJson.rpId ?? window.location.hostname },
         user: {
           id: new TextEncoder().encode(email),
           name: email,

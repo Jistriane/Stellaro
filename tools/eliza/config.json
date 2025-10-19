@@ -1,6 +1,6 @@
 {
-  "name": "Stelato Assistant",
-  "description": "Agente ElizaOS para auxiliar fluxos de desenvolvimento do projeto Stelato (PT-BR)",
+  "name": "Stellaro Assistant",
+  "description": "Agente ElizaOS para auxiliar fluxos de desenvolvimento do projeto Stellaro (PT-BR)",
   "language": "auto",
   "settings": {
     "telemetry": false
@@ -60,6 +60,6 @@
     }
   },
   "startupMessages": [
-    "Olá! Sou o Stelato Assistant. Posso ajudar a rodar builds, testes, gerar docs e orientar integrações. O que deseja fazer agora?"
+    "Olá! Sou o Stellaro Assistant. Posso ajudar a rodar builds, testes, gerar docs e orientar integrações. O que deseja fazer agora?"
   ]
 }

@@ -15,8 +15,8 @@ export default function Navbar() {
     <header className="w-full sticky top-0 z-50 backdrop-blur bg-slate-900/70 border-b border-slate-800">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Stelato" width={36} height={36} className="h-9 w-9 object-contain" />
-          <span className="font-semibold text-slate-100">Stelato</span>
+          <Image src="/logo.png" alt="Stellaro" width={36} height={36} className="h-9 w-9 object-contain" />
+          <span className="font-semibold text-slate-100">Stellaro</span>
         </Link>
         <nav className="flex items-center gap-3">
           <ul className="hidden md:flex items-center gap-4 mr-2">

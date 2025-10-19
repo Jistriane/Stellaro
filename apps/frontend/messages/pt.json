@@ -292,7 +292,7 @@
     },
     "alerts": {
       "title": "Alertas",
-      "a1": "Nunca envie Pix para terceiros em nome do Stelato.",
+      "a1": "Nunca envie Pix para terceiros em nome do Stellaro.",
       "a2": "Sempre confira a chave antes de transferir valores.",
       "a3": "Em caso de manutenção, comunicaremos por este canal."
     },
@@ -304,7 +304,7 @@
   }
   ,
   "login": {
-    "title": "Bem-vindo ao Stelato",
+    "title": "Bem-vindo ao Stellaro",
     "subtitle": "\u201cSua ponte entre blockchain e o mundo real.\u201d",
     "auth": "Autenticação",
     "passkey_login": "Entrar com Passkey",
@@ -388,7 +388,7 @@
     "hours": "Atendimento: 08h às 22h (horário local)",
     "protocol": "Ao abrir um chamado, um número de protocolo será gerado (mock). Você poderá anexar prints/documentos.",
     "security_title": "Dicas de Segurança",
-    "sec_tip1": "O Stelato NUNCA pede sua senha por WhatsApp, e-mail ou redes sociais.",
+    "sec_tip1": "O Stellaro NUNCA pede sua senha por WhatsApp, e-mail ou redes sociais.",
     "sec_tip2": "Confira sempre o domínio oficial antes de inserir dados: stelato.app (mock).",
     "sec_tip3": "Ative o 2FA em Configurações > Segurança.",
     "sec_tip4": "Desconfie de promessas de ganhos fáceis e nunca compartilhe códigos de verificação.",
@@ -812,8 +812,8 @@
     "education": {
       "title": "Educação e Alertas",
       "item1": "Use crédito para investir de forma consciente; evite parcelar dívidas com juros maiores.",
-      "item2": "Evite golpes: o Stelato nunca pede pagamento antecipado para liberar crédito.",
-      "item3": "Assista: “Como contratar seu primeiro empréstimo no Stelato?” (em breve)"
+      "item2": "Evite golpes: o Stellaro nunca pede pagamento antecipado para liberar crédito.",
+      "item3": "Assista: "Como contratar seu primeiro empréstimo no Stellaro?" (em breve)"
     },
     "quick": {
       "apply": "Solicitar",
@@ -829,7 +829,7 @@
       "save_and_view": "Salve e veja as mudanças instantaneamente."
     },
     "footer": {
-      "brand": "Stelato"
+      "brand": "Stellaro"
     }
   },
   "insurance": {
@@ -838,7 +838,7 @@
       "updated_now": "Atualizado agora"
     },
     "intro": {
-      "title": "Proteja-se com os Seguros Stelato",
+      "title": "Proteja-se com os Seguros Stellaro",
       "p1": "Por que ter seguro? Para aumentar sua segurança financeira contra eventos imprevistos. Proteja seu saldo, cartão, celular, cripto e até operações DeFi. O seguro não substitui práticas seguras: ative 2FA, use senhas fortes e desconfie de contatos desconhecidos.",
       "warning": "Aviso: o seguro é complementar. Mantenha sempre ativas suas medidas pessoais de segurança."
     },
@@ -1038,8 +1038,8 @@
       "view_wallet": "ver"
     },
     "edu": {
-      "title": "Sobre as Stablecoins do Stelato",
-      "p1": "STLT é uma stablecoin 1:1 desenhada para transparência e segurança no ecossistema Stelato. Emissão e queima seguem políticas claras e auditáveis, mantendo lastro e paridade continuamente.",
+      "title": "Sobre as Stablecoins do Stellaro",
+      "p1": "STLT é uma stablecoin 1:1 desenhada para transparência e segurança no ecossistema Stellaro. Emissão e queima seguem políticas claras e auditáveis, mantendo lastro e paridade continuamente.",
       "li1": "Paridade 1:1 e transparência de oferta.",
       "li2": "Relatórios e auditorias periódicas (quando disponíveis).",
       "li3": "Papel central no ecossistema: meio de troca e colateral.",

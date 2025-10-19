@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Orquestrador de inicialização completa do Stelato (dev)
+# Orquestrador de inicialização completa do Stellaro (dev)
 # - Assume Postgres e Redis locais já em execução (sem Docker)
 # - Instala dependências (workspaces)
 # - Executa Prisma (generate + migrate dev)
