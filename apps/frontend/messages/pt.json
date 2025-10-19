@@ -6,7 +6,6 @@
   "go_next": "Ir para o site do Next.js",
   "hero_title": "Infra de crédito DeFi na Stellar",
   "hero_subtitle": "Financie, gerencie risco e opere carteiras tokenizadas com transparência e automação.",
-
   "routes": {
     "home": "Início",
     "login": "Login",
@@ -813,7 +812,7 @@
       "title": "Educação e Alertas",
       "item1": "Use crédito para investir de forma consciente; evite parcelar dívidas com juros maiores.",
       "item2": "Evite golpes: o Stellaro nunca pede pagamento antecipado para liberar crédito.",
-      "item3": "Assista: "Como contratar seu primeiro empréstimo no Stellaro?" (em breve)"
+      "item3": "Assista: \"Como contratar seu primeiro empréstimo no Stellaro?\" (em breve)"
     },
     "quick": {
       "apply": "Solicitar",

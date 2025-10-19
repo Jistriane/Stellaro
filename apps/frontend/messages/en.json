@@ -6,7 +6,6 @@
   "go_next": "Go to Next.js website",
   "hero_title": "DeFi credit infrastructure on Stellar",
   "hero_subtitle": "Finance, manage risk and operate tokenized portfolios with transparency and automation.",
-
   "routes": {
     "home": "Home",
     "login": "Login",
@@ -888,7 +887,7 @@
       "title": "Education and Alerts",
       "item1": "Use credit to invest responsibly; avoid refinancing higher interest debts.",
       "item2": "Avoid scams: Stellaro never asks for upfront payment to release credit.",
-      "item3": "Watch: "How to take your first loan on Stellaro?" (coming soon)"
+      "item3": "Watch: \"How to take your first loan on Stellaro?\" (coming soon)"
     },
     "quick": {
       "apply": "Apply",
