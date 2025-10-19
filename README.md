@@ -1,6 +1,6 @@
-# Stelato Monorepo
+# Stellaro DeFi Credit Infrastructure on Stellar
 
-Welcome to the Stelato project! This monorepo contains the initial architecture for a financial services platform, featuring a Next.js 14 frontend and a NestJS backend, with integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
+Welcome to the Stellaro project! This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 14 frontend and a NestJS backend, with integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ Welcome to the Stelato project! This monorepo contains the initial architecture 
 2.  **Clone the repository**:
     ```bash
     git clone <your-repository-url>
-    cd Stelato
+    cd Stellaro
     ```
 3.  **Install dependencies**:
     ```bash
