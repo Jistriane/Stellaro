@@ -6,18 +6,18 @@ Este documento fornece um guia completo para o monorepo Stellaro, cobrindo sua a
 
 Stellaro é um monorepo Turborepo projetado para serviços financeiros, integrando tecnologias tradicionais e blockchain.
 
-- **`apps/frontend`**: Uma aplicação Next.js 14 usando o App Router, i18n (PT-BR padrão, EN), shadcn/ui, Zustand e React Query.
+- **`apps/frontend`**: Uma aplicação Next.js 15 usando o App Router, i18n (PT-BR padrão, EN), shadcn/ui, Zustand e React Query.
 - **`apps/backend`**: Uma aplicação NestJS (Node 20) com Prisma (Postgres), Redis/BullMQ para cache e filas, OpenAPI para documentação de API e OpenTelemetry/Sentry para observabilidade.
 - **`contracts/`**: Um workspace Rust para smart contracts Soroban, incluindo `stablecoin`, `risklock`, `loans_pool`, `portfolio` e `governance`.
-- **`packages/ui`**: Componentes React compartilhados para uma UI consistente (tema `Stellato`).
+- **`packages/ui`**: Componentes React compartilhados para uma UI consistente (tema `Stellaro`).
 - **`packages/config`**: Configurações compartilhadas para ESLint, TypeScript e Prettier.
 - **`infra/`**: Infraestrutura como Código, incluindo Docker Compose para desenvolvimento local, scripts de deploy e manifestos de CI/CD.
 
 ### Ambientes e DNS
 
-- **Produção**: `app.stelato.com.br` (frontend) e `api.stelato.com.br` (backend)
-- **Staging**: `staging.stelato.com.br`
-- **Desenvolvimento**: `dev.stelato.com.br`
+- **Produção**: `app.stellaro.com.br` (frontend) e `api.stellaro.com.br` (backend)
+- **Staging**: `staging.stellaro.com.br`
+- **Desenvolvimento**: `dev.stellaro.com.br`
 
 Esses domínios também servem como RP IDs para autenticação Passkey em seus respectivos ambientes.
 
@@ -40,7 +40,7 @@ Opcional para integrações específicas:
 
 1.  **Clone o repositório**:
     ```bash
-    git clone <url-do-seu-repositorio>
+    git clone https://github.com/Jistriane/Stellaro.git
     cd Stellaro
     ```
 
@@ -75,8 +75,8 @@ Inicie todas as aplicações em modo de desenvolvimento:
 ```bash
 npm run dev
 ```
-- **Frontend**: Acessível em `http://localhost:3000`
-- **Backend**: Acessível em `http://localhost:3333` (a porta pode ser alterada via `PORT` no `.env-dev`)
+- **Frontend**: Acessível em `http://localhost:3000` (ou 3002 se a porta 3000 estiver ocupada)
+- **Backend**: Acessível em `http://localhost:3001` (a porta pode ser alterada via `PORT` no `.env-dev`)
 
 ## 3. Variáveis de Ambiente
 
@@ -114,6 +114,8 @@ O diretório `contracts/` contém todos os smart contracts Soroban. O script `in
 
 - **Decimais**: 7 casas decimais on-chain, exibidas com 2 casas decimais na UI.
 - **Taxas**: Mint (0%), Burn (0%), Transferência (0.1%). As taxas são ajustáveis via governança.
+- **Integração Real**: O frontend agora se integra com contratos Soroban reais, substituindo dados mock por interações em tempo real com a blockchain.
+- **Conexão de Carteira**: Os usuários podem conectar suas carteiras Stellar (Freighter, etc.) para interagir diretamente com os contratos inteligentes.
 
 ## 5. API Backend & Segurança
 
@@ -121,7 +123,7 @@ O backend expõe uma API RESTful com um forte foco em segurança.
 
 ### 5.1. Endpoints Principais
 
-URL Base: `http://localhost:3333`
+URL Base: `http://localhost:3001`
 
 - **Autenticação Passkey (WebAuthn)**:
   - `POST /passkey/register/init` & `.../verify`
@@ -172,13 +174,33 @@ A plataforma se integra com:
 
 A comunicação segura com esses serviços é garantida através da verificação de webhooks com HMAC.
 
-## 7. Solução de Problemas (Troubleshooting)
+## 7. Atualizações e Melhorias Recentes
+
+### 7.1. Melhorias no Frontend
+- **Integração Real com Soroban**: Substituição de dados mock por interações em tempo real com a blockchain
+- **Integração de Carteira**: Suporte completo para conexões de carteiras Stellar (Freighter, etc.)
+- **Chamadas Dinâmicas de Contratos**: Busca de dados em tempo real de contratos inteligentes implantados
+- **UI/UX Melhorada**: Atualização da marca e integração da logo
+
+### 7.2. Integração de Contratos Inteligentes
+- **IDs de Contratos**: Variáveis de ambiente para todos os endereços de contratos implantados
+- **Dados em Tempo Real**: Dados de saldo e transações em tempo real da blockchain
+- **Assinatura de Transações**: Integração direta de carteira para interações com contratos
+
+### 7.3. Experiência de Desenvolvimento
+- **Otimização de Build**: Correção da configuração do Tailwind CSS e setup do PostCSS
+- **Segurança de Tipos**: Melhoria nas definições TypeScript e tratamento de erros
+- **Configuração de Ambiente**: Atualização dos arquivos de exemplo e configuração de desenvolvimento
+
+## 8. Solução de Problemas (Troubleshooting)
 
 - **Falha na Conexão com o Redis**: O backend registrará um aviso e usará um armazenamento de sessão em memória (não adequado para produção). Garanta que `REDIS_URL` esteja configurado corretamente.
 - **Falha no MFA**: Verifique a expiração do `nonce` ou problemas com a assinatura Stellar.
 - **403 Forbidden em Admin/Webhook**: Verifique se os headers `x-admin-token` ou `x-eliza-secret` estão corretos.
+- **Problemas de Integração de Contratos**: Garanta que todos os IDs de contratos estejam configurados corretamente nas variáveis de ambiente.
+- **Problemas de Conexão de Carteira**: Verifique se a extensão Freighter está instalada e acessível.
 
-## 8. Glossário
+## 9. Glossário
 
 - **Passkey/WebAuthn**: Um padrão para autenticação sem senha usando criptografia de chave pública.
 - **Recência de MFA**: Uma curta janela de tempo após uma verificação de MFA bem-sucedida, durante a qual um usuário pode realizar ações críticas sem se re-autenticar.

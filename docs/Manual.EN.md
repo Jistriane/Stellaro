@@ -6,18 +6,18 @@ This document provides a comprehensive guide to the Stellaro monorepo, covering 
 
 Stellaro is a Turborepo monorepo designed for financial services, integrating traditional and blockchain technologies.
 
-- **`apps/frontend`**: A Next.js 14 application using the App Router, i18n (PT-BR default, EN), shadcn/ui, Zustand, and React Query.
+- **`apps/frontend`**: A Next.js 15 application using the App Router, i18n (PT-BR default, EN), shadcn/ui, Zustand, and React Query.
 - **`apps/backend`**: A NestJS (Node 20) application with Prisma (Postgres), Redis/BullMQ for caching and queues, OpenAPI for API documentation, and OpenTelemetry/Sentry for observability.
 - **`contracts/`**: A Rust workspace for Soroban smart contracts, including `stablecoin`, `risklock`, `loans_pool`, `portfolio`, and `governance`.
-- **`packages/ui`**: Shared React components for a consistent UI (`Stellato` theme).
+- **`packages/ui`**: Shared React components for a consistent UI (`Stellaro` theme).
 - **`packages/config`**: Shared configurations for ESLint, TypeScript, and Prettier.
 - **`infra/`**: Infrastructure as Code, including Docker Compose for local development, deployment scripts, and CI/CD manifests.
 
 ### Environments and DNS
 
-- **Production**: `app.stelato.com.br` (frontend) and `api.stelato.com.br` (backend)
-- **Staging**: `staging.stelato.com.br`
-- **Development**: `dev.stelato.com.br`
+- **Production**: `app.stellaro.com.br` (frontend) and `api.stellaro.com.br` (backend)
+- **Staging**: `staging.stellaro.com.br`
+- **Development**: `dev.stellaro.com.br`
 
 These domains also serve as RP IDs for Passkey authentication in their respective environments.
 
@@ -40,7 +40,7 @@ Optional for specific integrations:
 
 1.  **Clone the repository**:
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/Jistriane/Stellaro.git
     cd Stellaro
     ```
 
@@ -75,8 +75,8 @@ Start all applications in development mode:
 ```bash
 npm run dev
 ```
-- **Frontend**: Accessible at `http://localhost:3000`
-- **Backend**: Accessible at `http://localhost:3333` (port can be changed via `PORT` in `.env-dev`)
+- **Frontend**: Accessible at `http://localhost:3000` (or 3002 if port 3000 is busy)
+- **Backend**: Accessible at `http://localhost:3001` (port can be changed via `PORT` in `.env-dev`)
 
 ## 3. Environment Variables
 
@@ -114,6 +114,8 @@ The `contracts/` directory contains all Soroban smart contracts. The `infra/depl
 
 - **Decimals**: 7 decimals on-chain, displayed with 2 decimals in the UI.
 - **Fees**: Mint (0%), Burn (0%), Transfer (0.1%). Fees are adjustable via governance.
+- **Real Integration**: The frontend now integrates with real Soroban contracts, replacing mock data with live blockchain interactions.
+- **Wallet Connection**: Users can connect their Stellar wallets (Freighter, etc.) to interact directly with smart contracts.
 
 ## 5. Backend API & Security
 
@@ -121,7 +123,7 @@ The backend exposes a RESTful API with a strong focus on security.
 
 ### 5.1. Key Endpoints
 
-Base URL: `http://localhost:3333`
+Base URL: `http://localhost:3001`
 
 - **Passkey (WebAuthn) Authentication**:
   - `POST /passkey/register/init` & `.../verify`
@@ -172,13 +174,33 @@ The platform integrates with:
 
 Secure communication with these services is ensured via HMAC webhook verification.
 
-## 7. Troubleshooting
+## 7. Recent Updates and Improvements
+
+### 7.1. Frontend Enhancements
+- **Real Soroban Integration**: Replaced mock data with live blockchain interactions
+- **Wallet Integration**: Full support for Stellar wallet connections (Freighter, etc.)
+- **Dynamic Contract Calls**: Real-time data fetching from deployed smart contracts
+- **Improved UI/UX**: Updated branding and logo integration
+
+### 7.2. Smart Contract Integration
+- **Contract IDs**: Environment variables for all deployed contract addresses
+- **Real-time Data**: Live balance and transaction data from the blockchain
+- **Transaction Signing**: Direct wallet integration for contract interactions
+
+### 7.3. Development Experience
+- **Build Optimization**: Fixed Tailwind CSS configuration and PostCSS setup
+- **Type Safety**: Improved TypeScript definitions and error handling
+- **Environment Configuration**: Updated example files and development setup
+
+## 8. Troubleshooting
 
 - **Redis Connection Failure**: The backend will log a warning and fall back to an in-memory session store (not suitable for production). Ensure `REDIS_URL` is correctly set.
 - **MFA Failure**: Check for `nonce` expiration or issues with the Stellar signature.
 - **403 Forbidden on Admin/Webhook**: Verify that the `x-admin-token` or `x-eliza-secret` headers are correct.
+- **Contract Integration Issues**: Ensure all contract IDs are properly set in environment variables.
+- **Wallet Connection Problems**: Verify that the Freighter extension is installed and accessible.
 
-## 8. Glossary
+## 9. Glossary
 
 - **Passkey/WebAuthn**: A standard for passwordless authentication using public-key cryptography.
 - **MFA Recency**: A short time window after a successful MFA check during which a user can perform critical actions without re-authenticating.
