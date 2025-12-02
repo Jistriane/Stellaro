@@ -10,6 +10,16 @@ Welcome to the Stellaro project! This monorepo contains the complete architectur
 
 Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para uma plataforma de infraestrutura DeFi de crédito construída na Stellar, com frontend Next.js 15, backend NestJS, gerenciamento de risco com IA (ElizaOS), e integrações enterprise para Stellar/Soroban, PIX, Cartões, KYC e Passkeys.
 
+## 🎨 Screenshots da Interface
+
+Login / Autenticação:
+
+![Login](docs/screenshots/login.png)
+
+Home / Dashboard:
+
+![Home](docs/screenshots/home.png)
+
 ## 🎯 Architecture v3.0 Highlights
 
 - **🤖 AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring
