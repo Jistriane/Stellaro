@@ -74,6 +74,11 @@ async getAggregatedPrice(asset: string): Promise<PriceData> {
 }
 ```
 
+### Notes (2025-12-02)
+- Preços consumidos por `/oracles/price` alimentam enriquecimento de posições em `/defi/blend/positions/:address`.
+- Decisão complementar: usar `LOANS_POOL_CONTRACT_ID` e `LOANSPOOL_INTEREST_BPS` (bps → %) via `.env` para `poolId` e `apy` enquanto leitura direta de `params()` do LoansPool via Soroban RPC não está integrada.
+- Cache Redis curto (15s) aplicado para reduzir carga e latência.
+
 ---
 
 ## ADR-003: Passkey Session Keys for UX

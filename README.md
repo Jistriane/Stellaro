@@ -32,6 +32,21 @@ Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para
 - 🤖 **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
 - ⚡ **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
 
+### Novos Endpoints On-Chain (Backend)
+- `GET /oracles/price?asset=<code>&issuer=<account>`: preço agregado em tempo real (Reflector + DEX fallback)
+- `GET /defi/blend/positions/:address`: posições DeFi enriquecidas por saldo Horizon + preço oracle, com
+  - `poolId`: de `LOANS_POOL_CONTRACT_ID`
+  - `apy`: de `LOANSPOOL_INTEREST_BPS` (bps → %)
+  - cache Redis: 15s (evita sobrecarga)
+- `GET /memory/history/:address?cursor=<id>`: histórico de operações do endereço via Horizon com paginação por cursor
+
+Quick tests:
+```bash
+curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
+curl "http://localhost:3001/defi/blend/positions/GD..."
+curl "http://localhost:3001/memory/history/GD...?cursor=now"
+```
+
 ### Tech Stack v3.0
 - **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, Zustand, next-intl
 - **Backend**: NestJS 11, Prisma (PostgreSQL), Redis Cluster, Swagger/OpenAPI
@@ -48,6 +63,7 @@ Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para
   - *Aplicação Next.js 14 com componentes de UI modernos e integração de carteira.*
 - **`apps/backend`**: NestJS application with Prisma, Redis, and comprehensive API services.
   - *Aplicação NestJS com Prisma, Redis e serviços de API abrangentes.*
+  - Endpoints relevantes: `/oracles/price`, `/defi/blend/positions/:address`, `/memory/history/:address`, `/chain/health`
 - **`contracts/`**: Soroban smart contracts written in Rust for DeFi operations.
   - *Contratos inteligentes Soroban escritos em Rust para operações DeFi.*
 - **`packages/`**: Shared UI components and configurations across the monorepo.
@@ -75,6 +91,13 @@ A plataforma Stellaro inclui 6 contratos inteligentes principais deployados na S
 - **RPC URL**: `https://soroban-testnet.stellar.org`
 - **Horizon URL**: `https://horizon-testnet.stellar.org`
  - **Admin (Public Key)**: `GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD`
+
+### Variáveis de Ambiente (Backend)
+- `HORIZON_URL`, `SOROBAN_RPC_URL`
+- `BACKEND_URL` e/ou `BACKEND_PUBLIC_URL`
+- `LOANS_POOL_CONTRACT_ID` (usado para `poolId` nas posições)
+- `LOANSPOOL_INTEREST_BPS` (usado para `apy` nas posições)
+- `PORTFOLIO_CONTRACT_ID` (opcional)
 
 ### Deploying Contracts / Deployando Contratos
 
@@ -165,6 +188,9 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
     cp .env.example .env
     # Edit .env with your credentials
     ```
+    Campos importantes a ajustar:
+    - `HORIZON_URL`, `SOROBAN_RPC_URL`
+    - `LOANS_POOL_CONTRACT_ID`, `LOANSPOOL_INTEREST_BPS`
 
 5.  **Run migrations / Execute migrations**:
     ```bash
@@ -181,6 +207,13 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
     ```bash
     npm run dev
     ```
+
+  #### Sanidade dos Endpoints
+  ```bash
+  curl "http://localhost:3001/chain/health"
+  curl "http://localhost:3001/oracles/price?asset=STLT&issuer=CD..."
+  curl "http://localhost:3001/defi/blend/positions/GD..."
+  ```
 
 ### Access / Acesso
 - **Frontend**: http://localhost:3000

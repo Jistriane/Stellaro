@@ -206,3 +206,28 @@ Secure communication with these services is ensured via HMAC webhook verificatio
 - **MFA Recency**: A short time window after a successful MFA check during which a user can perform critical actions without re-authenticating.
 - **ElizaOS**: An external agent that monitors user activity and emits risk alerts.
 - **HSM**: Hardware Security Module, a physical device for securely managing digital keys.
+
+## 10. On-Chain Endpoints & Env
+
+### Endpoints
+- `GET /oracles/price?asset=<code>&issuer=<account>` — aggregated price (Reflector + DEX fallback)
+- `GET /defi/blend/positions/:address` — positions enriched by Horizon balances and oracle price; includes:
+  - `poolId` from `LOANS_POOL_CONTRACT_ID`
+  - `apy` from `LOANSPOOL_INTEREST_BPS` (bps to %)
+  - Redis cache: 15s
+- `GET /memory/history/:address?cursor=<id>` — Horizon operations history with cursor pagination
+
+### Environment Variables (backend)
+- `HORIZON_URL`, `SOROBAN_RPC_URL`
+- `BACKEND_URL` and/or `BACKEND_PUBLIC_URL`
+- `LOANS_POOL_CONTRACT_ID` (used to set `poolId`)
+- `LOANSPOOL_INTEREST_BPS` (used to compute `apy`)
+- `PORTFOLIO_CONTRACT_ID` (optional)
+
+### Quick Checks
+```bash
+curl "http://localhost:3001/chain/health"
+curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
+curl "http://localhost:3001/defi/blend/positions/GD..."
+curl "http://localhost:3001/memory/history/GD...?cursor=now"
+```

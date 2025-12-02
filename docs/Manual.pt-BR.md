@@ -206,3 +206,28 @@ A comunicação segura com esses serviços é garantida através da verificaçã
 - **Recência de MFA**: Uma curta janela de tempo após uma verificação de MFA bem-sucedida, durante a qual um usuário pode realizar ações críticas sem se re-autenticar.
 - **ElizaOS**: Um agente externo que monitora a atividade do usuário e emite alertas de risco.
 - **HSM**: Hardware Security Module, um dispositivo físico para gerenciar chaves digitais de forma segura.
+
+## 10. Endpoints On-Chain & Ambiente
+
+### Endpoints
+- `GET /oracles/price?asset=<code>&issuer=<account>` — preço agregado (Reflector + DEX fallback)
+- `GET /defi/blend/positions/:address` — posições enriquecidas pelos saldos no Horizon e preço do oracle; inclui:
+  - `poolId` de `LOANS_POOL_CONTRACT_ID`
+  - `apy` de `LOANSPOOL_INTEREST_BPS` (bps → %)
+  - cache Redis: 15s
+- `GET /memory/history/:address?cursor=<id>` — histórico de operações no Horizon com paginação por cursor
+
+### Variáveis de Ambiente (backend)
+- `HORIZON_URL`, `SOROBAN_RPC_URL`
+- `BACKEND_URL` e/ou `BACKEND_PUBLIC_URL`
+- `LOANS_POOL_CONTRACT_ID` (define `poolId`)
+- `LOANSPOOL_INTEREST_BPS` (calcula `apy`)
+- `PORTFOLIO_CONTRACT_ID` (opcional)
+
+### Testes Rápidos
+```bash
+curl "http://localhost:3001/chain/health"
+curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
+curl "http://localhost:3001/defi/blend/positions/GD..."
+curl "http://localhost:3001/memory/history/GD...?cursor=now"
+```
