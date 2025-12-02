@@ -143,7 +143,10 @@
       "report": "Report",
       "report_alert_aria": "Report this alert as suspicious or incorrect",
       "dismiss": "Dismiss",
-      "dismiss_alert_aria": "Dismiss this alert"
+      "dismiss_alert_aria": "Dismiss this alert",
+      "none": "No active alerts",
+      "reported_alert": "Alert reported for review",
+      "reported_activity": "Suspicious activity reported"
     },
     "limits": {
       "title": "Transaction Limits",
@@ -153,7 +156,9 @@
       "aria_withdraw_daily": "Edit daily withdrawal limit",
       "trade_daily": "Daily Trading Limit", 
       "aria_trade_daily": "Edit daily trading limit",
-      "review_limits": "Review Limits"
+      "review_limits": "Review Limits",
+      "save": "Save",
+      "cancel": "Cancel"
     },
     "fraud": {
       "title": "Fraud Protection",
@@ -178,11 +183,13 @@
       "level_low": "Low Risk",
       "level_medium": "Medium Risk", 
       "level_high": "High Risk",
-      "improve_btn": "How to Improve"
+      "improve_btn": "How to Improve",
+      "improve_feedback": "Tips applied — improving security"
     },
     "events": {
       "title": "Recent Events",
       "view_all": "View All",
+      "open_center_feedback": "Opening events center",
       "severity_low": "Low",
       "severity_medium": "Medium",
       "severity_high": "High",
@@ -204,7 +211,9 @@
       "view_faq": "View FAQ",
       "block_now": "Block Account",
       "escalated_feedback": "Request escalated to risk team",
-      "open_chat_feedback": "Opening chat support"
+      "open_chat_feedback": "Opening chat support",
+      "confirm_block": "Are you sure you want to block the account?",
+      "blocked_feedback": "Account blocked (mock)"
     },
     "footer": {
       "warning": "Risk management involves monitoring and analysis. Always consult our team for important decisions."
@@ -410,31 +419,31 @@
       "albedo_desc": "Albedo web wallet",
       "passkey_credential_create_fail": "Passkey credential not created",
       "passkey_credential_missing": "Passkey credential not returned",
-      "email_prompt": "Enter the 6-digit code sent to your email",
-      "errors": {
-        "need_api": "API not configured (missing NEXT_PUBLIC_API_URL)",
-        "need_email_register": "Enter your email to register a passkey",
-        "need_email_login": "Enter your email to sign in with passkey",
-        "passkey_init_fail": "Failed to start passkey login",
-        "passkey_verify_fail": "Failed to verify passkey",
-        "passkey_register_init_fail": "Failed to start passkey registration",
-        "passkey_register_verify_fail": "Failed to verify passkey registration",
-        "freighter_not_found": "Freighter not detected. Install the extension and try again.",
-        "freighter_no_pubkey": "Couldn't get Freighter public key",
-        "albedo_not_found": "Albedo not detected. Install or open Albedo and allow pop-ups.",
-        "albedo_no_pubkey": "Couldn't get Albedo public key",
-        "albedo_no_signmessage": "Albedo version does not support signMessage",
-        "wallet_connect_fail": "Failed to connect wallet",
-        "rabet_not_found": "Rabet not found",
-        "xbull_not_found": "xBull not found",
-        "ledger_unsupported": "Ledger support requires extra dependencies (WebHID)",
-        "soroban_no_compat": "No compatible wallet found for Soroban",
-        "chainlink_not_ready": "Chainlink Bridge integration not configured",
-        "email_required": "Enter a valid email",
-        "email_init_fail": "Failed to send code to your email",
-        "email_verify_fail": "Invalid or expired code. Try again.",
-        "email_code_required": "Enter the verification code from your email"
-      }
+      "email_prompt": "Enter the 6-digit code sent to your email"
+    },
+    "errors": {
+      "need_api": "API not configured (missing NEXT_PUBLIC_API_URL)",
+      "need_email_register": "Enter your email to register a passkey",
+      "need_email_login": "Enter your email to sign in with passkey",
+      "passkey_init_fail": "Failed to start passkey login",
+      "passkey_verify_fail": "Failed to verify passkey",
+      "passkey_register_init_fail": "Failed to start passkey registration",
+      "passkey_register_verify_fail": "Failed to verify passkey registration",
+      "freighter_not_found": "Freighter not detected. Install the extension and try again.",
+      "freighter_no_pubkey": "Couldn't get Freighter public key",
+      "albedo_not_found": "Albedo not detected. Install or open Albedo and allow pop-ups.",
+      "albedo_no_pubkey": "Couldn't get Albedo public key",
+      "albedo_no_signmessage": "Albedo version does not support signMessage",
+      "wallet_connect_fail": "Failed to connect wallet",
+      "rabet_not_found": "Rabet not found",
+      "xbull_not_found": "xBull not found",
+      "ledger_unsupported": "Ledger support requires extra dependencies (WebHID)",
+      "soroban_no_compat": "No compatible wallet found for Soroban",
+      "chainlink_not_ready": "Chainlink Bridge integration not configured",
+      "email_required": "Enter a valid email",
+      "email_init_fail": "Failed to send code to your email",
+      "email_verify_fail": "Invalid or expired code. Try again.",
+      "email_code_required": "Enter the verification code from your email"
     }
   }
   ,

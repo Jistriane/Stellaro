@@ -1,0 +1,11 @@
+/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/sec1-863b6ce7beb4e645.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/point.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/parameters.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/private_key.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/traits.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/../README.md
+
+/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libsec1-863b6ce7beb4e645.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/point.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/parameters.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/private_key.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/traits.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/../README.md
+
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/lib.rs:
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/point.rs:
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/error.rs:
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/parameters.rs:
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/private_key.rs:
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/traits.rs:
+/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sec1-0.7.3/src/../README.md:

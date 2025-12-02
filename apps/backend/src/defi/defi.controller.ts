@@ -1,11 +1,17 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, UseGuards, Param } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DefiService } from './defi.service';
+import { BlendYieldService } from './blend-yield.service';
 import { SessionGuard } from '../auth/session.guard';
 
+@ApiTags('defi')
 @Controller('defi')
 @UseGuards(SessionGuard)
 export class DefiController {
-  constructor(private readonly service: DefiService) {}
+  constructor(
+    private readonly service: DefiService,
+    private readonly blendService: BlendYieldService,
+  ) {}
 
   @Post('yield/stake')
   stake(
@@ -88,5 +94,34 @@ export class DefiController {
     },
   ) {
     return this.service.loanByScore(body);
+  }
+
+  // Blend Protocol Endpoints
+  @Post('blend/auto-compound')
+  @ApiOperation({ summary: 'Auto-compound Blend rewards' })
+  @ApiResponse({ status: 200, description: 'Compound results' })
+  async autoCompound(@Body() body: { userAddress: string }) {
+    return this.blendService.autoCompound(body.userAddress);
+  }
+
+  @Get('blend/optimal-pool/:asset')
+  @ApiOperation({ summary: 'Find optimal pool for asset' })
+  @ApiResponse({ status: 200, description: 'Pool analysis' })
+  async findOptimalPool(@Param('asset') asset: string) {
+    return this.blendService.findOptimalPool(asset);
+  }
+
+  @Post('blend/rebalance')
+  @ApiOperation({ summary: 'Rebalance portfolio across pools' })
+  @ApiResponse({ status: 200, description: 'Rebalance operations' })
+  async rebalancePortfolio(
+    @Body()
+    body: {
+      userAddress: string;
+      targetAllocation: Record<string, number>;
+    },
+  ) {
+    const targetMap = new Map(Object.entries(body.targetAllocation));
+    return this.blendService.rebalancePortfolio(body.userAddress, targetMap);
   }
 }

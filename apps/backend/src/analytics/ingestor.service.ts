@@ -19,6 +19,11 @@ export class IngestorService implements OnModuleInit {
       orderBy: { ledgerSeq: 'desc' },
     });
     this.lastSeq = last?.ledgerSeq ?? null;
+    // Evita rodar polling durante testes para não vazar handles
+    if (process.env.NODE_ENV === 'test') {
+      this.logger.log('IngestorService disabled in test environment.');
+      return;
+    }
     this.loop().catch((e) => this.logger.error(e));
   }
 
@@ -28,7 +33,12 @@ export class IngestorService implements OnModuleInit {
     try {
       while (true) {
         await this.tick();
-        await new Promise((r) => setTimeout(r, 5000)); // 5s polling
+        await new Promise((r) => {
+          const t = setTimeout(r, 5000); // 5s polling
+          if (typeof (t as any).unref === 'function') {
+            (t as any).unref();
+          }
+        });
       }
     } finally {
       this.running = false;
@@ -40,6 +50,11 @@ export class IngestorService implements OnModuleInit {
     if (!rpcUrl) return; // disabled
     try {
       const { SorobanRpc } = require('@stellar/stellar-sdk');
+      if (!SorobanRpc || !SorobanRpc.Server) {
+        throw new Error(
+          'SorobanRpc.Server indisponível. Atualize @stellar/stellar-sdk ou verifique compatibilidade.',
+        );
+      }
       const server = new SorobanRpc.Server(rpcUrl, {
         allowHttp: rpcUrl.startsWith('http://'),
       });

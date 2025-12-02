@@ -10,6 +10,7 @@ enum DataKey {
     LtvBps, // 0..=10000
     InterestBps, // juros anualizados simplificado
     Position(Address), // saldo devedor por tomador
+    ReentrancyLock, // Global reentrancy protection
 }
 
 fn read_u128(env: &Env, key: &DataKey) -> u128 {
@@ -34,6 +35,28 @@ fn write_u32(env: &Env, key: &DataKey, val: u32) {
     env.storage().persistent().set(key, &val);
 }
 
+fn read_bool(env: &Env, key: &DataKey) -> bool {
+    env.storage()
+        .persistent()
+        .get::<DataKey, bool>(key)
+        .unwrap_or(false)
+}
+
+fn write_bool(env: &Env, key: &DataKey, val: bool) {
+    env.storage().persistent().set(key, &val);
+}
+
+fn acquire_lock(env: &Env) {
+    if read_bool(env, &DataKey::ReentrancyLock) {
+        panic!("reentrancy detected");
+    }
+    write_bool(env, &DataKey::ReentrancyLock, true);
+}
+
+fn release_lock(env: &Env) {
+    write_bool(env, &DataKey::ReentrancyLock, false);
+}
+
 #[contract]
 pub struct LoansPoolContract;
 
@@ -52,6 +75,9 @@ impl LoansPoolContract {
     }
 
     pub fn deposit(env: Env, from: Address, amount: u128) {
+        // Reentrancy guard
+        acquire_lock(&env);
+        
         // Exige autorização do depositante; integração com token deve ser feita externamente
         from.require_auth();
         assert!(amount > 0, "amount");
@@ -59,9 +85,14 @@ impl LoansPoolContract {
         write_u128(&env, &DataKey::TotalLiquidity, liq.saturating_add(amount));
         let evt = Symbol::new(&env, "deposit");
         env.events().publish((evt,), ());
+        
+        release_lock(&env);
     }
 
     pub fn borrow(env: Env, borrower: Address, amount: u128, collateral_value: u128) {
+        // Reentrancy guard
+        acquire_lock(&env);
+        
         borrower.require_auth();
         assert!(amount > 0, "amount");
         let ltv = read_u32(&env, &DataKey::LtvBps) as u128;
@@ -75,9 +106,14 @@ impl LoansPoolContract {
         write_u128(&env, &DataKey::Position(borrower), cur.saturating_add(amount));
         let evt = Symbol::new(&env, "borrow");
         env.events().publish((evt,), ());
+        
+        release_lock(&env);
     }
 
     pub fn repay(env: Env, borrower: Address, amount: u128) {
+        // Reentrancy guard
+        acquire_lock(&env);
+        
         borrower.require_auth();
         assert!(amount > 0, "amount");
         let cur = read_u128(&env, &DataKey::Position(borrower.clone()));
@@ -88,9 +124,198 @@ impl LoansPoolContract {
         write_u128(&env, &DataKey::TotalLiquidity, liq.saturating_add(amount));
         let evt = Symbol::new(&env, "repay");
         env.events().publish((evt,), ());
+        
+        release_lock(&env);
     }
 
     pub fn params(env: Env) -> (u32, u32) {
         (read_u32(&env, &DataKey::LtvBps), read_u32(&env, &DataKey::InterestBps))
+    }
+
+    pub fn position(env: Env, borrower: Address) -> u128 {
+        read_u128(&env, &DataKey::Position(borrower))
+    }
+
+    pub fn total_liquidity(env: Env) -> u128 {
+        read_u128(&env, &DataKey::TotalLiquidity)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use soroban_sdk::testutils::Address as _;
+
+    #[test]
+    fn init_and_basic_params() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        let (ltv, interest) = client.params();
+        assert_eq!(ltv, 6000u32);
+        assert_eq!(interest, 1500u32);
+        assert_eq!(client.total_liquidity(), 0u128);
+    }
+
+    #[test]
+    fn deposit_increases_liquidity() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        client.deposit(&depositor, &1000u128);
+        assert_eq!(client.total_liquidity(), 1000u128);
+
+        client.deposit(&depositor, &500u128);
+        assert_eq!(client.total_liquidity(), 1500u128);
+    }
+
+    #[test]
+    fn borrow_respects_ltv() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let borrower = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32); // LTV 60%
+        client.deposit(&depositor, &10000u128);
+
+        // Collateral 1000 -> max borrow = 1000 * 0.60 = 600
+        client.borrow(&borrower, &600u128, &1000u128);
+        assert_eq!(client.position(&borrower), 600u128);
+        assert_eq!(client.total_liquidity(), 9400u128); // 10000 - 600
+    }
+
+    #[test]
+    #[should_panic(expected = "exceeds ltv")]
+    fn borrow_exceeds_ltv_panics() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let borrower = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        client.deposit(&depositor, &10000u128);
+
+        // Tentar pegar 700 com collateral 1000 (max seria 600)
+        client.borrow(&borrower, &700u128, &1000u128);
+    }
+
+    #[test]
+    #[should_panic(expected = "insufficient liquidity")]
+    fn borrow_exceeds_pool_liquidity_panics() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let borrower = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        client.deposit(&depositor, &100u128); // Pouca liquidez
+
+        // LTV OK mas pool não tem fundos
+        client.borrow(&borrower, &500u128, &1000u128);
+    }
+
+    #[test]
+    fn repay_reduces_position_and_restores_liquidity() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let borrower = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        client.deposit(&depositor, &10000u128);
+        client.borrow(&borrower, &600u128, &1000u128);
+
+        assert_eq!(client.position(&borrower), 600u128);
+        assert_eq!(client.total_liquidity(), 9400u128);
+
+        client.repay(&borrower, &300u128);
+        assert_eq!(client.position(&borrower), 300u128);
+        assert_eq!(client.total_liquidity(), 9700u128);
+    }
+
+    #[test]
+    #[should_panic(expected = "overpay")]
+    fn repay_more_than_borrowed_panics() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let borrower = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        client.deposit(&depositor, &10000u128);
+        client.borrow(&borrower, &500u128, &1000u128);
+
+        // Tentar pagar mais que deve
+        client.repay(&borrower, &600u128);
+    }
+
+    #[test]
+    fn test_overflow_protection_deposit() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1500u32);
+        
+        // Deposit max amount
+        client.deposit(&depositor, &u128::MAX);
+        assert_eq!(client.total_liquidity(), u128::MAX);
+        
+        // Try to deposit more (should saturate)
+        client.deposit(&depositor, &1u128);
+        assert_eq!(client.total_liquidity(), u128::MAX);
+    }
+
+    #[test]
+    fn test_multiple_borrowers() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let borrower1 = Address::generate(&env);
+        let borrower2 = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &5000u32, &1000u32); // LTV 50%
+        client.deposit(&depositor, &10000u128);
+
+        // Borrower1 takes 400 with collateral 1000 (max 500)
+        client.borrow(&borrower1, &400u128, &1000u128);
+        assert_eq!(client.position(&borrower1), 400u128);
+
+        // Borrower2 takes 300 with collateral 800 (max 400)
+        client.borrow(&borrower2, &300u128, &800u128);
+        assert_eq!(client.position(&borrower2), 300u128);
+
+        assert_eq!(client.total_liquidity(), 9300u128); // 10000 - 400 - 300
     }
 }

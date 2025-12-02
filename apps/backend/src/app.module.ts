@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -20,9 +21,12 @@ import { DefiModule } from './defi/defi.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { PasskeyModule } from './passkey/passkey.module';
 import { SecurityModule } from './security/security.module';
+import { ZkModule } from './zk/zk.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
     WalletsModule,
@@ -42,6 +46,8 @@ import { SecurityModule } from './security/security.module';
     AnalyticsModule,
     PasskeyModule,
     SecurityModule,
+    RedisModule,
+    ZkModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 
 export default function WalletPanel() {
   const t = useTranslations("wallet");
-  const tLoginErr = useTranslations("login.login.errors");
+  const tLoginErr = useTranslations("login.errors");
   const { connected, address, balance, loading, error, available, activeType, connectByType, connectFreighter, disconnect, refreshBalance, refreshAvailable, network, invokeContract } = useWalletStore();
   const [selected, setSelected] = useState<string>("");
   const [testing, setTesting] = useState(false);

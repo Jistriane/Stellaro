@@ -1,0 +1,89 @@
+# PostgreSQL Database - AWS RDS Configuration
+# Multi-AZ deployment for high availability
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stellaro-postgres
+  namespace: production
+spec:
+  type: ExternalName
+  externalName: stellaro-db.abc123.sa-east-1.rds.amazonaws.com
+
+---
+# Redis Cache Cluster
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stellaro-redis
+  namespace: production
+spec:
+  serviceName: stellaro-redis
+  replicas: 3
+  selector:
+    matchLabels:
+      app: stellaro-redis
+  template:
+    metadata:
+      labels:
+        app: stellaro-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+          name: client
+        - containerPort: 16379
+          name: gossip
+        command:
+        - redis-server
+        - --cluster-enabled
+        - "yes"
+        - --cluster-config-file
+        - /data/nodes.conf
+        - --cluster-node-timeout
+        - "5000"
+        - --appendonly
+        - "yes"
+        - --maxmemory
+        - "2gb"
+        - --maxmemory-policy
+        - "allkeys-lru"
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "2Gi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: gp3
+      resources:
+        requests:
+          storage: 20Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stellaro-redis
+  namespace: production
+spec:
+  clusterIP: None
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: client
+  - port: 16379
+    targetPort: 16379
+    name: gossip
+  selector:
+    app: stellaro-redis

@@ -122,6 +122,10 @@
 
   "risk": {
     "title": "Painel de Risco",
+    "header": {
+      "title": "Painel de Risco",
+      "intro": "Acompanhe alertas, eventos e limites de segurança da sua conta."
+    },
     "userId": "ID do usuário",
     "jwt": "Token JWT (opcional)",
     "actions": {
@@ -134,7 +138,86 @@
       "proposal": "Proposta de Ação",
       "execution": "Resultado da Execução"
     },
-    "empty": "Sem dados"
+    "empty": "Sem dados",
+    "alerts": {
+      "report": "Reportar",
+      "report_alert_aria": "Reportar este alerta como suspeito ou incorreto",
+      "dismiss": "Descartar",
+      "dismiss_alert_aria": "Descartar este alerta",
+      "none": "Nenhum alerta ativo",
+      "reported_alert": "Alerta reportado para análise",
+      "reported_activity": "Atividade suspeita reportada"
+    },
+    "limits": {
+      "title": "Limites de Transação",
+      "pix_daily": "Limite Diário Pix",
+      "aria_pix_daily": "Editar limite diário de transações Pix",
+      "withdraw_daily": "Limite Diário de Saque",
+      "aria_withdraw_daily": "Editar limite diário de saque",
+      "trade_daily": "Limite Diário de Trading",
+      "aria_trade_daily": "Editar limite diário de trading",
+      "review_limits": "Revisar Limites",
+      "save": "Salvar",
+      "cancel": "Cancelar"
+    },
+    "fraud": {
+      "title": "Proteção contra Fraude",
+      "tips": "Dicas antifraude",
+      "tips_aria": "Ver dicas de segurança antifraude",
+      "warning": "Alerta: Nunca compartilhe suas senhas ou códigos de verificação com ninguém."
+    },
+    "market": {
+      "title": "Condições de Mercado",
+      "alert": "Alta volatilidade detectada nos ativos do seu portfólio",
+      "link": "Ver detalhes"
+    },
+    "compliance": {
+      "title": "Status de Conformidade",
+      "badge": "Conforme",
+      "last_review": "Última revisão",
+      "view_report": "Ver Relatório"
+    },
+    "sidebar": {
+      "score_label": "Score de Risco",
+      "score": "Score de Risco",
+      "level_low": "Baixo Risco",
+      "level_medium": "Risco Médio",
+      "level_high": "Alto Risco",
+      "improve_btn": "Como Melhorar",
+      "improve_feedback": "Dicas aplicadas — melhorando segurança"
+    },
+    "events": {
+      "title": "Eventos Recentes",
+      "view_all": "Ver Todos",
+      "open_center_feedback": "Abrindo central de eventos",
+      "severity_low": "Baixa",
+      "severity_medium": "Média",
+      "severity_high": "Alta",
+      "report_activity": "Reportar Atividade Suspeita",
+      "block_now": "Bloquear Agora"
+    },
+    "edu": {
+      "title": "Educação sobre Risco",
+      "q1": "O que é gestão de risco?",
+      "q1_desc": "É o processo de identificar, avaliar e mitigar riscos financeiros e operacionais.",
+      "q2": "Como proteger meu portfólio?",
+      "q2_desc": "Diversifique investimentos, defina limites de stop-loss e monitore as condições de mercado regularmente.",
+      "q3": "Quais são os principais indicadores?",
+      "q3_desc": "VaR (Value at Risk), correlação, volatilidade e concentração de exposição por ativo."
+    },
+    "quick": {
+      "title": "Ações Rápidas",
+      "contact_team": "Contatar Equipe",
+      "view_faq": "Ver FAQ",
+      "block_now": "Bloquear Conta",
+      "escalated_feedback": "Solicitação encaminhada para a equipe de risco",
+      "open_chat_feedback": "Abrindo suporte por chat",
+      "confirm_block": "Tem certeza que deseja bloquear a conta?",
+      "blocked_feedback": "Conta bloqueada (mock)"
+    },
+    "footer": {
+      "warning": "A gestão de risco envolve monitoramento e análise. Sempre consulte nossa equipe para decisões importantes."
+    }
   }
   ,
   "events": {
@@ -303,30 +386,42 @@
   }
   ,
   "login": {
-    "title": "Bem-vindo ao Stellaro",
-    "subtitle": "\u201cSua ponte entre blockchain e o mundo real.\u201d",
-    "auth": "Autenticação",
-    "passkey_login": "Entrar com Passkey",
-    "passkey_login_loading": "Verificando passkey...",
-    "passkey_register": "Registrar Passkey",
-    "passkey_register_loading": "Registrando...",
-    "passkey_hint": "Rápido, seguro, sem senha. Use biometria ou dispositivo confiável.",
-    "wallets_title": "Entrar com Carteira Blockchain",
-    "freighter_button": "Entrar com Freighter",
-    "freighter_install": "Instale a Freighter",
-    "albedo_button": "Entrar com Albedo",
-    "ledger_button": "Entrar com Ledger",
-    "divider_or": "Ou",
-    "email_placeholder": "voce@email.com",
-    "email_button": "Entrar com e-mail",
-    "email_loading": "Enviando...",
-    "email_helper": "Use e-mail caso não consiga acessar passkeys ou carteira. Enviaremos um código ou link mágico.",
-    "help_onboarding": "Não tem carteira?",
-    "help_link": "Saiba mais",
-    "kyc_banner": "Verifique sua identidade para aproveitar todos os recursos.",
-    "footer_help": "Ajuda",
-    "footer_terms": "Termos",
-    "footer_privacy": "Privacidade",
+    "login": {
+      "title": "Bem-vindo ao Stellaro",
+      "subtitle": "\u201cSua ponte entre blockchain e o mundo real.\u201d",
+      "auth": "Autenticação",
+      "passkey_login": "Entrar com Passkey",
+      "passkey_login_loading": "Verificando passkey...",
+      "passkey_register": "Registrar Passkey",
+      "passkey_register_loading": "Registrando...",
+      "passkey_hint": "Rápido, seguro, sem senha. Use biometria ou dispositivo confiável.",
+      "wallets_title": "Entrar com Carteira Blockchain",
+      "freighter_button": "Entrar com Freighter",
+      "freighter_install": "Instale a Freighter",
+      "albedo_button": "Entrar com Albedo",
+      "ledger_button": "Entrar com Ledger",
+      "divider_or": "Ou",
+      "email_placeholder": "voce@email.com",
+      "email_button": "Entrar com e-mail",
+      "email_loading": "Enviando...",
+      "email_helper": "Use e-mail caso não consiga acessar passkeys ou carteira. Enviaremos um código ou link mágico.",
+      "help_onboarding": "Não tem carteira?",
+      "help_link": "Saiba mais",
+      "kyc_banner": "Verifique sua identidade para aproveitar todos os recursos.",
+      "footer_help": "Ajuda",
+      "footer_terms": "Termos",
+      "footer_privacy": "Privacidade",
+      "passkey_credential_create_fail": "Credencial de passkey não criada",
+      "passkey_credential_missing": "Credencial de passkey não retornada",
+      "albedo_install": "Instalar/Abrir Albedo",
+      "email_prompt": "Digite o código de 6 dígitos enviado ao seu e-mail",
+      "connecting": "Conectando...",
+      "waiting": "Aguardando...",
+      "wallets_hint": "Suporte a ícones e descrições será adicionado. Integrações reais virão no próximo passo.",
+      "freighter_desc": "Carteira extensão de navegador da Stellar",
+      "albedo_desc": "Carteira web da Albedo",
+      "ledger_desc": "Carteira hardware via WebHID (em breve)"
+    },
     "errors": {
       "need_api": "API não configurada (NEXT_PUBLIC_API_URL ausente)",
       "need_email_register": "Informe seu e-mail para registrar a passkey",
@@ -350,17 +445,7 @@
       "email_init_fail": "Falha ao enviar o código para seu e-mail",
       "email_verify_fail": "Código inválido ou expirado. Tente novamente.",
       "email_code_required": "Informe o código de verificação recebido por e-mail"
-    },
-    "passkey_credential_create_fail": "Credencial de passkey não criada",
-    "passkey_credential_missing": "Credencial de passkey não retornada",
-    "albedo_install": "Instalar/Abrir Albedo",
-    "email_prompt": "Digite o código de 6 dígitos enviado ao seu e-mail",
-    "connecting": "Conectando...",
-    "waiting": "Aguardando...",
-    "wallets_hint": "Suporte a ícones e descrições será adicionado. Integrações reais virão no próximo passo.",
-    "freighter_desc": "Carteira extensão de navegador da Stellar",
-    "albedo_desc": "Carteira web da Albedo",
-    "ledger_desc": "Carteira hardware via WebHID (em breve)"
+    }
   }
   ,
   "help": {

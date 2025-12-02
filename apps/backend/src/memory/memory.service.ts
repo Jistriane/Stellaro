@@ -13,7 +13,11 @@ export class MemoryService {
 
   async logEvent(
     userId: string,
-    type: 'SIGNAL_INGEST' | 'DECISION_MADE' | 'ACTION_EXECUTED',
+    type:
+      | 'SIGNAL_INGEST'
+      | 'DECISION_MADE'
+      | 'ACTION_EXECUTED'
+      | string, // Allow custom event types for multi-agent
     payload: unknown,
   ) {
     try {

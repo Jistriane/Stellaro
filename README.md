@@ -6,27 +6,41 @@
   *Infraestrutura DeFi de Crédito na Stellar*
 </div>
 
-Welcome to the Stellaro project! This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 14 frontend and a NestJS backend, with integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
+Welcome to the Stellaro project! This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 15 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
-Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para uma plataforma de infraestrutura DeFi de crédito construída na Stellar, com frontend Next.js 14 e backend NestJS, integrando Stellar/Soroban, PIX, Cartões, KYC e Passkeys.
+Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para uma plataforma de infraestrutura DeFi de crédito construída na Stellar, com frontend Next.js 15, backend NestJS, gerenciamento de risco com IA (ElizaOS), e integrações enterprise para Stellar/Soroban, PIX, Cartões, KYC e Passkeys.
+
+## 🎯 Architecture v3.0 Highlights
+
+- **🤖 AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring
+- **⚡ Sub-second Oracles** - Reflector Network integration (<500ms latency)
+- **🔐 Passkey Sessions** - Biometric authentication with session keys for batch operations
+- **💰 120% Collateralization** - Automated reserve monitoring with emergency freeze
+- **🏗️ Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster
+- **📊 Progressive Decentralization** - Multisig 3/5 → DAO governance roadmap
 
 ## Features / Funcionalidades
 
 ### Core Features / Funcionalidades Principais
-- 🏦 **DeFi Credit Infrastructure** - Complete lending and borrowing platform
-- 💳 **Stablecoin Management** - STLT token with 1:1 backing
-- 🏛️ **Governance System** - DAO-based decision making
-- 🔐 **Wallet Integration** - Multiple Stellar wallet support
-- 📱 **PIX Integration** - Brazilian instant payment system
-- 🎯 **KYC/AML Compliance** - Identity verification system
-- 🔒 **Security Features** - Risk management and account locking
+- 🏦 **DeFi Credit Infrastructure** - Complete lending and borrowing platform with AI-powered risk assessment
+- 💳 **Stablecoin STLT-BRL** - Brazilian Real-pegged stablecoin with 120%+ collateralization
+- 🏛️ **Governance System** - Progressive decentralization (Multisig → DAO)
+- 🔐 **Wallet Integration** - Freighter, Ledger, Albedo support
+- 📱 **PIX Integration** - Instant BRL mint/burn via Stellar Anchors
+- 🎯 **KYC/AML Compliance** - Multi-tier (0/1/2) via Onfido + Chainalysis
+- 🔒 **Security Features** - Passkey authentication, session keys, reserve monitoring
+- 🤖 **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
+- ⚡ **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
 
-### Tecnologias / Technologies
-- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
-- **Backend**: NestJS, Prisma, Redis, PostgreSQL
+### Tech Stack v3.0
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, Zustand, next-intl
+- **Backend**: NestJS 11, Prisma (PostgreSQL), Redis Cluster, Swagger/OpenAPI
 - **Blockchain**: Stellar, Soroban Smart Contracts (Rust)
-- **Payments**: PIX, Card processing, Multi-currency support
-- **Security**: Passkeys, 2FA, Risk assessment
+- **AI/ML**: ElizaOS (Anthropic Claude), ZK-Proofs (Groth16)
+- **Infrastructure**: AWS EKS (sa-east-1), PostgreSQL Multi-AZ, Redis cluster
+- **CI/CD**: GitHub Actions, Turborepo, Docker, Kubernetes
+- **Monitoring**: Grafana, Prometheus, Loki, CloudWatch
+- **Security**: Passkey Kit, Onfido, Chainalysis, Wazuh SIEM
 
 ## Project Structure / Estrutura do Projeto
 
@@ -43,9 +57,9 @@ Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para
 
 ## Deployed Smart Contracts / Contratos Inteligentes Deployados
 
-The Stellaro platform includes 5 core smart contracts deployed on Stellar Testnet:
+The Stellaro platform includes 6 core smart contracts deployed on Stellar Testnet:
 
-A plataforma Stellaro inclui 5 contratos inteligentes principais deployados na Stellar Testnet:
+A plataforma Stellaro inclui 6 contratos inteligentes principais deployados na Stellar Testnet:
 
 | Contract / Contrato | Contract ID | Purpose / Propósito |
 |-------------------|-------------|-------------------|
@@ -54,11 +68,13 @@ A plataforma Stellaro inclui 5 contratos inteligentes principais deployados na S
 | **LoansPool** | `CC2NDM5ZPXNET6LUVKKBUAAO75MMP2ISJWKF27X6WWJVC4HD3HU7344M` | Lending and borrowing operations |
 | **Portfolio** | `CCI4AQ3LMYJYTNNU2354VJ37EIC3SKV2UBXDMIA4OLPINOI6ZSOPNRKP` | Asset portfolio management |
 | **Governance** | `CA47ANKVNAFNO4EOCC3S3EJ2HKQ5DR4X55QQQ5ETCLKWXF76G5M5JBGF` | DAO governance and voting |
+| **ZK Verifier** | `CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L` ✅ | ZK-proof verification and credit scoring (initialized) |
 
 ### Network Configuration / Configuração da Rede
 - **Network**: Stellar Testnet
 - **RPC URL**: `https://soroban-testnet.stellar.org`
 - **Horizon URL**: `https://horizon-testnet.stellar.org`
+ - **Admin (Public Key)**: `GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD`
 
 ### Deploying Contracts / Deployando Contratos
 
@@ -67,36 +83,60 @@ To deploy or update the smart contracts, use the automated deployment script:
 Para fazer deploy ou atualizar os contratos inteligentes, use o script de deploy automatizado:
 
 ```bash
+# Build contracts (release)
+soroban contract build --profile release
+
+# Fund account on testnet (if needed)
+curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
+
 # Deploy with default settings / Deploy com configurações padrão
-./infra/deploy_soroban.sh <ALIAS_DA_CONTA>
+./infra/deploy_soroban.sh deploy
 
 # Deploy with custom parameters / Deploy com parâmetros customizados
-./infra/deploy_soroban.sh <ALIAS_DA_CONTA> <ADMIN_PUBKEY> <RISK_BPS> <LTV_BPS> <INTEREST_BPS>
+./infra/deploy_soroban.sh deploy <ADMIN_PUBKEY> <RISK_BPS> <LTV_BPS> <INTEREST_BPS>
 ```
 
 **Prerequisites / Pré-requisitos:**
 - `soroban-cli` installed and configured
 - Rust target `wasm32v1-none` added
 - Stellar account imported with alias
+ - `.env-dev` configured with CONTRACT_IDs (auto-populated pelo script)
+
+> Referência de deploy: consulte `TESTNET_DEPLOY.md` e `DEPLOY_SUCCESS.md` para detalhes, IDs e links de explorer.
 
 ## Documentation / Documentação
 
-**For a complete guide to the project's architecture, setup, development, and features, please see the full documentation in the `docs/` directory.**
+**📚 Comprehensive documentation for v3.0 architecture:**
 
-**Para um guia completo da arquitetura do projeto, configuração, desenvolvimento e funcionalidades, consulte a documentação completa no diretório `docs/`.**
+- **[Quick Start Guide](./QUICK_START.md)** - Week 1 implementation guide
+- **[Architecture Decision Records](./docs/ADRs.md)** - Technical decisions and rationale
+- **[Week 1 Report](./docs/WEEK1_REPORT.md)** - Implementation status and metrics
+- **[English Manual](./docs/Manual.EN.md)** - Complete user and developer guide
+- **[Manual em Português](./docs/Manual.pt-BR.md)** - Guia completo em português
 
-- **[English Manual](./docs/Manual.EN.md)**
-- **[Manual em Português](./docs/Manual.pt-BR.md)**
+### Key Features Documentation
+
+| Feature | Status | Documentation |
+|---------|--------|---------------|
+| Reflector Oracle | ✅ Implemented | `src/oracles/reflector-oracle.service.ts` |
+| Passkey Sessions | ✅ Implemented | `src/passkey/passkey-session.service.ts` |
+| Reserve Manager | ✅ Implemented | `src/compliance/reserve-manager.service.ts` |
+| CI/CD Pipeline | ✅ Implemented | `.github/workflows/ci.yml` |
+| Kubernetes Setup | ✅ Implemented | `infra/k8s/` |
+| ZK Credit Score | 🔄 In Progress | Week 3-4 |
+| PIX Integration | 📅 Planned | Week 5-6 |
 
 ## Getting Started / Começando
 
 ### Prerequisites / Pré-requisitos
-- Node.js (v20+)
-- npm (v10+)
-- Docker
-- Rust toolchain
+- Node.js 20+
+- npm 10+
+- Docker & Docker Compose
+- Rust toolchain (stable)
+- Stellar CLI 23.0.0+
+- PostgreSQL 15+ (or use Docker)
 
-### Setup / Configuração
+### Quick Setup / Configuração Rápida
 
 1.  **Clone the repository / Clone o repositório**:
     ```bash
@@ -109,28 +149,46 @@ Para fazer deploy ou atualizar os contratos inteligentes, use o script de deploy
     npm install
     ```
 
-3.  **Configure your environment / Configure seu ambiente**:
+3.  **Start infrastructure / Inicie a infraestrutura**:
     ```bash
-    cp .env-example .env-dev
+    # PostgreSQL + Redis via Docker
+    docker run -d --name stellaro-postgres \
+      -e POSTGRES_USER=stellar -e POSTGRES_PASSWORD=dev \
+      -e POSTGRES_DB=stellaro_dev -p 5432:5432 postgres:15-alpine
+
+    docker run -d --name stellaro-redis -p 6379:6379 redis:7-alpine
     ```
-    Then, edit `.env-dev` with your local configuration.
-    *Em seguida, edite `.env-dev` com sua configuração local.*
 
-4.  **Start the development environment / Inicie o ambiente de desenvolvimento**:
+4.  **Configure environment / Configure o ambiente**:
     ```bash
-    # Start local database and cache / Inicie banco de dados e cache locais
-    docker compose -f infra/docker-compose.dev.yml up -d
+    cd apps/backend
+    cp .env.example .env
+    # Edit .env with your credentials
+    ```
 
-    # Run all applications / Execute todas as aplicações
+5.  **Run migrations / Execute migrations**:
+    ```bash
+    npx prisma migrate dev
+    npx prisma generate
+    ```
+
+6.  **Deploy contracts / Faça deploy dos contratos**:
+    ```bash
+    ./infra/deploy_soroban.sh testnet
+    ```
+
+7.  **Start development / Inicie desenvolvimento**:
+    ```bash
     npm run dev
     ```
 
 ### Access / Acesso
-- **Frontend**: http://localhost:3000 (or 3002 if port 3000 is busy)
+- **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
+- **API Docs**: http://localhost:3001/api
+- **Grafana** (if running): http://localhost:3000
 
-Refer to the full documentation for details on database migration, smart contract deployment, and more.
-*Consulte a documentação completa para detalhes sobre migração de banco de dados, deploy de contratos inteligentes e muito mais.*
+**📖 For detailed setup, see [QUICK_START.md](./QUICK_START.md)**
 
 ## Contributing / Contribuindo
 

@@ -1,0 +1,26 @@
+import { Controller, Get, Param } from '@nestjs/common';
+
+@Controller('defi/blend/positions')
+export class BlendPositionsController {
+  @Get(':address')
+  getPositions(@Param('address') address: string) {
+    // Stub de posições para desenvolvimento
+    const positions = [
+      {
+        asset: 'BTC',
+        poolId: 'pool-btc-1',
+        valueUSD: 25000,
+        apy: 0.06,
+        accruedInterestUSD: 75,
+      },
+      {
+        asset: 'ETH',
+        poolId: 'pool-eth-2',
+        valueUSD: 15000,
+        apy: 0.08,
+        accruedInterestUSD: 60,
+      },
+    ];
+    return positions;
+  }
+}

@@ -2,9 +2,11 @@
 // Location: apps/backend/prisma/schema.prisma
 
 // Datasource uses DATABASE_URL from environment
+// Production: PostgreSQL 15+
+// Development: SQLite for simplicity
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // Generator for Prisma Client
@@ -81,16 +83,10 @@ model WebhookEvent {
 // RiskAgent Off-chain Store
 // =========================
 
-enum RiskEventType {
-  SIGNAL_INGEST
-  DECISION_MADE
-  ACTION_EXECUTED
-}
-
 model RiskEvent {
   id        String        @id @default(uuid())
   userId    String
-  type      RiskEventType
+  type      String
   payload   Json
   createdAt DateTime      @default(now())
 

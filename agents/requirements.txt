@@ -1,0 +1,14 @@
+# Microsoft Agent Framework (PREVIEW - requires --pre flag)
+agent-framework-azure-ai
+
+# Stellar SDK for blockchain interactions
+stellar-sdk
+
+# HTTP requests
+httpx
+
+# Environment variables
+python-dotenv
+
+# Data validation
+pydantic

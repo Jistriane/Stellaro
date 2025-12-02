@@ -21,4 +21,29 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('Hello World!');
   });
+
+  it('/redis/health (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/redis/health')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then((res) => {
+        expect(res.body).toHaveProperty('connected');
+        expect(res.body).toHaveProperty('hits');
+        expect(res.body).toHaveProperty('misses');
+        expect(res.body).toHaveProperty('memoryItems');
+      });
+  });
+
+  it('/redis/metrics (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/redis/metrics')
+      .expect(200)
+      .expect('Content-Type', /text\/plain/)
+      .then((res) => {
+        expect(res.text).toContain('redis_connected');
+        expect(res.text).toContain('redis_cache_hits_total');
+        expect(res.text).toContain('redis_cache_misses_total');
+      });
+  });
 });

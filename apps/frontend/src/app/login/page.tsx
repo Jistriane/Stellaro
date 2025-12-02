@@ -29,7 +29,7 @@ export default function LoginPage() {
   const pushEvent = useAppStore((s) => s.pushEvent);
   const walletAvailable = useWalletStore((s) => s.available);
   const refreshWalletAvailable = useWalletStore((s) => s.refreshAvailable);
-  const tLoginErrors = useTranslations("login.login.errors");
+  const tLoginErrors = useTranslations("login.errors");
 
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL, []);
 
@@ -104,11 +104,11 @@ export default function LoginPage() {
       }
 
       if (!apiUrl) {
-        setError(t("errors.need_api"));
+        setError(tLoginErrors("need_api"));
         return;
       }
       if (!email.trim()) {
-        setError(t("errors.need_email_register"));
+        setError(tLoginErrors("need_email_register"));
         return;
       }
 
@@ -125,7 +125,7 @@ export default function LoginPage() {
       if (!initRes.ok) {
         const errorText = await initRes.text();
         console.error("[passkey] Register init failed:", errorText);
-        throw new Error(t("errors.passkey_register_init_fail"));
+        throw new Error(tLoginErrors("passkey_register_init_fail"));
       }
       const initJson: { challenge: string; rpId?: string; user?: { id: string; name?: string } } = await initRes.json();
 
@@ -166,14 +166,14 @@ export default function LoginPage() {
         credentials: "include",
         body: JSON.stringify({ challenge: initJson.challenge, credential }),
       });
-      if (!verifyRes.ok) throw new Error(t("errors.passkey_register_verify_fail"));
+      if (!verifyRes.ok) throw new Error(tLoginErrors("passkey_register_verify_fail"));
 
       // 3) Sinaliza sucesso (pode manter o usuário logado se backend setar cookie)
       setLoggedIn(true, undefined);
       pushEvent("LOGGED_IN");
     } catch (e: unknown) {
       const maybeMsg = e && typeof e === "object" && "message" in e ? (e as { message?: unknown }).message : undefined;
-      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : t("errors.passkey_register_verify_fail");
+      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("passkey_register_verify_fail");
       setError(msg);
     } finally {
       setLoadingPasskeyReg(false);
@@ -191,11 +191,11 @@ export default function LoginPage() {
       }
 
       if (!apiUrl) {
-        setError(t("errors.need_api"));
+        setError(tLoginErrors("need_api"));
         return;
       }
       if (!email.trim()) {
-        setError(t("errors.need_email_login"));
+        setError(tLoginErrors("need_email_login"));
         return;
       }
 
@@ -212,7 +212,7 @@ export default function LoginPage() {
       if (!initRes.ok) {
         const errorText = await initRes.text();
         console.error("[passkey] Login init failed:", errorText);
-        throw new Error(t("errors.passkey_init_fail"));
+        throw new Error(tLoginErrors("passkey_init_fail"));
       }
       const initJson: { ok: boolean; challenge: string; allowCredentials?: Array<{ id: string; type: PublicKeyCredentialType; transports?: AuthenticatorTransport[] }> } = await initRes.json();
 
@@ -249,14 +249,14 @@ export default function LoginPage() {
         credentials: "include",
         body: JSON.stringify({ challenge: initJson.challenge, assertion }),
       });
-      if (!verifyRes.ok) throw new Error(t("errors.passkey_verify_fail"));
+      if (!verifyRes.ok) throw new Error(tLoginErrors("passkey_verify_fail"));
 
       // 3) Atualiza estado local (sem pubkey de carteira neste fluxo)
       setLoggedIn(true, undefined);
       pushEvent("LOGGED_IN");
     } catch (e: unknown) {
       const maybeMsg = e && typeof e === "object" && "message" in e ? (e as { message?: unknown }).message : undefined;
-      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : t("errors.passkey_verify_fail");
+      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("passkey_verify_fail");
       setError(msg);
     } finally {
       setLoadingPasskey(false);
@@ -274,17 +274,17 @@ export default function LoginPage() {
       const connector = AllConnectors.find(c => c.id === kind);
       
       if (!connector) {
-        setError(t("errors.wallet_connect_fail"));
+        setError(tLoginErrors("wallet_connect_fail"));
         return;
       }
 
       if (!connector.isAvailable()) {
-        setError(t(`errors.${kind}_not_found`));
+        setError(tLoginErrors(`${kind}_not_found`));
         return;
       }
 
       if (!localApiUrl) {
-        setError(t("errors.need_api"));
+        setError(tLoginErrors("need_api"));
         return;
       }
 
@@ -293,7 +293,7 @@ export default function LoginPage() {
       const pubkey = session.address;
 
       if (!pubkey) {
-        setError(t(`errors.${kind}_no_pubkey`));
+        setError(tLoginErrors(`${kind}_no_pubkey`));
         return;
       }
 
@@ -305,7 +305,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pubkey }),
       });
-      if (!nres.ok) throw new Error(t("errors.wallet_connect_fail"));
+      if (!nres.ok) throw new Error(tLoginErrors("wallet_connect_fail"));
       const { nonce } = await nres.json();
 
       // 2) Assina o nonce (implementação específica por carteira)
@@ -335,7 +335,7 @@ export default function LoginPage() {
         }
       }
 
-      if (!signature) throw new Error(t("errors.wallet_connect_fail"));
+      if (!signature) throw new Error(tLoginErrors("wallet_connect_fail"));
 
       // 3) Verifica no backend
       const vres = await fetch(`${localApiUrl}/auth/verify`, {
@@ -344,7 +344,7 @@ export default function LoginPage() {
         credentials: "include",
         body: JSON.stringify({ pubkey, nonce, signature, provider: kind }),
       });
-      if (!vres.ok) throw new Error(t("errors.wallet_connect_fail"));
+      if (!vres.ok) throw new Error(tLoginErrors("wallet_connect_fail"));
 
       // 4) Atualiza estado e saldos
       setLoggedIn(true, pubkey);
@@ -364,7 +364,7 @@ export default function LoginPage() {
         e && typeof e === "object" && "message" in e
           ? (e as { message?: unknown }).message
           : undefined;
-      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : t("errors.wallet_connect_fail");
+      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("wallet_connect_fail");
       setError(msg);
     } finally {
       setLoadingWallet(null);
@@ -373,11 +373,11 @@ export default function LoginPage() {
 
   const onEmailLogin = useCallback(async () => {
     if (!email.trim()) {
-      setError(t("errors.email_required"));
+      setError(tLoginErrors("email_required"));
       return;
     }
     if (!apiUrl) {
-      setError(t("errors.need_api"));
+      setError(tLoginErrors("need_api"));
       return;
     }
     setError("");
@@ -390,14 +390,14 @@ export default function LoginPage() {
         credentials: "include",
         body: JSON.stringify({ email }),
       });
-      if (!initRes.ok) throw new Error(t("errors.email_init_fail"));
+      if (!initRes.ok) throw new Error(tLoginErrors("email_init_fail"));
       const initJson: { ok: boolean; code?: string } = await initRes.json();
 
       // 2) Solicita o código ao usuário (DEV: mostramos código retornado, se vier)
       const hint = initJson.code ? ` (DEV: ${initJson.code})` : "";
       const input = window.prompt(`${t("email_prompt")}${hint}`) ?? "";
       const code = input.trim();
-      if (!code) throw new Error(t("errors.email_code_required"));
+      if (!code) throw new Error(tLoginErrors("email_code_required"));
 
       // 3) Verifica código e recebe cookie HttpOnly
       const verifyRes = await fetch(`${apiUrl}/auth/email/verify`, {
@@ -406,13 +406,13 @@ export default function LoginPage() {
         credentials: "include",
         body: JSON.stringify({ email, code }),
       });
-      if (!verifyRes.ok) throw new Error(t("errors.email_verify_fail"));
+      if (!verifyRes.ok) throw new Error(tLoginErrors("email_verify_fail"));
 
       setLoggedIn(true, undefined);
       pushEvent("LOGGED_IN");
     } catch (e: unknown) {
       const maybeMsg = e && typeof e === "object" && "message" in e ? (e as { message?: unknown }).message : undefined;
-      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : t("errors.email_verify_fail");
+      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("email_verify_fail");
       setError(msg);
     } finally {
       setLoadingEmail(false);
@@ -460,7 +460,7 @@ export default function LoginPage() {
                     onClick={() => onWallet("freighter")}
                     className="px-4 py-2 rounded bg-slate-800 text-sm hover:bg-slate-700 disabled:opacity-60"
                     disabled={loadingWallet !== null || !freighterAvailable}
-                    title={freighterAvailable ? t("freighter_desc") : t("errors.freighter_not_found")}
+                    title={freighterAvailable ? t("freighter_desc") : tLoginErrors("freighter_not_found")}
                   >
                     <span className="inline-flex items-center gap-2">
                       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
@@ -474,7 +474,7 @@ export default function LoginPage() {
                     onClick={() => onWallet("albedo")}
                     className="px-4 py-2 rounded bg-slate-800 text-sm hover:bg-slate-700 disabled:opacity-60"
                     disabled={loadingWallet !== null || !albedoAvailable}
-                    title={albedoAvailable ? t("albedo_desc") : t("errors.albedo_not_found")}
+                    title={albedoAvailable ? t("albedo_desc") : tLoginErrors("albedo_not_found")}
                   >
                     <span className="inline-flex items-center gap-2">
                       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">

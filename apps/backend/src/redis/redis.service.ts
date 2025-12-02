@@ -22,6 +22,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RedisService.name);
   private client: RedisClientLike | null = null;
   private memory = new Map<string, string>();
+  private hits = 0;
+  private misses = 0;
+  private rateLimitedTotal = 0;
+  private zkVerifyOk = 0;
+  private zkVerifyErr = 0;
+  private zkScoreOk = 0;
+  private zkScoreErr = 0;
 
   async onModuleInit() {
     const url = process.env.REDIS_URL;
@@ -59,10 +66,20 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async get<T = any>(key: string): Promise<T | null> {
     if (this.client) {
       const raw = await this.client.get(key);
+      if (raw !== null) {
+        this.hits++;
+      } else {
+        this.misses++;
+      }
       return raw ? (JSON.parse(raw) as T) : null;
     }
     const v = this.memory.get(key);
-    return v ? (JSON.parse(v) as T) : null;
+    if (v) {
+      this.hits++;
+      return JSON.parse(v) as T;
+    }
+    this.misses++;
+    return null;
   }
 
   async set<T = any>(key: string, value: T, ttlSeconds?: number) {
@@ -86,6 +103,32 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async del(key: string) {
     if (this.client) return this.client.del(key);
     return this.memory.delete(key) ? 1 : 0;
+  }
+
+  incRateLimited() {
+    this.rateLimitedTotal++;
+  }
+
+  incZkVerify(ok: boolean) {
+    if (ok) this.zkVerifyOk++; else this.zkVerifyErr++;
+  }
+
+  incZkScore(ok: boolean) {
+    if (ok) this.zkScoreOk++; else this.zkScoreErr++;
+  }
+
+  getStats() {
+    return {
+      connected: !!this.client,
+      hits: this.hits,
+      misses: this.misses,
+      memoryItems: this.memory.size,
+      rateLimitedTotal: this.rateLimitedTotal,
+      zkVerifyOk: this.zkVerifyOk,
+      zkVerifyErr: this.zkVerifyErr,
+      zkScoreOk: this.zkScoreOk,
+      zkScoreErr: this.zkScoreErr,
+    };
   }
 
   async mDel(keys: string[]) {

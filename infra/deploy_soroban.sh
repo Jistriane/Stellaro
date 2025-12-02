@@ -29,6 +29,7 @@ else
 fi
 
 RISK_BPS=${3:-7000}
+ZK_VERIFIER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/zk_verifier.wasm"
 LTV_BPS=${4:-6000}
 INTEREST_BPS=${5:-1500}
 
@@ -126,6 +127,10 @@ echo "==> Deploying governance"
 GOVERNANCE_ID=$(deploy_one "$GOV_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
 echo "GOVERNANCE_ID=$GOVERNANCE_ID"
 
+echo "==> Deploying ZK Verifier"
+ZK_VERIFIER_ID=$(deploy_one "$ZK_VERIFIER_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+echo "ZK_VERIFIER_ID=$ZK_VERIFIER_ID"
+
 # Inicializações (idempotentes)
 
 echo "==> Init stablecoin (idempotente)"
@@ -183,6 +188,7 @@ persist_envs() {
   upsert_env_var "$file" LOANSPOOL_CONTRACT_ID "$LOANSPOOL_ID"
   upsert_env_var "$file" PORTFOLIO_CONTRACT_ID "$PORTFOLIO_ID"
   upsert_env_var "$file" GOVERNANCE_CONTRACT_ID "$GOVERNANCE_ID"
+  upsert_env_var "$file" ZK_VERIFIER_CONTRACT_ID "$ZK_VERIFIER_ID"
   upsert_env_var "$file" STELLAR_PUBLIC_KEY "$ADMIN"
 }
 
@@ -207,6 +213,7 @@ RISKLOCK_ID=$RISKLOCK_ID
 LOANSPOOL_ID=$LOANSPOOL_ID
 PORTFOLIO_ID=$PORTFOLIO_ID
 GOVERNANCE_ID=$GOVERNANCE_ID
+ZK_VERIFIER_ID=$ZK_VERIFIER_ID
 ==========================
 
 Dica: IDs gravados em $ROOT_ENV. Se existir, também atualizado: $BACKEND_ENV

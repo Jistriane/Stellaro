@@ -13,6 +13,7 @@ enum DataKey {
     Paused,
     MintEnabled,
     BurnEnabled,
+    ReentrancyLock, // Global reentrancy protection
 }
 
 #[cfg(test)]
@@ -24,8 +25,9 @@ mod test {
     fn init_and_admin_controls() {
         let env = Env::default();
         env.mock_all_auths();
-        let mut li = LedgerInfo::default();
-        li.timestamp = 1;
+        // Usa o ledger atual para preservar protocol_version e demais campos
+        let mut li = env.ledger().get();
+        li.timestamp = 1; // avança tempo mínimo necessário
         env.ledger().set(li);
 
         let admin = Address::generate(&env);
@@ -128,6 +130,101 @@ mod test {
         // user2 tentando queimar saldo de user1 -> panica
         client.burn(&user2, &user1, &50u128);
     }
+
+    #[test]
+    fn test_overflow_protection() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let contract_id = env.register_contract(None, StablecoinContract);
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &500u32);
+        
+        // Mint max amount
+        client.mint_guarded(&admin, &user1, &u128::MAX, &100u32);
+        assert_eq!(client.balance_of(&user1), u128::MAX);
+        
+        // Try to mint more (should saturate, not overflow)
+        client.mint_guarded(&admin, &user1, &1u128, &100u32);
+        assert_eq!(client.balance_of(&user1), u128::MAX);
+    }
+
+    #[test]
+    #[should_panic(expected = "insufficient")]
+    fn test_underflow_protection() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let contract_id = env.register_contract(None, StablecoinContract);
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &500u32);
+        
+        // Mint 100 tokens
+        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        
+        // Try to burn more than balance (should panic)
+        client.burn(&user1, &user1, &101u128);
+    }
+
+    #[test]
+    #[should_panic(expected = "not admin")]
+    fn test_unauthorized_clawback() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let user2 = Address::generate(&env);
+        let contract_id = env.register_contract(None, StablecoinContract);
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &500u32);
+        
+        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        
+        // Non-admin trying clawback should panic
+        client.clawback(&user2, &user1, &50u128);
+    }
+
+    #[test]
+    #[should_panic(expected = "locked")]
+    fn test_lock_prevents_mint() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let contract_id = env.register_contract(None, StablecoinContract);
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &500u32);
+        
+        // Lock user1
+        client.lock(&admin, &user1);
+        assert_eq!(client.is_locked(&user1), true);
+        
+        // Try to mint to locked address (should panic)
+        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+    }
+
+    #[test]
+    #[should_panic(expected = "locked")]
+    fn test_lock_prevents_burn() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let contract_id = env.register_contract(None, StablecoinContract);
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &500u32);
+        
+        // Mint first
+        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        
+        // Lock user1
+        client.lock(&admin, &user1);
+        
+        // Try to burn from locked address (should panic)
+        client.burn(&user1, &user1, &50u128);
+    }
 }
 
 #[contract]
@@ -170,6 +267,17 @@ fn emit(env: &Env, topic: &str, data: &str) {
     // Eventos simples com dois tópicos: nome e dados stringificados
     let t = Symbol::new(env, topic);
     env.events().publish((t,), data);
+}
+
+fn acquire_lock(env: &Env) {
+    if read_bool(env, &DataKey::ReentrancyLock) {
+        panic!("reentrancy detected");
+    }
+    write_bool(env, &DataKey::ReentrancyLock, true);
+}
+
+fn release_lock(env: &Env) {
+    write_bool(env, &DataKey::ReentrancyLock, false);
 }
 
 #[contractimpl]
@@ -289,6 +397,9 @@ impl StablecoinContract {
     }
 
     pub fn mint_guarded(env: Env, caller: Address, to: Address, amount: u128, current_risk_bps: u32) {
+        // Reentrancy guard
+        acquire_lock(&env);
+        
         // Política: admin-only e só mint se risco atual < threshold e destino não bloqueado
         caller.require_auth();
         let admin: Address = env
@@ -296,29 +407,58 @@ impl StablecoinContract {
             .persistent()
             .get(&DataKey::Admin)
             .expect("admin not set");
-        if caller != admin { panic!("not admin"); }
+        if caller != admin { 
+            release_lock(&env);
+            panic!("not admin"); 
+        }
         assert!(amount > 0, "amount=0");
-        if read_bool(&env, &DataKey::Paused) { panic!("paused"); }
-        if !read_bool(&env, &DataKey::MintEnabled) { panic!("mint disabled"); }
+        if read_bool(&env, &DataKey::Paused) { 
+            release_lock(&env);
+            panic!("paused"); 
+        }
+        if !read_bool(&env, &DataKey::MintEnabled) { 
+            release_lock(&env);
+            panic!("mint disabled"); 
+        }
         let thr = read_u32(&env, &DataKey::RiskThreshold);
         assert!(current_risk_bps < thr, "high risk");
-        if Self::is_locked(env.clone(), to.clone()) { panic!("locked"); }
+        if Self::is_locked(env.clone(), to.clone()) { 
+            release_lock(&env);
+            panic!("locked"); 
+        }
 
         let bal = read_u128(&env, &DataKey::Balance(to.clone()));
         write_u128(&env, &DataKey::Balance(to.clone()), bal.saturating_add(amount));
         let ts = read_u128(&env, &DataKey::TotalSupply);
         write_u128(&env, &DataKey::TotalSupply, ts.saturating_add(amount));
         emit(&env, "mint", "ok");
+        
+        release_lock(&env);
     }
 
     pub fn burn(env: Env, caller: Address, from: Address, amount: u128) {
+        // Reentrancy guard
+        acquire_lock(&env);
+        
         // Somente o próprio "from" pode queimar o seu saldo (ou políticas futuras)
         caller.require_auth();
-        if caller != from { panic!("not owner"); }
+        if caller != from { 
+            release_lock(&env);
+            panic!("not owner"); 
+        }
         assert!(amount > 0, "amount=0");
-        if read_bool(&env, &DataKey::Paused) { panic!("paused"); }
-        if !read_bool(&env, &DataKey::BurnEnabled) { panic!("burn disabled"); }
-        if Self::is_locked(env.clone(), from.clone()) { panic!("locked"); }
+        if read_bool(&env, &DataKey::Paused) { 
+            release_lock(&env);
+            panic!("paused"); 
+        }
+        if !read_bool(&env, &DataKey::BurnEnabled) { 
+            release_lock(&env);
+            panic!("burn disabled"); 
+        }
+        if Self::is_locked(env.clone(), from.clone()) { 
+            release_lock(&env);
+            panic!("locked"); 
+        }
 
         let bal = read_u128(&env, &DataKey::Balance(from.clone()));
         assert!(bal >= amount, "insufficient");
@@ -326,17 +466,25 @@ impl StablecoinContract {
         let ts = read_u128(&env, &DataKey::TotalSupply);
         write_u128(&env, &DataKey::TotalSupply, ts - amount);
         emit(&env, "burn", "ok");
+        
+        release_lock(&env);
     }
 
     // Clawback admin-only: reduz saldo do endereço e totalSupply
     pub fn clawback(env: Env, caller: Address, from: Address, amount: u128) {
+        // Reentrancy guard
+        acquire_lock(&env);
+        
         let admin: Address = env
             .storage()
             .persistent()
             .get(&DataKey::Admin)
             .expect("admin not set");
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
+        if caller != admin { 
+            release_lock(&env);
+            panic!("not admin"); 
+        }
         assert!(amount > 0, "amount=0");
         let bal = read_u128(&env, &DataKey::Balance(from.clone()));
         assert!(bal >= amount, "insufficient");
@@ -344,6 +492,8 @@ impl StablecoinContract {
         let ts = read_u128(&env, &DataKey::TotalSupply);
         write_u128(&env, &DataKey::TotalSupply, ts - amount);
         emit(&env, "clawback", "ok");
+        
+        release_lock(&env);
     }
 
     pub fn symbol(env: Env) -> Symbol {

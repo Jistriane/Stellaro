@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { MemoryService } from '../memory/memory.service';
 import { ActionsService } from '../actions/actions.service';
+import axios from 'axios';
 
 export interface ElizaConfig {
   name?: string;
@@ -17,11 +18,16 @@ export class ElizaService implements OnModuleInit {
   private config: ElizaConfig | null = null;
   private running = false;
   private timer: NodeJS.Timeout | null = null;
+  private agentServiceUrl: string;
 
   constructor(
     private readonly memory: MemoryService,
     private readonly actions: ActionsService,
-  ) {}
+  ) {
+    // URL do serviço Python multi-agente
+    this.agentServiceUrl =
+      process.env.AGENT_SERVICE_URL ?? 'http://localhost:8000';
+  }
 
   onModuleInit(): void {
     const customPath = process.env.ELIZA_CONFIG_PATH;
@@ -87,5 +93,179 @@ export class ElizaService implements OnModuleInit {
 
     // 3) Opcional: executar uma ação de rotina (stub desabilitado)
     // await this.actions.autoHedge({});
+  }
+
+  // ============================================
+  // Multi-Agent Integration Methods
+  // ============================================
+
+  async triggerAgentAction(
+    agent: 'stellaro' | 'treasury_manager' | 'compliance_bot',
+    action: string,
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        `Triggering ${agent} action: ${action} with payload: ${JSON.stringify(payload)}`,
+      );
+
+      // In production: call Python agent service via HTTP
+      // For now, mock response
+      const mockResponse = {
+        agent,
+        action,
+        timestamp: new Date().toISOString(),
+        result: {
+          success: true,
+          message: `${agent}.${action} executed successfully (MOCK)`,
+          payload,
+        },
+      };
+
+      // Log to memory
+      await this.memory.logEvent('multi-agent', `${agent}.${action}`, {
+        payload,
+        result: mockResponse.result,
+      });
+
+      return mockResponse;
+    } catch (error) {
+      this.logger.error(
+        `Failed to trigger ${agent}.${action}`,
+        error as Error,
+      );
+      throw error;
+    }
+  }
+
+  async orchestrateWorkflow(
+    workflow:
+      | 'safe_optimization'
+      | 'transaction_compliance'
+      | 'monitor_mitigate',
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    try {
+      this.logger.log(
+        `Orchestrating workflow: ${workflow} with payload: ${JSON.stringify(payload)}`,
+      );
+
+      // In production: call Python orchestrator service
+      // For now, simulate workflow execution
+      let workflowResult;
+
+      switch (workflow) {
+        case 'safe_optimization':
+          workflowResult = await this.executeSafeOptimization(payload);
+          break;
+        case 'transaction_compliance':
+          workflowResult = await this.executeTransactionCompliance(payload);
+          break;
+        case 'monitor_mitigate':
+          workflowResult = await this.executeMonitorMitigate(payload);
+          break;
+        default:
+          throw new Error(`Unknown workflow: ${workflow}`);
+      }
+
+      // Log to memory
+      await this.memory.logEvent('orchestration', workflow, {
+        payload,
+        result: workflowResult,
+      });
+
+      return workflowResult;
+    } catch (error) {
+      this.logger.error(`Workflow ${workflow} failed`, error as Error);
+      throw error;
+    }
+  }
+
+  // ============================================
+  // Workflow Implementations (MOCK)
+  // ============================================
+
+  private async executeSafeOptimization(
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    const treasuryAddress = payload.treasuryAddress as string;
+
+    // Sequential workflow: Compliance → Risk → Optimization
+    const complianceCheck = { approved: true, message: 'Address verified' };
+    const riskAnalysis = {
+      risks_detected: 0,
+      recommendation: 'Portfolio healthy',
+    };
+    const optimization = {
+      estimated_annual_gain: 5000,
+      optimization_opportunities: 3,
+    };
+
+    return {
+      success: true,
+      workflow: 'safe_optimization',
+      treasury_address: treasuryAddress,
+      steps: {
+        compliance: complianceCheck,
+        risk: riskAnalysis,
+        optimization,
+      },
+      summary: {
+        total_gain_potential: optimization.estimated_annual_gain,
+      },
+    };
+  }
+
+  private async executeTransactionCompliance(
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    const { userAddress, amountUSD, asset } = payload;
+
+    // Sequential workflow: Compliance → Execute → Risk
+    const complianceCheck = {
+      approved: true,
+      risk_score: 20,
+      violations: [],
+    };
+    const transaction = {
+      transaction_hash: '0xABCD1234...',
+      status: 'SUCCESS',
+    };
+    const postRisk = { risks_detected: 0 };
+
+    return {
+      success: true,
+      workflow: 'transaction_compliance',
+      user_address: userAddress,
+      amount_usd: amountUSD,
+      asset,
+      steps: {
+        compliance: complianceCheck,
+        transaction,
+        post_risk: postRisk,
+      },
+    };
+  }
+
+  private async executeMonitorMitigate(
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    const userAddress = payload.userAddress as string;
+
+    // Concurrent workflow: Risk + AML → Mitigation
+    const riskAnalysis = { risks_detected: 1, risks: [] };
+    const amlAnalysis = { patterns_detected: 0, patterns: [] };
+    const mitigationTriggered = false;
+
+    return {
+      success: true,
+      workflow: 'monitor_mitigate',
+      user_address: userAddress,
+      steps: {
+        risk: riskAnalysis,
+        aml: amlAnalysis,
+      },
+      mitigation_triggered: mitigationTriggered,
+    };
   }
 }

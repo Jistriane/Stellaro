@@ -1,0 +1,258 @@
+name: Stellaro CI/CD
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+env:
+  CARGO_TERM_COLOR: always
+  NODE_VERSION: '20'
+  RUST_TOOLCHAIN: stable
+
+jobs:
+  test-contracts:
+    name: Test Soroban Contracts
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./contracts
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          override: true
+          components: rustfmt, clippy
+
+      - name: Cache Cargo Registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo Build
+        uses: actions/cache@v3
+        with:
+          path: contracts/target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Stellar CLI
+        run: |
+          cargo install --locked stellar-cli --features opt
+          stellar --version
+
+      - name: Run Tests
+        run: cargo test --all-features --verbose
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Security Audit
+        run: |
+          cargo install cargo-audit
+          cargo audit --deny warnings
+
+      - name: Build Optimized Contracts
+        run: |
+          stellar contract build --package stablecoin
+          stellar contract build --package governance
+          stellar contract build --package loans_pool
+          stellar contract build --package portfolio
+          stellar contract build --package risklock
+
+      - name: Upload Contract Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: contracts
+          path: contracts/target/wasm32-unknown-unknown/release/*.wasm
+
+  test-backend:
+    name: Test NestJS Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/backend
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: stellar
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: stellaro_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://stellar:test@localhost:5432/stellaro_test
+
+      - name: Run Unit Tests
+        run: npm run test:cov
+
+      - name: Run E2E Tests
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://stellar:test@localhost:5432/stellaro_test
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./apps/backend/coverage/lcov.info
+          flags: backend
+
+  test-frontend:
+    name: Test Next.js Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/frontend
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Type Check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run E2E Tests
+        run: npx playwright test
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: apps/frontend/playwright-report/
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy Results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  deploy-testnet:
+    name: Deploy to Testnet
+    needs: [test-contracts, test-backend, test-frontend]
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: testnet
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Contract Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: contracts
+          path: ./contracts/build
+
+      - name: Install Stellar CLI
+        run: |
+          cargo install --locked stellar-cli --features opt
+
+      - name: Deploy Contracts to Testnet
+        run: ./infra/deploy_soroban.sh testnet
+        env:
+          STELLAR_NETWORK: testnet
+          STELLAR_SECRET_KEY: ${{ secrets.TESTNET_SECRET_KEY }}
+
+      - name: Run Smoke Tests
+        run: npm run test:smoke
+        working-directory: ./apps/backend
+
+  deploy-mainnet:
+    name: Deploy to Mainnet (Canary)
+    needs: [test-contracts, test-backend, test-frontend, security-scan]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Contract Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: contracts
+          path: ./contracts/build
+
+      - name: Install Stellar CLI
+        run: |
+          cargo install --locked stellar-cli --features opt
+
+      - name: Deploy Canary (10%)
+        run: |
+          echo "Deploying canary release..."
+          # TODO: Implement canary deployment logic
+        env:
+          STELLAR_NETWORK: mainnet
+          STELLAR_SECRET_KEY: ${{ secrets.MAINNET_SECRET_KEY }}
+
+      - name: Monitor Canary Health
+        run: |
+          echo "Monitoring canary for 5 minutes..."
+          sleep 300
+          # TODO: Check metrics endpoint
+
+      - name: Rollout or Rollback
+        run: |
+          # TODO: Check health and decide
+          echo "Health check passed, proceeding with full rollout"
