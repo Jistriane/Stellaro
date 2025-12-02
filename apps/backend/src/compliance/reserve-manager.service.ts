@@ -2,6 +2,8 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReflectorOracleService } from '../oracles/reflector-oracle.service';
+import { SorobanService } from '../chain/soroban.service';
+import { NotificationService } from '../notifications/notification.service';
 import * as StellarSdk from '@stellar/stellar-sdk';
 
 /**
@@ -48,6 +50,8 @@ export class ReserveManagerService implements OnModuleInit {
     private configService: ConfigService,
     private prisma: PrismaService,
     private oracleService: ReflectorOracleService,
+    private sorobanService: SorobanService,
+    private notificationService: NotificationService,
   ) {
     const horizonUrl =
       this.configService.get('STELLAR_HORIZON') ||
@@ -171,7 +175,7 @@ export class ReserveManagerService implements OnModuleInit {
   }
 
   /**
-   * Obtém supply da stablecoin
+   * Obtém supply da stablecoin via contrato Soroban
    */
   private async getStablecoinSupply(): Promise<number> {
     try {
@@ -181,9 +185,8 @@ export class ReserveManagerService implements OnModuleInit {
         return 0;
       }
 
-      // TODO: Chamar contrato Soroban para obter total_supply
-      // Por enquanto, retorna mock
-      return 1000000; // 1M BRL
+      const supply = await this.sorobanService.getStablecoinSupply(contractId);
+      return supply;
     } catch (error) {
       this.logger.error(`Failed to get stablecoin supply: ${error.message}`);
       return 0;
@@ -296,12 +299,20 @@ export class ReserveManagerService implements OnModuleInit {
   }
 
   /**
-   * Congela minting no contrato
+   * Congela minting no contrato Stablecoin via Soroban
    */
   private async freezeMinting(): Promise<void> {
     try {
-      // TODO: Chamar contrato stablecoin.set_mint_enabled(false)
-      this.logger.log('Minting frozen due to undercollateralization');
+      const contractId = this.configService.get('STABLECOIN_CONTRACT_ID');
+      const signerSecret = this.configService.get('STELLAR_SECRET_KEY');
+      
+      if (!contractId || !signerSecret) {
+        this.logger.error('Missing STABLECOIN_CONTRACT_ID or STELLAR_SECRET_KEY');
+        return;
+      }
+
+      await this.sorobanService.setMintingEnabled(contractId, false, signerSecret);
+      this.logger.log('✅ Minting frozen via Soroban contract due to undercollateralization');
     } catch (error) {
       this.logger.error(`Failed to freeze minting: ${error.message}`);
     }
@@ -311,7 +322,20 @@ export class ReserveManagerService implements OnModuleInit {
    * Notifica admins via múltiplos canais
    */
   private async notifyAdmins(alert: CollateralizationAlert): Promise<void> {
-    // TODO: Implementar notificações (email, SMS, webhook)
+    if (alert.severity === 'WARNING') {
+      await this.notificationService.sendWarningAlert(
+        alert.ratio,
+        alert.threshold,
+        { action: alert.action },
+      );
+    } else if (alert.severity === 'EMERGENCY' || alert.severity === 'CRITICAL') {
+      await this.notificationService.sendUndercollateralizationAlert(
+        alert.ratio,
+        alert.threshold,
+        { action: alert.action },
+      );
+    }
+    
     this.logger.log(
       `Admin notification sent: ${alert.severity} - Ratio ${alert.ratio.toFixed(2)}%`,
     );

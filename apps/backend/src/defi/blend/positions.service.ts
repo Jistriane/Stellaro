@@ -14,16 +14,60 @@ type Position = {
 
 @Injectable()
 export class BlendPositionsService {
+  private poolParamsCache: { params: any; timestamp: number } | null = null;
+  private readonly POOL_PARAMS_CACHE_TTL = 300000; // 5 minutos
+
   constructor(
     private readonly horizon: HorizonService,
     private readonly soroban: SorobanService,
     private readonly redis: RedisService,
   ) {}
 
+  /**
+   * Obtém parâmetros do LoansPool com cache de 5 minutos
+   */
+  private async getPoolParams(): Promise<{ interest_bps?: number; poolId?: string }> {
+    const now = Date.now();
+    
+    // Verificar cache em memória
+    if (this.poolParamsCache && (now - this.poolParamsCache.timestamp) < this.POOL_PARAMS_CACHE_TTL) {
+      return this.poolParamsCache.params;
+    }
+
+    const loansPoolId = process.env.LOANS_POOL_CONTRACT_ID;
+    if (!loansPoolId) {
+      return {};
+    }
+
+    try {
+      // Tentar ler do contrato via Soroban
+      const params = await this.soroban.getLoansPoolParams(loansPoolId);
+      const result = {
+        interest_bps: params.interest_bps,
+        poolId: loansPoolId,
+      };
+      
+      // Cachear em memória
+      this.poolParamsCache = { params: result, timestamp: now };
+      return result;
+    } catch (error) {
+      // Fallback para env vars se falhar
+      const interestBpsEnv = process.env.LOANSPOOL_INTEREST_BPS;
+      const result = {
+        interest_bps: interestBpsEnv ? Number(interestBpsEnv) : undefined,
+        poolId: loansPoolId,
+      };
+      
+      this.poolParamsCache = { params: result, timestamp: now };
+      return result;
+    }
+  }
+
   async getPositions(address: string, quote = 'USD') {
     const cacheKey = `defi:blend:positions:${address}:${quote}`;
     const cached = await this.redis.get<{ address: string; positions: Position[]; totalUSD: number }>(cacheKey);
     if (cached) return cached;
+    
     const account = await this.horizon.getAccount(address);
     const balances: Array<{ asset_type: string; asset_code?: string; balance: string }> = account?.balances || [];
 
@@ -42,17 +86,15 @@ export class BlendPositionsService {
       positions.push({ asset, balance: b.balance, valueUSD: balanceNum * price });
     }
 
-    // Optional enrichment based on contract configuration
-    const loansPoolId = process.env.LOANS_POOL_CONTRACT_ID;
-    const interestBpsEnv = process.env.LOANSPOOL_INTEREST_BPS;
-    const interestBps = interestBpsEnv ? Number(interestBpsEnv) : undefined; // e.g., 1500 = 15.00%
-    if (loansPoolId) {
+    // Enriquecimento dinâmico com parâmetros do contrato
+    const poolConfig = await this.getPoolParams();
+    if (poolConfig.poolId) {
       for (const p of positions) {
-        p.poolId = loansPoolId;
-        if (typeof interestBps === 'number' && !Number.isNaN(interestBps)) {
-          // Representa APY em bps (basis points) ou percentual simplificado
-          // Aqui mantemos como percentual: 1500 -> 15.00
-          p.apy = Math.round((interestBps / 100) * 100) / 100;
+        p.poolId = poolConfig.poolId;
+        
+        if (typeof poolConfig.interest_bps === 'number' && !Number.isNaN(poolConfig.interest_bps)) {
+          // Converter basis points para percentual (1500 bps = 15.00%)
+          p.apy = Math.round((poolConfig.interest_bps / 100) * 100) / 100;
         }
       }
     }
