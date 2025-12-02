@@ -1,11 +1,15 @@
 import { Body, Controller, Get, Patch, Post, Req, Res } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { WebAuthnAttestationDto } from './dto/webauthn-attestation.dto';
+import { WebAuthnAssertionDto } from './dto/webauthn-assertion.dto';
 import type { Request, Response } from 'express';
 import { IssueNonceDto, VerifyWalletDto } from './dto/wallet.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -21,13 +25,17 @@ export class AuthController {
   }
 
   @Post('webauthn/attestation')
-  attestation() {
-    return this.authService.webauthnAttestation();
+  @ApiOperation({ summary: 'Verificar attestation WebAuthn e registrar credential' })
+  @ApiResponse({ status: 200, description: 'Credential registrado com sucesso' })
+  async attestation(@Body() body: WebAuthnAttestationDto) {
+    return this.authService.webauthnAttestation(body);
   }
 
   @Post('webauthn/assertion')
-  assertion() {
-    return this.authService.webauthnAssertion();
+  @ApiOperation({ summary: 'Verificar assertion WebAuthn e emitir token' })
+  @ApiResponse({ status: 200, description: 'Autenticação bem-sucedida' })
+  async assertion(@Body() body: WebAuthnAssertionDto) {
+    return this.authService.webauthnAssertion(body);
   }
 
   // ==============================
@@ -90,45 +98,56 @@ export class AuthController {
   }
 
   // ==============================
-  // Passkey (WebAuthn) - DEV
+  // Passkey (WebAuthn) - Production-ready
   // ==============================
+  
   @Post('passkey/register/init')
+  @ApiOperation({ summary: 'Inicializar registro de passkey' })
+  @ApiResponse({ status: 200, description: 'Challenge e opções WebAuthn' })
   passkeyRegisterInit(@Body() body: { email: string }) {
     return this.authService.passkeyRegisterInit(body.email);
   }
 
   @Post('passkey/register/verify')
+  @ApiOperation({ summary: 'Verificar e completar registro de passkey' })
+  @ApiResponse({ status: 200, description: 'Passkey registrado com sucesso' })
   async passkeyRegisterVerify(
-    @Body() body: { challenge: string; credential?: unknown },
+    @Body() body: { challenge: string; credential: any },
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { token, userId } = await this.authService.passkeyRegisterVerify(
-      body.challenge,
-    );
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
-      maxAge: 24 * 60 * 60 * 1000,
-      path: '/',
-    });
-    return { ok: true, userId };
+    const result = await this.authService.passkeyRegisterVerify(body);
+    
+    // Se houver token, definir cookie
+    if ('token' in result && result.token) {
+      const isProd = process.env.NODE_ENV === 'production';
+      res.cookie('token', result.token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'strict' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+    }
+    
+    return result;
   }
 
   @Post('passkey/login/init')
+  @ApiOperation({ summary: 'Inicializar login com passkey' })
+  @ApiResponse({ status: 200, description: 'Challenge e opções de autenticação' })
   passkeyLoginInit(@Body() body: { email: string }) {
     return this.authService.passkeyLoginInit(body.email);
   }
 
   @Post('passkey/login/verify')
+  @ApiOperation({ summary: 'Verificar assertion e autenticar usuário' })
+  @ApiResponse({ status: 200, description: 'Login bem-sucedido' })
   async passkeyLoginVerify(
-    @Body() body: { challenge: string; assertion?: unknown },
+    @Body() body: { challenge: string; assertion: any },
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { token, userId } = await this.authService.passkeyLoginVerify(
-      body.challenge,
-    );
+    const { token, userId, passkeyToken } = await this.authService.passkeyLoginVerify(body);
+    
     const isProd = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
       httpOnly: true,
@@ -137,7 +156,8 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
-    return { ok: true, userId };
+    
+    return { ok: true, userId, passkeyToken };
   }
 
   // ==============================

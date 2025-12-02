@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PasskeyService } from '../passkey/passkey.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -18,13 +19,10 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly passkeyService: PasskeyService,
   ) {}
 
-  // In-memory stores for dev only (passkeys/email)
-  private passkeyChallenges = new Map<
-    string,
-    { email: string; kind: 'register' | 'login'; issuedAt: number }
-  >();
+  // In-memory stores apenas para email OTP (mantido para dev)
   private emailCodes = new Map<string, { code: string; issuedAt: number }>();
 
   async register(data: RegisterDto) {
@@ -33,8 +31,17 @@ export class AuthService {
       create: { email: data.email, name: data.name ?? null },
       update: { name: data.name ?? null },
     });
-    // TODO: bootstrap WebAuthn registration options
-    return { user };
+    
+    // Inicializar registro WebAuthn usando PasskeyService
+    const passkeyOptions = await this.passkeyService.initRegistration(
+      user.id,
+      user.email,
+    );
+    
+    return { 
+      user,
+      passkeyOptions, // challenge, rpId, user info para WebAuthn
+    };
   }
 
   async login(data: LoginDto) {
@@ -46,14 +53,58 @@ export class AuthService {
     return { user, token };
   }
 
-  webauthnAttestation() {
-    // TODO: verify attestation and store credential in Passkey
-    return { ok: true };
+  /**
+   * Verifica attestation WebAuthn e armazena credential
+   */
+  async webauthnAttestation(payload: {
+    challenge: string;
+    credential: any;
+  }) {
+    const result = await this.passkeyService.verifyRegistration(payload);
+    
+    if (!result.ok) {
+      throw new UnauthorizedException(result.error || 'Registration verification failed');
+    }
+    
+    return { 
+      ok: true,
+      message: 'Passkey registered successfully',
+    };
   }
 
-  webauthnAssertion() {
-    // TODO: verify assertion and issue session/JWT
-    return { ok: true };
+  /**
+   * Verifica assertion WebAuthn e emite session/JWT
+   */
+  async webauthnAssertion(payload: {
+    challenge: string;
+    assertion: any;
+  }) {
+    const result = await this.passkeyService.verifyLogin(payload);
+    
+    if (!result.ok) {
+      throw new UnauthorizedException(result.error || 'Authentication failed');
+    }
+    
+    // Emitir JWT padrão da aplicação
+    const user = await this.prisma.user.findUnique({
+      where: { id: result.userId },
+    });
+    
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    const appToken = await this.jwt.signAsync({ 
+      sub: user.id, 
+      email: user.email,
+    });
+    
+    return { 
+      ok: true,
+      token: appToken,
+      passkeyToken: result.token, // Session token do passkey
+      user,
+    };
   }
 
   // ==============================
@@ -197,59 +248,102 @@ export class AuthService {
   }
 
   // ==============================
-  // Passkey (WebAuthn) - DEV basic flow
+  // Passkey (WebAuthn) - Production-ready flow
   // ==============================
-  passkeyRegisterInit(email: string) {
+  
+  /**
+   * Inicializa registro de passkey
+   */
+  async passkeyRegisterInit(email: string) {
     if (!email) throw new UnauthorizedException('Missing email');
-    const challenge = crypto.randomBytes(32).toString('base64url');
-    this.passkeyChallenges.set(challenge, {
-      email,
-      kind: 'register',
-      issuedAt: Date.now(),
-    });
-    return { challenge, rpId: undefined, user: { id: email, name: email } };
-  }
-
-  async passkeyRegisterVerify(challenge: string) {
-    const entry = this.passkeyChallenges.get(challenge);
-    if (!entry || entry.kind !== 'register')
-      throw new UnauthorizedException('Invalid challenge');
-    this.passkeyChallenges.delete(challenge);
-    // NOTE: Skipping real attestation verification in DEV
+    
+    // Criar ou buscar usuário
     const user = await this.prisma.user.upsert({
-      where: { email: entry.email },
-      create: { email: entry.email },
+      where: { email },
+      create: { email },
       update: {},
     });
-    const token = await this.jwt.signAsync({ sub: user.id, email: user.email });
-    return { ok: true, token, userId: user.id };
+    
+    // Delegar ao PasskeyService
+    const options = await this.passkeyService.initRegistration(user.id, email);
+    return options;
   }
 
+  /**
+   * Verifica e completa registro de passkey
+   */
+  async passkeyRegisterVerify(payload: {
+    challenge: string;
+    credential: any;
+  }) {
+    const result = await this.passkeyService.verifyRegistration(payload);
+    
+    if (!result.ok) {
+      throw new UnauthorizedException(result.error || 'Registration failed');
+    }
+    
+    // Buscar usuário associado ao challenge (via Redis)
+    // Como o PasskeyService já salvou o passkey, podemos emitir token
+    // Nota: idealmente pegamos userId do cache do challenge
+    return { 
+      ok: true,
+      message: 'Passkey registered successfully',
+    };
+  }
+
+  /**
+   * Inicializa login com passkey
+   */
   async passkeyLoginInit(email: string) {
     if (!email) throw new UnauthorizedException('Missing email');
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new NotFoundException('User not found');
-    const challenge = crypto.randomBytes(32).toString('base64url');
-    this.passkeyChallenges.set(challenge, {
-      email,
-      kind: 'login',
-      issuedAt: Date.now(),
-    });
-    return { ok: true, challenge, allowCredentials: [] };
+    
+    const result = await this.passkeyService.initLogin(email);
+    
+    if (!result.ok) {
+      throw new NotFoundException(result.error || 'User not found');
+    }
+    
+    return {
+      ok: true,
+      challenge: result.challenge,
+      allowCredentials: result.allowCredentials,
+    };
   }
 
-  async passkeyLoginVerify(challenge: string) {
-    const entry = this.passkeyChallenges.get(challenge);
-    if (!entry || entry.kind !== 'login')
-      throw new UnauthorizedException('Invalid challenge');
-    this.passkeyChallenges.delete(challenge);
-    // NOTE: Skipping real assertion verification in DEV
+  /**
+   * Verifica assertion e emite token
+   */
+  async passkeyLoginVerify(payload: {
+    challenge: string;
+    assertion: any;
+  }) {
+    const result = await this.passkeyService.verifyLogin(payload);
+    
+    if (!result.ok) {
+      throw new UnauthorizedException(result.error || 'Login failed');
+    }
+    
+    // Buscar usuário
     const user = await this.prisma.user.findUnique({
-      where: { email: entry.email },
+      where: { id: result.userId },
     });
-    if (!user) throw new NotFoundException('User not found');
-    const token = await this.jwt.signAsync({ sub: user.id, email: user.email });
-    return { ok: true, token, userId: user.id };
+    
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    // Emitir JWT padrão da aplicação
+    const appToken = await this.jwt.signAsync({ 
+      sub: user.id, 
+      email: user.email,
+    });
+    
+    return { 
+      ok: true,
+      token: appToken,
+      userId: user.id,
+      passkeyToken: result.token, // Session token do passkey para operações privilegiadas
+    };
   }
 
   // ==============================
