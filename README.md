@@ -46,15 +46,36 @@ Home / Dashboard:
 - `GET /oracles/price?asset=<code>&issuer=<account>`: preço agregado em tempo real (Reflector + DEX fallback)
 - `GET /defi/blend/positions/:address`: posições DeFi enriquecidas por saldo Horizon + preço oracle, com
   - `poolId`: de `LOANS_POOL_CONTRACT_ID`
-  - `apy`: de `LOANSPOOL_INTEREST_BPS` (bps → %)
+  - `apy`: lido dinamicamente via `params()` do LoansPool (fallback env: `LOANSPOOL_INTEREST_BPS` em bps → %)
   - cache Redis: 15s (evita sobrecarga)
+  - cache de params: 5min em memória
 - `GET /memory/history/:address?cursor=<id>`: histórico de operações do endereço via Horizon com paginação por cursor
+
+### Compliance & Reserve Management
+- `GET /compliance/reserves/check`: verifica colateralização atual (120% mínimo)
+- `POST /compliance/reserves/proof`: gera Proof of Reserves on-chain
+- `GET /compliance/reserves/snapshot`: snapshot detalhado de reservas
+- Integração completa com Soroban:
+  - Leitura de `total_supply` do contrato Stablecoin
+  - Freeze automático de minting via `set_mint_enabled(false)` em caso de undercollateralization
+- Sistema de notificações multi-canal (webhook, email, console)
+
+### Autenticação WebAuthn (Passkey)
+- `POST /auth/passkey/register/init`: inicializar registro de passkey
+- `POST /auth/passkey/register/verify`: verificar attestation e completar registro
+- `POST /auth/passkey/login/init`: inicializar login com passkey
+- `POST /auth/passkey/login/verify`: verificar assertion e emitir tokens
+- `POST /auth/webauthn/attestation`: verificação direta de attestation
+- `POST /auth/webauthn/assertion`: verificação direta de assertion
+- Integração production-ready com PasskeyService (Redis-backed)
+- Suporte a MFA e transaction signing
 
 Quick tests:
 ```bash
 curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
 curl "http://localhost:3001/defi/blend/positions/GD..."
 curl "http://localhost:3001/memory/history/GD...?cursor=now"
+curl "http://localhost:3001/compliance/reserves/check"
 ```
 
 ### Tech Stack v3.0
