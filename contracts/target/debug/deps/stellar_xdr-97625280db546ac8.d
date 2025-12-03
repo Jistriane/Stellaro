@@ -1,18 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/stellar_xdr-97625280db546ac8.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/mod.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/generated.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/jsonschema.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/str.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scval_conversions.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/transaction_conversions.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scval_validations.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scmap.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/../xdr/curr-version /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/../xdr/next-version
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libstellar_xdr-97625280db546ac8.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/mod.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/generated.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/jsonschema.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/str.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scval_conversions.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/transaction_conversions.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scval_validations.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scmap.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/../xdr/curr-version /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/../xdr/next-version
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/mod.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/generated.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/jsonschema.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/str.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scval_conversions.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/transaction_conversions.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scval_validations.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/curr/scmap.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/../xdr/curr-version:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-xdr-21.2.0/src/../xdr/next-version:
-
-# env-dep:CARGO_PKG_VERSION=21.2.0
-# env-dep:GIT_REVISION=9bea881f2057e412fdbb98875841626bf77b4b88
+version https://git-lfs.github.com/spec/v1
+oid sha256:a54387244a172077e671897f568faf9ed478c68cdb3b999910f2011e7b0f2dd2
+size 3964

@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[10012205734978813886,"build_script_build",false,1790138355804545513]],"local":[{"RerunIfChanged":{"output":"debug/build/libm-a30d32beaef3ffe3/output","paths":["build.rs","configure.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:745b687b27412de8037ebcd467a8c79712eaaa15a934529a43eac9b9781b8d4b
+size 339

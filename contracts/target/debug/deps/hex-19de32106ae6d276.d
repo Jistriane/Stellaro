@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/hex-19de32106ae6d276.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libhex-19de32106ae6d276.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:3786cb1f50224132e4e97d545f85f33092a47206fa85f286aaa46dd5d270c7e3
+size 1028

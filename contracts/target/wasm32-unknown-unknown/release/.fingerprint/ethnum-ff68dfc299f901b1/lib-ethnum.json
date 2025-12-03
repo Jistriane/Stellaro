@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[\"ethnum-intrinsics\", \"llvm-intrinsics\", \"macros\", \"serde\"]","target":11101709943660853555,"profile":2040997289075261528,"path":18237180039514599973,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"wasm32-unknown-unknown/release/.fingerprint/ethnum-ff68dfc299f901b1/dep-lib-ethnum","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":14682669768258224367}
+version https://git-lfs.github.com/spec/v1
+oid sha256:308fcd4dd4efcf1eff72991a089c9ceaffd6a08945f851ddd0902e2781d264cb
+size 455

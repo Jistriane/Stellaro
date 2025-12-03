@@ -1,6 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/adler2-3086b8c8a710a842.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/algo.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libadler2-3086b8c8a710a842.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/algo.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/algo.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:dd9e104ade426068ce31096840d611da01fd97e4319061c7d12b61673bfd9564
+size 752

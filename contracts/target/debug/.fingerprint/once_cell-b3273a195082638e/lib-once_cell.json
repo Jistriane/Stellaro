@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"alloc\", \"race\"]","declared_features":"[\"alloc\", \"atomic-polyfill\", \"critical-section\", \"default\", \"parking_lot\", \"portable-atomic\", \"race\", \"std\", \"unstable\"]","target":17524666916136250164,"profile":15657897354478470176,"path":5531635769826421944,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/once_cell-b3273a195082638e/dep-lib-once_cell","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:130d05252e37c2959d2d13cbe60d9e23beff97a82897b62b15ff16814a34cfe0
+size 507

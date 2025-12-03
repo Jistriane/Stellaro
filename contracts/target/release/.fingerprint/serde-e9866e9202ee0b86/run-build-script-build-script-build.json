@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[9689903380558560274,"build_script_build",false,9593554896076199912]],"local":[{"RerunIfChanged":{"output":"release/build/serde-e9866e9202ee0b86/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9caa2d58af7511c597a37dcfa29d51e33e1b6271d48698d3a64bdccf6b59bc0d
+size 327

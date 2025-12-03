@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"read\", \"read-core\"]","declared_features":"[\"default\", \"endian-reader\", \"fallible-iterator\", \"read\", \"read-all\", \"read-core\", \"rustc-dep-of-std\", \"std\", \"write\"]","target":11303284564750886169,"profile":15657897354478470176,"path":17772022967185735615,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/gimli-cd46afa7eaf188ac/dep-lib-gimli","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:b512b05973fb260f2d4cfd53c880e919c9e2a259d172d474dafeee1e3ae314e5
+size 502

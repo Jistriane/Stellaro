@@ -1,8 +1,3 @@
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/darling-fd0daeeab232759e.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/macros_public.rs
-
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/libdarling-fd0daeeab232759e.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/macros_public.rs
-
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/libdarling-fd0daeeab232759e.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/macros_public.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling-0.20.11/src/macros_public.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:e409356c76adc8c6333c56f9e189b274a911800a5550ad4e5630a196f5ac135f
+size 1120

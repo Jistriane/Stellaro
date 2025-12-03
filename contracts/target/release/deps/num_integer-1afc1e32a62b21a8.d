@@ -1,9 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/release/deps/num_integer-1afc1e32a62b21a8.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/roots.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/average.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/release/deps/libnum_integer-1afc1e32a62b21a8.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/roots.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/average.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/release/deps/libnum_integer-1afc1e32a62b21a8.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/roots.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/average.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/roots.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46/src/average.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:f75404b9b743b3b61b526b350b4eb9d2a0ee65eb36b39799c498d8bb27ca5c67
+size 1522

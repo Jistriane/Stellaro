@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/darling_macro-1e54965939984ed6.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling_macro-0.20.11/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libdarling_macro-1e54965939984ed6.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling_macro-0.20.11/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/darling_macro-0.20.11/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:8524637e884aa1c44ca12a98e18c100c96667ec16fc0785487f4c1a6fe5659f2
+size 527

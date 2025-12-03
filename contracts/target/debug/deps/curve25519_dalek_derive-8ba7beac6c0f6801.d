@@ -1,6 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/curve25519_dalek_derive-8ba7beac6c0f6801.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/curve25519-dalek-derive-0.1.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/curve25519-dalek-derive-0.1.1/src/../README.md
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libcurve25519_dalek_derive-8ba7beac6c0f6801.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/curve25519-dalek-derive-0.1.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/curve25519-dalek-derive-0.1.1/src/../README.md
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/curve25519-dalek-derive-0.1.1/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/curve25519-dalek-derive-0.1.1/src/../README.md:
+version https://git-lfs.github.com/spec/v1
+oid sha256:b64b8a06f61379cca9c72d12be5c2dd84c550febe55441b4e7f09605ab9855e9
+size 920

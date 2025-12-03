@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[]","target":13295522343034025779,"profile":2040997289075261528,"path":14658668017235766452,"deps":[[17296431325340505742,"soroban_sdk",false,2781281724711571754]],"local":[{"CheckDepInfo":{"dep_info":"wasm32v1-none/release/.fingerprint/loans_pool-24472025bc5ece0b/dep-lib-loans_pool","checksum":false}}],"rustflags":["--remap-path-prefix=/home/jistriane/.cargo/registry/src="],"config":2069994364910194474,"compile_kind":14430488398132994368}
+version https://git-lfs.github.com/spec/v1
+oid sha256:25d1f9f647abfd6b8cf07141efe56bd73f4fd14ae4cbeededc3de3e75634bc51
+size 509

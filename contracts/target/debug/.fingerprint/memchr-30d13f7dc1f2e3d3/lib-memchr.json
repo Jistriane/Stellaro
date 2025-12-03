@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[\"alloc\", \"std\"]","declared_features":"[\"alloc\", \"core\", \"default\", \"libc\", \"logging\", \"rustc-dep-of-std\", \"std\", \"use_std\"]","target":11745930252914242013,"profile":2225463790103693989,"path":9310128755313144457,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/memchr-30d13f7dc1f2e3d3/dep-lib-memchr","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4503a090d72185c2b6e081d81cfe65f23eb9e49fdc8b8abdd80cdc6aa7a0f908
+size 463

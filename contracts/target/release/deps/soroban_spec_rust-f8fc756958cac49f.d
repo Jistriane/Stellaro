@@ -1,9 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/soroban_spec_rust-f8fc756958cac49f.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/trait.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/types.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/libsoroban_spec_rust-f8fc756958cac49f.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/trait.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/types.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/libsoroban_spec_rust-f8fc756958cac49f.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/trait.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/types.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/trait.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-rust-22.0.8/src/types.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:a1b495869462b66ba1c52b6cf154572e9ae4bccdd9745d789e52eed949b9a3be
+size 1634

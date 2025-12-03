@@ -68,19 +68,19 @@ export class RiskService {
     // Não aguardar resultado específico por ora; apenas delegar
     switch (action) {
       case 'swap':
-        void this.actions.swap(params);
+        void this.actions.swap(params as any);
         break;
       case 'partialLiquidation':
-        void this.actions.partialLiquidation(params);
+        void this.actions.partialLiquidation(params as any);
         break;
       case 'autoHedge':
-        void this.actions.autoHedge(params);
+        void this.actions.autoHedge(params as any);
         break;
       case 'stableMigration':
-        void this.actions.stableMigration(params);
+        void this.actions.stableMigration(params as any);
         break;
       case 'cardBlock':
-        void this.actions.cardBlock(params);
+        void this.actions.cardBlock(params as any);
         break;
       default:
         break;

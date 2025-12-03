@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/release/deps/bytes_lit-d6b03fdac8d63a46.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/bytes.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/bytesmin.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/release/deps/libbytes_lit-d6b03fdac8d63a46.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/bytes.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/bytesmin.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/bytes.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-lit-0.0.5/src/bytesmin.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:c40e5df02f3156273cdb89cce3c29110c7e42d0d1b0d2bc37253828f72b9c232
+size 1084

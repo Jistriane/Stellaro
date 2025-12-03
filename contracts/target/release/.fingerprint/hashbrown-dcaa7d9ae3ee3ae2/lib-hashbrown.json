@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[]","declared_features":"[\"alloc\", \"allocator-api2\", \"core\", \"default\", \"default-hasher\", \"equivalent\", \"inline-more\", \"nightly\", \"raw-entry\", \"rayon\", \"rustc-dep-of-std\", \"rustc-internal-api\", \"serde\"]","target":13796197676120832388,"profile":1369601567987815722,"path":276497601889728408,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/hashbrown-dcaa7d9ae3ee3ae2/dep-lib-hashbrown","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3ece1f14e3389aa862373c0336b6245a5f70a916d51f673dd3458708b9825efe
+size 554

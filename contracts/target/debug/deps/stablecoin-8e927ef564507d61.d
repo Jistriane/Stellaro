@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/stablecoin-8e927ef564507d61.d: stablecoin/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libstablecoin-8e927ef564507d61.rmeta: stablecoin/src/lib.rs
-
-stablecoin/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:d6de1a9303bbc6a28d2f61daac9042a40a0672fbbb972be26bbfc880a5207b60
+size 284

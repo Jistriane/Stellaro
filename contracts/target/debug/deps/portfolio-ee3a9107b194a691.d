@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/portfolio-ee3a9107b194a691.d: portfolio/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libportfolio-ee3a9107b194a691.rmeta: portfolio/src/lib.rs
-
-portfolio/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:d405680bd9441a687a016e484afd8ee69940fe4b6d1c2a46b48add9db539cfc2
+size 259

@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[11887305395906501191,"build_script_build",false,3924489086673493972]],"local":[{"RerunIfChanged":{"output":"debug/build/libc-616d815b76627862/output","paths":["build.rs"]}},{"RerunIfEnvChanged":{"var":"RUST_LIBC_UNSTABLE_FREEBSD_VERSION","val":null}},{"RerunIfEnvChanged":{"var":"RUST_LIBC_UNSTABLE_MUSL_V1_2_3","val":null}},{"RerunIfEnvChanged":{"var":"RUST_LIBC_UNSTABLE_LINUX_TIME_BITS64","val":null}},{"RerunIfEnvChanged":{"var":"RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS","val":null}},{"RerunIfEnvChanged":{"var":"RUST_LIBC_UNSTABLE_GNU_TIME_BITS","val":null}}],"rustflags":[],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:31cfb8ee7b0dc17989d53317ce0c53b6df6804c66668150ce8c7bd315a75e211
+size 715

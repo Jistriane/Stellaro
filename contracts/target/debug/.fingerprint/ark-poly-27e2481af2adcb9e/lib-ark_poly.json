@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[\"default\", \"parallel\", \"rayon\", \"std\"]","target":5077770153215708384,"profile":15657897354478470176,"path":15217405358013230356,"deps":[[520424413174385823,"ark_ff",false,3764714051993602620],[6124836340423303934,"hashbrown",false,18270746906613011395],[13859769749131231458,"derivative",false,396722429259911770],[15179503056858879355,"ark_std",false,13485533669102021310],[16925068697324277505,"ark_serialize",false,2699591720677999889]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/ark-poly-27e2481af2adcb9e/dep-lib-ark_poly","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:25d98e158f3d2f610e9c4ff608da4c3efb154eed35c76ad9e47e4c910207695e
+size 697

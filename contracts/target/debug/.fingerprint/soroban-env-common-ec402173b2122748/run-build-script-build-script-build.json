@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[14833005319145329331,"build_script_build",false,14514816663663048090]],"local":[{"RerunIfChanged":{"output":"debug/build/soroban-env-common-ec402173b2122748/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:d955a9923e2388f5b105ab2101fb9422a08c75d025896fb92a0b7d22a238794b
+size 339

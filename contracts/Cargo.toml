@@ -6,5 +6,7 @@ members = [
     "loans_pool",
     "governance",
     "zk_verifier",
+    "batch_executor",
+    "mev_guard",
 ]
 resolver = "2"

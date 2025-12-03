@@ -1,10 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/soroban_env_macros-753c2cb66b15bd60.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/call_macro_with_all_host_functions.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/path.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_dispatch_host_fn_tests.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_linear_memory_tests.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_wasm_expr_type.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libsoroban_env_macros-753c2cb66b15bd60.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/call_macro_with_all_host_functions.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/path.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_dispatch_host_fn_tests.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_linear_memory_tests.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_wasm_expr_type.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/call_macro_with_all_host_functions.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/path.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_dispatch_host_fn_tests.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_linear_memory_tests.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-macros-22.1.3/src/synth_wasm_expr_type.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:e8fabf161ac765df07a5faa8dac688b791f7ef0566c1f5b295e98f152350f40a
+size 2432

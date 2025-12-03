@@ -1,8 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/cpufeatures-e2bead5fbcbc1f9e.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/x86.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libcpufeatures-e2bead5fbcbc1f9e.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/x86.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libcpufeatures-e2bead5fbcbc1f9e.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/x86.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cpufeatures-0.2.17/src/x86.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:5405985204b87ec2f012c7aac7012b7bb4cd67f84f2feef72f925af5da41b0d4
+size 1095

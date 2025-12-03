@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[\"align\", \"const-extern-fn\", \"default\", \"extra_traits\", \"rustc-dep-of-std\", \"rustc-std-workspace-core\", \"std\", \"use_std\"]","target":17682796336736096309,"profile":6200076328592068522,"path":7928274416183503482,"deps":[[11887305395906501191,"build_script_build",false,3173011561380796269]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/libc-b06f326f0891ebac/dep-lib-libc","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9699ab0f246922ab8497586bcbcdd17a842ab4ff47dac23ff4091f68bc798126
+size 545

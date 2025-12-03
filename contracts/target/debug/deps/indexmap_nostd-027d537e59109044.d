@@ -1,9 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/indexmap_nostd-027d537e59109044.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/map.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/set.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libindexmap_nostd-027d537e59109044.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/map.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/set.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libindexmap_nostd-027d537e59109044.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/map.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/set.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/map.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-nostd-0.4.0/src/set.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:acbb66bbdd0666dbd302420ce339136288cf3c7ca6e13f5fe9bf6d3d97a2cbde
+size 1555

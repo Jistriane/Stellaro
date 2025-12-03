@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[]","declared_features":"[\"next\", \"testutils\"]","target":6405013841875832882,"profile":2040997289075261528,"path":12796340043036752726,"deps":[[13785866025199020095,"static_assertions",false,3837884957856033112],[14833005319145329331,"soroban_env_common",false,16429793886658336622]],"local":[{"CheckDepInfo":{"dep_info":"wasm32-unknown-unknown/release/.fingerprint/soroban-env-guest-8ad63811c155280d/dep-lib-soroban_env_guest","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":14682669768258224367}
+version https://git-lfs.github.com/spec/v1
+oid sha256:1b976e5fc10be03c171cd83bac95fbf7876ed8a5d1180625e7b80d8be373303b
+size 574

@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/smallvec-79613bb1b0975608.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libsmallvec-79613bb1b0975608.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:4c5809d458d6d6a4877f517ed2484f23f912ac10227f86f33114db1a2009b738
+size 482

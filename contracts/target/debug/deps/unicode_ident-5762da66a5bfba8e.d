@@ -1,8 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/unicode_ident-5762da66a5bfba8e.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/tables.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libunicode_ident-5762da66a5bfba8e.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/tables.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libunicode_ident-5762da66a5bfba8e.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/tables.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.18/src/tables.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:eb9f56ad4b67b59e6ae330f517a3332497b2f924c7ebaec34132cfd87240168e
+size 1129

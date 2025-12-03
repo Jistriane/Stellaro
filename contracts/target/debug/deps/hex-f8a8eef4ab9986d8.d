@@ -1,9 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/hex-f8a8eef4ab9986d8.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libhex-f8a8eef4ab9986d8.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libhex-f8a8eef4ab9986d8.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/error.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hex-0.4.3/src/serde.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:db843c7d1a06cac58abb3f8db73073771d4f06ede9b1fce09819650f507adbb6
+size 1376

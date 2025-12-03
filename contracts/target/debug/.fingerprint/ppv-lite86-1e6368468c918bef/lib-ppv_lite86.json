@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[\"simd\", \"std\"]","declared_features":"[\"default\", \"no_simd\", \"simd\", \"std\"]","target":2607852365283500179,"profile":2241668132362809309,"path":2337787215061733584,"deps":[[14131061446229887432,"zerocopy",false,11819556646703557344]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/ppv-lite86-1e6368468c918bef/dep-lib-ppv_lite86","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:965469d9620c0895bfb7665c63637dd830625655cacf83b8b8c4dbf93b138494
+size 473

@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[]","declared_features":"[\"no-panic\"]","target":8239509073162986830,"profile":2241668132362809309,"path":5510044334894712667,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/itoa-7a0919d71cb7f92c/dep-lib-itoa","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:dd9cda88fab9dabaf4cd3d95d8f5162da90281731bd1eb4ec20c1b7f6ea4b628
+size 353

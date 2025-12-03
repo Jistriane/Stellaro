@@ -1,6 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/itoa-7a0919d71cb7f92c.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/udiv128.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libitoa-7a0919d71cb7f92c.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/udiv128.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.15/src/udiv128.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:e5bc7888d23f9bcd0716f5865e9b3b35eeef990dffe28bc59637357c2f224dbc
+size 751

@@ -1,8 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/soroban_spec-ca719365777c850c.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/read.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libsoroban_spec-ca719365777c850c.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/read.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libsoroban_spec-ca719365777c850c.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/read.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-spec-21.7.7/src/read.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:b569705d7db5d29e4de2e86d19d0a521c7bc2bc1c291077a9b71d3db1bc9307e
+size 1140

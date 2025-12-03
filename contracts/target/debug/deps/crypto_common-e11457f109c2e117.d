@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/crypto_common-e11457f109c2e117.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crypto-common-0.1.6/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libcrypto_common-e11457f109c2e117.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crypto-common-0.1.6/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libcrypto_common-e11457f109c2e117.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crypto-common-0.1.6/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crypto-common-0.1.6/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:f3abc8cb4734a774d696c1b5cfe3c1a78e3d5df82364cfebc471d6f12ecfa7cf
+size 738

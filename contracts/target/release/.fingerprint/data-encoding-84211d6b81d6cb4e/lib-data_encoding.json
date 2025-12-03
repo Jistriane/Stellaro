@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"alloc\", \"default\", \"std\"]","declared_features":"[\"alloc\", \"default\", \"std\"]","target":11695827766092040444,"profile":4277963323381001074,"path":130021968490835353,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/data-encoding-84211d6b81d6cb4e/dep-lib-data_encoding","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:a7595fcc8b8f57530b807ae1c6b89be1753145eccf4d98a2f8fa7b2021a63fb9
+size 422

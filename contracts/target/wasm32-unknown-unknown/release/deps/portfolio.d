@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/portfolio.d: portfolio/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/portfolio.wasm: portfolio/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/libportfolio.rlib: portfolio/src/lib.rs
-
-portfolio/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:0f05afebf2ed63fc1e263b6d33c5be1dd4a0194f43cd9aaf9445df4609f27203
+size 430

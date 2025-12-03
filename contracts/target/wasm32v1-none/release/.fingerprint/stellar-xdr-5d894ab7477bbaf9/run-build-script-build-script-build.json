@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[2492769554574893010,"build_script_build",false,7373972477949322700]],"local":[{"Precalculated":"21.2.0"}],"rustflags":["--remap-path-prefix=/home/jistriane/.cargo/registry/src="],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:fea1259472b15ca81b4717cdf042ac9841811df7dea24e0314baa57efaaeac90
+size 315

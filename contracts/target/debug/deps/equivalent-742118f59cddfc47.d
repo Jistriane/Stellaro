@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/equivalent-742118f59cddfc47.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libequivalent-742118f59cddfc47.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libequivalent-742118f59cddfc47.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:0f739f524b0593688d3bc5ffac03a53bc2304b4b791aaa99ab0b391337139a2b
+size 687

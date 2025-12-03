@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/risklock-6a23afeb9446bf3c.d: risklock/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/librisklock-6a23afeb9446bf3c.rmeta: risklock/src/lib.rs
-
-risklock/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:caf0ec4b200855fbdf71201e4cfd71dd2046cae188193aac6726dee8acf30e6f
+size 274

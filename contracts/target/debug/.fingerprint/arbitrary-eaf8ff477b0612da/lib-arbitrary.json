@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"derive\", \"derive_arbitrary\"]","declared_features":"[\"derive\", \"derive_arbitrary\"]","target":17665432273791891122,"profile":2241668132362809309,"path":10639504410037270316,"deps":[[10187655140533542017,"derive_arbitrary",false,16987274644424749732]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/arbitrary-eaf8ff477b0612da/dep-lib-arbitrary","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:316df254960c2b5eeaf8d97fb843dfecf37245af109610fa57c10f3b2fa4a88f
+size 484

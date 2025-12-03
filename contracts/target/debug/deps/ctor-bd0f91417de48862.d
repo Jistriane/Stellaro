@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/ctor-bd0f91417de48862.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ctor-0.2.9/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libctor-bd0f91417de48862.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ctor-0.2.9/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ctor-0.2.9/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:b33ff1ef0bd6892c18709303409ad2081843d58d7614ed144c247d4cbd2b7b99
+size 476

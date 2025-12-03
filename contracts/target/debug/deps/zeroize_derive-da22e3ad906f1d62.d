@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/zeroize_derive-da22e3ad906f1d62.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zeroize_derive-1.4.2/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libzeroize_derive-da22e3ad906f1d62.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zeroize_derive-1.4.2/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zeroize_derive-1.4.2/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:b637c29c71547e7538fdd00ee6c757c9feb7cad767a2c7a0cebe9e6553b8038d
+size 526

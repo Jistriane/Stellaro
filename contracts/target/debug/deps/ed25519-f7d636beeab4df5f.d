@@ -1,7 +1,3 @@
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/ed25519-f7d636beeab4df5f.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/hex.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/../README.md
-
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/libed25519-f7d636beeab4df5f.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/hex.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/../README.md
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/hex.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ed25519-2.2.3/src/../README.md:
+version https://git-lfs.github.com/spec/v1
+oid sha256:a6a2d057104778a5e730dd70f8e081fe548031facb5babc171f701a12f2b6d88
+size 1072

@@ -1,1 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/loans_pool.wasm: /home/jistriane/Documentos/Projetos/Stellaro/contracts/loans_pool/src/lib.rs
+version https://git-lfs.github.com/spec/v1
+oid sha256:1199e8b2509fef712954aaa0f236b5288b8f8e7dd31a7b6f21c5e22d06aa74ca
+size 187

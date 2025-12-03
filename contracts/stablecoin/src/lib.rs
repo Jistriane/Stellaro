@@ -1,6 +1,23 @@
 #![cfg_attr(not(test), no_std)]
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol};
+use soroban_sdk::{contract, contractimpl, contracttype, contracterror, Address, Env, Symbol};
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum Error {
+    Unauthorized = 1,
+    InsufficientBalance = 2,
+    AlreadyInitialized = 3,
+    ContractPaused = 4,
+    AccountLocked = 5,
+    RiskThresholdExceeded = 6,
+    InvalidAmount = 7,
+    MintDisabled = 8,
+    BurnDisabled = 9,
+    Reentrancy = 10,
+    InvalidThreshold = 11,
+}
 
 #[derive(Clone)]
 #[contracttype]
@@ -269,11 +286,12 @@ fn emit(env: &Env, topic: &str, data: &str) {
     env.events().publish((t,), data);
 }
 
-fn acquire_lock(env: &Env) {
+fn acquire_lock(env: &Env) -> Result<(), Error> {
     if read_bool(env, &DataKey::ReentrancyLock) {
-        panic!("reentrancy detected");
+        return Err(Error::Reentrancy);
     }
     write_bool(env, &DataKey::ReentrancyLock, true);
+    Ok(())
 }
 
 fn release_lock(env: &Env) {
@@ -282,18 +300,20 @@ fn release_lock(env: &Env) {
 
 #[contractimpl]
 impl StablecoinContract {
-    pub fn init(env: Env, admin: Address, risk_threshold_bps: u32) {
+    pub fn init(env: Env, admin: Address, risk_threshold_bps: u32) -> Result<(), Error> {
         // Pode ser chamado uma vez, sem proteção para simplificar o MVP
         if env
             .storage()
             .persistent()
             .has(&DataKey::Admin)
         {
-            panic!("already initialized");
+            return Err(Error::AlreadyInitialized);
         }
         // Exigir prova de posse do endereço admin
         admin.require_auth();
-        assert!(risk_threshold_bps <= 10_000, "invalid threshold");
+        if risk_threshold_bps > 10_000 {
+            return Err(Error::InvalidThreshold);
+        }
         env.storage().persistent().set(&DataKey::Admin, &admin);
         write_u32(&env, &DataKey::RiskThreshold, risk_threshold_bps);
         write_u128(&env, &DataKey::TotalSupply, 0);
@@ -301,18 +321,24 @@ impl StablecoinContract {
         write_bool(&env, &DataKey::MintEnabled, true);
         write_bool(&env, &DataKey::BurnEnabled, true);
         emit(&env, "init", "ok");
+        Ok(())
     }
 
-    pub fn set_risk_threshold(env: Env, caller: Address, risk_threshold_bps: u32) {
-        assert!(risk_threshold_bps <= 10_000, "invalid threshold");
+    pub fn set_risk_threshold(env: Env, caller: Address, risk_threshold_bps: u32) -> Result<(), Error> {
+        if risk_threshold_bps > 10_000 {
+            return Err(Error::InvalidThreshold);
+        }
         let admin: Address = env
             .storage()
             .persistent()
             .get(&DataKey::Admin)
             .expect("admin not set");
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
+        if caller != admin {
+            return Err(Error::Unauthorized);
+        }
         write_u32(&env, &DataKey::RiskThreshold, risk_threshold_bps);
+        Ok(())
     }
 
     pub fn risk_threshold(env: Env) -> u32 {

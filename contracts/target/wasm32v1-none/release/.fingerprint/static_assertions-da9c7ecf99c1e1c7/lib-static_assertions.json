@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[\"nightly\"]","target":4712552111018528150,"profile":2040997289075261528,"path":10552556079027122865,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"wasm32v1-none/release/.fingerprint/static_assertions-da9c7ecf99c1e1c7/dep-lib-static_assertions","checksum":false}}],"rustflags":["--remap-path-prefix=/home/jistriane/.cargo/registry/src="],"config":2069994364910194474,"compile_kind":14430488398132994368}
+version https://git-lfs.github.com/spec/v1
+oid sha256:827c94ed4de1dd8b486ce09034c858ed58dae468dbeffa857f324a603595fec4
+size 471

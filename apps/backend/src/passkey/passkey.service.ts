@@ -132,7 +132,7 @@ export class PasskeyService {
     const list = (await this.redis.get<string[]>(listKey)) || [];
     list.push(token);
     await this.redis.set(listKey, list, 3600);
-    return { ok: true, token, exp: Date.now() + 3600 * 1000 };
+    return { ok: true, token, userId, exp: Date.now() + 3600 * 1000 };
   }
 
   // ========== Transaction Signing ==========

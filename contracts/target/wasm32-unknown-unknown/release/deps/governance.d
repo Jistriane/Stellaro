@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/governance.d: governance/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/governance.wasm: governance/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/libgovernance.rlib: governance/src/lib.rs
-
-governance/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:a357841f12755a086abc24c3ad9b019848a322065943c8d4722bb922ab545f90
+size 437

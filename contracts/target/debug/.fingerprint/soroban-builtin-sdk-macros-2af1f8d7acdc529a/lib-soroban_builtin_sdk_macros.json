@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[]","target":10086734255730557642,"profile":2225463790103693989,"path":5641349503347314273,"deps":[[373107762698212489,"proc_macro2",false,12039793184393640066],[11903278875415370753,"itertools",false,12177395307228259420],[17332570067994900305,"syn",false,2860967539853948468],[17990358020177143287,"quote",false,2293527594092626234]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/soroban-builtin-sdk-macros-2af1f8d7acdc529a/dep-lib-soroban_builtin_sdk_macros","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4655fea300303155c5b7a8865ffd1af5c143a22ef50b1739f8e311d8ab4b5ee1
+size 620

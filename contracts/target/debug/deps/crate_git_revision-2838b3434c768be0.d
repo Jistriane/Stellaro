@@ -1,8 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/crate_git_revision-2838b3434c768be0.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/test.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libcrate_git_revision-2838b3434c768be0.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/test.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libcrate_git_revision-2838b3434c768be0.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/test.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crate-git-revision-0.0.6/src/test.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:8131b866174504b939b24a6340b9be723334a9b326e9e4cf499ed8f6968a5366
+size 1198

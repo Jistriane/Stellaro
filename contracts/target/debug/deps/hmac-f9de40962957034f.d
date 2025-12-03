@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/hmac-f9de40962957034f.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/optim.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/simple.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libhmac-f9de40962957034f.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/optim.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/simple.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/optim.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hmac-0.12.1/src/simple.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:356d4cc5f4b6fd7e1c376e7bfbe454bb6df07a51c5aba837032dc997794ac99c
+size 1051

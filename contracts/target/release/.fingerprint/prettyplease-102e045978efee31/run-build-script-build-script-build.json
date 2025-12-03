@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[9423015880379144908,"build_script_build",false,14803256242288806652]],"local":[{"RerunIfChanged":{"output":"release/build/prettyplease-102e045978efee31/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:64b1ba4e9cd533ed03e22d8b3719d040f9eab8fd488370dd7ef49e20b5c61234
+size 335

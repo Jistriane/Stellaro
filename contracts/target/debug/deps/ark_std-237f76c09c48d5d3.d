@@ -1,12 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/ark_std-237f76c09c48d5d3.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/io/mod.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/io/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/rand_helper.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/perf_trace.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/iterable/mod.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/iterable/rev.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libark_std-237f76c09c48d5d3.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/io/mod.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/io/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/rand_helper.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/perf_trace.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/iterable/mod.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/iterable/rev.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/io/mod.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/io/error.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/error.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/rand_helper.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/perf_trace.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/iterable/mod.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ark-std-0.4.0/src/iterable/rev.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:f16c9a5b15d43955c0b88ac3d0b0c55378da4eddf2c768ac310fff420a175696
+size 2604

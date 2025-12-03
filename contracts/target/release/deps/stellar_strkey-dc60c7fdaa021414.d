@@ -1,17 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/stellar_strkey-dc60c7fdaa021414.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/convert.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/crc.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/ed25519.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/strkey.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/typ.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/version.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/libstellar_strkey-dc60c7fdaa021414.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/convert.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/crc.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/ed25519.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/strkey.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/typ.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/version.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/libstellar_strkey-dc60c7fdaa021414.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/convert.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/crc.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/ed25519.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/error.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/strkey.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/typ.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/version.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/convert.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/crc.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/ed25519.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/error.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/strkey.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/typ.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/stellar-strkey-0.0.9/src/version.rs:
-
-# env-dep:CARGO_PKG_VERSION=0.0.9
-# env-dep:GIT_REVISION=9b58e04ec31afd40e352c8179376729c2852a430
+version https://git-lfs.github.com/spec/v1
+oid sha256:269dd25799b38351a144feb4f0a3c60f4c2734a731be044fce4294b303c70bf4
+size 3753

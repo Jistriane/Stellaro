@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32v1-none/release/deps/loans_pool.d: loans_pool/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32v1-none/release/deps/loans_pool.wasm: loans_pool/src/lib.rs
-
-loans_pool/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:3e2af5aa44720bd139ee1934bc9dd024c7bf97599cdf4384978706fb08e76977
+size 278

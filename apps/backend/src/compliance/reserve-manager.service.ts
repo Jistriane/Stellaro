@@ -460,7 +460,7 @@ export class ReserveManagerService implements OnModuleInit {
             const hash = this.hashSnapshot(snapshot);
             await this.prisma.auditLog.create({
               data: {
-                channel: 'APP',
+                channel: 'OFFCHAIN',
                 level: 'INFO',
                 action: 'POR_SNAPSHOT_ONLY',
                 metadata: JSON.stringify({ hash, snapshot }) as any,

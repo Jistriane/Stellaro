@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"strsim\", \"suggestions\"]","declared_features":"[\"diagnostics\", \"strsim\", \"suggestions\"]","target":13428977600034985537,"profile":1369601567987815722,"path":16914523824100470849,"deps":[[373107762698212489,"proc_macro2",false,2300768045161804689],[1345404220202658316,"fnv",false,4660604987599771013],[11166530783118767604,"strsim",false,10156083611193221930],[15383437925411509181,"ident_case",false,12390543349149463365],[17332570067994900305,"syn",false,13393956683221547425],[17990358020177143287,"quote",false,922583778452794506]],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/darling_core-23d315e0b648e1fd/dep-lib-darling_core","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f96fa6e3f83a9192395524017c88a5015526179eb6599c630219476b5b68fc41
+size 779

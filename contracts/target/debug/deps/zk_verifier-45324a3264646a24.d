@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/zk_verifier-45324a3264646a24.d: zk_verifier/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libzk_verifier-45324a3264646a24.rmeta: zk_verifier/src/lib.rs
-
-zk_verifier/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:eed2489168e80fbca7ef56a36e74908b00585b511e2c2ab79c69666341e5ec22
+size 289

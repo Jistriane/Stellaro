@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/fnv-92dd6573194b1649.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fnv-1.0.7/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libfnv-92dd6573194b1649.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fnv-1.0.7/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libfnv-92dd6573194b1649.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fnv-1.0.7/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/fnv-1.0.7/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:86e72ab892dc6e8495d5829bdb861ea1bc4906d4f4d53e53afae1a15178d870b
+size 622

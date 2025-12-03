@@ -1,0 +1,210 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: stellaro-postgres
+    environment:
+      POSTGRES_DB: stellaro
+      POSTGRES_USER: stellar
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-stellaro_dev_pass}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stellar -d stellaro"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stellaro-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: stellaro-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-stellaro_redis_pass}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stellaro-network
+
+  # Stellar Horizon (Testnet)
+  horizon:
+    image: stellar/stellar-horizon:latest
+    container_name: stellaro-horizon
+    environment:
+      DATABASE_URL: postgres://stellar:${DB_PASSWORD:-stellaro_dev_pass}@postgres/horizon
+      STELLAR_CORE_DATABASE_URL: postgres://stellar:${DB_PASSWORD:-stellaro_dev_pass}@postgres/stellar_core
+      NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+      HISTORY_ARCHIVE_URLS: https://history.stellar.org/prd/core-testnet/core_testnet_001
+      INGEST: "true"
+      PER_HOUR_RATE_LIMIT: 72000
+      APPLY_MIGRATIONS: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - stellaro-network
+    restart: unless-stopped
+
+  # Soroban RPC Server
+  soroban-rpc:
+    image: stellar/soroban-rpc:latest
+    container_name: stellaro-soroban-rpc
+    environment:
+      NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+      STELLAR_CAPTIVE_CORE_HTTP_PORT: 11626
+      ENDPOINT: "http://horizon:8000"
+    ports:
+      - "8001:8001"
+    depends_on:
+      - horizon
+    networks:
+      - stellaro-network
+    restart: unless-stopped
+
+  # Stellaro Backend (NestJS)
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: stellaro-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://stellar:${DB_PASSWORD:-stellaro_dev_pass}@postgres:5432/stellaro
+      REDIS_URL: redis://:${REDIS_PASSWORD:-stellaro_redis_pass}@redis:6379
+      STELLAR_NETWORK: testnet
+      STELLAR_HORIZON: http://horizon:8000
+      SOROBAN_RPC_URL: http://soroban-rpc:8001
+      REFLECTOR_URL: https://api.reflector.network
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_prod}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./apps/backend:/app
+      - backend_node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      horizon:
+        condition: service_started
+      soroban-rpc:
+        condition: service_started
+    networks:
+      - stellaro-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # Stellaro Frontend (Next.js)
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: stellaro-frontend
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_STELLAR_NETWORK: testnet
+      NEXT_PUBLIC_HORIZON_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/frontend:/app
+      - frontend_node_modules:/app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - stellaro-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # ElizaOS Agents Runtime (quando migrado para TypeScript)
+  # eliza-runtime:
+  #   build:
+  #     context: ./agents
+  #     dockerfile: Dockerfile
+  #   container_name: stellaro-eliza
+  #   environment:
+  #     STELLAR_NETWORK: testnet
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+  #     REFLECTOR_URL: https://api.reflector.network
+  #     BACKEND_URL: http://backend:3001
+  #   depends_on:
+  #     - backend
+  #     - redis
+  #   networks:
+  #     - stellaro-network
+  #   restart: unless-stopped
+
+  # Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: stellaro-prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    networks:
+      - stellaro-network
+    restart: unless-stopped
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: stellaro-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infra/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3003:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - stellaro-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_node_modules:
+    driver: local
+  frontend_node_modules:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  stellaro-network:
+    driver: bridge

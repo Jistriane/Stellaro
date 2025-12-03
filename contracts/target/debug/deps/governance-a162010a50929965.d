@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/governance-a162010a50929965.d: governance/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libgovernance-a162010a50929965.rmeta: governance/src/lib.rs
-
-governance/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:42a828339d4a2c68b028f491ff0e05116f11e32bab509228315acaa53c8168d0
+size 284

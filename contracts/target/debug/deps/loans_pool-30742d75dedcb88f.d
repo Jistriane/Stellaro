@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/loans_pool-30742d75dedcb88f.d: loans_pool/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/loans_pool-30742d75dedcb88f: loans_pool/src/lib.rs
-
-loans_pool/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:fd40c30ab97bcea9fedaa6cfcae0b46296f094ce702a23d8c7f8feb2859ca381
+size 275

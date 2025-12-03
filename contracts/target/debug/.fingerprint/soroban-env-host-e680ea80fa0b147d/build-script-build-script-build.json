@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"recording_mode\", \"testutils\"]","declared_features":"[\"bench\", \"next\", \"recording_mode\", \"testutils\", \"tracy\", \"unstable-next-api\"]","target":5408242616063297496,"profile":2225463790103693989,"path":9102409124159448551,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/soroban-env-host-e680ea80fa0b147d/dep-build-script-build-script-build","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:73e5a765e1f88a7382bbbddb0ec436192c7e354173a3d996b743de82b5ad487a
+size 496

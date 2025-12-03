@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[]","declared_features":"[\"used_linker\"]","target":16767752466166802488,"profile":2225463790103693989,"path":6696974349408080343,"deps":[[17332570067994900305,"syn",false,7664741405628904204],[17990358020177143287,"quote",false,9876869028060262648]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/ctor-843e06507ec01c8b/dep-lib-ctor","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:dbf4cebbc3fdb08b6945218496122932eccecba6fd723676d566a69a0a9d3671
+size 468

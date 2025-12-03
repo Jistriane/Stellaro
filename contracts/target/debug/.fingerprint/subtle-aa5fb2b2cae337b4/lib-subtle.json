@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"i128\"]","declared_features":"[\"const-generics\", \"core_hint_black_box\", \"default\", \"i128\", \"nightly\", \"std\"]","target":13005322332938347306,"profile":2241668132362809309,"path":1128024956774848380,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/subtle-aa5fb2b2cae337b4/dep-lib-subtle","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:edffee56978ee3c82911a08e7d6688ca8a37ef905aeda1f6f485c73897c93f2d
+size 441

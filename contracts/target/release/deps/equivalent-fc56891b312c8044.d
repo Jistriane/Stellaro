@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/equivalent-fc56891b312c8044.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/libequivalent-fc56891b312c8044.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/release/deps/libequivalent-fc56891b312c8044.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:cc5ec1146bc6810d0104f67c5ade432a3a5f5fc3add4fd181d9c9effb28ce563
+size 723

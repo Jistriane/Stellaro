@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[15493370609364094450,"build_script_build",false,14571074218864582754]],"local":[{"RerunIfChanged":{"output":"wasm32v1-none/release/build/soroban-env-common-c2838a3152d2ea89/output","paths":["build.rs"]}}],"rustflags":["--remap-path-prefix=/home/jistriane/.cargo/registry/src="],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:5c35724aa133f87315c1c825f3bb4084bd4991b66fe48e3364c6150863afd357
+size 413

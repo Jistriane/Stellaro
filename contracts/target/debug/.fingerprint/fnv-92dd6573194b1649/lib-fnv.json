@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[\"default\", \"std\"]","declared_features":"[\"default\", \"std\"]","target":10248144769085601448,"profile":2225463790103693989,"path":8831604727612056606,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/fnv-92dd6573194b1649/dep-lib-fnv","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:708c8ec8ff65e863ea2633aa856f9cbffb0a2b1ea51e186bdcc3b88898068c78
+size 380

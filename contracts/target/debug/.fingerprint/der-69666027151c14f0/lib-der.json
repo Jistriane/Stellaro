@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"oid\", \"zeroize\"]","declared_features":"[\"alloc\", \"arbitrary\", \"bytes\", \"derive\", \"flagset\", \"oid\", \"pem\", \"real\", \"std\", \"time\", \"zeroize\"]","target":2789908270074842938,"profile":2241668132362809309,"path":5853339974247229907,"deps":[[6528079939221783635,"zeroize",false,6573269670418142430],[8066688306558157009,"const_oid",false,18277141587221086504]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/der-69666027151c14f0/dep-lib-der","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:2e2a6ebd1ed1f3af695c285781eb215d5e612e825403df0e791614fcd08e1497
+size 596

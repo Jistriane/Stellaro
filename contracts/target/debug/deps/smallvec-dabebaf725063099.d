@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/smallvec-dabebaf725063099.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libsmallvec-dabebaf725063099.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libsmallvec-dabebaf725063099.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.1/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:834714f5ba366cc0b41d26067689cba3e8aeed7ad90a549e49ac4c71feefd4fb
+size 707

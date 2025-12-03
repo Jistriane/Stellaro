@@ -1,2 +1,3 @@
-UnsafeCell<std::option::Option<Rc<(dyn for<'a> Fn(&'a soroban_env_host::host::Host, soroban_env_host::host::trace::TraceEvent<'a>) -> std::result::Result<(), soroban_env_host::host::error::HostError> + 'static)>>>
-RefCell<std::option::Option<Rc<(dyn for<'a> Fn(&'a soroban_env_host::host::Host, soroban_env_host::host::trace::TraceEvent<'a>) -> std::result::Result<(), soroban_env_host::host::error::HostError> + 'static)>>>
+version https://git-lfs.github.com/spec/v1
+oid sha256:e78b0ea5b41844c96ee38c3bfba6a5cf5f2bef4d0c435f8a60de84b97aeb5f8b
+size 425

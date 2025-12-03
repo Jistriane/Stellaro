@@ -23,6 +23,7 @@ import { PasskeyModule } from './passkey/passkey.module';
 import { SecurityModule } from './security/security.module';
 import { ZkModule } from './zk/zk.module';
 import { RedisModule } from './redis/redis.module';
+import { ReflectorModule } from './reflector/reflector.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { RedisModule } from './redis/redis.module';
     SecurityModule,
     RedisModule,
     ZkModule,
+    ReflectorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

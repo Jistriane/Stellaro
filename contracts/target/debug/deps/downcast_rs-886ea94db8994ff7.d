@@ -1,5 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/downcast_rs-886ea94db8994ff7.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/downcast-rs-1.2.1/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libdowncast_rs-886ea94db8994ff7.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/downcast-rs-1.2.1/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/downcast-rs-1.2.1/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:e6f8bba436a5fe4a7a6941f69a5d68337d5d0b735d9169fb84f9c5f57df2f55e
+size 494

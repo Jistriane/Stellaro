@@ -1,9 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/rustc_demangle-71b7355255706c9f.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/legacy.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/v0.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/librustc_demangle-71b7355255706c9f.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/legacy.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/v0.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/librustc_demangle-71b7355255706c9f.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/legacy.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/v0.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/legacy.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc-demangle-0.1.26/src/v0.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:f7f994db5d35f283f2f9c1dae4bb60eee7eae57d010696e3adb193e7bad3f0f9
+size 1545

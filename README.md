@@ -42,6 +42,31 @@ Home / Dashboard:
 - 🤖 **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
 - ⚡ **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
 
+### Observability & Operations / Monitoramento e Operações
+- 📈 **Prometheus**: scraping de métricas do backend (`/metrics`), Horizon e Soroban RPC
+- 📊 **Grafana**: dashboards provisionados automaticamente (Overview e DeFi)
+- 🚨 **Alertas**: regras para disponibilidade, erro 5xx, latência p95, pool de DB/Redis, contratos e ZK proofs
+
+Quick setup (docker):
+```bash
+# Prometheus (usa config em infra/prometheus/prometheus.yml)
+docker run -d --name stellaro-prometheus \
+  -p 9090:9090 \
+  -v $(pwd)/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+  prom/prometheus:v2.53.0
+
+# Grafana (provisiona datasources e dashboards do repositório)
+docker run -d --name stellaro-grafana \
+  -p 3000:3000 \
+  -v $(pwd)/infra/grafana/datasources:/etc/grafana/provisioning/datasources \
+  -v $(pwd)/infra/grafana/dashboards:/etc/grafana/provisioning/dashboards \
+  grafana/grafana:10.4.0
+```
+
+Dashboards provisionados:
+- `Stellaro - System Overview`: tráfego HTTP, latência p95, erros 5xx, health, execuções de contrato, ZK verifications
+- `Stellaro - DeFi Metrics`: TVL, loans ativos, utilization, default rate, APY, distribuição de credit score
+
 ### Novos Endpoints On-Chain (Backend)
 - `GET /oracles/price?asset=<code>&issuer=<account>`: preço agregado em tempo real (Reflector + DEX fallback)
 - `GET /defi/blend/positions/:address`: posições DeFi enriquecidas por saldo Horizon + preço oracle, com
@@ -78,6 +103,26 @@ Home / Dashboard:
 - Integração com providers (PJBank, Asaas, etc.) via webhook
 - Mint/burn automático via ActionsService após confirmação PIX
 - Sistema idempotente para evitar double-mint
+
+### Agentes ElizaOS (IA)
+- 3 agentes: Risk Analyzer, Compliance Bot, Treasury Manager
+- 4 ações: análise de risco, checagem de compliance, otimização de yield, auto-compound
+- Suporte a Telegram/Discord via runtime orquestrador
+
+Quick start (dev):
+```bash
+cd tools/eliza
+# Inicializar projeto local (se ainda não existir package.json)
+npm init -y
+npm install typescript ts-node dotenv @anthropic-ai/sdk
+
+# Compilar TS (opcional)
+npx tsc --init
+
+# Executar runtime
+npx ts-node src/index.ts
+```
+Configuração: veja `tools/eliza/README.md` e `.env.example`.
 
 Quick tests:
 ```bash
@@ -226,6 +271,21 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
     docker run -d --name stellaro-redis -p 6379:6379 redis:7-alpine
     ```
 
+    Observability (opcional):
+    ```bash
+    # Prometheus + Grafana (usa os provisionamentos do repositório)
+    docker run -d --name stellaro-prometheus \
+      -p 9090:9090 \
+      -v $(pwd)/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+      prom/prometheus:v2.53.0
+
+    docker run -d --name stellaro-grafana \
+      -p 3000:3000 \
+      -v $(pwd)/infra/grafana/datasources:/etc/grafana/provisioning/datasources \
+      -v $(pwd)/infra/grafana/dashboards:/etc/grafana/provisioning/dashboards \
+      grafana/grafana:10.4.0
+    ```
+
 4.  **Configure environment / Configure o ambiente**:
     ```bash
     cd apps/backend
@@ -257,6 +317,8 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
   curl "http://localhost:3001/chain/health"
   curl "http://localhost:3001/oracles/price?asset=STLT&issuer=CD..."
   curl "http://localhost:3001/defi/blend/positions/GD..."
+  # Métricas Prometheus expostas pelo backend
+  curl "http://localhost:3001/metrics"
   ```
 
 ### Access / Acesso
@@ -264,6 +326,10 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 - **Backend API**: http://localhost:3001
 - **API Docs**: http://localhost:3001/api
 - **Grafana** (if running): http://localhost:3000
+
+### Project Status / Status do Projeto
+- Progresso detalhado: `docs/PROGRESS_UPDATE_YYYYMMDD.md`
+- Lista de tarefas: `TODO.md`
 
 **📖 For detailed setup, see [QUICK_START.md](./QUICK_START.md)**
 

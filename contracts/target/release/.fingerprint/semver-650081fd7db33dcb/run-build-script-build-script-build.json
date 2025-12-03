@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[4899080583175475170,"build_script_build",false,5096285985555293816]],"local":[{"RerunIfChanged":{"output":"release/build/semver-650081fd7db33dcb/output","paths":["build.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:8da255be07ef20d2d0a111d0c0acc9d61005b25a99b70e5ccd2a356fac0aa697
+size 327

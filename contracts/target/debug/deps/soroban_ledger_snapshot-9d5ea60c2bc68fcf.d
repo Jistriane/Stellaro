@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/soroban_ledger_snapshot-9d5ea60c2bc68fcf.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-ledger-snapshot-21.7.7/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libsoroban_ledger_snapshot-9d5ea60c2bc68fcf.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-ledger-snapshot-21.7.7/src/lib.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/debug/deps/libsoroban_ledger_snapshot-9d5ea60c2bc68fcf.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-ledger-snapshot-21.7.7/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-ledger-snapshot-21.7.7/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:1c2b4e7987ff79ef2cf557b006f2b8aa293ff973cffc135c861be2a3a2f540b7
+size 782

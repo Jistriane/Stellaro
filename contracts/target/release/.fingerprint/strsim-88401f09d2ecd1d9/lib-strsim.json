@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[]","declared_features":"[]","target":14520901741915772287,"profile":1369601567987815722,"path":11800161478810404206,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/strsim-88401f09d2ecd1d9/dep-lib-strsim","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:8e50020c216df83e046b164397ca89327d879fd31319f65f04bf1aacb1d9aa0e
+size 349

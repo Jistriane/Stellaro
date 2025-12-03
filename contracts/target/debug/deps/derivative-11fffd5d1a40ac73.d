@@ -1,16 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/derivative-11fffd5d1a40ac73.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/ast.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/attr.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/bound.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/clone.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/cmp.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/debug.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/default.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/hash.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/matcher.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/paths.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/utils.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/debug/deps/libderivative-11fffd5d1a40ac73.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/ast.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/attr.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/bound.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/clone.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/cmp.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/debug.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/default.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/hash.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/matcher.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/paths.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/utils.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/ast.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/attr.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/bound.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/clone.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/cmp.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/debug.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/default.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/hash.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/matcher.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/paths.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derivative-2.2.0/src/utils.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:35a597a72e840323f590e5a92f0fa1dd5fa99231cb2e0c283cdfa33570a2f208
+size 3778

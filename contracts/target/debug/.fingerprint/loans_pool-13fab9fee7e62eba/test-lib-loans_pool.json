@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[]","target":13288252806314134623,"profile":3316208278650011218,"path":14658668017235766452,"deps":[[15234002195613461296,"soroban_sdk",false,13552592273407578029]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/loans_pool-13fab9fee7e62eba/dep-test-lib-loans_pool","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:c384f9703ba146c4169b460ddead82973c27af8d0168bae24822a5d677e01af7
+size 422

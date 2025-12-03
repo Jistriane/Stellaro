@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[]","declared_features":"[]","target":1524667692659508025,"profile":1369601567987815722,"path":2920276487968139943,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/equivalent-fc56891b312c8044/dep-lib-equivalent","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:55ef22607b464a459dc14fc9ef46a8d5763e124f60fdb955ca1555d1341cd92d
+size 354

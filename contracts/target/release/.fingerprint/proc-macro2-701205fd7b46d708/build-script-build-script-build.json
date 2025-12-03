@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[\"default\", \"proc-macro\"]","declared_features":"[\"default\", \"nightly\", \"proc-macro\", \"span-locations\"]","target":5408242616063297496,"profile":1369601567987815722,"path":13507469804556736637,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release/.fingerprint/proc-macro2-701205fd7b46d708/dep-build-script-build-script-build","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:52a87a0bdbb7b0b489939da6e078beeb3f6e544618a4141b3acf575f4e071ed2
+size 461

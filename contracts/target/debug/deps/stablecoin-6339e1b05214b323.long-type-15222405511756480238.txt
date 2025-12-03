@@ -1,2 +1,3 @@
-UnsafeCell<std::option::Option<Rc<(dyn for<'a> Fn(&'a soroban_env_host::host::Host, soroban_env_host::host::ContractInvocationEvent) + 'static)>>>
-RefCell<std::option::Option<Rc<(dyn for<'a> Fn(&'a soroban_env_host::host::Host, soroban_env_host::host::ContractInvocationEvent) + 'static)>>>
+version https://git-lfs.github.com/spec/v1
+oid sha256:401f11621c0fbc9376f3e1fed12393ef39e1234f0e10936f81cdd39b51bf490c
+size 291

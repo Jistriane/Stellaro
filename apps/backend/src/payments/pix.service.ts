@@ -127,7 +127,7 @@ export class PixService {
             qrCode,
             status: 'pending',
             createdAt: payment.createdAt,
-            expiresAt: payment.expiresAt,
+            expiresAt: payment.expiresAt ?? undefined,
           },
         };
       }
@@ -179,7 +179,7 @@ export class PixService {
           qrCode,
           status: 'pending',
           createdAt: payment.createdAt,
-          expiresAt: payment.expiresAt,
+          expiresAt: payment.expiresAt ?? undefined,
         },
       };
     } catch (error) {
@@ -376,7 +376,7 @@ export class PixService {
           pixKey: params.pixKey,
           pixKeyType: params.pixKeyType,
           stellarAddress: params.stellarAddress,
-          burnTxHash: burnResult.txHash,
+          burnTxHash: burnResult.txHash ?? '',
           status: 'processing',
         },
       });
@@ -423,7 +423,7 @@ export class PixService {
           name: payment.name,
           status: payment.status as any,
           createdAt: payment.createdAt,
-          expiresAt: payment.expiresAt,
+          expiresAt: payment.expiresAt ?? undefined,
         },
       };
     } catch (error) {

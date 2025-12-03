@@ -1,7 +1,3 @@
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/risklock.d: risklock/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/risklock.wasm: risklock/src/lib.rs
-
-/home/jistriane/Documentos/Projetos/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/librisklock.rlib: risklock/src/lib.rs
-
-risklock/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:dd3bf0ce74c6617f3ff1207042376c2fbbe679f44b7b4ce05e78afb6e523f508
+size 423

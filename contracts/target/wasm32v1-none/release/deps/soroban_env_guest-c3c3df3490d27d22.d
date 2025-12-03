@@ -1,8 +1,3 @@
-/home/jistriane/Documentos/Stelato/contracts/target/wasm32v1-none/release/deps/soroban_env_guest-c3c3df3490d27d22.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/guest.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/wasm32v1-none/release/deps/libsoroban_env_guest-c3c3df3490d27d22.rlib: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/guest.rs
-
-/home/jistriane/Documentos/Stelato/contracts/target/wasm32v1-none/release/deps/libsoroban_env_guest-c3c3df3490d27d22.rmeta: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/lib.rs /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/guest.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/lib.rs:
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/soroban-env-guest-21.2.1/src/guest.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:221cbd91f690acb40a3eee000ee30c4b857683cc10aca2b20c74cad800501374
+size 1217

@@ -1,5 +1,3 @@
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/num_derive-8b673b7c94325106.d: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-derive-0.4.2/src/lib.rs
-
-/home/jistriane/Area de Trabalho/Stellaro/contracts/target/debug/deps/libnum_derive-8b673b7c94325106.so: /home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-derive-0.4.2/src/lib.rs
-
-/home/jistriane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-derive-0.4.2/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:b4e235188f7dd33ebff2a4b3d42a495af89deca8c4069d33bf1a24f3ac47f5e8
+size 500

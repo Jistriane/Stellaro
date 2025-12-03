@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@stellar/stellar-sdk": "^14.4.0",
+    "jest-environment-jsdom": "^30.2.0",
     "tsx": "^4.21.0",
     "turbo": "^2.0.0"
   },

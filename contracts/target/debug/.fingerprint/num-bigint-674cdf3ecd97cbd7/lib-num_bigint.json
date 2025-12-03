@@ -1,1 +1,3 @@
-{"rustc":4826714390000139368,"features":"[\"default\", \"std\"]","declared_features":"[\"arbitrary\", \"default\", \"quickcheck\", \"rand\", \"serde\", \"std\"]","target":4386859821456661766,"profile":2225463790103693989,"path":7315759865464100944,"deps":[[5157631553186200874,"num_traits",false,18270101264735183704],[16795989132585092538,"num_integer",false,11415316601816211118]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/num-bigint-674cdf3ecd97cbd7/dep-lib-num_bigint","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:d58b75623a3fc8cc6287864ba42521874523480737e420eb03a54b08f024af0b
+size 569

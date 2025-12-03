@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[\"mutex\", \"rwlock\", \"spin_mutex\", \"std\"]","declared_features":"[\"barrier\", \"default\", \"fair_mutex\", \"lazy\", \"lock_api\", \"lock_api_crate\", \"mutex\", \"once\", \"portable-atomic\", \"portable_atomic\", \"rwlock\", \"spin_mutex\", \"std\", \"ticket_mutex\", \"use_ticket_mutex\"]","target":4260413527236709406,"profile":2241668132362809309,"path":17585782117486114443,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/spin-d8246d893fd02af9/dep-lib-spin","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:852cff118c8daefd98abf9b21a75a3d3ddf5c49b873448a7e7b1c7ab28bc7ae5
+size 612

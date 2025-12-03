@@ -1,1 +1,3 @@
-{"rustc":12013579709055016942,"features":"[]","declared_features":"[\"alloc\", \"bits\", \"bitvec\", \"byteorder\", \"default\", \"derive\", \"derive_bits\", \"ff_derive\", \"std\"]","target":8731611455144862167,"profile":2241668132362809309,"path":17819164995613926814,"deps":[[17003143334332120809,"subtle",false,8547257268696978306],[18130209639506977569,"rand_core",false,14413752484453644530]],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/ff-250a3f55da4f6330/dep-lib-ff","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:7325bcd13eb65cbf341ab9e1771d16eff300bc6f1e25cf58eca18562dd90b4e7
+size 569
