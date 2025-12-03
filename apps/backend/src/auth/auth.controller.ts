@@ -72,7 +72,14 @@ export class AuthController {
   @Get('me')
   async me(@Req() req: Request) {
     const cookies = req.cookies as Record<string, string> | undefined;
-    const token: string | undefined = cookies?.token;
+    let token: string | undefined = cookies?.token;
+    // Suporte a Authorization: Bearer <token>
+    if (!token && req.headers?.authorization) {
+      const auth = req.headers.authorization as string;
+      if (auth.toLowerCase().startsWith('bearer ')) {
+        token = auth.substring(7);
+      }
+    }
     const { user } = await this.authService.meFromToken(token);
     return { user };
   }
@@ -89,7 +96,13 @@ export class AuthController {
     },
   ) {
     const cookies = req.cookies as Record<string, string> | undefined;
-    const token: string | undefined = cookies?.token;
+    let token: string | undefined = cookies?.token;
+    if (!token && req.headers?.authorization) {
+      const auth = req.headers.authorization as string;
+      if (auth.toLowerCase().startsWith('bearer ')) {
+        token = auth.substring(7);
+      }
+    }
     const { user }: { user: User } = await this.authService.updateMe(
       token,
       body,
@@ -185,6 +198,6 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
-    return { ok: true, userId };
+    return { ok: true, token, userId };
   }
 }

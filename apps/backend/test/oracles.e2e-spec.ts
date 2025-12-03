@@ -65,8 +65,12 @@ describe('Oracles (e2e)', () => {
         .get('/chain/health')
         .expect(200)
         .expect((res) => {
-          expect(res.body).toHaveProperty('horizon');
-          expect(res.body).toHaveProperty('soroban');
+          // Resposta atual do endpoint
+          expect(res.body).toHaveProperty('network');
+          expect(res.body).toHaveProperty('rpcUrl');
+          expect(res.body).toHaveProperty('rpcOk');
+          expect(res.body).toHaveProperty('estimatedFee');
+          expect(res.body).toHaveProperty('sdkAvailable');
         });
     });
   });

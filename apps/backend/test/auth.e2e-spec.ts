@@ -156,7 +156,7 @@ describe('Authentication (e2e)', () => {
 
       return request(app.getHttpServer())
         .get('/auth/me')
-        .set('Cookie', [`token=${authToken}`])
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('user');
@@ -170,7 +170,7 @@ describe('Authentication (e2e)', () => {
 
       return request(app.getHttpServer())
         .patch('/auth/me')
-        .set('Cookie', [`token=${authToken}`])
+        .set('Authorization', `Bearer ${authToken}`)
         .send({ name: 'Test User' })
         .expect(200)
         .expect((res) => {

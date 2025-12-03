@@ -62,8 +62,8 @@ describe('DeFi Positions (e2e)', () => {
       return request(app.getHttpServer())
         .get('/defi/blend/positions/INVALID_ADDRESS')
         .expect((res) => {
-          // Deve retornar erro 4xx ou positions vazias
-          expect([400, 404, 200]).toContain(res.status);
+          // Deve retornar erro 4xx (Stellar responde 400/404 para endereço inválido)
+          expect([400, 404]).toContain(res.status);
         });
     });
 

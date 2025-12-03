@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { HorizonService } from '../../chain/horizon.service';
 import { SorobanService } from '../../chain/soroban.service';
 import { RedisService } from '../../redis/redis.service';
@@ -68,7 +68,20 @@ export class BlendPositionsService {
     const cached = await this.redis.get<{ address: string; positions: Position[]; totalUSD: number }>(cacheKey);
     if (cached) return cached;
     
-    const account = await this.horizon.getAccount(address);
+    let account: any;
+    try {
+      account = await this.horizon.getAccount(address);
+    } catch (err: any) {
+      // Mapear erro do Horizon (400/404) para resposta adequada
+      const status = err?.response?.status;
+      if (status === 404) {
+        throw new NotFoundException('Account not found');
+      }
+      if (status === 400) {
+        throw new NotFoundException('Invalid account');
+      }
+      throw err;
+    }
     const balances: Array<{ asset_type: string; asset_code?: string; balance: string }> = account?.balances || [];
 
     const backendUrl = process.env.BACKEND_PUBLIC_URL || process.env.BACKEND_URL || 'http://localhost:3001';

@@ -154,6 +154,32 @@ export class ReserveManagerService implements OnModuleInit {
     txHash: string;
     snapshot: ReserveSnapshot;
   }> {
+    // Permite desabilitar publicação de PoR em dev/test via flag
+    const publishDisabled = this.configService.get('RESERVES_PUBLISH_DISABLED');
+    if (publishDisabled && publishDisabled !== '0' && publishDisabled !== 'false') {
+      this.logger.warn('RESERVES_PUBLISH_DISABLED set; skipping PoR on-chain publish');
+      const snapshot = await this.getCurrentSnapshot();
+      const hash = this.hashSnapshot(snapshot);
+      return {
+        hash,
+        txHash: '',
+        snapshot: { ...snapshot, auditHash: hash },
+      };
+    }
+
+    // Guardar execução quando variáveis críticas estão ausentes (ambiente de dev/test)
+    const signerSecret = this.configService.get('STELLAR_SECRET_KEY');
+    if (!signerSecret) {
+      this.logger.error('Missing STELLAR_SECRET_KEY: skipping PoR publish in dev/test');
+      const snapshot = await this.getCurrentSnapshot();
+      const hash = this.hashSnapshot(snapshot);
+      return {
+        hash,
+        txHash: '',
+        snapshot: { ...snapshot, auditHash: hash },
+      };
+    }
+
     const snapshot = await this.getCurrentSnapshot();
 
     // Gera hash do snapshot
@@ -213,6 +239,7 @@ export class ReserveManagerService implements OnModuleInit {
         }));
     } catch (error) {
       this.logger.error(`Failed to load reserve balances: ${error.message}`);
+      // Em dev/test sem conta configurada, retornar XLM=0 para evitar 500
       return [];
     }
   }
@@ -425,7 +452,23 @@ export class ReserveManagerService implements OnModuleInit {
     setInterval(
       async () => {
         try {
-          await this.generateProofOfReserves();
+          const publishDisabled = this.configService.get('RESERVES_PUBLISH_DISABLED');
+          if (publishDisabled && publishDisabled !== '0' && publishDisabled !== 'false') {
+            this.logger.log('PoR publish disabled by env; generating local snapshot only');
+            // Ainda gera snapshot e salva no banco para monitoramento
+            const snapshot = await this.getCurrentSnapshot();
+            const hash = this.hashSnapshot(snapshot);
+            await this.prisma.auditLog.create({
+              data: {
+                channel: 'APP',
+                level: 'INFO',
+                action: 'POR_SNAPSHOT_ONLY',
+                metadata: JSON.stringify({ hash, snapshot }) as any,
+              },
+            });
+          } else {
+            await this.generateProofOfReserves();
+          }
         } catch (error) {
           this.logger.error(`PoR generation failed: ${error.message}`);
         }

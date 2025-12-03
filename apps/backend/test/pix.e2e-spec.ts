@@ -20,17 +20,27 @@ describe('PIX Payments (e2e)', () => {
     prisma = app.get<PrismaService>(PrismaService);
     await app.init();
 
-    // Criar usuário de teste e fazer login
-    const testUser = await prisma.user.create({
-      data: {
-        email: 'pix-test@stellaro.com',
-        name: 'PIX Test User',
-      },
-    });
-    userId = testUser.id;
+    // Garantir que não há usuário residual do e-mail de teste
+    await prisma.user.deleteMany({ where: { email: 'pix-test@stellaro.com' } });
 
-    // Mock de token JWT (em produção, usar endpoint de login real)
-    authToken = 'mock-jwt-token';
+    // Usar fluxo real de OTP para obter token
+    const initRes = await request(app.getHttpServer())
+      .post('/auth/email/init')
+      .send({ email: 'pix-test@stellaro.com' })
+      .expect(201);
+
+    const code: string = initRes.body.code;
+
+    const verifyRes = await request(app.getHttpServer())
+      .post('/auth/email/verify')
+      .send({ email: 'pix-test@stellaro.com', code })
+      .expect(201);
+
+    expect(verifyRes.body).toHaveProperty('token');
+    expect(verifyRes.body).toHaveProperty('userId');
+
+    authToken = verifyRes.body.token;
+    userId = verifyRes.body.userId;
   });
 
   afterAll(async () => {

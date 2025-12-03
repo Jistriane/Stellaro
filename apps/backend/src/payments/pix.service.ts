@@ -33,16 +33,19 @@ export class PixService {
   private readonly client: AxiosInstance | null = null;
   private readonly enabled: boolean;
   private readonly webhookSecret: string;
+  private readonly stubMode: boolean;
 
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
     private actions: ActionsService,
   ) {
-    const apiKey = this.configService.get('PIX_API_KEY');
-    const apiUrl = this.configService.get('PIX_API_URL');
-    this.webhookSecret = this.configService.get('PIX_WEBHOOK_SECRET') || '';
+    const apiKey = this.configService.get('PIX_API_KEY') ?? process.env.PIX_API_KEY;
+    const apiUrl = this.configService.get('PIX_API_URL') ?? process.env.PIX_API_URL;
+    this.webhookSecret = this.configService.get('PIX_WEBHOOK_SECRET') || process.env.PIX_WEBHOOK_SECRET || '';
+    const modeRaw = this.configService.get('PIX_MODE') ?? process.env.PIX_MODE ?? '';
     this.enabled = !!apiKey && !!apiUrl;
+    this.stubMode = String(modeRaw).toLowerCase() === 'stub';
 
     if (this.enabled) {
       this.client = axios.create({
@@ -55,7 +58,11 @@ export class PixService {
       });
       this.logger.log('PIX integration enabled');
     } else {
-      this.logger.warn('PIX integration disabled (missing API credentials)');
+      if (this.stubMode) {
+        this.logger.log('PIX integration running in STUB mode');
+      } else {
+        this.logger.warn('PIX integration disabled (missing API credentials)');
+      }
     }
   }
 
@@ -74,8 +81,55 @@ export class PixService {
     error?: string;
   }> {
     try {
+      // Validações básicas
+      const cpfDigits = (params.cpf || '').replace(/\D/g, '');
+      const validCpf = /^\d{11}$/.test(cpfDigits);
+      const amount = Number(params.amountBRL);
+      if (!validCpf) {
+        return { ok: false, error: 'Invalid CPF format' };
+      }
+      if (!amount || amount <= 0) {
+        return { ok: false, error: 'Invalid amount' };
+      }
       if (!this.enabled || !this.client) {
-        throw new Error('PIX integration not configured');
+        if (!this.stubMode) {
+          throw new Error('PIX integration not configured');
+        }
+        // STUB: simular falhas por valor extremo
+        if (amount > 500000) {
+          return { ok: false, error: 'Provider error: amount too high' };
+        }
+        // STUB: gerar cobrança localmente sem provider externo
+        const txId = `STLT${Date.now()}${randomBytes(4).toString('hex').toUpperCase()}`;
+        const qrCode = `00020126STLT${txId}520400005303986540${params.amountBRL.replace('.', '')}5802BR5920STELLARO PIX CHARGE6009STELLARO6210TXID${txId}`;
+        const payment = await this.prisma.pixPayment.create({
+          data: {
+            userId: params.userId,
+            txId,
+            amount: params.amountBRL,
+            cpf: params.cpf,
+            name: params.name,
+            stellarAddress: params.stellarAddress,
+            qrCode,
+            status: 'pending',
+            expiresAt: new Date(Date.now() + 3600_000),
+          },
+        });
+        return {
+          ok: true,
+          payment: {
+            id: payment.id,
+            txId: payment.txId,
+            amount: payment.amount,
+            cpf: payment.cpf,
+            name: payment.name,
+            key: undefined,
+            qrCode,
+            status: 'pending',
+            createdAt: payment.createdAt,
+            expiresAt: payment.expiresAt,
+          },
+        };
       }
 
       const txId = `STLT${Date.now()}${randomBytes(4).toString('hex').toUpperCase()}`;
@@ -181,6 +235,19 @@ export class PixService {
         // Mint STLT tokens (1 BRL = 1 STLT)
         const stltAmount = payment.amount;
 
+        if (this.stubMode) {
+          // Em STUB mode, não chamar ActionsService; simular mint bem-sucedido
+          await this.prisma.pixPayment.update({
+            where: { id: payment.id },
+            data: {
+              mintTxHash: 'stub-mint',
+              mintedAt: new Date(),
+            },
+          });
+          this.logger.log(`✅ [STUB] Minted ${stltAmount} STLT for PIX payment ${txId}`);
+          return { ok: true, minted: true };
+        }
+
         const mintResult = await this.actions.stablecoinMintGuarded({
           to: payment.stellarAddress,
           amount: stltAmount,
@@ -233,8 +300,47 @@ export class PixService {
     error?: string;
   }> {
     try {
+      // Validações básicas
+      const amount = Number(params.amountSTLT);
+      if (!amount || amount <= 0) {
+        return { ok: false, error: 'Invalid amount' };
+      }
+      const key = params.pixKey || '';
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(key);
+      const isPhone = /^\+?\d{10,15}$/.test(key);
+      const isRandom = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[ab89][a-f0-9]{3}-[a-f0-9]{12}$/.test(key);
+      const isCpf = /^\d{11}$/.test(key.replace(/\D/g, ''));
+      const validKey = (params.pixKeyType === 'email' && isEmail)
+        || (params.pixKeyType === 'phone' && isPhone)
+        || (params.pixKeyType === 'random' && isRandom)
+        || (params.pixKeyType === 'cpf' && isCpf);
+      if (!validKey) {
+        return { ok: false, error: 'Invalid PIX key' };
+      }
       if (!this.enabled || !this.client) {
-        throw new Error('PIX integration not configured');
+        if (!this.stubMode) {
+          throw new Error('PIX integration not configured');
+        }
+        // STUB: simular falha de burn com endereço inválido ou valor extremo
+        const amountNum = Number(params.amountSTLT);
+        if (params.stellarAddress === 'INVALID_ADDRESS' || amountNum > 1000000) {
+          return { ok: false, error: 'Burn failed: invalid address or amount' };
+        }
+        // STUB: registrar saque sem burn real
+        const transferId = `TRF${Date.now()}${randomBytes(3).toString('hex').toUpperCase()}`;
+        await this.prisma.pixWithdrawal.create({
+          data: {
+            userId: params.userId,
+            transferId,
+            amount: params.amountSTLT,
+            pixKey: params.pixKey,
+            pixKeyType: params.pixKeyType,
+            stellarAddress: params.stellarAddress,
+            burnTxHash: 'stub-burn',
+            status: 'processing',
+          },
+        });
+        return { ok: true, withdrawalId: transferId };
       }
 
       // 1. Burn STLT tokens
