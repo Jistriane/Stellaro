@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { PaymentsModule } from '../src/payments/payments.module';
-import { ActionsModule } from '../src/actions/actions.module';
+import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createHmac } from 'crypto';
 
@@ -14,7 +13,7 @@ describe('PIX Payments (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [PaymentsModule, ActionsModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

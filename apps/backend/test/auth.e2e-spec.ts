@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AuthModule } from '../src/auth/auth.module';
-import { PasskeyModule } from '../src/passkey/passkey.module';
+import { AppModule } from '../src/app.module';
 
 describe('Authentication (e2e)', () => {
   let app: INestApplication;
@@ -10,7 +9,7 @@ describe('Authentication (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule, PasskeyModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
