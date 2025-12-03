@@ -70,12 +70,25 @@ Home / Dashboard:
 - Integração production-ready com PasskeyService (Redis-backed)
 - Suporte a MFA e transaction signing
 
+### Pagamentos PIX
+- `POST /payments/pix/charge`: gera cobrança PIX para mint de STLT (1 BRL = 1 STLT)
+- `POST /payments/pix/webhook`: webhook para confirmação de pagamento (HMAC-signed)
+- `POST /payments/pix/withdrawal`: inicia saque PIX após burn de STLT
+- `GET /payments/pix/status/:txId`: consulta status de pagamento
+- Integração com providers (PJBank, Asaas, etc.) via webhook
+- Mint/burn automático via ActionsService após confirmação PIX
+- Sistema idempotente para evitar double-mint
+
 Quick tests:
 ```bash
 curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
 curl "http://localhost:3001/defi/blend/positions/GD..."
 curl "http://localhost:3001/memory/history/GD...?cursor=now"
 curl "http://localhost:3001/compliance/reserves/check"
+curl -X POST "http://localhost:3001/payments/pix/charge" \
+  -H "Authorization: Bearer <JWT>" \
+  -H "Content-Type: application/json" \
+  -d '{"amountBRL":"100.00","stellarAddress":"GD...","cpf":"12345678900","name":"User Test"}'
 ```
 
 ### Tech Stack v3.0

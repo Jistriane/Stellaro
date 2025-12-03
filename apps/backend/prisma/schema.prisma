@@ -227,3 +227,47 @@ model DashboardSnapshot {
 
   @@index([key, windowStart, windowEnd])
 }
+
+// PIX Payments - Depósitos BRL para mint STLT
+model PixPayment {
+  id              String    @id @default(uuid())
+  userId          String
+  txId            String    @unique // ID da transação PIX
+  amount          String    // Valor em BRL (1:1 com STLT)
+  cpf             String
+  name            String
+  stellarAddress  String
+  qrCode          String?
+  pixKey          String?
+  status          String    // pending, confirmed, failed
+  mintTxHash      String?   // Hash da transação de mint no Stellar
+  expiresAt       DateTime?
+  paidAt          DateTime?
+  mintedAt        DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// PIX Withdrawals - Saques BRL após burn STLT
+model PixWithdrawal {
+  id              String    @id @default(uuid())
+  userId          String
+  transferId      String    @unique // ID da transferência PIX
+  amount          String    // Valor em BRL
+  pixKey          String
+  pixKeyType      String    // cpf, email, phone, random
+  stellarAddress  String
+  burnTxHash      String    // Hash da transação de burn no Stellar
+  status          String    // processing, completed, failed
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
