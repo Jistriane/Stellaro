@@ -1,37 +1,61 @@
 # Relatório de Cobertura de Testes - Stellaro Backend
 
-Data: 2025-12-03
+Data: 2025-12-03 22:54 (UTC-3)
 
 Resumo dos testes
-- Suites: 7 passadas, 0 falhas
-- Testes: 129 passados, 1 ignorado, 130 total
-- Observação: 1 teste de PoR on-chain está ignorado por depender de TransactionBuilder e de ambiente integrado.
 
-Cobertura (Jest --coverage)
-- Statements: 18.84%
-- Branches: 18.32%
-- Functions: 14.06%
-- Lines: 19.26%
+- Unit: 25 suites passadas, 235 testes passados (1 ignorado)
+- E2E: 9 suites passadas, 46 testes passados
+- Observação: Warnings de serviços stubados (Soroban, ZK, PIX, Reserve) são esperados e não indicam falha.
+
+Cobertura (Unit — npm run test)
+
+- Statements: 35.37%
+- Branches: 32.97%
+- Functions: 32.88%
+- Lines: 35.94%
+
+Cobertura (E2E — npm run test:e2e)
+
+- Statements: 45.36%
+- Branches: 31.11%
+- Functions: 32.52%
+- Lines: 43.15%
 
 Arquivos em destaque
+
 - src/actions/actions.service.ts: Stmts 96.47%, Branch 84%, Funcs 100%, Lines 96.38%
+- src/health/health.controller.ts: 100% em todas as métricas
+- src/metrics/metrics.controller.ts: 100% em todas as métricas
 - src/payments/pix.service.ts: Stmts 75.65%, Branch 67.02%, Funcs 100%, Lines 75.22%
-- src/auth/auth.service.ts: Stmts 90.37%, Branch 74.74%, Funcs 100%, Lines 92.43%
-- src/chain/soroban.service.ts: Stmts 47.52%, Branch 33.96%, Funcs 75%, Lines 45.26%
-- src/compliance/reserve-manager.service.ts: Stmts 78.46%, Branch 76.56%, Funcs 77.27%, Lines 78.12%
+- src/zk/zk.service.ts: Stmts 56.3%, Branch 57.57%, Funcs 100%, Lines 55.55%
 
 Módulos com baixa cobertura (próximos alvos)
-- src/chain/chain.service.ts
-- src/oracles/reflecor.service.ts (e serviços de oráculos)
-- src/passkey/*
-- src/notifications/*
-- src/redis/*
+
+- src/main.ts, src/app.module.ts, controllers sem specs (analytics, memory, webhooks, zk.controller)
+- guards: jwt/session/mfa/admin/eliza
+- src/chain/chain.service.ts, src/chain/soroban.service.ts
+- src/governance/governance.service.ts
+
+Estabilidade e Teardown
+
+- `--detectOpenHandles` (Unit/E2E): sem vazamentos.
+- Nota: Sem `--detectOpenHandles`, o Jest pode forçar encerramento de um worker por timers ativos. Padronizar o uso desse flag em CI ajuda a identificar fontes cedo.
 
 Como gerar os relatórios localmente
+
 ```bash
+# Unit com cobertura e detecção de handles
 cd apps/backend
-npm test -- --coverage
+npm run test -- --coverage --detectOpenHandles
+
+# E2E com detecção de handles
+npm run test:e2e:detect
+
+# Execução combinada (unit + e2e) com cobertura
+npm run test:all --silent
 ```
 
 Nota sobre ambiente de integração
-- Para reabilitar o teste de publicação on-chain do PoR, configure variáveis de ambiente reais (rede, chaves e contratos) e execute em modo de integração. Veja `apps/backend/.env.test.example` e `docs/TESTING.md`.
+
+- Para reabilitar o teste de publicação on-chain do PoR, configure variáveis de ambiente reais (rede, chaves e contratos) e execute em modo de integração. Veja `apps/backend/.env.test.example` e `docs/E2E_TESTING.md`.
