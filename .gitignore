@@ -39,6 +39,7 @@ contracts/target/
 
 # Python virtual env for agents
 agents/.venv/
+agents/__pycache__/
 
 # Prisma generated client cache
 apps/backend/node_modules/.prisma/
@@ -47,3 +48,6 @@ apps/backend/node_modules/.prisma/
 infra/docker-data/
 apps/backend/venv/
 agents/venv/
+
+# Rust/Emacs flycheck temp files
+contracts/target/flycheck0/
