@@ -12,3 +12,7 @@ python-dotenv
 
 # Data validation
 pydantic
+
+# FastAPI for HTTP API server
+fastapi
+uvicorn[standard]
