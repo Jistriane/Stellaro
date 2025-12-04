@@ -1,25 +1,25 @@
 # Stellaro - Testing Summary
 
-**Última Atualização**: 2025-12-03
+**Last Updated**: 2025-12-03
 
-## 📊 Status Geral
+## 📊 Overall Status
 
-| Categoria | Status | Suites | Testes | Coverage |
+| Category | Status | Suites | Tests | Coverage |
 |-----------|--------|--------|--------|----------|
-| **Unit Tests** | ✅ | 23/23 | 231/232 | 36.40% |
+| **Unit Tests** | ✅ | 63/63 | 270/271 | 35.11% |
 | **E2E Tests** | ✅ | 9/9 | 46/46 | 100% |
-| **Total** | ✅ | 32/32 | 277/278 | - |
+| **Total** | ✅ | 72/72 | 316/317 | - |
 
-## 🎯 Unit Tests (36% Coverage)
+## 🎯 Unit Tests (35.11% Coverage)
 
-### Cobertura por Categoria
+### Coverage by Category
 
-| Métrica | % | Meta |
+| Metric | % | Target |
 |---------|---|------|
-| Statements | 36.40% | 50% |
-| Branches | 33.33% | 45% |
-| Functions | 33.70% | 45% |
-| Lines | 37.18% | 50% |
+| Statements | 35.11% | 50% |
+| Branches | 34.44% | 45% |
+| Functions | 32.60% | 45% |
+| Lines | 35.62% | 50% |
 
 ### Services Testados (19 specs)
 

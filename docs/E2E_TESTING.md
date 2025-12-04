@@ -2,27 +2,27 @@
 
 ## Overview
 
-O backend Stellaro possui uma suíte completa de testes E2E isolados de dependências externas (PostgreSQL, Redis, Soroban RPC). Todos os 9 suites (46 testes) passam consistentemente sem open handles.
+The Stellaro backend has a complete E2E test suite isolated from external dependencies (PostgreSQL, Redis, Soroban RPC). All 9 suites (46 tests) pass consistently without open handles.
 
-**Status**: ✅ 100% Passing (9/9 suites, 46/46 testes)
+**Status**: ✅ 100% Passing (9/9 suites, 46/46 tests)
 
-**Runtime**: ~7s em modo serial (`--runInBand`)
+**Runtime**: ~7s in serial mode (`--runInBand`)
 
-## Arquitetura de Isolamento
+## Isolation Architecture
 
-### Princípios
+### Principles
 
-1. **Zero dependências externas**: Sem Postgres, Redis real ou Soroban RPC
-2. **Mocks centralizados**: `test/test-utils.ts` fornece stubs reutilizáveis
-3. **Provider overrides**: Cada suite injeta mocks via DI do NestJS
-4. **Modo stub**: PIX opera em modo simulado; ZK sem contrato configurado
-5. **Determinismo**: Testes reproduzíveis sem side-effects
+1. **Zero external dependencies**: No real Postgres, Redis or Soroban RPC
+2. **Centralized mocks**: `test/test-utils.ts` provides reusable stubs
+3. **Provider overrides**: Each suite injects mocks via NestJS DI
+4. **Stub mode**: PIX operates in simulated mode; ZK without configured contract
+5. **Determinism**: Reproducible tests without side-effects
 
-### Componentes
+### Components
 
-#### 1. Setup Global (`test/setup-e2e.ts`)
+#### 1. Global Setup (`test/setup-e2e.ts`)
 
-Configuração aplicada antes de todos os testes:
+Configuration applied before all tests:
 
 ```typescript
 process.env.NODE_ENV = 'test';
@@ -31,11 +31,11 @@ delete process.env.REDIS_URL;
 delete process.env.ZK_VERIFIER_CONTRACT_ID;
 ```
 
-- Força ambiente de teste
-- PIX em modo stub (sem API real)
-- Redis desabilitado (fallback in-memory)
-- ZK sem RPC (sem Soroban)
-- Timeout Jest: 30s
+- Forces test environment
+- PIX in stub mode (no real API)
+- Redis disabled (in-memory fallback)
+- ZK without RPC (no Soroban)
+- Jest timeout: 30s
 
 #### 2. Mocks/Stubs (`test/test-utils.ts`)
 

@@ -1,27 +1,27 @@
-# Testes e Ambiente — Stellaro Backend
+# Testing and Environment — Stellaro Backend
 
-Este guia explica como executar os testes (unitários e com cobertura) e como preparar um ambiente mínimo para testes de integração controlados.
+This guide explains how to run tests (unit and with coverage) and how to prepare a minimal environment for controlled integration tests.
 
-## Comandos rápidos
+## Quick Commands
 
 ```bash
 cd apps/backend
-# Rodar testes
+# Run tests
 npm test
-# Rodar com cobertura
+# Run with coverage
 npm run test:cov
 ```
 
-## Cobertura atual (2025-12-03)
-- Suites: 7 passadas, 0 falhas
-- Testes: 129 passados, 1 ignorado, 130 total
-- Coverage: Statements 18.84% • Branches 18.32% • Functions 14.06% • Lines 19.26%
+## Current Coverage (2025-12-03)
+- Suites: 63 passed, 0 failed
+- Tests: 270 passed, 1 skipped, 271 total
+- Coverage: Statements 35.11% • Branches 34.44% • Functions 32.60% • Lines 35.62%
 
-## Teste ignorado (PoR on-chain)
-- Um teste de Proof of Reserves on-chain permanece ignorado (skipped) para evitar fragilidade em unit tests, pois depende de `TransactionBuilder` e de uma conta/chave válidas em rede.
-- Recomendação: reabilitar este teste apenas em ambiente de integração (testnet) com variáveis de ambiente reais configuradas.
+## Skipped Test (PoR on-chain)
+- One Proof of Reserves on-chain test remains skipped to avoid fragility in unit tests, as it depends on `TransactionBuilder` and valid account/key on network.
+- Recommendation: re-enable this test only in integration environment (testnet) with real environment variables configured.
 
-## Ambiente de integração (opcional)
+## Integration Environment (optional)
 1. Copie o arquivo de exemplo:
    ```bash
    cd apps/backend
@@ -36,12 +36,12 @@ npm run test:cov
    npm test -- --runInBand
    ```
 
-## Dicas
-- Use contas e contratos da testnet para evitar custos e riscos.
-- Mantenha o teste de PoR on-chain ignorado em CI. Execute-o apenas em pipelines/ambientes dedicados de integração.
-- Caso use provider PIX real, defina `PIX_PROVIDER_BASE_URL`, `PIX_PROVIDER_TOKEN` e `PIX_WEBHOOK_SECRET`. Sem provider, mantenha modo stub ou caminhos de teste que não façam chamadas externas.
+## Tips
+- Use testnet accounts and contracts to avoid costs and risks.
+- Keep the on-chain PoR test skipped in CI. Execute it only in dedicated integration pipelines/environments.
+- If using real PIX provider, define `PIX_PROVIDER_BASE_URL`, `PIX_PROVIDER_TOKEN` and `PIX_WEBHOOK_SECRET`. Without provider, maintain stub mode or test paths that don't make external calls.
 
-## Problemas comuns
-- "Invalid contract ID": verifique `*_CONTRACT_ID` e a rede selecionada.
-- "Invalid pubkey" / "invalid encoded string": checar formato de chaves e variáveis de ambiente.
-- Falhas de rede: confirme URLs, firewall e disponibilidade dos serviços (Horizon/Soroban/DB/Redis).
+## Common Issues
+- "Invalid contract ID": verify `*_CONTRACT_ID` and selected network.
+- "Invalid pubkey" / "invalid encoded string": check key format and environment variables.
+- Network failures: confirm URLs, firewall and service availability (Horizon/Soroban/DB/Redis).

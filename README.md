@@ -3,16 +3,14 @@
   
   # Stellaro DeFi Credit Infrastructure on Stellar
   
-  *Infraestrutura DeFi de Crédito na Stellar*
+  *DeFi Credit Infrastructure on Stellar*
 </div>
 
 Welcome to the Stellaro project! This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 15 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
-Bem-vindo ao projeto Stellaro! Este monorepo contém a arquitetura completa para uma plataforma de infraestrutura DeFi de crédito construída na Stellar, com frontend Next.js 15, backend NestJS, gerenciamento de risco com IA (ElizaOS), e integrações enterprise para Stellar/Soroban, PIX, Cartões, KYC e Passkeys.
+## 🎨 Interface Screenshots
 
-## 🎨 Screenshots da Interface
-
-Login / Autenticação:
+Login / Authentication:
 
 ![Login](docs/screenshots/login.png)
 
@@ -29,9 +27,9 @@ Home / Dashboard:
 - **🏗️ Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster
 - **📊 Progressive Decentralization** - Multisig 3/5 → DAO governance roadmap
 
-## Features / Funcionalidades
+## Features
 
-### Core Features / Funcionalidades Principais
+### Core Features
 - 🏦 **DeFi Credit Infrastructure** - Complete lending and borrowing platform with AI-powered risk assessment
 - 💳 **Stablecoin STLT-BRL** - Brazilian Real-pegged stablecoin with 120%+ collateralization
 - 🏛️ **Governance System** - Progressive decentralization (Multisig → DAO)
@@ -42,20 +40,20 @@ Home / Dashboard:
 - 🤖 **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
 - ⚡ **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
 
-### Observability & Operations / Monitoramento e Operações
-- 📈 **Prometheus**: scraping de métricas do backend (`/metrics`), Horizon e Soroban RPC
-- 📊 **Grafana**: dashboards provisionados automaticamente (Overview e DeFi)
-- 🚨 **Alertas**: regras para disponibilidade, erro 5xx, latência p95, pool de DB/Redis, contratos e ZK proofs
+### Observability & Operations
+- 📈 **Prometheus**: Backend metrics scraping (`/metrics`), Horizon and Soroban RPC
+- 📊 **Grafana**: Automatically provisioned dashboards (Overview and DeFi)
+- 🚨 **Alerts**: Rules for availability, 5xx errors, p95 latency, DB/Redis pool, contracts and ZK proofs
 
 Quick setup (docker):
 ```bash
-# Prometheus (usa config em infra/prometheus/prometheus.yml)
+# Prometheus (uses config from infra/prometheus/prometheus.yml)
 docker run -d --name stellaro-prometheus \
   -p 9090:9090 \
   -v $(pwd)/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
   prom/prometheus:v2.53.0
 
-# Grafana (provisiona datasources e dashboards do repositório)
+# Grafana (provisions datasources and dashboards from repository)
 docker run -d --name stellaro-grafana \
   -p 3000:3000 \
   -v $(pwd)/infra/grafana/datasources:/etc/grafana/provisioning/datasources \
@@ -63,66 +61,66 @@ docker run -d --name stellaro-grafana \
   grafana/grafana:10.4.0
 ```
 
-Dashboards provisionados:
-- `Stellaro - System Overview`: tráfego HTTP, latência p95, erros 5xx, health, execuções de contrato, ZK verifications
-- `Stellaro - DeFi Metrics`: TVL, loans ativos, utilization, default rate, APY, distribuição de credit score
+Provisioned dashboards:
+- `Stellaro - System Overview`: HTTP traffic, p95 latency, 5xx errors, health, contract executions, ZK verifications
+- `Stellaro - DeFi Metrics`: TVL, active loans, utilization, default rate, APY, credit score distribution
 
-### Novos Endpoints On-Chain (Backend)
-- `GET /oracles/price?asset=<code>&issuer=<account>`: preço agregado em tempo real (Reflector + DEX fallback)
-- `GET /defi/blend/positions/:address`: posições DeFi enriquecidas por saldo Horizon + preço oracle, com
-  - `poolId`: de `LOANS_POOL_CONTRACT_ID`
-  - `apy`: lido dinamicamente via `params()` do LoansPool (fallback env: `LOANSPOOL_INTEREST_BPS` em bps → %)
-  - cache Redis: 15s (evita sobrecarga)
-  - cache de params: 5min em memória
-- `GET /memory/history/:address?cursor=<id>`: histórico de operações do endereço via Horizon com paginação por cursor
+### On-Chain Backend Endpoints
+- `GET /oracles/price?asset=<code>&issuer=<account>`: Real-time aggregated price (Reflector + DEX fallback)
+- `GET /defi/blend/positions/:address`: DeFi positions enriched with Horizon balance + oracle price, including:
+  - `poolId`: from `LOANS_POOL_CONTRACT_ID`
+  - `apy`: dynamically read via LoansPool `params()` (env fallback: `LOANSPOOL_INTEREST_BPS` in bps → %)
+  - Redis cache: 15s (avoids overload)
+  - Params cache: 5min in-memory
+- `GET /memory/history/:address?cursor=<id>`: Address operation history via Horizon with cursor pagination
 
 ### Compliance & Reserve Management
-- `GET /compliance/reserves/check`: verifica colateralização atual (120% mínimo)
-- `POST /compliance/reserves/proof`: gera Proof of Reserves on-chain
-- `GET /compliance/reserves/snapshot`: snapshot detalhado de reservas
-- Integração completa com Soroban:
-  - Leitura de `total_supply` do contrato Stablecoin
-  - Freeze automático de minting via `set_mint_enabled(false)` em caso de undercollateralization
-- Sistema de notificações multi-canal (webhook, email, console)
+- `GET /compliance/reserves/check`: Check current collateralization (120% minimum)
+- `POST /compliance/reserves/proof`: Generate on-chain Proof of Reserves
+- `GET /compliance/reserves/snapshot`: Detailed reserves snapshot
+- Full Soroban integration:
+  - Reading `total_supply` from Stablecoin contract
+  - Automatic minting freeze via `set_mint_enabled(false)` in case of undercollateralization
+- Multi-channel notification system (webhook, email, console)
 
-### Autenticação WebAuthn (Passkey)
-- `POST /auth/passkey/register/init`: inicializar registro de passkey
-- `POST /auth/passkey/register/verify`: verificar attestation e completar registro
-- `POST /auth/passkey/login/init`: inicializar login com passkey
-- `POST /auth/passkey/login/verify`: verificar assertion e emitir tokens
-- `POST /auth/webauthn/attestation`: verificação direta de attestation
-- `POST /auth/webauthn/assertion`: verificação direta de assertion
-- Integração production-ready com PasskeyService (Redis-backed)
-- Suporte a MFA e transaction signing
+### WebAuthn Authentication (Passkey)
+- `POST /auth/passkey/register/init`: Initialize passkey registration
+- `POST /auth/passkey/register/verify`: Verify attestation and complete registration
+- `POST /auth/passkey/login/init`: Initialize passkey login
+- `POST /auth/passkey/login/verify`: Verify assertion and issue tokens
+- `POST /auth/webauthn/attestation`: Direct attestation verification
+- `POST /auth/webauthn/assertion`: Direct assertion verification
+- Production-ready PasskeyService integration (Redis-backed)
+- MFA and transaction signing support
 
-### Pagamentos PIX
-- `POST /payments/pix/charge`: gera cobrança PIX para mint de STLT (1 BRL = 1 STLT)
-- `POST /payments/pix/webhook`: webhook para confirmação de pagamento (HMAC-signed)
-- `POST /payments/pix/withdrawal`: inicia saque PIX após burn de STLT
-- `GET /payments/pix/status/:txId`: consulta status de pagamento
-- Integração com providers (PJBank, Asaas, etc.) via webhook
-- Mint/burn automático via ActionsService após confirmação PIX
-- Sistema idempotente para evitar double-mint
+### PIX Payments
+- `POST /payments/pix/charge`: Generate PIX charge for STLT mint (1 BRL = 1 STLT)
+- `POST /payments/pix/webhook`: Payment confirmation webhook (HMAC-signed)
+- `POST /payments/pix/withdrawal`: Initiate PIX withdrawal after STLT burn
+- `GET /payments/pix/status/:txId`: Query payment status
+- Provider integration (PJBank, Asaas, etc.) via webhook
+- Automatic mint/burn via ActionsService after PIX confirmation
+- Idempotent system to prevent double-mint
 
-### Agentes ElizaOS (IA)
-- 3 agentes: Risk Analyzer, Compliance Bot, Treasury Manager
-- 4 ações: análise de risco, checagem de compliance, otimização de yield, auto-compound
-- Suporte a Telegram/Discord via runtime orquestrador
+### ElizaOS Agents (AI)
+- 3 agents: Risk Analyzer, Compliance Bot, Treasury Manager
+- 4 actions: risk analysis, compliance check, yield optimization, auto-compound
+- Telegram/Discord support via orchestrator runtime
 
 Quick start (dev):
 ```bash
 cd tools/eliza
-# Inicializar projeto local (se ainda não existir package.json)
+# Initialize local project (if package.json doesn't exist)
 npm init -y
 npm install typescript ts-node dotenv @anthropic-ai/sdk
 
-# Compilar TS (opcional)
+# Compile TS (optional)
 npx tsc --init
 
-# Executar runtime
+# Run runtime
 npx ts-node src/index.ts
 ```
-Configuração: veja `tools/eliza/README.md` e `.env.example`.
+Configuration: see `tools/eliza/README.md` and `.env.example`.
 
 Quick tests:
 ```bash
@@ -145,29 +143,22 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 - **CI/CD**: GitHub Actions, Turborepo, Docker, Kubernetes
 - **Monitoring**: Grafana, Prometheus, Loki, CloudWatch
 - **Security**: Passkey Kit, Onfido, Chainalysis, Wazuh SIEM
-- **Testing**: Jest (36% unit coverage, 100% E2E passing)
+- **Testing**: Jest (63 test suites, 270+ tests, 35.11% coverage, 100% E2E passing)
 
-## Project Structure / Estrutura do Projeto
+## Project Structure
 
 - **`apps/frontend`**: Next.js 14 application with modern UI components and wallet integration.
-  - *Aplicação Next.js 14 com componentes de UI modernos e integração de carteira.*
 - **`apps/backend`**: NestJS application with Prisma, Redis, and comprehensive API services.
-  - *Aplicação NestJS com Prisma, Redis e serviços de API abrangentes.*
-  - Endpoints relevantes: `/oracles/price`, `/defi/blend/positions/:address`, `/memory/history/:address`, `/chain/health`
+  - Relevant endpoints: `/oracles/price`, `/defi/blend/positions/:address`, `/memory/history/:address`, `/chain/health`
 - **`contracts/`**: Soroban smart contracts written in Rust for DeFi operations.
-  - *Contratos inteligentes Soroban escritos em Rust para operações DeFi.*
 - **`packages/`**: Shared UI components and configurations across the monorepo.
-  - *Componentes de UI compartilhados e configurações em todo o monorepo.*
 - **`infra/`**: Docker files, deployment scripts, and CI/CD configurations.
-  - *Arquivos Docker, scripts de deploy e configurações de CI/CD.*
 
-## Deployed Smart Contracts / Contratos Inteligentes Deployados
+## Deployed Smart Contracts
 
 The Stellaro platform includes 6 core smart contracts deployed on Stellar Testnet:
 
-A plataforma Stellaro inclui 6 contratos inteligentes principais deployados na Stellar Testnet:
-
-| Contract / Contrato | Contract ID | Purpose / Propósito |
+| Contract | Contract ID | Purpose |
 |-------------------|-------------|-------------------|
 | **Stablecoin** | `CA2QGUHYWINO4JYADA3P4CUJC25DSMM6LPOYVFM63T5VFHGMDF3JQITA` | STLT token management and transfers |
 | **RiskLock** | `CAKSLX55PXBULHZ4W4Z5VGAE35J3OUF3VUCG7IL22LTN3DTGMVNQIQFB` | Risk management and account locking |
@@ -176,24 +167,22 @@ A plataforma Stellaro inclui 6 contratos inteligentes principais deployados na S
 | **Governance** | `CA47ANKVNAFNO4EOCC3S3EJ2HKQ5DR4X55QQQ5ETCLKWXF76G5M5JBGF` | DAO governance and voting |
 | **ZK Verifier** | `CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L` ✅ | ZK-proof verification and credit scoring (initialized) |
 
-### Network Configuration / Configuração da Rede
+### Network Configuration
 - **Network**: Stellar Testnet
 - **RPC URL**: `https://soroban-testnet.stellar.org`
 - **Horizon URL**: `https://horizon-testnet.stellar.org`
  - **Admin (Public Key)**: `GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD`
 
-### Variáveis de Ambiente (Backend)
+### Environment Variables (Backend)
 - `HORIZON_URL`, `SOROBAN_RPC_URL`
-- `BACKEND_URL` e/ou `BACKEND_PUBLIC_URL`
-- `LOANS_POOL_CONTRACT_ID` (usado para `poolId` nas posições)
-- `LOANSPOOL_INTEREST_BPS` (usado para `apy` nas posições)
-- `PORTFOLIO_CONTRACT_ID` (opcional)
+- `BACKEND_URL` and/or `BACKEND_PUBLIC_URL`
+- `LOANS_POOL_CONTRACT_ID` (used for `poolId` in positions)
+- `LOANSPOOL_INTEREST_BPS` (used for `apy` in positions)
+- `PORTFOLIO_CONTRACT_ID` (optional)
 
-### Deploying Contracts / Deployando Contratos
+### Deploying Contracts
 
 To deploy or update the smart contracts, use the automated deployment script:
-
-Para fazer deploy ou atualizar os contratos inteligentes, use o script de deploy automatizado:
 
 ```bash
 # Build contracts (release)
@@ -202,31 +191,33 @@ soroban contract build --profile release
 # Fund account on testnet (if needed)
 curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 
-# Deploy with default settings / Deploy com configurações padrão
+# Deploy with default settings
 ./infra/deploy_soroban.sh deploy
 
-# Deploy with custom parameters / Deploy com parâmetros customizados
+# Deploy with custom parameters
 ./infra/deploy_soroban.sh deploy <ADMIN_PUBKEY> <RISK_BPS> <LTV_BPS> <INTEREST_BPS>
 ```
 
-**Prerequisites / Pré-requisitos:**
+**Prerequisites:**
 - `soroban-cli` installed and configured
 - Rust target `wasm32v1-none` added
 - Stellar account imported with alias
- - `.env-dev` configured with CONTRACT_IDs (auto-populated pelo script)
+ - `.env-dev` configured with CONTRACT_IDs (auto-populated by script)
 
-> Referência de deploy: consulte `TESTNET_DEPLOY.md` e `DEPLOY_SUCCESS.md` para detalhes, IDs e links de explorer.
+> Deploy reference: see `TESTNET_DEPLOY.md` and `DEPLOY_SUCCESS.md` for details, IDs and explorer links.
 
-## Documentation / Documentação
+## Documentation
 
 **📚 Comprehensive documentation for v3.0 architecture:**
 
 - **[Quick Start Guide](./docs/QUICK_START.md)** - Week 1 implementation guide
 - **[Architecture Decision Records](./docs/ADRs.md)** - Technical decisions and rationale
 - **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide (9/9 suites, 46 tests)
+- **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive testing status (63 suites, 270+ tests)
+- **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics (35.11%)
 - **[Progress Report](./docs/PROGRESS.md)** - Implementation status and metrics
 - **[English Manual](./docs/Manual.EN.md)** - Complete user and developer guide
-- **[Manual em Português](./docs/Manual.pt-BR.md)** - Guia completo em português
+- **[Portuguese Manual](./docs/Manual.pt-BR.md)** - Complete guide in Portuguese
 
 ### Key Features Documentation
 
@@ -237,13 +228,15 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 | Reserve Manager | ✅ Implemented | `src/compliance/reserve-manager.service.ts` |
 | CI/CD Pipeline | ✅ Implemented | `.github/workflows/ci.yml` |
 | Kubernetes Setup | ✅ Implemented | `infra/k8s/` |
-| E2E Tests | ✅ Implemented | `apps/backend/test/` (9/9 suites, 46 tests) |
+| E2E Tests | ✅ Implemented | `apps/backend/test/` (9/9 suites, 46 tests, 100% passing) |
+| Unit Tests | ✅ Implemented | `apps/backend/src/**/*.spec.ts` (63 suites, 270+ tests) |
+| Test Coverage | ✅ Baseline Complete | 35.11% overall, all files have test structure |
 | ZK Credit Score | 🔄 In Progress | Week 3-4 |
 | PIX Integration | ✅ Implemented | `src/payments/pix.service.ts` |
 
-## Getting Started / Começando
+## Getting Started
 
-### Prerequisites / Pré-requisitos
+### Prerequisites
 - Node.js 20+
 - npm 10+
 - Docker & Docker Compose
@@ -251,20 +244,20 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 - Stellar CLI 23.0.0+
 - PostgreSQL 15+ (or use Docker)
 
-### Quick Setup / Configuração Rápida
+### Quick Setup
 
-1.  **Clone the repository / Clone o repositório**:
+1.  **Clone the repository**:
     ```bash
     git clone https://github.com/Jistriane/Stellaro.git
     cd Stellaro
     ```
 
-2.  **Install dependencies / Instale as dependências**:
+2.  **Install dependencies**:
     ```bash
     npm install
     ```
 
-3.  **Start infrastructure / Inicie a infraestrutura**:
+3.  **Start infrastructure**:
     ```bash
     # PostgreSQL + Redis via Docker
     docker run -d --name stellaro-postgres \
@@ -274,9 +267,9 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
     docker run -d --name stellaro-redis -p 6379:6379 redis:7-alpine
     ```
 
-    Observability (opcional):
+    Observability (optional):
     ```bash
-    # Prometheus + Grafana (usa os provisionamentos do repositório)
+    # Prometheus + Grafana (uses repository provisioning)
     docker run -d --name stellaro-prometheus \
       -p 9090:9090 \
       -v $(pwd)/infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
@@ -289,80 +282,120 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
       grafana/grafana:10.4.0
     ```
 
-4.  **Configure environment / Configure o ambiente**:
+4.  **Configure environment**:
     ```bash
     cd apps/backend
     cp .env.example .env
     # Edit .env with your credentials
     ```
-    Campos importantes a ajustar:
+    Important fields to adjust:
     - `HORIZON_URL`, `SOROBAN_RPC_URL`
     - `LOANS_POOL_CONTRACT_ID`, `LOANSPOOL_INTEREST_BPS`
 
-5.  **Run migrations / Execute migrations**:
+5.  **Run migrations**:
     ```bash
     npx prisma migrate dev
     npx prisma generate
     ```
 
-6.  **Deploy contracts / Faça deploy dos contratos**:
+6.  **Deploy contracts**:
     ```bash
     ./infra/deploy_soroban.sh testnet
     ```
 
-7.  **Start development / Inicie desenvolvimento**:
+7.  **Start development**:
     ```bash
     npm run dev
     ```
 
-  #### Sanidade dos Endpoints
+  #### Endpoint Health Check
   ```bash
   curl "http://localhost:3001/chain/health"
   curl "http://localhost:3001/oracles/price?asset=STLT&issuer=CD..."
   curl "http://localhost:3001/defi/blend/positions/GD..."
-  # Métricas Prometheus expostas pelo backend
+  # Prometheus metrics exposed by backend
   curl "http://localhost:3001/metrics"
   ```
 
-### Access / Acesso
+### Access
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
 - **API Docs**: http://localhost:3001/api
 - **Grafana** (if running): http://localhost:3000
 
-### Project Status / Status do Projeto
-- Progresso detalhado: `docs/PROGRESS_UPDATE_YYYYMMDD.md`
-- Lista de tarefas: `TODO.md`
+### Project Status
+- Detailed progress: `docs/PROGRESS_UPDATE_YYYYMMDD.md`
+- Task list: `TODO.md`
 
 **📖 For detailed setup, see [QUICK_START.md](./QUICK_START.md)**
 
-## Contributing / Contribuindo
+## Testing
+
+### Test Infrastructure
+
+Stellaro has comprehensive test coverage across all layers:
+
+- **63 test suites** with **270+ tests**
+- **35.11% overall code coverage** (baseline complete)
+- **100% E2E passing** (9 suites, 46 tests)
+- **Zero open handles** (memory leak free)
+
+### Running Tests
+
+```bash
+# Run all unit tests
+npm run test
+
+# Run unit tests with coverage
+npm run test:cov
+
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E with open handle detection
+npm run test:e2e:detect
+
+# Run E2E with coverage
+npm run test:e2e:cov
+
+# Run all tests (unit + E2E)
+npm run test:all
+```
+
+### Test Documentation
+
+- **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide, infrastructure details
+- **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive summary of testing status
+- **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics and analysis
+
+### Test Features
+
+- ✅ **Isolated test environment** with in-memory Prisma, Redis stubs
+- ✅ **Mocked external dependencies** (Soroban RPC, ZK proofs, PIX providers)
+- ✅ **Global teardown** for clean resource cleanup
+- ✅ **Serial execution** for E2E tests to prevent race conditions
+- ✅ **Comprehensive guards/services/controllers** test structure
+
+
 
 We welcome contributions to the Stellaro project! Please see our contributing guidelines and code of conduct.
 
-Aceitamos contribuições para o projeto Stellaro! Consulte nossas diretrizes de contribuição e código de conduta.
+### Development
+- Fork the repository
+- Create a feature branch
+- Make your changes
+- Submit a pull request
 
-### Development / Desenvolvimento
-- Fork the repository / Faça fork do repositório
-- Create a feature branch / Crie uma branch de feature
-- Make your changes / Faça suas alterações
-- Submit a pull request / Envie um pull request
-
-## License / Licença
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Este projeto está licenciado sob a Licença MIT - consulte o arquivo [LICENSE](LICENSE) para detalhes.
-
-## Support / Suporte
+## Support
 
 For support and questions, please open an issue on GitHub or contact the development team.
-
-Para suporte e dúvidas, abra uma issue no GitHub ou entre em contato com a equipe de desenvolvimento.
 
 ---
 
 <div align="center">
   <p>Built with ❤️ using Stellar and Soroban</p>
-  <p>Construído com ❤️ usando Stellar e Soroban</p>
 </div>
