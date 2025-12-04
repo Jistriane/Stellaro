@@ -1,19 +1,19 @@
 # Relatório de Cobertura de Testes - Stellaro Backend
 
-Data: 2025-12-03 22:54 (UTC-3)
+Data: 2025-12-03 23:29 (UTC-3)
 
 Resumo dos testes
 
-- Unit: 25 suites passadas, 235 testes passados (1 ignorado)
+- Unit: 63 suites passadas, 270 testes passados (1 ignorado)
 - E2E: 9 suites passadas, 46 testes passados
 - Observação: Warnings de serviços stubados (Soroban, ZK, PIX, Reserve) são esperados e não indicam falha.
 
 Cobertura (Unit — npm run test)
 
-- Statements: 35.37%
-- Branches: 32.97%
-- Functions: 32.88%
-- Lines: 35.94%
+- Statements: 35.11%
+- Branches: 33.33%
+- Functions: 31.33%
+- Lines: 35.41%
 
 Cobertura (E2E — npm run test:e2e)
 
