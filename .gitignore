@@ -45,3 +45,5 @@ apps/backend/node_modules/.prisma/
 
 # Redis/DB local data (if any)
 infra/docker-data/
+apps/backend/venv/
+agents/venv/

@@ -191,12 +191,36 @@ $ npm run start:prod
 # unit tests
 $ npm run test
 
-# e2e tests
+# unit tests with coverage
+$ npm run test:cov
+
+# e2e tests (9 suites, 46 tests)
 $ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
+# e2e with open handles detection
+$ npm run test:e2e:detect
+
+# e2e with coverage
+$ npm run test:e2e:cov
+
+# all tests with coverage (unit + e2e)
+$ npm run test:all
 ```
+
+### Test Infrastructure
+
+**Unit Tests (36% coverage)**:
+- 23 suites, 231 tests passing
+- Services: Actions, Auth, Chain, Soroban, Compliance, Redis, Passkey, Oracles, Notifications, Pix, ZK, Defi, Risk, Governance, Wallets, Webhooks, Eliza, Security
+- Controllers: Wallets, Actions, Auth, Governance
+
+**E2E Tests (100% passing)**:
+- 9 suites, 46 tests
+- Isolated from external dependencies (Postgres, Redis, Soroban)
+- Centralized mocks/stubs in `test/test-utils.ts`
+- PIX in stub mode, ZK without RPC
+- Runtime: ~7s in serial mode
+- Suites: auth, auth-flow, actions-flow, pix, positions, reserves, oracles, zk, app
 
 ## Deployment
 

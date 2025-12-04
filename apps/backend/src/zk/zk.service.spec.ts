@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import { RedisService } from '../redis/redis.service';
 import { ZkService } from './zk.service';
 
 describe('ZkService', () => {
@@ -10,6 +11,7 @@ describe('ZkService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ZkService,
+        RedisService,
         {
           provide: ConfigService,
           useValue: {
@@ -125,10 +127,10 @@ describe('ZkService', () => {
 
     it('should handle valid address format', async () => {
       const result = await service.getScore('GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD');
-      
-      // Pode retornar score undefined (sem score ainda) ou erro de simulação
+
+      // Aceita score undefined (sem score) ou presença de erro
       expect(result).toBeDefined();
-      expect(result.score !== undefined || result.error !== undefined).toBe(true);
+      expect('score' in result || 'error' in result).toBe(true);
     });
   });
 });

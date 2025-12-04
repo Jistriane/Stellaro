@@ -3,6 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { RedisService } from '../src/redis/redis.service';
+import { ReserveManagerService } from '../src/compliance/reserve-manager.service';
+import { IngestorService } from '../src/analytics/ingestor.service';
+import { createIngestorStub, createPrismaMock, createRedisStub, createReserveManagerStub } from './test-utils';
 import { createHmac } from 'crypto';
 
 describe('PIX Payments (e2e)', () => {
@@ -14,7 +18,16 @@ describe('PIX Payments (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue(createPrismaMock())
+      .overrideProvider(RedisService)
+      .useValue(createRedisStub())
+      .overrideProvider(ReserveManagerService)
+      .useValue(createReserveManagerStub())
+      .overrideProvider(IngestorService)
+      .useValue(createIngestorStub())
+      .compile();
 
     app = moduleFixture.createNestApplication();
     prisma = app.get<PrismaService>(PrismaService);
@@ -44,6 +57,7 @@ describe('PIX Payments (e2e)', () => {
   });
 
   afterAll(async () => {
+    // Cleanup in-memory stores
     await prisma.pixPayment.deleteMany({});
     await prisma.pixWithdrawal.deleteMany({});
     await prisma.user.deleteMany({ where: { email: 'pix-test@stellaro.com' } });

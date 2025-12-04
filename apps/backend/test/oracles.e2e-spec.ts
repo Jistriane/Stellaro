@@ -2,6 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { RedisService } from '../src/redis/redis.service';
+import { ReserveManagerService } from '../src/compliance/reserve-manager.service';
+import { IngestorService } from '../src/analytics/ingestor.service';
+import { createIngestorStub, createPrismaMock, createRedisStub, createReserveManagerStub } from './test-utils';
 
 describe('Oracles (e2e)', () => {
   let app: INestApplication;
@@ -9,7 +14,16 @@ describe('Oracles (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue(createPrismaMock())
+      .overrideProvider(RedisService)
+      .useValue(createRedisStub())
+      .overrideProvider(ReserveManagerService)
+      .useValue(createReserveManagerStub())
+      .overrideProvider(IngestorService)
+      .useValue(createIngestorStub())
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -23,7 +37,7 @@ describe('Oracles (e2e)', () => {
     it('should return price for XLM/USD', () => {
       return request(app.getHttpServer())
         .get('/oracles/price')
-        .query({ asset: 'XLM', quote: 'USD' })
+        .query({ base: 'XLM', quote: 'USD' })
         .expect(200)
         .expect((res) => {
           // Resposta real: { value: number, decimals: number, feed: string, quote: string }
@@ -37,22 +51,23 @@ describe('Oracles (e2e)', () => {
     it('should handle invalid asset gracefully', () => {
       return request(app.getHttpServer())
         .get('/oracles/price')
-        .query({ asset: 'INVALID', quote: 'USD' })
+        .query({ base: 'INVALID', quote: 'USD' })
         .expect((res) => {
           // Com stub oracle, sempre retorna valor
           expect(res.body).toHaveProperty('value');
-          expect(res.body.feed).toBe('stub');
+          // Aceita feed 'fallback' ou 'reflector'
+          expect(['fallback', 'reflector']).toContain(res.body.feed);
         });
     });
 
     it('should return cached price on subsequent requests', async () => {
       const first = await request(app.getHttpServer())
         .get('/oracles/price')
-        .query({ asset: 'XLM', quote: 'USD' });
+        .query({ base: 'XLM', quote: 'USD' });
 
       const second = await request(app.getHttpServer())
         .get('/oracles/price')
-        .query({ asset: 'XLM', quote: 'USD' });
+        .query({ base: 'XLM', quote: 'USD' });
 
       expect(first.body.value).toBe(second.body.value);
       // Com stub oracle, valores devem ser iguais

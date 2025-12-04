@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MetricsController } from './metrics/metrics.controller';
+import { HealthController } from './health/health.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { WalletsModule } from './wallets/wallets.module';
@@ -23,11 +25,23 @@ import { PasskeyModule } from './passkey/passkey.module';
 import { SecurityModule } from './security/security.module';
 import { ZkModule } from './zk/zk.module';
 import { RedisModule } from './redis/redis.module';
-import { ReflectorModule } from './reflector/reflector.module';
+// ReflectorModule optionally loaded in non-test env to avoid optional deps during E2E
+
+const isTest = process.env.NODE_ENV === 'test';
+let optionalReflectorModules: any[] = [];
+if (!isTest) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { ReflectorModule } = require('./reflector/reflector.module');
+  optionalReflectorModules = [ReflectorModule];
+}
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      ignoreEnvFile: false,
+      envFilePath: ['.env.test', '.env'],
+    }),
     PrismaModule,
     AuthModule,
     WalletsModule,
@@ -49,9 +63,9 @@ import { ReflectorModule } from './reflector/reflector.module';
     SecurityModule,
     RedisModule,
     ZkModule,
-    ReflectorModule,
+    ...optionalReflectorModules,
   ],
-  controllers: [AppController],
+  controllers: [AppController, MetricsController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}

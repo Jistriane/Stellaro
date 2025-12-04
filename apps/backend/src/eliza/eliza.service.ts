@@ -70,6 +70,10 @@ export class ElizaService implements OnModuleInit {
         this.logger.error('Eliza tick failed', e as Error),
       );
     }, intervalMs);
+    
+    // Prevent timer from blocking process exit in tests
+    this.timer.unref();
+    
     this.logger.log(`Eliza agent started. Tick interval: ${intervalMs}ms`);
     return { started: true };
   }
@@ -109,31 +113,50 @@ export class ElizaService implements OnModuleInit {
         `Triggering ${agent} action: ${action} with payload: ${JSON.stringify(payload)}`,
       );
 
-      // In production: call Python agent service via HTTP
-      // For now, mock response
-      const mockResponse = {
+      // Call Python agent service via HTTP
+      const url = `${this.agentServiceUrl}/agent/action`;
+      const response = await axios.post(url, {
         agent,
         action,
-        timestamp: new Date().toISOString(),
-        result: {
-          success: true,
-          message: `${agent}.${action} executed successfully (MOCK)`,
-          payload,
-        },
-      };
+        payload,
+      });
 
       // Log to memory
       await this.memory.logEvent('multi-agent', `${agent}.${action}`, {
         payload,
-        result: mockResponse.result,
+        result: response.data.result,
       });
 
-      return mockResponse;
+      return response.data;
     } catch (error) {
       this.logger.error(
         `Failed to trigger ${agent}.${action}`,
         error as Error,
       );
+      
+      // Fallback to mock response for development
+      if (process.env.NODE_ENV === 'development') {
+        this.logger.warn(`Using mock response for ${agent}.${action}`);
+        const mockResponse = {
+          agent,
+          action,
+          timestamp: new Date().toISOString(),
+          result: {
+            success: true,
+            message: `${agent}.${action} executed successfully (MOCK)`,
+            payload,
+          },
+        };
+        
+        await this.memory.logEvent('multi-agent', `${agent}.${action}`, {
+          payload,
+          result: mockResponse.result,
+          mock: true,
+        });
+        
+        return mockResponse;
+      }
+      
       throw error;
     }
   }
@@ -150,33 +173,55 @@ export class ElizaService implements OnModuleInit {
         `Orchestrating workflow: ${workflow} with payload: ${JSON.stringify(payload)}`,
       );
 
-      // In production: call Python orchestrator service
-      // For now, simulate workflow execution
-      let workflowResult;
-
-      switch (workflow) {
-        case 'safe_optimization':
-          workflowResult = await this.executeSafeOptimization(payload);
-          break;
-        case 'transaction_compliance':
-          workflowResult = await this.executeTransactionCompliance(payload);
-          break;
-        case 'monitor_mitigate':
-          workflowResult = await this.executeMonitorMitigate(payload);
-          break;
-        default:
-          throw new Error(`Unknown workflow: ${workflow}`);
-      }
+      // Call Python orchestrator service via HTTP
+      const url = `${this.agentServiceUrl}/orchestrate/workflow`;
+      const response = await axios.post(url, {
+        workflow,
+        payload,
+      });
 
       // Log to memory
       await this.memory.logEvent('orchestration', workflow, {
         payload,
-        result: workflowResult,
+        result: response.data.result,
       });
 
-      return workflowResult;
+      return response.data;
     } catch (error) {
       this.logger.error(`Workflow ${workflow} failed`, error as Error);
+      
+      // Fallback to mock workflow execution for development
+      if (process.env.NODE_ENV === 'development') {
+        this.logger.warn(`Using mock workflow for ${workflow}`);
+        
+        let workflowResult;
+        switch (workflow) {
+          case 'safe_optimization':
+            workflowResult = await this.executeSafeOptimization(payload);
+            break;
+          case 'transaction_compliance':
+            workflowResult = await this.executeTransactionCompliance(payload);
+            break;
+          case 'monitor_mitigate':
+            workflowResult = await this.executeMonitorMitigate(payload);
+            break;
+          default:
+            throw new Error(`Unknown workflow: ${workflow}`);
+        }
+
+        await this.memory.logEvent('orchestration', workflow, {
+          payload,
+          result: workflowResult,
+          mock: true,
+        });
+
+        return {
+          success: true,
+          workflow,
+          result: workflowResult,
+        };
+      }
+      
       throw error;
     }
   }

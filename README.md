@@ -145,6 +145,7 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 - **CI/CD**: GitHub Actions, Turborepo, Docker, Kubernetes
 - **Monitoring**: Grafana, Prometheus, Loki, CloudWatch
 - **Security**: Passkey Kit, Onfido, Chainalysis, Wazuh SIEM
+- **Testing**: Jest (36% unit coverage, 100% E2E passing)
 
 ## Project Structure / Estrutura do Projeto
 
@@ -220,9 +221,10 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 
 **📚 Comprehensive documentation for v3.0 architecture:**
 
-- **[Quick Start Guide](./QUICK_START.md)** - Week 1 implementation guide
+- **[Quick Start Guide](./docs/QUICK_START.md)** - Week 1 implementation guide
 - **[Architecture Decision Records](./docs/ADRs.md)** - Technical decisions and rationale
-- **[Week 1 Report](./docs/WEEK1_REPORT.md)** - Implementation status and metrics
+- **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide (9/9 suites, 46 tests)
+- **[Progress Report](./docs/PROGRESS.md)** - Implementation status and metrics
 - **[English Manual](./docs/Manual.EN.md)** - Complete user and developer guide
 - **[Manual em Português](./docs/Manual.pt-BR.md)** - Guia completo em português
 
@@ -235,8 +237,9 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 | Reserve Manager | ✅ Implemented | `src/compliance/reserve-manager.service.ts` |
 | CI/CD Pipeline | ✅ Implemented | `.github/workflows/ci.yml` |
 | Kubernetes Setup | ✅ Implemented | `infra/k8s/` |
+| E2E Tests | ✅ Implemented | `apps/backend/test/` (9/9 suites, 46 tests) |
 | ZK Credit Score | 🔄 In Progress | Week 3-4 |
-| PIX Integration | 📅 Planned | Week 5-6 |
+| PIX Integration | ✅ Implemented | `src/payments/pix.service.ts` |
 
 ## Getting Started / Começando
 

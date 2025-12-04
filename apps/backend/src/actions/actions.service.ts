@@ -133,13 +133,18 @@ export class ActionsService {
     error?: string;
   }> {
     try {
+      const exposureNum = parseFloat(params.exposure);
+      if (!isFinite(exposureNum)) {
+        throw new Error('Invalid exposure');
+      }
+      const ratio = params.targetHedgeRatio;
+      if (ratio < 0 || ratio > 100) {
+        throw new Error('Invalid hedge ratio');
+      }
       if (params.dryRun) {
         this.logger.log(`Dry-run auto hedge for ${params.asset}: ${params.exposure}`);
         
-        const hedgedAmount = (
-          parseFloat(params.exposure) *
-          (params.targetHedgeRatio / 100)
-        ).toString();
+        const hedgedAmount = (exposureNum * (ratio / 100)).toString();
         
         return {
           ok: true,
@@ -152,10 +157,7 @@ export class ActionsService {
       // Implementar hedge via swaps ou derivativos
       this.logger.log(`Executing auto hedge for ${params.asset}`);
       
-      const hedgedAmount = (
-        parseFloat(params.exposure) *
-        (params.targetHedgeRatio / 100)
-      ).toString();
+      const hedgedAmount = (exposureNum * (ratio / 100)).toString();
 
       return {
         ok: true,
