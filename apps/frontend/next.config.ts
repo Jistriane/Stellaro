@@ -12,7 +12,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  staticPageGenerationTimeout: 120,
+  // Skip generating the error page during static generation
+  experimental: {
+    ppr: 'incremental',
+  },
 };
 
 export default withNextIntl(nextConfig);
