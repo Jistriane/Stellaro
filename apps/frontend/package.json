@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "TURBOPACK=false next build",
+    "build": "next build",
+    "build:vercel": "bash build-production.sh",
     "start": "next start",
     "lint": "eslint"
   },
