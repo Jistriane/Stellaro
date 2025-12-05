@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "build:frontend": "cd apps/frontend && TURBOPACK=false npm run build",
     "lint": "turbo lint",
     "test": "turbo test",
     "eliza": "elizaos",
