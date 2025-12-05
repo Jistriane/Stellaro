@@ -1,7 +1,7 @@
 {
-  "buildCommand": "npm install && cd apps/frontend && TURBOPACK=false npm run build",
+  "buildCommand": "./build.sh",
   "outputDirectory": "apps/frontend/.next",
-  "installCommand": "",
+  "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_NETWORK": "testnet",
     "TURBOPACK": "false"
