@@ -36,7 +36,7 @@ enum DataKey {
 #[cfg(test)]
 mod test {
     use super::*;
-    use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
+    use soroban_sdk::testutils::{Address as _, Ledger};
 
     #[test]
     fn init_and_admin_controls() {
@@ -48,9 +48,8 @@ mod test {
         env.ledger().set(li);
 
         let admin = Address::generate(&env);
-        let user1 = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
 
         // init configura thresholds e flags iniciais
@@ -70,7 +69,7 @@ mod test {
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
 
         client.init(&admin, &800u32);
@@ -87,9 +86,8 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let user2 = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
 
         client.init(&admin, &700u32);
@@ -111,7 +109,7 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
         // Deve panicar porque user1 não é admin
@@ -125,7 +123,7 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &800u32);
         // Não admin tentando mint -> panica
@@ -140,7 +138,7 @@ mod test {
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
         let user2 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &700u32);
         client.mint_guarded(&admin, &user1, &200u128, &100u32);
@@ -154,7 +152,7 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
         
@@ -174,7 +172,7 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
         
@@ -193,7 +191,7 @@ mod test {
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
         let user2 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
         
@@ -210,7 +208,7 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
         
@@ -229,7 +227,7 @@ mod test {
         env.mock_all_auths();
         let admin = Address::generate(&env);
         let user1 = Address::generate(&env);
-        let contract_id = env.register_contract(None, StablecoinContract);
+        let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
         
@@ -424,7 +422,7 @@ impl StablecoinContract {
 
     pub fn mint_guarded(env: Env, caller: Address, to: Address, amount: u128, current_risk_bps: u32) {
         // Reentrancy guard
-        acquire_lock(&env);
+        let _ = acquire_lock(&env);
         
         // Política: admin-only e só mint se risco atual < threshold e destino não bloqueado
         caller.require_auth();
@@ -464,7 +462,7 @@ impl StablecoinContract {
 
     pub fn burn(env: Env, caller: Address, from: Address, amount: u128) {
         // Reentrancy guard
-        acquire_lock(&env);
+        let _ = acquire_lock(&env);
         
         // Somente o próprio "from" pode queimar o seu saldo (ou políticas futuras)
         caller.require_auth();
@@ -499,7 +497,7 @@ impl StablecoinContract {
     // Clawback admin-only: reduz saldo do endereço e totalSupply
     pub fn clawback(env: Env, caller: Address, from: Address, amount: u128) {
         // Reentrancy guard
-        acquire_lock(&env);
+        let _ = acquire_lock(&env);
         
         let admin: Address = env
             .storage()

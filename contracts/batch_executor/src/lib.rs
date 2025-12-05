@@ -8,7 +8,7 @@
 //! - Access control
 //! - Gas optimization através de batching
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol, Vec, BytesN, vec as soroban_vec};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Vec, BytesN, vec as soroban_vec};
 
 /// Tipo de operação suportada
 #[derive(Clone, Debug, PartialEq)]
@@ -72,6 +72,20 @@ impl From<Error> for soroban_sdk::Error {
     }
 }
 
+impl From<&Error> for soroban_sdk::Error {
+    fn from(e: &Error) -> Self {
+        soroban_sdk::Error::from_contract_error(*e as u32)
+    }
+}
+
+impl TryFrom<soroban_sdk::Error> for Error {
+    type Error = soroban_sdk::Error;
+    
+    fn try_from(e: soroban_sdk::Error) -> Result<Self, Self::Error> {
+        Err(e)
+    }
+}
+
 // Helper functions
 fn read_bool(env: &Env, key: &DataKey) -> bool {
     env.storage()
@@ -122,9 +136,6 @@ impl BatchExecutor {
         env.storage().persistent().set(&DataKey::Admin, &admin);
         write_u64(&env, &DataKey::ExecutionCount, 0);
         write_u64(&env, &DataKey::TotalGasSaved, 0);
-
-        let evt = Symbol::new(&env, "init");
-        env.events().publish((evt,), ());
 
         Ok(())
     }
@@ -184,13 +195,6 @@ impl BatchExecutor {
         let total_saved = read_u64(&env, &DataKey::TotalGasSaved);
         write_u64(&env, &DataKey::TotalGasSaved, total_saved + gas_saved);
 
-        // Evento de sucesso
-        let evt = Symbol::new(&env, "batch_executed");
-        env.events().publish(
-            (evt, operations.len()),
-            (total_gas, gas_saved),
-        );
-
         release_lock(&env);
         Ok(results)
     }
@@ -208,7 +212,7 @@ impl BatchExecutor {
             OperationType::Payment => {
                 // Transferência simples
                 // Em produção: integrar com token contract
-                Self::execute_payment(env, &operation.target, operation.amount, signer)?
+                Self::execute_payment(env, operation, signer, &operation.target, signer)?
             }
             OperationType::Swap => {
                 // Swap via DEX
@@ -242,76 +246,64 @@ impl BatchExecutor {
     // Operações individuais (stubs - integrar com contratos reais)
     
     fn execute_payment(
-        env: &Env,
-        to: &Address,
-        amount: i128,
-        from: &Address,
+        _env: &Env,
+        operation: &Operation,
+        _signer: &Address,
+        _to: &Address,
+        _from: &Address,
     ) -> Result<i128, Error> {
-        if amount <= 0 {
+        if operation.amount <= 0 {
             return Err(Error::InvalidOperation);
         }
 
         // TODO: Integrar com token contract real
         // token.transfer(from, to, amount)?;
 
-        let evt = Symbol::new(env, "payment");
-        env.events().publish((evt, from, to), amount);
-
-        Ok(amount)
+        Ok(operation.amount)
     }
 
     fn execute_swap(
-        env: &Env,
+        _env: &Env,
         operation: &Operation,
-        signer: &Address,
+        _signer: &Address,
     ) -> Result<i128, Error> {
         // TODO: Integrar com Soroswap
-        let evt = Symbol::new(env, "swap");
-        env.events().publish((evt, signer), operation.amount);
         Ok(operation.amount)
     }
 
     fn execute_supply(
-        env: &Env,
+        _env: &Env,
         operation: &Operation,
-        signer: &Address,
+        _signer: &Address,
     ) -> Result<i128, Error> {
         // TODO: Integrar com loans_pool contract
-        let evt = Symbol::new(env, "supply");
-        env.events().publish((evt, signer), operation.amount);
         Ok(operation.amount)
     }
 
     fn execute_borrow(
-        env: &Env,
+        _env: &Env,
         operation: &Operation,
-        signer: &Address,
+        _signer: &Address,
     ) -> Result<i128, Error> {
         // TODO: Integrar com loans_pool contract
-        let evt = Symbol::new(env, "borrow");
-        env.events().publish((evt, signer), operation.amount);
         Ok(operation.amount)
     }
 
     fn execute_repay(
-        env: &Env,
+        _env: &Env,
         operation: &Operation,
-        signer: &Address,
+        _signer: &Address,
     ) -> Result<i128, Error> {
         // TODO: Integrar com loans_pool contract
-        let evt = Symbol::new(env, "repay");
-        env.events().publish((evt, signer), operation.amount);
         Ok(operation.amount)
     }
 
     fn execute_withdraw(
-        env: &Env,
+        _env: &Env,
         operation: &Operation,
-        signer: &Address,
+        _signer: &Address,
     ) -> Result<i128, Error> {
         // TODO: Integrar com loans_pool contract
-        let evt = Symbol::new(env, "withdraw");
-        env.events().publish((evt, signer), operation.amount);
         Ok(operation.amount)
     }
 
@@ -344,7 +336,7 @@ mod test {
         env.mock_all_auths();
 
         let admin = Address::generate(&env);
-        let contract_id = env.register_contract(None, BatchExecutor);
+        let contract_id = env.register(BatchExecutor, ());
         let client = BatchExecutorClient::new(&env, &contract_id);
 
         client.init(&admin);
@@ -363,7 +355,7 @@ mod test {
         let recipient1 = Address::generate(&env);
         let recipient2 = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, BatchExecutor);
+        let contract_id = env.register(BatchExecutor, ());
         let client = BatchExecutorClient::new(&env, &contract_id);
 
         client.init(&admin);
@@ -402,7 +394,7 @@ mod test {
         let admin = Address::generate(&env);
         let user = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, BatchExecutor);
+        let contract_id = env.register(BatchExecutor, ());
         let client = BatchExecutorClient::new(&env, &contract_id);
 
         client.init(&admin);

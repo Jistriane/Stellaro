@@ -348,7 +348,7 @@ impl ZkVerifierContract {
 #[cfg(test)]
 mod test {
     use super::*;
-    use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
+    use soroban_sdk::testutils::{Address as _, Ledger};
 
     #[test]
     fn test_init_and_verify_stub() {
@@ -361,7 +361,7 @@ mod test {
         // Create dummy verification key (32 bytes)
         let vkey = BytesN::from_array(&env, &[1u8; 32]);
         
-        let contract_id = env.register_contract(None, ZkVerifierContract);
+        let contract_id = env.register(ZkVerifierContract, ());
         let client = ZkVerifierContractClient::new(&env, &contract_id);
         
         // Initialize
@@ -405,7 +405,7 @@ mod test {
         let user = Address::generate(&env);
         let vkey = BytesN::from_array(&env, &[1u8; 32]);
         
-        let contract_id = env.register_contract(None, ZkVerifierContract);
+        let contract_id = env.register(ZkVerifierContract, ());
         let client = ZkVerifierContractClient::new(&env, &contract_id);
         
         client.init(&admin, &vkey, &600);
@@ -439,7 +439,7 @@ mod test {
         let user = Address::generate(&env);
         let vkey = BytesN::from_array(&env, &[1u8; 32]);
         
-        let contract_id = env.register_contract(None, ZkVerifierContract);
+        let contract_id = env.register(ZkVerifierContract, ());
         let client = ZkVerifierContractClient::new(&env, &contract_id);
         
         client.init(&admin, &vkey, &600);
@@ -463,7 +463,7 @@ mod test {
 
     #[test]
     fn test_score_expiry() {
-        let mut env = Env::default();
+        let env = Env::default();
         env.mock_all_auths();
         env.ledger().with_mut(|li| li.timestamp = 1000);
         
@@ -471,7 +471,7 @@ mod test {
         let user = Address::generate(&env);
         let vkey = BytesN::from_array(&env, &[1u8; 32]);
         
-        let contract_id = env.register_contract(None, ZkVerifierContract);
+        let contract_id = env.register(ZkVerifierContract, ());
         let client = ZkVerifierContractClient::new(&env, &contract_id);
         
         client.init(&admin, &vkey, &600);

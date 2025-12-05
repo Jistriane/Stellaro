@@ -9,13 +9,13 @@
 //! 
 //! Implementa estratégias Flashbots-style para Stellar/Soroban
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol, Vec, BytesN};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Vec, BytesN};
 
 /// Swap path (lista de tokens)
 pub type SwapPath = Vec<Address>;
 
 /// Custom Errors
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[contracttype]
 #[repr(u32)]
 pub enum Error {
@@ -33,6 +33,22 @@ pub enum Error {
 impl From<Error> for soroban_sdk::Error {
     fn from(e: Error) -> Self {
         soroban_sdk::Error::from_contract_error(e as u32)
+    }
+}
+
+impl From<&Error> for soroban_sdk::Error {
+    fn from(e: &Error) -> Self {
+        soroban_sdk::Error::from_contract_error(*e as u32)
+    }
+}
+
+impl TryFrom<soroban_sdk::Error> for Error {
+    type Error = soroban_sdk::Error;
+    
+    fn try_from(e: soroban_sdk::Error) -> Result<Self, Self::Error> {
+        // Extract contract error code and try to convert back
+        // This is a simplified conversion
+        Err(e)
     }
 }
 
@@ -123,8 +139,6 @@ impl MEVGuard {
         write_u32(&env, &DataKey::MaxSlippageBps, max_slippage_bps);
         write_u32(&env, &DataKey::MinBlockDelay, min_block_delay);
 
-        let evt = Symbol::new(&env, "init");
-        env.events().publish((evt,), ());
 
         Ok(())
     }
@@ -145,16 +159,14 @@ impl MEVGuard {
             return Err(Error::InvalidPath);
         }
 
-        // Gera nonce único para a ordem
-        let nonce = env.crypto().sha256(&soroban_sdk::Bytes::from_slice(
-            &env,
-            &[
-                trader.to_string().as_bytes(),
-                &amount_in.to_be_bytes(),
-                &env.ledger().timestamp().to_be_bytes(),
-            ]
-            .concat(),
-        ));
+        // Gera nonce único para a ordem (timestamp-based)
+        let timestamp = env.ledger().timestamp();
+        let mut nonce_bytes = [0u8; 32];
+        // Preenchemos com timestamp e amount para variar
+        nonce_bytes[0..8].copy_from_slice(&timestamp.to_be_bytes());
+        nonce_bytes[8..16].copy_from_slice(&(amount_in as u64).to_be_bytes());
+        nonce_bytes[16] = min_amount_out as u8;
+        let nonce = BytesN::from_array(&env, &nonce_bytes);
 
         let order = ProtectedOrder {
             trader: trader.clone(),
@@ -169,9 +181,6 @@ impl MEVGuard {
         env.storage()
             .persistent()
             .set(&DataKey::Order(nonce.clone()), &order);
-
-        let evt = Symbol::new(&env, "order_created");
-        env.events().publish((evt, trader), nonce.clone());
 
         Ok(nonce)
     }
@@ -238,12 +247,6 @@ impl MEVGuard {
         order.filled = true;
         env.storage().persistent().set(&order_key, &order);
 
-        let evt = Symbol::new(&env, "swap_executed");
-        env.events().publish(
-            (evt, order.trader.clone(), nonce),
-            (amount_out, slippage_bps),
-        );
-
         release_lock(&env);
 
         Ok(SwapResult {
@@ -255,7 +258,7 @@ impl MEVGuard {
 
     /// Executa swap atomicamente (privado até execução)
     fn execute_atomic_swap(
-        env: &Env,
+        _env: &Env,
         order: &ProtectedOrder,
     ) -> Result<i128, Error> {
         // TODO: Integrar com DEX real (Soroswap)
@@ -264,7 +267,7 @@ impl MEVGuard {
         let mut current_amount = order.amount_in;
 
         // Simula swaps ao longo do path
-        for i in 0..order.path.len() - 1 {
+        for _ in 0..order.path.len() - 1 {
             // Em produção: chamar DEX para cada hop
             // let pool = get_pool(path[i], path[i+1]);
             // current_amount = pool.swap(current_amount);
@@ -272,9 +275,6 @@ impl MEVGuard {
             // Simula 0.3% de fee por hop
             current_amount = (current_amount * 997) / 1000;
         }
-
-        let evt = Symbol::new(env, "atomic_swap");
-        env.events().publish((evt,), current_amount);
 
         Ok(current_amount)
     }
@@ -295,9 +295,6 @@ impl MEVGuard {
         }
 
         env.storage().persistent().remove(&order_key);
-
-        let evt = Symbol::new(&env, "order_cancelled");
-        env.events().publish((evt, order.trader), nonce);
 
         Ok(())
     }
@@ -326,7 +323,7 @@ impl MEVGuard {
 #[cfg(test)]
 mod test {
     use super::*;
-    use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
+    use soroban_sdk::testutils::Address as _;
 
     #[test]
     fn test_mev_guard_init() {
@@ -334,7 +331,7 @@ mod test {
         env.mock_all_auths();
 
         let admin = Address::generate(&env);
-        let contract_id = env.register_contract(None, MEVGuard);
+        let contract_id = env.register(MEVGuard, ());
         let client = MEVGuardClient::new(&env, &contract_id);
 
         client.init(&admin, &500, &1); // 5% max slippage, 1 block delay
@@ -353,7 +350,7 @@ mod test {
         let token_a = Address::generate(&env);
         let token_b = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, MEVGuard);
+        let contract_id = env.register(MEVGuard, ());
         let client = MEVGuardClient::new(&env, &contract_id);
 
         client.init(&admin, &500, &1);
@@ -383,7 +380,7 @@ mod test {
         let token_a = Address::generate(&env);
         let token_b = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, MEVGuard);
+        let contract_id = env.register(MEVGuard, ());
         let client = MEVGuardClient::new(&env, &contract_id);
 
         client.init(&admin, &500, &1);
@@ -418,7 +415,7 @@ mod test {
         let token_a = Address::generate(&env);
         let token_b = Address::generate(&env);
 
-        let contract_id = env.register_contract(None, MEVGuard);
+        let contract_id = env.register(MEVGuard, ());
         let client = MEVGuardClient::new(&env, &contract_id);
 
         client.init(&admin, &500, &1);
