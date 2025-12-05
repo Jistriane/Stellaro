@@ -1,5 +1,5 @@
 {
-  "buildCommand": "bash build.sh",
+  "buildCommand": "cd $VERCEL_BUILD_CWD && bash build.sh",
   "outputDirectory": "apps/frontend/.next",
   "installCommand": "npm install",
   "env": {
