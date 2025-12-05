@@ -1,10 +1,11 @@
 {
-  "buildCommand": "bash build.sh",
+  "buildCommand": "cd apps/frontend && TURBOPACK=false npm run build",
   "outputDirectory": "apps/frontend/.next",
   "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_NETWORK": "testnet",
     "TURBOPACK": "false"
   },
-  "regions": ["sfo1", "gru1"]
+  "regions": ["sfo1", "gru1"],
+  "ignoreCommand": "git diff --quiet $VERCEL_GIT_PREVIOUS_COMMIT $VERCEL_GIT_COMMIT -- apps/frontend"
 }

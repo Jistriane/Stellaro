@@ -3,7 +3,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**"]
+      "outputs": ["dist/**", ".next/**", "build/**"],
+      "env": ["TURBOPACK=false", "NEXT_PUBLIC_NETWORK=testnet"]
     },
     "dev": {
       "cache": false
