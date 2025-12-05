@@ -1,12 +1,12 @@
 # Stellaro DeFi - Testnet Deploy Summary
-**Data**: 2025-12-05  
-**Status**: ✅ SUCESSO
+**Date**: 2025-12-05  
+**Status**: ✅ SUCCESS
 
 ## 📋 Deploy Summary - TESTNET
 
-### ✅ Contratos Deployados com Sucesso (6/6)
+### ✅ Successfully Deployed Contracts (6/6)
 
-| Contrato | Contract ID | Status | Explorer |
+| Contract | Contract ID | Status | Explorer |
 |----------|------------|--------|----------|
 | Stablecoin | `CA755Z32G3AXTIXC66AOZV3BG6TDCOFB67RSB2ICA2JXC2YBU4KTFBDH` | ✅ | [Link](https://stellar.expert/explorer/testnet/contract/CA755Z32G3AXTIXC66AOZV3BG6TDCOFB67RSB2ICA2JXC2YBU4KTFBDH) |
 | RiskLock | `CABBKKD56PZWR4B2DL7DLG6IZ3WQ6FDVT7IFQCQMJGJLQPL5SCT7TVZL` | ✅ | [Link](https://stellar.expert/explorer/testnet/contract/CABBKKD56PZWR4B2DL7DLG6IZ3WQ6FDVT7IFQCQMJGJLQPL5SCT7TVZL) |
@@ -15,69 +15,73 @@
 | Governance | `CCSUSUH2M65LQGYUJ7IY2HBYYXEMO3CKD7AEJDKB6NCOEOQ25GLKDFOY` | ✅ | [Link](https://stellar.expert/explorer/testnet/contract/CCSUSUH2M65LQGYUJ7IY2HBYYXEMO3CKD7AEJDKB6NCOEOQ25GLKDFOY) |
 | ZK Verifier | `CBJTI3QKUJGT4ERWAOMHSTSIQSIXXJKZAHHJDHESB3DT4N7GVTR2UZIU` | ✅ | [Link](https://stellar.expert/explorer/testnet/contract/CBJTI3QKUJGT4ERWAOMHSTSIQSIXXJKZAHHJDHESB3DT4N7GVTR2UZIU) |
 
-## 📊 Estatísticas
+## 📊 Statistics
 
-- **Tempo Total**: ~5-10 minutos
-- **Contratos**: 6/6 ✅
-- **Taxa de Sucesso**: 100%
-- **Custo**: 0 XLM (grátis em testnet)
+- **Total Time**: ~5-10 minutes
+- **Contracts**: 6/6 ✅
+- **Success Rate**: 100%
+- **Cost**: 0 XLM (free on testnet)
 
-## 🔧 Problemas Resolvidos
+## 🔧 Issues Resolved
 
-1. ✅ **WASM Target Incorreto** 
-   - Problema: Compilação em `wasm32-unknown-unknown` incompatível com Soroban
-   - Solução: Recompilação com `wasm32v1-none`
+1. ✅ **Incorrect WASM Target** 
+   - Problem: Compilation in `wasm32-unknown-unknown` incompatible with Soroban
+   - Solution: Recompilation with `wasm32v1-none`
 
-2. ✅ **Script de Deploy em Testnet**
-   - Problema: Bug no path relativo `./deploy_soroban.sh`
-   - Solução: Corrigido para usar path absoluto
+2. ✅ **Testnet Deploy Script**
+   - Problem: Bug in relative path `./deploy_soroban.sh`
+   - Solution: Fixed to use absolute path
 
-3. ✅ **Configuração de Rede**
-   - Problema: STELLAR_SECRET_KEY não era detectada
-   - Solução: Passada como variável de ambiente
+3. ✅ **Network Configuration**
+   - Problem: STELLAR_SECRET_KEY was not detected
+   - Solution: Passed as environment variable
 
-## 🚀 Próximos Passos para MAINNET
+## 🚀 Next Steps for MAINNET
 
-### 1️⃣ Adicionar Fundos (CRÍTICO)
+### 1️⃣ Add Funds (CRITICAL)
+
 ```bash
-# Adicione ~150 XLM à conta:
+# Add ~150 XLM to account:
 # GCKZ35K7GMUJBFKBOS2YM7FUHATM5FHHFGH7AVNGC5TXLFGV265G33QX
 
-# Saldo atual: 21.02 XLM
-# Necessário: ~20 XLM por contrato × 6 contratos = ~120 XLM total
-# Recomendado: +150 XLM (cushion para fees)
+# Current balance: 21.02 XLM
+# Required: ~20 XLM per contract × 6 contracts = ~120 XLM total
+# Recommended: +150 XLM (cushion for fees)
 ```
 
-### 2️⃣ Deploy em Mainnet
+
+### 2️⃣ Deploy to Mainnet
+
 ```bash
 export STELLAR_SECRET_KEY="SBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 echo "SIM" | ./infra/deploy_mainnet.sh
 ```
 
-### 3️⃣ Validação
-- Os Contract IDs serão salvos em `.env-dev`
-- Será criado `.env.production` para backend
-- Frontend será atualizado com IDs dos contratos
+### 3️⃣ Validation
 
-## 📝 Arquivos Gerados
+- Contract IDs will be saved to `.env-dev`
+- `.env.production` will be created for backend
+- Frontend will be updated with contract IDs
 
-- `.env-testnet` - Contract IDs e configuração de testnet
-- `deploy-testnet.log` - Log completo do deploy em testnet
-- `infra/test_contracts_testnet.sh` - Script de teste
+## 📝 Generated Files
 
-## 🎯 Aprendizados
+- `.env-testnet` - Contract IDs and testnet configuration
+- `deploy-testnet.log` - Full testnet deployment log
+- `infra/test_contracts_testnet.sh` - Test script
 
-1. **wasm32v1-none é obrigatório** para Soroban mainnet/testnet
-2. **Testnet é grátis** - perfeito para validação antes de mainnet
-3. **Deploy de contrato custa ~20 XLM** em mainnet
-4. **Timeout é esperado** - soroban-cli espera confirmação que pode levar tempo
+## 🎯 Key Learnings
 
-## ⚠️ Observações Importantes
+1. **wasm32v1-none is mandatory** for Soroban mainnet/testnet
+2. **Testnet is free** - perfect for validation before mainnet
+3. **Contract deployment costs ~20 XLM** on mainnet
+4. **Timeout is expected** - soroban-cli waits for confirmation which can take time
 
-- **19 XLM anterior**: A transação de mainnet foi bem-sucedida, mas o WASM estava errado
-- **Não é dinheiro perdido**: O deploy em testnet validou tudo que precisávamos
-- **Mainnet está pronto**: Basta adicionar fundos e executar deploy_mainnet.sh
+## ⚠️ Important Notes
+
+- **19 XLM earlier**: The mainnet transaction was successful, but the WASM was wrong
+- **Not money lost**: The testnet deployment validated everything we needed
+- **Mainnet is ready**: Just add funds and run deploy_mainnet.sh
 
 ---
 
-**Status Final**: 🟢 Pronto para Mainnet (aguardando fundos)
+**Final Status**: 🟢 Ready for Mainnet (waiting for funds)
