@@ -4,5 +4,7 @@
   "env": {
     "NEXT_PUBLIC_NETWORK": "testnet",
     "TURBOPACK": "false"
-  }
+  },
+  "installCommand": "npm install",
+  "framework": "nextjs"
 }
