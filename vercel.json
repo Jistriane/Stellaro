@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/frontend && npm run build",
+  "buildCommand": "/bin/bash -c 'cd apps/frontend && npm run build'",
   "outputDirectory": "apps/frontend/.next",
   "env": {
     "NEXT_PUBLIC_NETWORK": "testnet",
