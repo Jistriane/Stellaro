@@ -1,0 +1,39 @@
+# Dependencies and build artifacts
+node_modules
+.next
+dist
+build
+
+# Development files
+.env.local
+.env.*.local
+.git
+
+# Testing and documentation
+test
+tests
+coverage
+jest.config.js
+playwright.config.ts
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Project directories (not needed for frontend)
+agents/
+agents-ts/
+circuits/
+contracts/
+docs/
+infra/
+tools/
+test-results/
+
+# Config files not needed
+turbo.json
+tsconfig.json
+eslint.config.mjs
+README.md
+*.md
+
