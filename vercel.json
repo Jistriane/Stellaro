@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/frontend && bash build-production.sh",
+  "buildCommand": "bash apps/frontend/build-production.sh",
   "outputDirectory": "apps/frontend/.next",
   "installCommand": "npm install",
   "env": {
