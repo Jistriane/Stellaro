@@ -1,9 +1,8 @@
 {
-  "buildCommand": "npm --prefix=. run build",
+  "buildCommand": "npm --prefix=apps/frontend run build",
   "outputDirectory": "apps/frontend/.next",
   "env": {
-    "NEXT_PUBLIC_NETWORK": "testnet",
-    "TURBOPACK": "false"
+    "NEXT_PUBLIC_NETWORK": "testnet"
   },
   "framework": "nextjs"
 }
