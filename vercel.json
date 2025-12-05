@@ -1,11 +1,10 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "cd apps/frontend && npm run build",
   "outputDirectory": "apps/frontend/.next",
   "env": {
     "NEXT_PUBLIC_NETWORK": "testnet",
     "TURBOPACK": "false"
   },
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "rootDirectory": "apps/frontend"
+  "framework": "nextjs"
 }
