@@ -13,9 +13,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   staticPageGenerationTimeout: 120,
-  experimental: {
-    isrMemoryCacheSize: 0,
-  },
 };
 
 export default withNextIntl(nextConfig);
