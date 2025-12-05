@@ -9,4 +9,8 @@ docs/
 test-results/
 .turbo
 coverage/
+apps/backend
+apps/*/test
+apps/*/coverage
+
 
