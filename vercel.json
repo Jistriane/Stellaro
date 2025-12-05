@@ -1,5 +1,5 @@
 {
-  "buildCommand": "bash build-frontend.sh",
+  "buildCommand": "cd apps/frontend && TURBOPACK=false npm run build",
   "outputDirectory": "apps/frontend/.next",
   "env": {
     "NEXT_PUBLIC_NETWORK": "testnet",
