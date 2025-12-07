@@ -9,6 +9,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { SocketProvider } from "@/providers/SocketProvider";
 import Toasts from "@/components/Toasts";
 import LanguageToggle from "@/components/LanguageToggle";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,12 +46,16 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider locale={initialLocale} messages={messages} timeZone="UTC">
           <SocketProvider>
-            <Sidebar />
+            <Suspense fallback={null}>
+              <Sidebar />
+            </Suspense>
             <div className="min-h-screen pl-60">
               {/* Top bar */}
               <div className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur border-b border-slate-800">
                 <div className="flex items-center justify-between px-4 py-2">
-                  <Breadcrumbs />
+                  <Suspense fallback={null}>
+                    <Breadcrumbs />
+                  </Suspense>
                   <div className="flex items-center gap-3">
                     <span
                       className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-slate-700 text-slate-400"
@@ -58,7 +63,9 @@ export default async function RootLayout({
                     >
                       {initialLocale}
                     </span>
-                    <LanguageToggle />
+                    <Suspense fallback={null}>
+                      <LanguageToggle />
+                    </Suspense>
                   </div>
                 </div>
               </div>
@@ -66,7 +73,9 @@ export default async function RootLayout({
                 {children}
               </div>
             </div>
-            <Toasts />
+            <Suspense fallback={null}>
+              <Toasts />
+            </Suspense>
           </SocketProvider>
         </NextIntlClientProvider>
       </body>
