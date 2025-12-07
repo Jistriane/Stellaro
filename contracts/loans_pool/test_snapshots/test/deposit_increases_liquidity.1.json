@@ -20,7 +20,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                 },
                 {
-                  "u128": "1000"
+                  "u128": "1000000000"
                 }
               ]
             }
@@ -43,7 +43,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                 },
                 {
-                  "u128": "500"
+                  "u128": "500000000"
                 }
               ]
             }
@@ -199,7 +199,7 @@
                 },
                 "durability": "persistent",
                 "val": {
-                  "u32": 1500
+                  "u32": 1200
                 }
               }
             },
@@ -316,7 +316,7 @@
                 },
                 "durability": "persistent",
                 "val": {
-                  "u128": "1500"
+                  "u128": "1500000000"
                 }
               }
             },

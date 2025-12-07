@@ -20,7 +20,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                 },
                 {
-                  "u128": "10000"
+                  "u128": "10000000000"
                 }
               ]
             }
@@ -42,10 +42,10 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
                 },
                 {
-                  "u128": "500"
+                  "u128": "500000000"
                 },
                 {
-                  "u128": "1000"
+                  "u128": "1000000000"
                 }
               ]
             }
@@ -201,7 +201,7 @@
                 },
                 "durability": "persistent",
                 "val": {
-                  "u32": 1500
+                  "u32": 1200
                 }
               }
             },
@@ -285,7 +285,7 @@
                 },
                 "durability": "persistent",
                 "val": {
-                  "u128": "500"
+                  "u128": "500000000"
                 }
               }
             },
@@ -363,7 +363,7 @@
                 },
                 "durability": "persistent",
                 "val": {
-                  "u128": "9500"
+                  "u128": "9500000000"
                 }
               }
             },

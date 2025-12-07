@@ -19,7 +19,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
                 },
                 {
-                  "u32": 500
+                  "u32": 4000
                 }
               ]
             }
@@ -316,7 +316,7 @@
                 },
                 "durability": "persistent",
                 "val": {
-                  "u32": 500
+                  "u32": 4000
                 }
               }
             },

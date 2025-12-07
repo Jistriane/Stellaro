@@ -166,10 +166,10 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
+        client.init(&admin, &6000u32, &1200u32); // LTV 60%, Interest 12% annualized (mainnet realistic)
         let (ltv, interest) = client.params();
         assert_eq!(ltv, 6000u32);
-        assert_eq!(interest, 1500u32);
+        assert_eq!(interest, 1200u32);
         assert_eq!(client.total_liquidity(), 0u128);
     }
 
@@ -182,12 +182,12 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
-        client.deposit(&depositor, &1000u128);
-        assert_eq!(client.total_liquidity(), 1000u128);
+        client.init(&admin, &6000u32, &1200u32); // LTV 60%, 12% interest
+        client.deposit(&depositor, &1000000000u128); // 1B tokens
+        assert_eq!(client.total_liquidity(), 1000000000u128);
 
-        client.deposit(&depositor, &500u128);
-        assert_eq!(client.total_liquidity(), 1500u128);
+        client.deposit(&depositor, &500000000u128); // +500M
+        assert_eq!(client.total_liquidity(), 1500000000u128);
     }
 
     #[test]
@@ -200,13 +200,13 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32); // LTV 60%
-        client.deposit(&depositor, &10000u128);
+        client.init(&admin, &6000u32, &1200u32); // LTV 60%
+        client.deposit(&depositor, &10000000000u128); // 10B liquidity
 
-        // Collateral 1000 -> max borrow = 1000 * 0.60 = 600
-        client.borrow(&borrower, &600u128, &1000u128);
-        assert_eq!(client.position(&borrower), 600u128);
-        assert_eq!(client.total_liquidity(), 9400u128); // 10000 - 600
+        // Collateral 1B -> max borrow = 1B * 0.60 = 600M
+        client.borrow(&borrower, &600000000u128, &1000000000u128);
+        assert_eq!(client.position(&borrower), 600000000u128);
+        assert_eq!(client.total_liquidity(), 9400000000u128); // 10B - 600M
     }
 
     #[test]
@@ -220,11 +220,11 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
-        client.deposit(&depositor, &10000u128);
+        client.init(&admin, &6000u32, &1200u32);
+        client.deposit(&depositor, &10000000000u128);
 
-        // Tentar pegar 700 com collateral 1000 (max seria 600)
-        client.borrow(&borrower, &700u128, &1000u128);
+        // Tentar pegar 700M com collateral 1B (max seria 600M = 60% of 1B)
+        client.borrow(&borrower, &700000000u128, &1000000000u128);
     }
 
     #[test]
@@ -238,11 +238,11 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
-        client.deposit(&depositor, &100u128); // Pouca liquidez
+        client.init(&admin, &6000u32, &1200u32);
+        client.deposit(&depositor, &100000000u128); // Pouca liquidez - 100M (small for mainnet)
 
-        // LTV OK mas pool não tem fundos
-        client.borrow(&borrower, &500u128, &1000u128);
+        // LTV OK but pool não tem fundos para emprestar 500M
+        client.borrow(&borrower, &500000000u128, &1000000000u128);
     }
 
     #[test]
@@ -255,16 +255,16 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
-        client.deposit(&depositor, &10000u128);
-        client.borrow(&borrower, &600u128, &1000u128);
+        client.init(&admin, &6000u32, &1200u32);
+        client.deposit(&depositor, &10000000000u128);
 
-        assert_eq!(client.position(&borrower), 600u128);
-        assert_eq!(client.total_liquidity(), 9400u128);
+        client.borrow(&borrower, &600000000u128, &1000000000u128);
+        assert_eq!(client.position(&borrower), 600000000u128);
+        assert_eq!(client.total_liquidity(), 9400000000u128);
 
-        client.repay(&borrower, &300u128);
-        assert_eq!(client.position(&borrower), 300u128);
-        assert_eq!(client.total_liquidity(), 9700u128);
+        client.repay(&borrower, &300000000u128); // repay 300M
+        assert_eq!(client.position(&borrower), 300000000u128);
+        assert_eq!(client.total_liquidity(), 9700000000u128); // 9.4B + 300M
     }
 
     #[test]
@@ -278,12 +278,12 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
-        client.deposit(&depositor, &10000u128);
-        client.borrow(&borrower, &500u128, &1000u128);
+        client.init(&admin, &6000u32, &1200u32);
+        client.deposit(&depositor, &10000000000u128);
+        client.borrow(&borrower, &500000000u128, &1000000000u128);
 
         // Tentar pagar mais que deve
-        client.repay(&borrower, &600u128);
+        client.repay(&borrower, &600000000u128);
     }
 
     #[test]
@@ -295,7 +295,7 @@ mod test {
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &6000u32, &1500u32);
+        client.init(&admin, &6000u32, &1200u32);
         
         // Deposit max amount
         client.deposit(&depositor, &u128::MAX);
@@ -311,23 +311,31 @@ mod test {
         let env = Env::default();
         env.mock_all_auths();
         let admin = Address::generate(&env);
-        let depositor = Address::generate(&env);
+        let depositor1 = Address::generate(&env);
+        let depositor2 = Address::generate(&env);
         let borrower1 = Address::generate(&env);
         let borrower2 = Address::generate(&env);
         let contract_id = env.register(LoansPoolContract, ());
         let client = LoansPoolContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &5000u32, &1000u32); // LTV 50%
-        client.deposit(&depositor, &10000u128);
+        client.init(&admin, &6000u32, &1200u32); // LTV 60%
+        client.deposit(&depositor1, &5000000000u128); // 5B
+        client.deposit(&depositor2, &5000000000u128); // +5B = 10B total
 
-        // Borrower1 takes 400 with collateral 1000 (max 500)
-        client.borrow(&borrower1, &400u128, &1000u128);
-        assert_eq!(client.position(&borrower1), 400u128);
+        // Borrower1: 3B with 5B collateral (max = 3B = 60% of 5B)
+        client.borrow(&borrower1, &3000000000u128, &5000000000u128);
+        assert_eq!(client.position(&borrower1), 3000000000u128);
 
-        // Borrower2 takes 300 with collateral 800 (max 400)
-        client.borrow(&borrower2, &300u128, &800u128);
-        assert_eq!(client.position(&borrower2), 300u128);
+        // Borrower2: 4B with 7B collateral (max = 4.2B, borrow 4B = 57% of 7B)
+        client.borrow(&borrower2, &4000000000u128, &7000000000u128);
+        assert_eq!(client.position(&borrower2), 4000000000u128);
 
-        assert_eq!(client.total_liquidity(), 9300u128); // 10000 - 400 - 300
+        // Total liquidity: 10B - 3B - 4B = 3B
+        assert_eq!(client.total_liquidity(), 3000000000u128);
+        
+        // Repay 2B from borrower1
+        client.repay(&borrower1, &2000000000u128);
+        assert_eq!(client.position(&borrower1), 1000000000u128);
+        assert_eq!(client.total_liquidity(), 5000000000u128); // 3B + 2B
     }
 }

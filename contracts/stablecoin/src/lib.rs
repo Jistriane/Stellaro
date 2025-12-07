@@ -104,9 +104,9 @@ mod test {
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
 
-        // init configura thresholds e flags iniciais
-        client.init(&admin, &500u32);
-        assert_eq!(client.risk_threshold(), 500u32);
+        // init configura thresholds e flags iniciais - 4000 bps = 40% risk threshold for mainnet
+        client.init(&admin, &4000u32);
+        assert_eq!(client.risk_threshold(), 4000u32);
         assert_eq!(client.paused(), false);
 
         // Admin pode pausar
@@ -124,12 +124,12 @@ mod test {
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &800u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
 
         // Admin consegue mint quando risco atual < threshold
-        client.mint_guarded(&admin, &user1, &100u128, &500u32);
-        assert_eq!(client.balance_of(&user1), 100u128);
-        assert_eq!(client.total_supply(), 100u128);
+        client.mint_guarded(&admin, &user1, &1_000_000_000_000u128, &2000u32); // 1M tokens, 20% current risk
+        assert_eq!(client.balance_of(&user1), 1_000_000_000_000u128);
+        assert_eq!(client.total_supply(), 1_000_000_000_000u128);
     }
 
     #[test]
@@ -142,16 +142,16 @@ mod test {
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
 
-        client.init(&admin, &700u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
 
         // Admin cria saldo para user1
-        client.mint_guarded(&admin, &user1, &200u128, &100u32);
-        assert_eq!(client.balance_of(&user1), 200u128);
+        client.mint_guarded(&admin, &user1, &500_000_000_000u128, &1500u32); // 500k tokens, 15% risk
+        assert_eq!(client.balance_of(&user1), 500_000_000_000u128);
 
         // user1 queima seu próprio saldo
-        client.burn(&user1, &user1, &50u128);
-        assert_eq!(client.balance_of(&user1), 150u128);
-        assert_eq!(client.total_supply(), 150u128);
+        client.burn(&user1, &user1, &100_000_000_000u128); // queima 100k tokens
+        assert_eq!(client.balance_of(&user1), 400_000_000_000u128);
+        assert_eq!(client.total_supply(), 400_000_000_000u128);
     }
 
     #[test]
@@ -162,7 +162,7 @@ mod test {
         let user1 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &500u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         // Deve errar porque user1 não é admin
         expect_err(|| client.set_pause(&user1, &true));
     }
@@ -175,9 +175,9 @@ mod test {
         let user1 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &800u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         // Não admin tentando mint -> erro
-        expect_err(|| client.mint_guarded(&user1, &user1, &100u128, &100u32));
+        expect_err(|| client.mint_guarded(&user1, &user1, &1_000_000_000_000u128, &1500u32));
     }
 
     #[test]
@@ -189,10 +189,10 @@ mod test {
         let user2 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &700u32);
-        client.mint_guarded(&admin, &user1, &200u128, &100u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
+        client.mint_guarded(&admin, &user1, &500_000_000_000u128, &1500u32);
         // user2 tentando queimar saldo de user1 -> erro
-        expect_err(|| client.burn(&user2, &user1, &50u128));
+        expect_err(|| client.burn(&user2, &user1, &100_000_000_000u128));
     }
 
     #[test]
@@ -203,14 +203,14 @@ mod test {
         let user1 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &500u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         
         // Mint max amount
-        client.mint_guarded(&admin, &user1, &u128::MAX, &100u32);
+        client.mint_guarded(&admin, &user1, &u128::MAX, &0u32); // 0% risk to allow max mint
         assert_eq!(client.balance_of(&user1), u128::MAX);
-        
+
         // Try to mint more (should saturate, not overflow)
-        client.mint_guarded(&admin, &user1, &1u128, &100u32);
+        client.mint_guarded(&admin, &user1, &1u128, &0u32);
         assert_eq!(client.balance_of(&user1), u128::MAX);
     }
 
@@ -222,13 +222,13 @@ mod test {
         let user1 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &500u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         
-        // Mint 100 tokens
-        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        // Mint 1M tokens
+        client.mint_guarded(&admin, &user1, &1_000_000_000_000u128, &2000u32);
         
         // Try to burn more than balance (should error)
-        expect_err(|| client.burn(&user1, &user1, &101u128));
+        expect_err(|| client.burn(&user1, &user1, &1_000_000_000_001u128));
     }
 
     #[test]
@@ -240,12 +240,12 @@ mod test {
         let user2 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &500u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         
-        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        client.mint_guarded(&admin, &user1, &1_000_000_000_000u128, &2000u32);
         
         // Non-admin trying clawback should error
-        expect_err(|| client.clawback(&user2, &user1, &50u128));
+        expect_err(|| client.clawback(&user2, &user1, &500_000_000_000u128));
     }
 
     #[test]
@@ -256,14 +256,14 @@ mod test {
         let user1 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &500u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         
         // Lock user1
         client.lock(&admin, &user1);
         assert_eq!(client.is_locked(&user1), true);
         
         // Try to mint to locked address (should error)
-        expect_err(|| client.mint_guarded(&admin, &user1, &100u128, &100u32));
+        expect_err(|| client.mint_guarded(&admin, &user1, &1_000_000_000_000u128, &2000u32));
     }
 
     #[test]
@@ -274,16 +274,16 @@ mod test {
         let user1 = Address::generate(&env);
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
-        client.init(&admin, &500u32);
+        client.init(&admin, &4000u32); // 40% risk threshold
         
         // Mint first
-        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        client.mint_guarded(&admin, &user1, &1_000_000_000_000u128, &2000u32);
         
         // Lock user1
         client.lock(&admin, &user1);
         
         // Try to burn from locked address (should error)
-        expect_err(|| client.burn(&user1, &user1, &50u128));
+        expect_err(|| client.burn(&user1, &user1, &500_000_000_000u128));
     }
 }
 

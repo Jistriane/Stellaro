@@ -373,8 +373,8 @@ mod test {
         let contract_id = env.register(ZkVerifierContract, ());
         let client = ZkVerifierContractClient::new(&env, &contract_id);
         
-        // Initialize
-        client.init(&admin, &vkey, &600);
+        // Initialize with min_score=700 (realistic for mainnet creditworthiness)
+        client.init(&admin, &vkey, &700);
         
         // Create dummy proof (256 bytes, not all zeros)
         let mut proof_bytes = [0u8; 256];
