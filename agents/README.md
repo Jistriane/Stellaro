@@ -1,74 +1,74 @@
 # Stellaro Multi-Agent System
 
-Sistema multi-agente para gestão autônoma de DeFi na rede Stellar/Soroban.
+Multi-agent system for autonomous DeFi management on Stellar/Soroban.
 
 ## Agentes
 
 ### 1. Stellaro Agent
-**Responsabilidade:** Análise de risco e mitigação proativa
-- Monitora volatilidade de preços (via Reflector Oracle)
-- Detecta riscos de liquidez em pools Blend
-- Recomenda ações de mitigação (rebalanceamento, liquidação parcial)
-- Executa auto-hedging quando detecta riscos críticos
+**Responsibility:** Risk analysis and proactive mitigation
+- Monitors price volatility (via Reflector Oracle)
+- Detects liquidity risks in Blend pools
+- Recommends mitigation actions (rebalancing, partial liquidation)
+- Executes auto-hedging when critical risks are detected
 
 ### 2. TreasuryManager Agent
-**Responsabilidade:** Otimização de yield e gestão de tesouraria
-- Identifica oportunidades de migração para pools com maior APY
-- Auto-compounding de yields acumulados
-- Rebalanceamento inteligente entre pools
-- Gestão automatizada da tesouraria do protocolo
+**Responsibility:** Yield optimization and treasury management
+- Identifies migration opportunities to higher-APY pools
+- Auto-compounding of accumulated yields
+- Intelligent rebalancing across pools
+- Automated protocol treasury management
 
 ### 3. ComplianceBot Agent
-**Responsabilidade:** KYC/AML e conformidade regulatória
-- Validação de compliance em transações
-- Detecção de padrões suspeitos (structuring, layering, round amounts)
-- Enforcement de limites (volume diário, transação única)
-- Bloqueio de jurisdições não permitidas
+**Responsibility:** KYC/AML and regulatory compliance
+- Compliance validation on transactions
+- Detection of suspicious patterns (structuring, layering, round amounts)
+- Enforcement of limits (daily volume, single transaction)
+- Blocking disallowed jurisdictions
 
-## Orquestração
+## Orchestration
 
-O `StellaroAgentOrchestrator` coordena os agentes em workflows:
+The `StellaroAgentOrchestrator` coordinates agents in workflows:
 
 ### Workflow 1: Safe Treasury Optimization (Sequential)
 ```
 ComplianceBot → Stellaro → TreasuryManager
 ```
-1. Verifica compliance do endereço
-2. Analisa riscos do portfolio
-3. Otimiza yields (somente se riscos aceitáveis)
+1. Check address compliance
+2. Analyze portfolio risks
+3. Optimize yields (only if risks acceptable)
 
 ### Workflow 2: Transaction with Compliance (Sequential + Gate)
 ```
 ComplianceBot → [GATE] → Execute → Stellaro
 ```
-1. Valida compliance (bloqueia se falhar)
-2. Executa transação (apenas se aprovada)
-3. Monitora riscos pós-transação
+1. Validate compliance (block if it fails)
+2. Execute transaction (only if approved)
+3. Monitor post-transaction risks
 
 ### Workflow 3: Monitor & Mitigate (Concurrent)
 ```
 [Stellaro + ComplianceBot] → Auto-Mitigation
 ```
-1. Executa análise de risco e AML em paralelo
-2. Trigger auto-rebalancing se riscos altos
+1. Perform risk analysis and AML in parallel
+2. Trigger auto-rebalancing if risks are high
 
-## Instalação
+## Installation
 
-⚠️ **IMPORTANTE:** Microsoft Agent Framework está em preview e requer flag `--pre`
+⚠️ **IMPORTANT:** Microsoft Agent Framework is in preview and requires `--pre` flag
 
 ```bash
 cd agents
 pip install -r requirements.txt --pre
 ```
 
-## Configuração
+## Configuration
 
-1. Copie `.env.example` para `.env`:
+1. Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
 
-2. Configure variáveis de ambiente:
+2. Configure environment variables:
 ```env
 # GitHub Models (free tier)
 GITHUB_TOKEN=ghp_your_token_here
@@ -81,14 +81,14 @@ BACKEND_URL=http://localhost:3000
 REDIS_URL=redis://localhost:6379
 ```
 
-## Uso
+## Usage
 
-### Executar orquestrador de exemplo:
+### Run sample orchestrator:
 ```bash
 python orchestrator.py
 ```
 
-### Usar agentes individualmente:
+### Use agents individually:
 ```python
 from stellaro_agent import StellaroAgent
 from treasury_manager import TreasuryManagerAgent
@@ -114,16 +114,16 @@ check = await compliance_agent.check_transaction_compliance(
 print(check)
 ```
 
-## Integração com Backend
+## Integration with Backend
 
-Todos os agentes se comunicam com o backend NestJS via REST API:
+All agents communicate with the NestJS backend via REST API:
 
 - **Reflector Oracle:** `/oracles/reflector/price/:asset`
 - **Blend Protocol:** `/defi/blend/positions/:address`, `/defi/blend/optimal-pool/:asset`, `/defi/blend/rebalance`
 - **Compliance:** `/compliance/kyc-status/:address`
 - **Memory:** `/memory/history/:address`
 
-## Arquitetura
+## Architecture
 
 ```
 agents/
@@ -133,20 +133,20 @@ agents/
 ├── orchestrator.py         # Multi-Agent Orchestrator
 ├── requirements.txt        # Dependencies (--pre required)
 ├── .env.example           # Environment template
-└── README.md              # Este arquivo
+└── README.md              # This file
 ```
 
-## Próximos Passos
+## Next Steps
 
-- [ ] Integrar Microsoft Agent Framework para orquestração avançada
-- [ ] Adicionar GitHub Models para inferência LLM
-- [ ] Implementar handoff patterns entre agentes
-- [ ] Criar dashboard de monitoramento de agentes
-- [ ] Adicionar testes unitários e E2E
+- [ ] Integrate Microsoft Agent Framework for advanced orchestration
+- [ ] Add GitHub Models for LLM inference
+- [ ] Implement handoff patterns between agents
+- [ ] Create agent monitoring dashboard
+- [ ] Add unit and E2E tests
 
-## Notas Técnicas
+## Technical Notes
 
 - **Workflows:** Sequential (compliance gates), Concurrent (risk + AML), Conditional (mitigation triggers)
 - **Communication:** REST API calls via `httpx.AsyncClient`
-- **Error Handling:** Graceful degradation com fallbacks
-- **Observability:** Logs estruturados em cada agente
+- **Error Handling:** Graceful degradation with fallbacks
+- **Observability:** Structured logs in each agent

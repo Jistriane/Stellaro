@@ -12,16 +12,16 @@ export default function LanguageToggle() {
   const switchLocale = (next: "pt" | "en") => {
     const current = pathname || "/";
     const params = new URLSearchParams(searchParams?.toString());
-    // 1) seta cookie no cliente (1 ano)
+    // 1) Set cookie on client (1 year expiration)
     try {
       document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000`;
     } catch {}
-    // 2) remove o param lang e preserva os demais
+    // 2) Remove lang param and preserve others
     if (params.has("lang")) params.delete("lang");
     const qs = params.toString();
     const cleanHref = qs ? `${current}?${qs}` : current;
     const hrefWithBuster = `${cleanHref}${qs ? "&" : "?"}_l=${Date.now()}`;
-    // 3) reload completo para garantir que o Server Component (layout) leia o novo cookie
+    // 3) Full reload to ensure Server Component (layout) reads new cookie
     if (typeof window !== "undefined") {
       window.location.replace(hrefWithBuster);
     } else {
@@ -41,8 +41,8 @@ export default function LanguageToggle() {
       <button
         type="button"
         aria-pressed={locale === "pt"}
-        aria-label="Mudar para Português do Brasil"
-        title="Português (Brasil)"
+        aria-label="Switch to Brazilian Portuguese"
+        title="Portuguese (Brazil)"
         className={`${baseBtn} ${locale === "pt" ? active : inactive}`}
         onClick={() => switchLocale("pt")}
       >
