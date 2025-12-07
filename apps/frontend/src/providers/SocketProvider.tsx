@@ -34,7 +34,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const wsUrl = useMemo(() => {
     return process.env.NEXT_PUBLIC_WS_URL || "";
   }, []);
-  
 
   useEffect(() => {
     if (!loggedIn) {
@@ -47,50 +46,60 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (!wsUrl) {
-      setStatus("error");
-      setLastError("no_ws_url");
+      setStatus("disconnected");
+      setLastError(undefined);
       return;
     }
 
     setStatus("connecting");
     const url = `${wsUrl}?pubkey=${encodeURIComponent(publicKey || "")}`;
-    const ws = new WebSocket(url);
-    wsRef.current = ws;
+    
+    try {
+      const ws = new WebSocket(url);
+      wsRef.current = ws;
 
-    ws.onopen = () => setStatus("connected");
-    ws.onerror = () => {
-      setLastError("ws_error");
+      ws.onopen = () => setStatus("connected");
+      ws.onerror = () => {
+        setLastError("ws_error");
+        setStatus("error");
+      };
+      ws.onclose = () => {
+        setStatus("disconnected");
+        resetOnDisconnect();
+      };
+      ws.onmessage = (ev) => {
+        try {
+          const data = JSON.parse(ev.data);
+          switch (data.type) {
+            case "BALANCE_UPDATED":
+              setBalances({ xlm: data.payload?.xlm, stlt: data.payload?.stlt });
+              pushEvent("BALANCE_UPDATED");
+              break;
+            case "RISK_SCORE":
+              setRisk({ score: data.payload?.score });
+              pushEvent("RISK_SCORE");
+              break;
+            case "ORDER_EVENT":
+              upsertOrder(data.payload);
+              pushEvent(data.payload?.status === "filled" ? "ORDER_FILLED" : "ORDER_UPDATED");
+              break;
+            default:
+              // desconhecido; apenas loga
+              break;
+          }
+        } catch {}
+      };
+    } catch (err) {
+      console.error("WebSocket connection error:", err);
       setStatus("error");
-    };
-    ws.onclose = () => {
-      setStatus("disconnected");
-      resetOnDisconnect();
-    };
-    ws.onmessage = (ev) => {
-      try {
-        const data = JSON.parse(ev.data);
-        switch (data.type) {
-          case "BALANCE_UPDATED":
-            setBalances({ xlm: data.payload?.xlm, stlt: data.payload?.stlt });
-            pushEvent("BALANCE_UPDATED");
-            break;
-          case "RISK_SCORE":
-            setRisk({ score: data.payload?.score });
-            pushEvent("RISK_SCORE");
-            break;
-          case "ORDER_EVENT":
-            upsertOrder(data.payload);
-            pushEvent(data.payload?.status === "filled" ? "ORDER_FILLED" : "ORDER_UPDATED");
-            break;
-          default:
-            // desconhecido; apenas loga
-            break;
-        }
-      } catch {}
-    };
+      setLastError("ws_init_error");
+    }
 
     return () => {
-      ws.close();
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
     };
   }, [loggedIn, publicKey, wsUrl, setBalances, setRisk, upsertOrder, pushEvent, resetOnDisconnect]);
 
