@@ -12,13 +12,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    isrMemoryCacheSize: 0,
-  },
   onDemandEntries: {
     maxInactiveAge: 15 * 1000,
     pagesBufferLength: 5,
   },
+  // Estaticamente, não tenta pre-renderizar rotas especiais de erro
+  staticPageGenerationTimeout: 10,
 };
 
 export default withNextIntl(nextConfig);
