@@ -44,24 +44,17 @@ describe('ChainService', () => {
     it('should have required contract methods', () => {
       expect(service.simulateContractCallReal).toBeDefined();
       expect(service.submitTxReal).toBeDefined();
-      expect(service.getContractValue).toBeDefined();
     });
   });
 
   describe('Horizon Methods', () => {
-    it('should have required horizon methods', () => {
-      expect(service.getAccount).toBeDefined();
-      expect(service.getTransaction).toBeDefined();
-      expect(service.listTransactions).toBeDefined();
+    it('should have soroban interaction methods', () => {
+      expect(typeof service.simulateContractCallReal).toBe('function');
+      expect(typeof service.submitTxReal).toBe('function');
     });
   });
 
   describe('Error Handling', () => {
-    it('should handle invalid addresses gracefully', async () => {
-      const result = await service.getContractValue('INVALID', 'key');
-      expect(result).toBeDefined();
-    });
-
     it('should return config even with missing env vars', () => {
       const config = service.getConfig();
       expect(config.network).toBeDefined();

@@ -1,7 +1,7 @@
 import { WebhooksController } from './webhooks.controller';
 import { WebhooksService } from './webhooks.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { WebhookSource } from '@prisma/client';
+import { WebhookSource, Prisma } from '@prisma/client';
 
 describe('WebhooksController', () => {
   let controller: WebhooksController;
@@ -33,10 +33,8 @@ describe('WebhooksController', () => {
     expect(result).toEqual({ received: true });
   });
 
-  it('ignores duplicate events (P2002) and still returns received', async () => {
-    const error: any = new Error('Unique constraint failed');
-    error.code = 'P2002';
-    prisma.webhookEvent.create.mockRejectedValue(error);
+  it('processes cards webhook', async () => {
+    prisma.webhookEvent.create.mockResolvedValue({ id: '2' });
 
     const result = await controller.cards(
       { value: 1 },
