@@ -1,6 +1,44 @@
 #![cfg_attr(not(test), no_std)]
 
-use soroban_sdk::{contract, contractimpl, contracttype, contracterror, Address, Env, Symbol};
+use soroban_sdk::{contract, contractimpl, contracttype, contracterror, contractevent, Address, Env, Symbol};
+
+#[contractevent]
+pub struct InitEvent {
+    pub initialized: bool,
+}
+
+#[contractevent]
+pub struct SetPauseEvent {
+    pub paused: bool,
+}
+
+#[contractevent]
+pub struct MintEvent {
+    pub to: Address,
+    pub amount: u128,
+}
+
+#[contractevent]
+pub struct BurnEvent {
+    pub from: Address,
+    pub amount: u128,
+}
+
+#[contractevent]
+pub struct ClawbackEvent {
+    pub from: Address,
+    pub amount: u128,
+}
+
+#[contractevent]
+pub struct LockEvent {
+    pub owner: Address,
+}
+
+#[contractevent]
+pub struct UnlockEvent {
+    pub owner: Address,
+}
 
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
@@ -17,6 +55,7 @@ pub enum Error {
     BurnDisabled = 9,
     Reentrancy = 10,
     InvalidThreshold = 11,
+    NotInitialized = 12,
 }
 
 #[derive(Clone)]
@@ -33,10 +72,23 @@ enum DataKey {
     ReentrancyLock, // Global reentrancy protection
 }
 
+fn get_admin(env: &Env) -> Result<Address, Error> {
+    env
+        .storage()
+        .persistent()
+        .get(&DataKey::Admin)
+        .ok_or(Error::NotInitialized)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::panic::{catch_unwind, AssertUnwindSafe};
     use soroban_sdk::testutils::{Address as _, Ledger};
+
+    fn expect_err<F: FnOnce()>(f: F) {
+        assert!(catch_unwind(AssertUnwindSafe(f)).is_err());
+    }
 
     #[test]
     fn init_and_admin_controls() {
@@ -103,8 +155,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic]
-    fn set_pause_non_admin_panics() {
+    fn set_pause_non_admin_errors() {
         let env = Env::default();
         env.mock_all_auths();
         let admin = Address::generate(&env);
@@ -112,13 +163,12 @@ mod test {
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &500u32);
-        // Deve panicar porque user1 não é admin
-        client.set_pause(&user1, &true);
+        // Deve errar porque user1 não é admin
+        expect_err(|| client.set_pause(&user1, &true));
     }
 
     #[test]
-    #[should_panic]
-    fn mint_by_non_admin_panics() {
+    fn mint_by_non_admin_errors() {
         let env = Env::default();
         env.mock_all_auths();
         let admin = Address::generate(&env);
@@ -126,13 +176,12 @@ mod test {
         let contract_id = env.register(StablecoinContract, ());
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &800u32);
-        // Não admin tentando mint -> panica
-        client.mint_guarded(&user1, &user1, &100u128, &100u32);
+        // Não admin tentando mint -> erro
+        expect_err(|| client.mint_guarded(&user1, &user1, &100u128, &100u32));
     }
 
     #[test]
-    #[should_panic]
-    fn burn_not_owner_panics() {
+    fn burn_not_owner_errors() {
         let env = Env::default();
         env.mock_all_auths();
         let admin = Address::generate(&env);
@@ -142,8 +191,8 @@ mod test {
         let client = StablecoinContractClient::new(&env, &contract_id);
         client.init(&admin, &700u32);
         client.mint_guarded(&admin, &user1, &200u128, &100u32);
-        // user2 tentando queimar saldo de user1 -> panica
-        client.burn(&user2, &user1, &50u128);
+        // user2 tentando queimar saldo de user1 -> erro
+        expect_err(|| client.burn(&user2, &user1, &50u128));
     }
 
     #[test]
@@ -166,7 +215,6 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected = "insufficient")]
     fn test_underflow_protection() {
         let env = Env::default();
         env.mock_all_auths();
@@ -179,12 +227,11 @@ mod test {
         // Mint 100 tokens
         client.mint_guarded(&admin, &user1, &100u128, &100u32);
         
-        // Try to burn more than balance (should panic)
-        client.burn(&user1, &user1, &101u128);
+        // Try to burn more than balance (should error)
+        expect_err(|| client.burn(&user1, &user1, &101u128));
     }
 
     #[test]
-    #[should_panic(expected = "not admin")]
     fn test_unauthorized_clawback() {
         let env = Env::default();
         env.mock_all_auths();
@@ -197,12 +244,11 @@ mod test {
         
         client.mint_guarded(&admin, &user1, &100u128, &100u32);
         
-        // Non-admin trying clawback should panic
-        client.clawback(&user2, &user1, &50u128);
+        // Non-admin trying clawback should error
+        expect_err(|| client.clawback(&user2, &user1, &50u128));
     }
 
     #[test]
-    #[should_panic(expected = "locked")]
     fn test_lock_prevents_mint() {
         let env = Env::default();
         env.mock_all_auths();
@@ -216,12 +262,11 @@ mod test {
         client.lock(&admin, &user1);
         assert_eq!(client.is_locked(&user1), true);
         
-        // Try to mint to locked address (should panic)
-        client.mint_guarded(&admin, &user1, &100u128, &100u32);
+        // Try to mint to locked address (should error)
+        expect_err(|| client.mint_guarded(&admin, &user1, &100u128, &100u32));
     }
 
     #[test]
-    #[should_panic(expected = "locked")]
     fn test_lock_prevents_burn() {
         let env = Env::default();
         env.mock_all_auths();
@@ -237,8 +282,8 @@ mod test {
         // Lock user1
         client.lock(&admin, &user1);
         
-        // Try to burn from locked address (should panic)
-        client.burn(&user1, &user1, &50u128);
+        // Try to burn from locked address (should error)
+        expect_err(|| client.burn(&user1, &user1, &50u128));
     }
 }
 
@@ -278,12 +323,6 @@ fn write_bool(env: &Env, key: &DataKey, val: bool) {
     env.storage().persistent().set(key, &val);
 }
 
-fn emit(env: &Env, topic: &str, data: &str) {
-    // Eventos simples com dois tópicos: nome e dados stringificados
-    let t = Symbol::new(env, topic);
-    env.events().publish((t,), data);
-}
-
 fn acquire_lock(env: &Env) -> Result<(), Error> {
     if read_bool(env, &DataKey::ReentrancyLock) {
         return Err(Error::Reentrancy);
@@ -318,7 +357,7 @@ impl StablecoinContract {
         write_bool(&env, &DataKey::Paused, false);
         write_bool(&env, &DataKey::MintEnabled, true);
         write_bool(&env, &DataKey::BurnEnabled, true);
-        emit(&env, "init", "ok");
+        env.events().publish_event(&InitEvent { initialized: true });
         Ok(())
     }
 
@@ -326,11 +365,7 @@ impl StablecoinContract {
         if risk_threshold_bps > 10_000 {
             return Err(Error::InvalidThreshold);
         }
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+        let admin = get_admin(&env)?;
         caller.require_auth();
         if caller != admin {
             return Err(Error::Unauthorized);
@@ -359,165 +394,160 @@ impl StablecoinContract {
         read_bool(&env, &DataKey::Paused)
     }
 
-    pub fn set_pause(env: Env, caller: Address, flag: bool) {
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+    pub fn set_pause(env: Env, caller: Address, flag: bool) -> Result<(), Error> {
+        let admin = get_admin(&env)?;
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
+        if caller != admin {
+            return Err(Error::Unauthorized);
+        }
         write_bool(&env, &DataKey::Paused, flag);
-        emit(&env, if flag { "paused" } else { "unpaused" }, "");
+        env.events().publish_event(&SetPauseEvent { paused: flag });
+        Ok(())
     }
 
-    pub fn set_mint_enabled(env: Env, caller: Address, flag: bool) {
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+    pub fn set_mint_enabled(env: Env, caller: Address, flag: bool) -> Result<(), Error> {
+        let admin = get_admin(&env)?;
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
+        if caller != admin { return Err(Error::Unauthorized); }
         write_bool(&env, &DataKey::MintEnabled, flag);
-        emit(&env, "mint_enabled", if flag { "true" } else { "false" });
+        env.events().publish_event(&SetPauseEvent { paused: !flag });
+        Ok(())
     }
 
-    pub fn set_burn_enabled(env: Env, caller: Address, flag: bool) {
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+    pub fn set_burn_enabled(env: Env, caller: Address, flag: bool) -> Result<(), Error> {
+        let admin = get_admin(&env)?;
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
+        if caller != admin { return Err(Error::Unauthorized); }
         write_bool(&env, &DataKey::BurnEnabled, flag);
-        emit(&env, "burn_enabled", if flag { "true" } else { "false" });
+        env.events().publish_event(&SetPauseEvent { paused: !flag });
+        Ok(())
     }
 
-    pub fn lock(env: Env, caller: Address, owner: Address) {
-        // simplificado: admin-only
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+    pub fn lock(env: Env, caller: Address, owner: Address) -> Result<(), Error> {
+        let admin = get_admin(&env)?;
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
-        write_bool(&env, &DataKey::Locked(owner), true);
-        emit(&env, "lock", "ok");
+        if caller != admin { return Err(Error::Unauthorized); }
+        write_bool(&env, &DataKey::Locked(owner.clone()), true);
+        env.events().publish_event(&LockEvent { owner });
+        Ok(())
     }
 
-    pub fn unlock(env: Env, caller: Address, owner: Address) {
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+    pub fn unlock(env: Env, caller: Address, owner: Address) -> Result<(), Error> {
+        let admin = get_admin(&env)?;
         caller.require_auth();
-        if caller != admin { panic!("not admin"); }
-        write_bool(&env, &DataKey::Locked(owner), false);
-        emit(&env, "unlock", "ok");
+        if caller != admin { return Err(Error::Unauthorized); }
+        write_bool(&env, &DataKey::Locked(owner.clone()), false);
+        env.events().publish_event(&UnlockEvent { owner });
+        Ok(())
     }
 
-    pub fn mint_guarded(env: Env, caller: Address, to: Address, amount: u128, current_risk_bps: u32) {
+    pub fn mint_guarded(env: Env, caller: Address, to: Address, amount: u128, current_risk_bps: u32) -> Result<(), Error> {
         // Reentrancy guard
-        let _ = acquire_lock(&env);
+        acquire_lock(&env)?;
         
-        // Política: admin-only e só mint se risco atual < threshold e destino não bloqueado
         caller.require_auth();
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+        let admin = get_admin(&env)?;
         if caller != admin { 
             release_lock(&env);
-            panic!("not admin"); 
+            return Err(Error::Unauthorized); 
         }
-        assert!(amount > 0, "amount=0");
+        if amount == 0 {
+            release_lock(&env);
+            return Err(Error::InvalidAmount);
+        }
         if read_bool(&env, &DataKey::Paused) { 
             release_lock(&env);
-            panic!("paused"); 
+            return Err(Error::ContractPaused); 
         }
         if !read_bool(&env, &DataKey::MintEnabled) { 
             release_lock(&env);
-            panic!("mint disabled"); 
+            return Err(Error::MintDisabled); 
         }
         let thr = read_u32(&env, &DataKey::RiskThreshold);
-        assert!(current_risk_bps < thr, "high risk");
+        if current_risk_bps >= thr {
+            release_lock(&env);
+            return Err(Error::RiskThresholdExceeded);
+        }
         if Self::is_locked(env.clone(), to.clone()) { 
             release_lock(&env);
-            panic!("locked"); 
+            return Err(Error::AccountLocked); 
         }
 
         let bal = read_u128(&env, &DataKey::Balance(to.clone()));
         write_u128(&env, &DataKey::Balance(to.clone()), bal.saturating_add(amount));
         let ts = read_u128(&env, &DataKey::TotalSupply);
         write_u128(&env, &DataKey::TotalSupply, ts.saturating_add(amount));
-        emit(&env, "mint", "ok");
+        env.events().publish_event(&MintEvent { to, amount });
         
         release_lock(&env);
+        Ok(())
     }
 
-    pub fn burn(env: Env, caller: Address, from: Address, amount: u128) {
-        // Reentrancy guard
-        let _ = acquire_lock(&env);
+    pub fn burn(env: Env, caller: Address, from: Address, amount: u128) -> Result<(), Error> {
+        acquire_lock(&env)?;
         
-        // Somente o próprio "from" pode queimar o seu saldo (ou políticas futuras)
         caller.require_auth();
         if caller != from { 
             release_lock(&env);
-            panic!("not owner"); 
+            return Err(Error::Unauthorized); 
         }
-        assert!(amount > 0, "amount=0");
+        if amount == 0 {
+            release_lock(&env);
+            return Err(Error::InvalidAmount);
+        }
         if read_bool(&env, &DataKey::Paused) { 
             release_lock(&env);
-            panic!("paused"); 
+            return Err(Error::ContractPaused); 
         }
         if !read_bool(&env, &DataKey::BurnEnabled) { 
             release_lock(&env);
-            panic!("burn disabled"); 
+            return Err(Error::BurnDisabled); 
         }
         if Self::is_locked(env.clone(), from.clone()) { 
             release_lock(&env);
-            panic!("locked"); 
+            return Err(Error::AccountLocked); 
         }
 
         let bal = read_u128(&env, &DataKey::Balance(from.clone()));
-        assert!(bal >= amount, "insufficient");
+        if bal < amount {
+            release_lock(&env);
+            return Err(Error::InsufficientBalance);
+        }
         write_u128(&env, &DataKey::Balance(from.clone()), bal - amount);
         let ts = read_u128(&env, &DataKey::TotalSupply);
         write_u128(&env, &DataKey::TotalSupply, ts - amount);
-        emit(&env, "burn", "ok");
+        env.events().publish_event(&BurnEvent { from, amount });
         
         release_lock(&env);
+        Ok(())
     }
 
     // Clawback admin-only: reduz saldo do endereço e totalSupply
-    pub fn clawback(env: Env, caller: Address, from: Address, amount: u128) {
-        // Reentrancy guard
-        let _ = acquire_lock(&env);
+    pub fn clawback(env: Env, caller: Address, from: Address, amount: u128) -> Result<(), Error> {
+        acquire_lock(&env)?;
         
-        let admin: Address = env
-            .storage()
-            .persistent()
-            .get(&DataKey::Admin)
-            .expect("admin not set");
+        let admin = get_admin(&env)?;
         caller.require_auth();
         if caller != admin { 
             release_lock(&env);
-            panic!("not admin"); 
+            return Err(Error::Unauthorized); 
         }
-        assert!(amount > 0, "amount=0");
+        if amount == 0 {
+            release_lock(&env);
+            return Err(Error::InvalidAmount);
+        }
         let bal = read_u128(&env, &DataKey::Balance(from.clone()));
-        assert!(bal >= amount, "insufficient");
+        if bal < amount {
+            release_lock(&env);
+            return Err(Error::InsufficientBalance);
+        }
         write_u128(&env, &DataKey::Balance(from.clone()), bal - amount);
         let ts = read_u128(&env, &DataKey::TotalSupply);
         write_u128(&env, &DataKey::TotalSupply, ts - amount);
-        emit(&env, "clawback", "ok");
+        env.events().publish_event(&ClawbackEvent { from, amount });
         
         release_lock(&env);
+        Ok(())
     }
 
     pub fn symbol(env: Env) -> Symbol {

@@ -1,6 +1,16 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol};
+use soroban_sdk::{contract, contractimpl, contracttype, contractevent, Address, Env};
+
+#[contractevent]
+pub struct LockEvent {
+    pub event: bool,
+}
+
+#[contractevent]
+pub struct UnlockEvent {
+    pub event: bool,
+}
 
 #[derive(Clone)]
 #[contracttype]
@@ -21,8 +31,6 @@ impl RiskLockContract {
         // Exigir prova de posse do endereço admin
         admin.require_auth();
         env.storage().persistent().set(&DataKey::Admin, &admin);
-        let evt = Symbol::new(&env, "init");
-        env.events().publish((evt,), ());
     }
 
     pub fn is_locked(env: Env, owner: Address) -> bool {
@@ -45,8 +53,7 @@ impl RiskLockContract {
         env.storage()
             .persistent()
             .set(&DataKey::Locked(owner), &true);
-        let evt = Symbol::new(&env, "lock");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&LockEvent { event: true });
     }
 
     pub fn unlock(env: Env, caller: Address, owner: Address) {
@@ -62,7 +69,6 @@ impl RiskLockContract {
         env.storage()
             .persistent()
             .set(&DataKey::Locked(owner), &false);
-        let evt = Symbol::new(&env, "unlock");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&UnlockEvent { event: true });
     }
 }

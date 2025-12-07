@@ -22,11 +22,26 @@
 //! - Admin can revoke compromised verification keys
 //! - Scores are stored with timestamp for decay calculation
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, BytesN, Env, Symbol};
+use soroban_sdk::{contract, contractimpl, contracttype, contractevent, Address, BytesN, Env};
 
 /// Verification key for Groth16 proofs (placeholder 32 bytes)
 /// In production, this will be the actual Groth16 vkey serialized
 pub type VerificationKey = BytesN<32>;
+
+#[contractevent]
+pub struct ProofVerifiedEvent {
+    pub event: bool,
+}
+
+#[contractevent]
+pub struct VkeyUpdatedEvent {
+    pub event: bool,
+}
+
+#[contractevent]
+pub struct PauseEvent {
+    pub paused: bool,
+}
 
 /// ZK Proof data (placeholder 256 bytes)
 /// In production, this will contain the actual Groth16 proof (alpha, beta, gamma, delta)
@@ -117,9 +132,6 @@ impl ZkVerifierContract {
         write_u32(&env, &DataKey::MinScore, min_score);
         write_u64(&env, &DataKey::ProofExpiry, 86400); // 24h default
         write_bool(&env, &DataKey::Paused, false);
-        
-        let evt = Symbol::new(&env, "init");
-        env.events().publish((evt,), ("ok",));
     }
 
     /// Verify a ZK proof and store the credit score
@@ -199,8 +211,7 @@ impl ZkVerifierContract {
         write_bool(&env, &DataKey::UsedNonces(nonce), true);
         
         // Emit event
-        let evt = Symbol::new(&env, "proof_verified");
-        env.events().publish((evt,), (user, score));
+        env.events().publish_event(&ProofVerifiedEvent { event: true });
         
         true
     }
@@ -254,8 +265,7 @@ impl ZkVerifierContract {
         
         env.storage().persistent().set(&DataKey::VerificationKey, &new_key);
         
-        let evt = Symbol::new(&env, "vkey_updated");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&VkeyUpdatedEvent { event: true });
     }
 
     /// Admin: Set minimum score threshold
@@ -290,8 +300,7 @@ impl ZkVerifierContract {
         
         write_bool(&env, &DataKey::Paused, paused);
         
-        let evt = Symbol::new(&env, if paused { "paused" } else { "unpaused" });
-        env.events().publish((evt,), ());
+        env.events().publish_event(&PauseEvent { paused });
     }
 
     // ========== PRIVATE HELPERS ==========

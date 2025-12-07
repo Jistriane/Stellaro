@@ -1,0 +1,11 @@
+{
+  "name": "stellaro-zk-circuits-test",
+  "version": "1.0.0",
+  "description": "ZK Circuit testing for Stellaro",
+  "scripts": {
+    "test": "node test-proof-generation.js"
+  },
+  "dependencies": {
+    "snarkjs": "^0.7.0"
+  }
+}

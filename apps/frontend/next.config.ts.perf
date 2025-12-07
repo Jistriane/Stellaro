@@ -1,0 +1,118 @@
+/**
+ * CDN Configuration - Stellaro Frontend
+ * 
+ * Integração com CloudFront (AWS) ou similar
+ * Para servir assets estáticos globalmente com baixa latência
+ */
+
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const config: NextConfig = {
+  // ============= Image Optimization =============
+  images: {
+    // CloudFront distribution
+    domains: [
+      'd1234567890.cloudfront.net', // Seu CDN
+      'stellaro.com',
+      'api.stellaro.com',
+    ],
+    // Formatos modernos
+    formats: ['image/avif', 'image/webp'],
+    // Geração de imagens otimizadas on-demand
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Cache indefinido para hashes
+    cacheMaxAge: 60 * 60 * 24 * 365, // 1 ano
+  },
+
+  // ============= Asset Optimization =============
+  compress: true, // Gzip compression
+  productionBrowserSourceMaps: false, // Reduzir bundle
+  
+  swcMinify: true, // SWC minification (mais rápido que Terser)
+
+  // ============= Code Splitting =============
+  experimental: {
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+      'lodash-es',
+      'recharts',
+    ],
+  },
+
+  // ============= CDN Headers =============
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=60, s-maxage=3600', // 1h na CDN
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
+      {
+        source: '/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 ano para assets com hash
+          },
+        ],
+      },
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+    ];
+  },
+
+  // ============= Rewrite para CDN =============
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Servir assets grandes do CDN
+        {
+          source: '/assets/:path*',
+          destination: 'https://d1234567890.cloudfront.net/assets/:path*',
+        },
+        // Servir imagens otimizadas
+        {
+          source: '/images/:path*',
+          destination: 'https://d1234567890.cloudfront.net/_next/image?url=/images/:path*&w=:width&q=:quality',
+        },
+      ],
+    };
+  },
+
+  // ============= Environment Variables =============
+  env: {
+    NEXT_PUBLIC_CDN_URL: process.env.CDN_URL || 'https://d1234567890.cloudfront.net',
+    NEXT_PUBLIC_API_URL: process.env.API_URL || 'https://api.stellaro.com',
+  },
+
+  // ============= Build Output Analysis =============
+  analyzePackages: ['@stellar/stellar-sdk', '@blend-capital/blend-sdk'],
+};
+
+export default config;

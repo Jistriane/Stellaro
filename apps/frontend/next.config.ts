@@ -11,8 +11,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Standalone mode para Vercel
-  output: 'standalone',
 };
 
 export default withNextIntl(nextConfig);

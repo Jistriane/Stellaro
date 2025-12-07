@@ -1,19 +1,22 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, Symbol, IntoVal};
+use soroban_sdk::{contract, contractimpl, contractevent, symbol_short, Address, Env, Symbol, IntoVal};
 
 const ADMIN_KEY: Symbol = symbol_short!("ADMIN");
 
+#[contractevent]
+pub struct ProposalExecutedEvent {
+    pub target: Address,
+    pub method: Symbol,
+    pub ok: bool,
+}
+
+#[contractevent]
+pub struct SetAdminEvent {
+    pub event: bool,
+}
+
 #[contract]
 pub struct Governance;
-
-pub struct Events;
-impl Events {
-    fn proposal_executed(env: &Env, target: &Address, method: &Symbol, ok: bool) {
-        let evt = Symbol::new(env, "proposal_executed");
-        let topics = (evt, target.clone(), method.clone());
-        env.events().publish(topics, ok);
-    }
-}
 
 #[contractimpl]
 impl Governance {
@@ -36,8 +39,7 @@ impl Governance {
         let admin: Address = Self::get_admin(env.clone());
         admin.require_auth();
         env.storage().instance().set(&ADMIN_KEY, &new_admin);
-        let evt = Symbol::new(&env, "set_admin");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&SetAdminEvent { event: true });
     }
 
     /// Chamada genérica para métodos (caller: Address, flag: bool) em outro contrato
@@ -49,7 +51,7 @@ impl Governance {
         let args = soroban_sdk::vec![&env, admin.into_val(&env), flag.into_val(&env)];
         let res: bool = env.invoke_contract(&target, &method, args);
 
-        Events::proposal_executed(&env, &target, &method, res);
+        env.events().publish_event(&ProposalExecutedEvent { target, method, ok: res });
         res
     }
 
@@ -75,7 +77,7 @@ impl Governance {
         admin.require_auth();
         let args = soroban_sdk::vec![&env, admin.into_val(&env), value.into_val(&env)];
         let res: bool = env.invoke_contract(&target, &method, args);
-        Events::proposal_executed(&env, &target, &method, res);
+        env.events().publish_event(&ProposalExecutedEvent { target, method, ok: res });
         res
     }
 

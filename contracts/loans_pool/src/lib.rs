@@ -1,6 +1,21 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol};
+use soroban_sdk::{contract, contractimpl, contracttype, contractevent, Address, Env};
+
+#[contractevent]
+pub struct DepositEvent {
+    pub event: bool,
+}
+
+#[contractevent]
+pub struct BorrowEvent {
+    pub event: bool,
+}
+
+#[contractevent]
+pub struct RepayEvent {
+    pub event: bool,
+}
 
 #[derive(Clone)]
 #[contracttype]
@@ -83,8 +98,7 @@ impl LoansPoolContract {
         assert!(amount > 0, "amount");
         let liq = read_u128(&env, &DataKey::TotalLiquidity);
         write_u128(&env, &DataKey::TotalLiquidity, liq.saturating_add(amount));
-        let evt = Symbol::new(&env, "deposit");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&DepositEvent { event: true });
         
         release_lock(&env);
     }
@@ -104,8 +118,7 @@ impl LoansPoolContract {
         write_u128(&env, &DataKey::TotalLiquidity, liq - amount);
         let cur = read_u128(&env, &DataKey::Position(borrower.clone()));
         write_u128(&env, &DataKey::Position(borrower), cur.saturating_add(amount));
-        let evt = Symbol::new(&env, "borrow");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&BorrowEvent { event: true });
         
         release_lock(&env);
     }
@@ -122,8 +135,7 @@ impl LoansPoolContract {
         // Devolver liquidez ao pool
         let liq = read_u128(&env, &DataKey::TotalLiquidity);
         write_u128(&env, &DataKey::TotalLiquidity, liq.saturating_add(amount));
-        let evt = Symbol::new(&env, "repay");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&RepayEvent { event: true });
         
         release_lock(&env);
     }

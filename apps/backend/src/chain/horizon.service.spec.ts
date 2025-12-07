@@ -1,5 +1,8 @@
-describe('Spec', () => {
-  it('placeholder', () => {
-    expect(true).toBe(true);
+import { HorizonService } from './horizon.service';
+
+describe('HorizonService', () => {
+  it('instancia corretamente', () => {
+    const service = new HorizonService();
+    expect(service).toBeDefined();
   });
 });

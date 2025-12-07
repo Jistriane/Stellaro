@@ -1,6 +1,16 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, BytesN, Env, Symbol};
+use soroban_sdk::{contract, contractimpl, contracttype, contractevent, Address, BytesN, Env};
+
+#[contractevent]
+pub struct SetAllocationEvent {
+    pub event: bool,
+}
+
+#[contractevent]
+pub struct SetLimitEvent {
+    pub event: bool,
+}
 
 #[derive(Clone)]
 #[contracttype]
@@ -22,8 +32,6 @@ impl PortfolioContract {
         // Exigir prova de posse do endereço admin
         admin.require_auth();
         env.storage().persistent().set(&DataKey::Admin, &admin);
-        let evt = Symbol::new(&env, "init");
-        env.events().publish((evt,), ());
     }
 
     pub fn set_allocation(env: Env, asset: BytesN<32>, bps: u32) {
@@ -38,8 +46,7 @@ impl PortfolioContract {
         admin.require_auth();
         let key = DataKey::Allocation(asset);
         env.storage().persistent().set(&key, &bps);
-        let evt = Symbol::new(&env, "set_allocation");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&SetAllocationEvent { event: true });
     }
 
     pub fn get_allocation(env: Env, asset: BytesN<32>) -> u32 {
@@ -60,8 +67,7 @@ impl PortfolioContract {
         admin.require_auth();
         let key = DataKey::Limit(asset);
         env.storage().persistent().set(&key, &bps);
-        let evt = Symbol::new(&env, "set_limit");
-        env.events().publish((evt,), ());
+        env.events().publish_event(&SetLimitEvent { event: true });
     }
 
     pub fn get_limit(env: Env, asset: BytesN<32>) -> u32 {
