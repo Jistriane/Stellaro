@@ -62,8 +62,8 @@ export class ReflectorService {
 
       const price: ReflectorPrice = {
         symbol: assetCode,
-        price: response.data.price,
-        timestamp: response.data.last_update,
+        price: (response.data as any).price,
+        timestamp: (response.data as any).last_update,
         source: 'reflector',
       };
 
@@ -142,7 +142,7 @@ export class ReflectorService {
         }),
       );
 
-      return response.data.map((item) => ({
+      return (response.data as any).map((item: any) => ({
         symbol: assetCode,
         price: item.price,
         timestamp: item.last_update,

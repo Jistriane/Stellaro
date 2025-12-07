@@ -7,11 +7,11 @@ services:
     container_name: stellaro-postgres
     environment:
       POSTGRES_DB: stellaro
-      POSTGRES_USER: stellar
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-stellaro_dev_pass}
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -26,7 +26,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: stellaro-redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-stellaro_redis_pass}
+    command: redis-server --appendonly yes
     ports:
       - "6379:6379"
     volumes:

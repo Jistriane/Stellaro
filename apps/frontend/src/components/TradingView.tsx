@@ -35,7 +35,7 @@ export default function TradingView({
     script.type = "text/javascript";
     script.async = true;
     const tvLocale = locale === "pt" ? "br" : "en";
-    script.innerHTML = JSON.stringify({
+    script.textContent = JSON.stringify({
       symbols,
       chartOnly: false,
       width: "100%",
