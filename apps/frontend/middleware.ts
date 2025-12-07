@@ -8,5 +8,6 @@ export default createMiddleware({
 });
 
 export const config = {
-  matcher: ['/((?!_next|.*\\..*|api).*)'],
+  // Não executar middleware em rotas especiais de erro
+  matcher: ['/((?!_next|.*\\..*|api|404|500|_error).*)'],
 };

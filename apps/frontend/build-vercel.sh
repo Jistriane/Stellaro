@@ -3,7 +3,6 @@
 # Build script para Vercel
 # Faz o build do Next.js com fallback para SSG falho
 
-set -e
 cd "$(dirname "$0")" || exit 1
 
 # Executar o build do Next.js

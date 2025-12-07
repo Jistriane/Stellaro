@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { LayoutClientWrapper } from "./layout-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   description: "Aplicação frontend Stellaro",
 };
 
-// Desabilitar pré-render estático para evitar erro de React #31 em /404
+// Renderização completamente dinâmica - sem pre-render
 export const dynamic = 'force-dynamic';
 
 export default async function RootLayout({
@@ -28,7 +29,9 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <LayoutClientWrapper>
+          {children}
+        </LayoutClientWrapper>
       </body>
     </html>
   );
