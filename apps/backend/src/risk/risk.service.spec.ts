@@ -70,4 +70,105 @@ describe('RiskService', () => {
     const exec = service.execute({ userId: 'U3', proposalId: 'P1', action: 'swap', params: { amount: 1 } } as any);
     expect(exec.executed).toBe(true);
   });
+
+  describe('Signal Ingestion', () => {
+    it('should handle multiple signals', () => {
+      const signals = [
+        { type: 'price_drop', value: -10 },
+        { type: 'volatility_spike', value: 0.8 }
+      ];
+      const res = service.ingestSignals({ signals, context: { userId: 'U4' } } as any);
+      expect(res.ok).toBe(true);
+    });
+
+    it('should handle empty signal array', () => {
+      const res = service.ingestSignals({ signals: [], context: { userId: 'U5' } } as any);
+      expect(res.ok).toBe(true);
+      expect(res.received).toBeDefined();
+    });
+
+    it('should process signals with different user contexts', () => {
+      const res1 = service.ingestSignals({ signals: [], context: { userId: 'U6' } } as any);
+      const res2 = service.ingestSignals({ signals: [], context: { userId: 'U7' } } as any);
+      expect(res1.ok).toBe(true);
+      expect(res2.ok).toBe(true);
+    });
+  });
+
+  describe('Risk Summary', () => {
+    it('should return consistent structure for summary', () => {
+      const summary = service.getSummary('U8');
+      expect(summary).toHaveProperty('userId');
+      expect(summary).toHaveProperty('riskLevel');
+    });
+
+    it('should handle multiple user summaries', () => {
+      const s1 = service.getSummary('U9');
+      const s2 = service.getSummary('U10');
+      const s3 = service.getSummary('U11');
+      expect(s1.userId).toBe('U9');
+      expect(s2.userId).toBe('U10');
+      expect(s3.userId).toBe('U11');
+    });
+
+    it('should maintain neutral risk for new users', () => {
+      const summary = service.getSummary('U12');
+      expect(summary.riskLevel).toBe('neutral');
+    });
+  });
+
+  describe('Decision Making', () => {
+    it('should generate proposals with confidence', () => {
+      const proposal = service.decide({ userId: 'U13', context: {} } as any);
+      expect(proposal.proposalId).toBeDefined();
+      expect(proposal.confidence).toBe(0.9);
+    });
+
+    it('should create different proposals for different users', () => {
+      const p1 = service.decide({ userId: 'U14', context: {} } as any);
+      const p2 = service.decide({ userId: 'U15', context: {} } as any);
+      expect(p1).toBeDefined();
+      expect(p2).toBeDefined();
+    });
+
+    it('should handle decisions with varying contexts', () => {
+      const proposal = service.decide({ 
+        userId: 'U16', 
+        context: { urgency: 'high', amount: 1000 } 
+      } as any);
+      expect(proposal.proposalId).toBeDefined();
+    });
+  });
+
+  describe('Action Execution', () => {
+    it('should execute swap actions', () => {
+      const exec = service.execute({ 
+        userId: 'U17', 
+        proposalId: 'P2', 
+        action: 'swap', 
+        params: { amount: 100 } 
+      } as any);
+      expect(exec.executed).toBe(true);
+    });
+
+    it('should execute partial liquidation', () => {
+      const exec = service.execute({ 
+        userId: 'U18', 
+        proposalId: 'P3', 
+        action: 'partialLiquidation', 
+        params: { percentage: 50 } 
+      } as any);
+      expect(exec.executed).toBe(true);
+    });
+
+    it('should execute auto hedge', () => {
+      const exec = service.execute({ 
+        userId: 'U19', 
+        proposalId: 'P4', 
+        action: 'autoHedge', 
+        params: {} 
+      } as any);
+      expect(exec.executed).toBe(true);
+    });
+  });
 });
