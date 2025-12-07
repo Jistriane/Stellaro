@@ -1,6 +1,6 @@
-# ⚡ Quick Start - Mainnet Deployment
+# ⚡ Quick Start - Mainnet Deployment (English)
 
-**Last Updated**: 7 de dezembro de 2025  
+**Last Updated**: December 7, 2025  
 **Status**: 🟢 Production Ready  
 **Deployment Target**: Stellar Mainnet
 
@@ -14,7 +14,7 @@ cd apps/frontend
 npm install
 npm run build
 npm run start
-# → Acessar em https://api.stellaro.com
+# → Access at https://api.stellaro.com
 ```
 
 ### 2. Deploy Backend
@@ -24,7 +24,7 @@ npm install
 npm run build
 npm run prisma:migrate:deploy
 npm run start
-# → API em https://api.stellaro.com/api
+# → API at https://api.stellaro.com/api
 ```
 
 ### 3. Deploy Contracts
@@ -33,7 +33,7 @@ cd contracts
 cargo build --release
 cargo test
 ./deploy-mainnet.sh
-# → Verificar contract IDs em .env-mainnet
+# → Verify contract IDs in .env-mainnet
 ```
 
 ### 4. Deploy Infrastructure
@@ -45,7 +45,7 @@ kubectl apply -f redis.yaml
 kubectl apply -f backend.yaml
 kubectl apply -f frontend.yaml
 kubectl apply -f ingress.yaml
-# → Aguardar até todos Pods estarem Running
+# → Wait until all Pods are Running
 ```
 
 ### 5. Verify Deployment
@@ -296,8 +296,8 @@ kubectl scale deployment/backend --replicas=5 -n stellaro-prod
 
 ## 📞 Emergency Contacts
 
-| Situação | Ação | Contato |
-|----------|------|---------|
+| Situation | Action | Contact |
+|-----------|--------|---------|
 | API Down | Page On-Call | PagerDuty |
 | Database Down | Activate DR | DBA Team |
 | Security Incident | Activate Incident Response | Security Lead |
@@ -341,4 +341,3 @@ kubectl scale deployment/backend --replicas=5 -n stellaro-prod
 **Status**: 🟢 READY TO DEPLOY
 
 **Next Action**: Run deployment script when mainnet funding confirmed
-
