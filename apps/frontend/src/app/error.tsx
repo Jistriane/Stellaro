@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 export default function Error({
   error,
   reset,
@@ -9,19 +7,33 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    if (error) {
-      console.error(error);
-    }
-  }, [error]);
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-4">Oops!</h1>
-      <p className="text-xl mb-8">Algo deu errado</p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      fontFamily: 'system-ui, sans-serif',
+      padding: '20px',
+    }}>
+      <h1 style={{ fontSize: '2rem', margin: '0 0 1rem 0' }}>
+        Erro
+      </h1>
+      <p style={{ fontSize: '1rem', margin: '0 0 2rem 0', color: '#666' }}>
+        {error?.message || 'Algo deu errado'}
+      </p>
       <button
         onClick={() => reset()}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        style={{
+          padding: '12px 24px',
+          backgroundColor: '#3b82f6',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontSize: '1rem',
+        }}
       >
         Tentar novamente
       </button>
