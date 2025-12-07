@@ -4,7 +4,6 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
-  /* config options here */
   outputFileTracingRoot: process.cwd(),
   eslint: {
     ignoreDuringBuilds: true,
@@ -12,12 +11,8 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  onDemandEntries: {
-    maxInactiveAge: 15 * 1000,
-    pagesBufferLength: 5,
-  },
-  // Estaticamente, não tenta pre-renderizar rotas especiais de erro
-  staticPageGenerationTimeout: 10,
+  // Standalone mode para Vercel
+  output: 'standalone',
 };
 
 export default withNextIntl(nextConfig);
