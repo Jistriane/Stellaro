@@ -19,7 +19,7 @@ export function LayoutClient({ children, locale }: LayoutClientProps) {
     setMounted(true);
   }, []);
 
-  // SSR fallback - renderizar apenas children sem qualquer componente cliente
+  // Durante SSR e pré-renderização, renderizar apenas children sem layout
   if (!mounted) {
     return <>{children}</>;
   }
@@ -39,7 +39,7 @@ export function LayoutClient({ children, locale }: LayoutClientProps) {
             <div className="flex items-center gap-3">
               <span
                 className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-slate-700 text-slate-400"
-                title="Locale: {locale}"
+                title="Locale atual detectado no servidor"
               >
                 {locale}
               </span>
