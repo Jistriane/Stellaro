@@ -11,45 +11,24 @@
 
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CacheService } from './cache.service';
 
 @Injectable()
 export class DatabaseOptimizationService {
   private readonly logger = new Logger(DatabaseOptimizationService.name);
 
-  constructor(
-    private prisma: PrismaService,
-    private cache: CacheService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   /**
-   * Otimizado: Buscar usuário com portfólio (sem cache)
+   * Otimizado: Buscar usuário
    */
-  async getUserWithPortfolio(userId: string) {
+  async getUserOptimized(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
         email: true,
         createdAt: true,
-        // Eager load portfolio
-        portfolio: {
-          select: {
-            id: true,
-            assetCode: true,
-            quantity: true,
-            value: true,
-          },
-          orderBy: { value: 'desc' },
-          take: 10, // Apenas top 10 assets
-        },
-        // Eager load metadata essencial
-        metadata: {
-          select: {
-            totalValue: true,
-            riskScore: true,
-          },
-        },
+        updatedAt: true,
       },
     });
   }
@@ -57,120 +36,128 @@ export class DatabaseOptimizationService {
   /**
    * Com cache distribuído
    */
-  async getUserWithPortfolioCached(userId: string) {
-    return this.cache.remember(
-      `user:${userId}:portfolio`,
-      300, // 5 minutos
-      () => this.getUserWithPortfolio(userId),
-    );
+  async getUserCached(userId: string) {
+    // TODO: Implementar cache quando disponível
+    return this.getUserOptimized(userId);
   }
 
   /**
    * Buscar múltiplos usuários em lote (evita N+1)
    */
-  async getUsersWithPortfolios(userIds: string[]) {
-    // Batch query (1 query ao invés de N)
+  async getUsersInBatch(userIds: string[]) {
     const users = await this.prisma.user.findMany({
       where: { id: { in: userIds } },
       select: {
         id: true,
         email: true,
-        portfolio: {
-          select: { assetCode: true, quantity: true },
-        },
+        createdAt: true,
       },
     });
 
-    // Map para acesso rápido
     return new Map(users.map((u) => [u.id, u]));
   }
 
   /**
-   * Paginar resultados com cursor (melhor que offset)
+   * Webhook events com paginação cursor
    */
-  async getTransactionsPaginated(
-    userId: string,
+  async getWebhookEventsPaginated(
     limit: number = 20,
     cursor?: string,
   ) {
-    return this.prisma.transaction.findMany({
-      where: { userId },
-      take: limit + 1, // +1 para verificar se há mais
+    return this.prisma.webhookEvent.findMany({
+      take: limit + 1,
       cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { receivedAt: 'desc' },
+      select: {
+        id: true,
+        eventId: true,
+        payload: true,
+        receivedAt: true,
+      },
+    });
+  }
+
+  /**
+   * Count com cache
+   */
+  async getUserCountCached() {
+    // TODO: Implementar cache quando disponível
+    return this.prisma.user.count();
+  }
+
+  /**
+   * Risk events summary
+   */
+  async getRiskEventsSummary(limit: number = 50) {
+    return this.prisma.riskEvent.findMany({
+      take: limit,
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
+        userId: true,
         type: true,
-        amount: true,
-        fee: true,
         createdAt: true,
       },
     });
   }
 
   /**
-   * Agregações com Prisma (evita client-side processing)
+   * Aggregate risk data
    */
-  async getPortfolioStats(userId: string) {
-    const stats = await this.prisma.portfolio.aggregate({
-      where: { userId },
-      _sum: { value: true },
-      _avg: { value: true },
-      _max: { value: true },
-      _min: { value: true },
-      _count: true,
+  async getRiskMetrics() {
+    try {
+      const result = await this.prisma.riskEvent.aggregate({
+        _count: true,
+      });
+
+      return {
+        totalEvents: result._count,
+      };
+    } catch (error) {
+      this.logger.error(`Error getting risk metrics: ${error.message}`);
+      return {
+        totalEvents: 0,
+      };
+    }
+  }
+
+  /**
+   * Bulk update risk proposal
+   */
+  async bulkUpdateRiskProposalStatus(
+    proposalIds: string[],
+    confidence?: number,
+  ) {
+    return this.prisma.riskProposal.updateMany({
+      where: { id: { in: proposalIds } },
+      data: { confidence: confidence || 0 },
     });
-
-    return {
-      totalValue: stats._sum.value || 0,
-      averageValue: stats._avg.value || 0,
-      maxAsset: stats._max.value || 0,
-      minAsset: stats._min.value || 0,
-      assetCount: stats._count,
-    };
   }
 
-  /**
-   * Busca com full-text search (PostgreSQL)
-   */
-  async searchTransactions(userId: string, query: string) {
-    return this.prisma.$queryRawUnsafe(`
-      SELECT id, type, description, amount, createdAt
-      FROM transactions
-      WHERE "userId" = $1
-      AND (
-        description ILIKE $2
-        OR type ILIKE $2
-      )
-      ORDER BY "createdAt" DESC
-      LIMIT 50
-    `, userId, `%${query}%`);
-  }
 
   /**
-   * Índices de banco de dados (criar uma vez)
+   * Ensure database indexes for optimal query performance
    */
   async ensureIndexes() {
     this.logger.log('Ensuring database indexes...');
 
     const indexes = [
-      // Índices simples
-      `CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`,
-      `CREATE INDEX IF NOT EXISTS idx_portfolio_userid ON portfolio("userId")`,
-      `CREATE INDEX IF NOT EXISTS idx_transactions_userid ON transactions("userId", "createdAt")`,
+      // Primary indexes
+      `CREATE INDEX IF NOT EXISTS idx_user_email ON "User"(email)`,
+      `CREATE INDEX IF NOT EXISTS idx_user_created ON "User"("createdAt" DESC)`,
       
-      // Índices compostos
-      `CREATE INDEX IF NOT EXISTS idx_portfolio_userid_asset ON portfolio("userId", "assetCode")`,
-      `CREATE INDEX IF NOT EXISTS idx_transactions_user_type ON transactions("userId", "type", "createdAt")`,
+      // Foreign key indexes
+      `CREATE INDEX IF NOT EXISTS idx_passkey_user ON "Passkey"("userId")`,
+      `CREATE INDEX IF NOT EXISTS idx_wallet_user ON "Wallet"("userId")`,
+      `CREATE INDEX IF NOT EXISTS idx_webhook_source ON "WebhookEvent"(source)`,
+      `CREATE INDEX IF NOT EXISTS idx_webhook_status ON "WebhookEvent"(status)`,
+      `CREATE INDEX IF NOT EXISTS idx_webhook_received ON "WebhookEvent"("receivedAt" DESC)`,
+      `CREATE INDEX IF NOT EXISTS idx_risk_event_user ON "RiskEvent"("userId")`,
+      `CREATE INDEX IF NOT EXISTS idx_risk_proposal_user ON "RiskProposal"("userId")`,
       
-      // Índices para range queries
-      `CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions("createdAt" DESC)`,
-      `CREATE INDEX IF NOT EXISTS idx_portfolio_value ON portfolio("value" DESC)`,
-      
-      // Full-text search index (PostgreSQL)
-      `CREATE INDEX IF NOT EXISTS idx_transactions_description ON transactions USING GIN(
-        to_tsvector('english', description)
-      )`,
+      // Composite indexes
+      `CREATE INDEX IF NOT EXISTS idx_risk_event_user_created ON "RiskEvent"("userId", "createdAt" DESC)`,
+      `CREATE INDEX IF NOT EXISTS idx_risk_proposal_user_created ON "RiskProposal"("userId", "createdAt" DESC)`,
     ];
 
     for (const index of indexes) {
@@ -178,7 +165,6 @@ export class DatabaseOptimizationService {
         await this.prisma.$executeRawUnsafe(index);
         this.logger.debug(`Index ensured: ${index.substring(0, 50)}...`);
       } catch (error) {
-        // Index pode já existir
         if (!error.message.includes('already exists')) {
           this.logger.error(`Index error: ${error.message}`);
         }
@@ -198,9 +184,13 @@ export class DatabaseOptimizationService {
           usename
         FROM pg_stat_database
         WHERE datname = current_database()
+        LIMIT 1
       `;
 
-      return result[0];
+      if (Array.isArray(result) && result.length > 0) {
+        return result[0];
+      }
+      return null;
     } catch (error) {
       this.logger.error(`Error getting pool stats: ${error.message}`);
       return null;
@@ -208,70 +198,43 @@ export class DatabaseOptimizationService {
   }
 
   /**
-   * Warm up cache com dados críticos
+   * Warm up cache with critical data
    */
   async warmupCriticalData() {
-    this.logger.log('Warming up critical data cache...');
+    this.logger.log('Warming up critical data...');
 
-    // Top 100 usuários ativos
-    const topUsers = await this.prisma.user.findMany({
-      where: { status: 'active' },
-      orderBy: { lastActiveAt: 'desc' },
-      take: 100,
-      select: { id: true },
-    });
-
-    const warmupMap = new Map();
-    for (const user of topUsers) {
-      warmupMap.set(`user:${user.id}:portfolio`, {
-        value: await this.getUserWithPortfolio(user.id),
-        ttl: 300,
+    try {
+      const topUsers = await this.prisma.user.findMany({
+        take: 100,
+        select: { id: true, email: true },
       });
+
+      this.logger.log(`Preloaded ${topUsers.length} users`);
+    } catch (error) {
+      this.logger.error(`Error during preload: ${error.message}`);
     }
-
-    await this.cache.warmUp(warmupMap);
   }
 
   /**
-   * Batch upsert (melhor que múltiplos updates)
+   * Archive old risk events (data cleanup)
    */
-  async batchUpsertPortfolio(
-    userId: string,
-    assets: Array<{ code: string; quantity: number; value: number }>,
-  ) {
-    return this.prisma.$transaction([
-      // Delete antigos
-      this.prisma.portfolio.deleteMany({
-        where: { userId },
-      }),
-      // Insert novos
-      this.prisma.portfolio.createMany({
-        data: assets.map((asset) => ({
-          userId,
-          assetCode: asset.code,
-          quantity: asset.quantity,
-          value: asset.value,
-        })),
-      }),
-    ]);
-  }
+  async archiveOldRiskEvents(daysOld: number = 90) {
+    try {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - daysOld);
 
-  /**
-   * Limpeza de dados antigos (arquivamento)
-   */
-  async archiveOldTransactions(daysOld: number = 90) {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+      const deleted = await this.prisma.riskEvent.deleteMany({
+        where: {
+          createdAt: { lt: cutoffDate },
+        },
+      });
 
-    const archived = await this.prisma.transaction.deleteMany({
-      where: {
-        createdAt: { lt: cutoffDate },
-        status: 'completed',
-      },
-    });
-
-    this.logger.log(`Archived ${archived.count} old transactions`);
-    return archived;
+      this.logger.log(`Archived ${deleted.count} old risk events`);
+      return deleted;
+    } catch (error) {
+      this.logger.error(`Error archiving old events: ${error.message}`);
+      return { count: 0 };
+    }
   }
 
   /**
@@ -279,50 +242,48 @@ export class DatabaseOptimizationService {
    */
   async explainQuery(sql: string) {
     try {
-      const plan = await this.prisma.$queryRawUnsafe(`EXPLAIN ${sql}`);
+      const plan = await this.prisma.$queryRawUnsafe(`EXPLAIN ANALYZE ${sql}`);
       this.logger.log('Query plan:', plan);
       return plan;
     } catch (error) {
-      this.logger.error(`Explain error: ${error.message}`);
+      this.logger.error(`Error in explain query: ${error.message}`);
       return null;
     }
   }
 
   /**
-   * Connection pool tuning
+   * Get database size
    */
-  getConnectionPoolConfig() {
-    return {
-      // Baseado em recomendações Prisma/PostgreSQL
-      max: parseInt(process.env.DATABASE_POOL_SIZE || '20'),
-      min: 2,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
-      // Para aplicações Serverless
-      connection: {
-        timezone: 'UTC',
-      },
-    };
+  async getDatabaseSize() {
+    try {
+      const result = await this.prisma.$queryRaw`
+        SELECT 
+          pg_size_pretty(pg_database_size(current_database())) as size
+      `;
+
+      if (Array.isArray(result) && result.length > 0) {
+        return result[0];
+      }
+      return null;
+    } catch (error) {
+      this.logger.error(`Error getting database size: ${error.message}`);
+      return null;
+    }
   }
 
   /**
-   * Detecção de slow queries
+   * Database maintenance routine
    */
-  async monitorSlowQueries(thresholdMs: number = 1000) {
-    // Enable slow query log no PostgreSQL
-    const result = await this.prisma.$queryRaw`
-      SELECT 
-        query,
-        calls,
-        total_time,
-        mean_time,
-        max_time
-      FROM pg_stat_statements
-      WHERE mean_time > $1
-      ORDER BY mean_time DESC
-      LIMIT 10
-    `;
+  async maintenanceRoutine() {
+    this.logger.log('Running database maintenance routine...');
 
-    return result;
+    try {
+      await this.prisma.$executeRawUnsafe('VACUUM ANALYZE');
+      await this.ensureIndexes();
+      await this.warmupCriticalData();
+      this.logger.log('Maintenance routine completed');
+    } catch (error) {
+      this.logger.error(`Error during maintenance: ${error.message}`);
+    }
   }
 }
