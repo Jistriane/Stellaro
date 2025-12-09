@@ -146,7 +146,7 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 
 ### Tech Stack v3.0
 
-- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, Zustand, next-intl
+- **Frontend**: Next.js 14, React 19, TypeScript, Tailwind CSS, Zustand, next-intl
 - **Backend**: NestJS 11, Prisma (PostgreSQL), Redis Cluster, Swagger/OpenAPI
 - **Blockchain**: Stellar, Soroban Smart Contracts (Rust)
 - **AI/ML**: ElizaOS (Anthropic Claude), ZK-Proofs (Groth16)
@@ -155,6 +155,16 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 - **Monitoring**: Grafana, Prometheus, Loki, CloudWatch
 - **Security**: Passkey Kit, Onfido, Chainalysis, Wazuh SIEM
 - **Testing**: Jest (65 test suites, 414+ tests, 57.62% coverage, 100% E2E passing)
+
+## Live Deployments
+
+### Frontend (Testnet)
+
+- **URL**: https://stellaro-frontend-testnet.vercel.app
+- **Platform**: Vercel
+- **Status**: ✅ Active
+- **Last Deployment**: December 9, 2025
+- **Deployment URL**: https://stellaro-frontend-testnet-c9oxyqhwh.vercel.app
 
 ## Project Structure
 
