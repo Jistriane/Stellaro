@@ -384,6 +384,9 @@ export default function SettingsAdvancedPage() {
                   </div>
                   <input
                     type="checkbox"
+                    id={`privacy-${item.title.replace(/\s+/g, '-').toLowerCase()}`}
+                    title={item.title}
+                    aria-label={item.description}
                     defaultChecked={item.enabled}
                     className="w-5 h-5 rounded"
                   />
