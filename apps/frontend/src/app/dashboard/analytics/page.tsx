@@ -55,20 +55,22 @@ export default function DashboardAnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center">
-        <p className="text-gray-500">{t("loading")}</p>
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center">
+          <div className="text-slate-400">{t("loading")}</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
+    <div className="p-6 space-y-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
-            <p className="text-gray-400">{t("subtitle")}</p>
+            <h1 className="text-2xl font-semibold mb-2">{t("title")}</h1>
+            <p className="text-xs text-slate-500">{t("subtitle")}</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -98,9 +100,9 @@ export default function DashboardAnalyticsPage() {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* TVL Card */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+              <CardTitle className="text-sm font-medium">
                 {t("tvl")}
               </CardTitle>
             </CardHeader>
@@ -108,7 +110,7 @@ export default function DashboardAnalyticsPage() {
               <div className="text-3xl font-bold">
                 ${(data.summary.tvl / 1000).toFixed(1)}K
               </div>
-              <div className="flex items-center gap-1 mt-2 text-green-400">
+              <div className="flex items-center gap-1 mt-2 text-green-600">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm">+{data.summary.tvlChange}%</span>
               </div>
@@ -116,15 +118,15 @@ export default function DashboardAnalyticsPage() {
           </Card>
 
           {/* APY Card */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+              <CardTitle className="text-sm font-medium">
                 {t("apy")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{data.summary.apy}%</div>
-              <div className="flex items-center gap-1 mt-2 text-green-400">
+              <div className="flex items-center gap-1 mt-2 text-green-600">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm">+{data.summary.apyChange}%</span>
               </div>
@@ -132,15 +134,15 @@ export default function DashboardAnalyticsPage() {
           </Card>
 
           {/* Active Loans Card */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+              <CardTitle className="text-sm font-medium">
                 {t("loans")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{data.summary.loans}</div>
-              <div className="flex items-center gap-1 mt-2 text-green-400">
+              <div className="flex items-center gap-1 mt-2 text-green-600">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm">+{data.summary.loansChange}</span>
               </div>
@@ -148,15 +150,15 @@ export default function DashboardAnalyticsPage() {
           </Card>
 
           {/* Default Rate Card */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+              <CardTitle className="text-sm font-medium">
                 {t("defaultRate")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">0.47%</div>
-              <div className="flex items-center gap-1 mt-2 text-red-400">
+              <div className="flex items-center gap-1 mt-2 text-red-600">
                 <TrendingDown className="w-4 h-4" />
                 <span className="text-sm">-0.12%</span>
               </div>
@@ -167,7 +169,7 @@ export default function DashboardAnalyticsPage() {
         {/* Charts Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* TVL Chart */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <LineChartIcon className="w-5 h-5" />
@@ -200,7 +202,7 @@ export default function DashboardAnalyticsPage() {
           </Card>
 
           {/* Asset Distribution */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="w-5 h-5" />
@@ -239,7 +241,7 @@ export default function DashboardAnalyticsPage() {
         </div>
 
         {/* Charts Row 2 */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5" />
@@ -267,40 +269,40 @@ export default function DashboardAnalyticsPage() {
 
         {/* Bottom Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-sm">{t("utilization")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">73.5%</div>
-              <div className="w-full bg-slate-700 rounded-full h-2 mt-3">
+              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
                 <div
-                  className="bg-blue-500 h-2 rounded-full"
+                  className="bg-blue-600 h-2 rounded-full"
                   style={{ width: "73.5%" }}
                 />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-sm">{t("liquidationRatio")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">98.4%</div>
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-slate-500 mt-2">
                 {t("healthyStatus")}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-sm">{t("reserveRatio")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">127%</div>
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-slate-500 mt-2">
                 {t("surplusCollateral")}
               </p>
             </CardContent>

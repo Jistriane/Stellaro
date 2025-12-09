@@ -1,70 +1,52 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 type Point = { t: string; v: number };
 
-const fallbackData: Point[] = [
-  { t: "T-5", v: 10.2 },
-  { t: "T-4", v: 10.4 },
-  { t: "T-3", v: 10.35 },
-  { t: "T-2", v: 10.6 },
-  { t: "T-1", v: 10.55 },
-  { t: "T-0", v: 10.7 },
-];
+// Simulated real-time data generator for XLM/USD
+function generateRealisticData(): Point[] {
+  const now = Date.now();
+  const basePrice = 0.095; // XLM price around $0.095
+  const points: Point[] = [];
+  
+  for (let i = 120; i >= 0; i--) {
+    const timestamp = now - i * 3600000; // hourly intervals
+    const ts = new Date(timestamp);
+    const volatility = (Math.random() - 0.5) * 0.003; // ±0.3% variation
+    const trend = Math.sin(i / 20) * 0.002; // gentle wave pattern
+    const price = basePrice + volatility + trend;
+    
+    const label = ts.toLocaleString("pt-BR", { 
+      weekday: "short", 
+      hour: "2-digit", 
+      minute: "2-digit" 
+    });
+    
+    points.push({ t: label, v: Number(price.toFixed(4)) });
+  }
+  
+  return points;
+}
 
 export default function BalanceChart() {
   const [data, setData] = useState<Point[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<"coingecko" | "fallback">("coingecko");
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await fetch(
-        "https://api.coingecko.com/api/v3/coins/stellar/market_chart?vs_currency=usd&days=7&interval=hourly",
-        { cache: "no-store" }
-      );
-      if (!res.ok) throw new Error("bad_response");
-      const json = await res.json();
-      const points: Point[] = (json?.prices ?? []).slice(-120).map((p: [number, number]) => {
-        const ts = new Date(p[0]);
-        const label = ts.toLocaleString("pt-BR", { weekday: "short", hour: "2-digit", minute: "2-digit" });
-        return { t: label, v: Number(p[1]) };
-      });
-
-      if (!points.length) throw new Error("empty_payload");
-      setData(points);
-      setSource("coingecko");
-    } catch (err) {
-      console.error("[BalanceChart] fetch failed", err);
-      setError("Não foi possível carregar dados em tempo real agora.");
-      setData(fallbackData);
-      setSource("fallback");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
-    let cancelled = false;
+    // Initial load
+    setData(generateRealisticData());
+    setLoading(false);
+    
+    // Update every 5 minutes with slight variations
+    const interval = setInterval(() => {
+      setData(generateRealisticData());
+    }, 300_000);
 
-    const tick = async () => {
-      if (cancelled) return;
-      await loadData();
-    };
-
-    tick();
-    const id = setInterval(tick, 60_000);
-    return () => {
-      cancelled = true;
-      clearInterval(id);
-    };
-  }, [loadData]);
+    return () => clearInterval(interval);
+  }, []);
 
   const latest = useMemo(() => data[data.length - 1]?.v ?? null, [data]);
 
@@ -74,36 +56,39 @@ export default function BalanceChart() {
         <CardTitle>Histórico de Saldo (XLM/USD)</CardTitle>
         <CardDescription>
           {loading
-            ? "Carregando dados reais de mercado..."
-            : source === "coingecko"
-            ? "Dados reais das últimas 72h via CoinGecko"
-            : "Dados temporários enquanto a API está indisponível"}
+            ? "Carregando dados de mercado..."
+            : "Dados simulados das últimas 120h com atualização a cada 5 minutos"}
         </CardDescription>
-        {error && (
-          <div className="text-amber-300 text-xs mt-2">{error} Exibindo série temporária de segurança.</div>
-        )}
       </CardHeader>
       <CardContent>
         {latest && (
-          <div className="mb-3 text-sm text-slate-300">Último preço: {latest.toFixed(4)} USD</div>
+          <div className="mb-3 text-sm text-slate-300">Último preço: ${latest.toFixed(4)} USD</div>
         )}
-        <div className="w-full h-[320px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full min-h-[320px]">
+          <ResponsiveContainer width="100%" height={320}>
             <LineChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
               <XAxis dataKey="t" stroke="currentColor" fontSize={11} minTickGap={24} hide={data.length > 40} />
-              <YAxis stroke="currentColor" fontSize={12} domain={["dataMin", "dataMax"]} tickFormatter={(v) => v.toFixed(2)} />
+              <YAxis stroke="currentColor" fontSize={12} domain={["dataMin", "dataMax"]} tickFormatter={(v) => `$${v.toFixed(3)}`} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "rgba(0, 0, 0, 0.85)",
                   border: "1px solid rgba(255, 255, 255, 0.15)",
                   borderRadius: "6px",
+                  fontSize: "13px",
                 }}
-                labelStyle={{ color: "#fff" }}
-                itemStyle={{ color: "#fff" }}
-                formatter={(value: number) => `${value.toFixed(4)} USD`}
+                labelStyle={{ color: "#cbd5e1", marginBottom: "4px" }}
+                itemStyle={{ color: "#38bdf8" }}
+                formatter={(value: number) => [`$${value.toFixed(4)}`, "Preço"]}
               />
-              <Line type="monotone" dataKey="v" stroke="#7dd3fc" strokeWidth={2} dot={false} />
+              <Line
+                type="monotone"
+                dataKey="v"
+                stroke="#38bdf8"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 5, fill: "#38bdf8" }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>

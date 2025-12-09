@@ -806,6 +806,39 @@
       "user": "Usuário",
       "kyc_pending": "pendente",
       "complete_kyc": "Completar KYC"
+    },
+    "analytics": {
+      "title": "Analytics Stellaro",
+      "subtitle": "Métricas e dados em tempo real do protocolo",
+      "loading": "Carregando dados...",
+      "tvl": "TVL Total",
+      "apy": "APY Médio",
+      "loans": "Empréstimos Ativos",
+      "defaultRate": "Taxa de Inadimplência",
+      "tvlHistory": "Histórico de TVL",
+      "assetDistribution": "Distribuição de Ativos",
+      "performanceMetrics": "Métricas de Performance",
+      "utilization": "Taxa de Utilização",
+      "liquidationRatio": "Ratio de Liquidação",
+      "healthyStatus": "Saudável",
+      "reserveRatio": "Ratio de Reserva",
+      "surplusCollateral": "Superávit de Colateral"
+    }
+  },
+  "defi": {
+    "stats": {
+      "title": "Estatísticas DeFi",
+      "subtitle": "Métricas e dados do protocolo em tempo real",
+      "tvl": "TVL Total",
+      "loans": "Empréstimos Ativos",
+      "apy": "APY Médio",
+      "utilization": "Taxa de Utilização"
+    }
+  },
+  "liquidity": {
+    "pools": {
+      "title": "Pools de Liquidez",
+      "subtitle": "Gerencie sua liquidez e ganhe recompensas"
     }
   },
   "loans": {

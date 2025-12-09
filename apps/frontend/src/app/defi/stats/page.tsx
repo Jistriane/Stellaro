@@ -43,59 +43,58 @@ export default function DefiStatsPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold mb-2">{t("stats.title")}</h1>
-          <p className="text-gray-400">{t("stats.subtitle")}</p>
-        </div>
+    <div className="p-6 space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold mb-1">{t("stats.title")}</h1>
+        <p className="text-xs text-slate-500">{t("stats.subtitle")}</p>
+      </div>
 
         {/* KPI Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">{t("stats.tvl")}</CardTitle>
+              <CardTitle className="text-xs text-slate-500">{t("stats.tvl")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">${(stats.tvl / 1000).toFixed(1)}K</div>
-              <p className="text-xs text-green-400 mt-2">↑ 12.5% from last week</p>
+              <p className="text-xs text-green-600 mt-2">↑ 12.5% from last week</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">{t("stats.loans")}</CardTitle>
+              <CardTitle className="text-xs text-slate-500">{t("stats.loans")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.loans}</div>
-              <p className="text-xs text-green-400 mt-2">↑ 5 from last week</p>
+              <p className="text-xs text-green-600 mt-2">↑ 5 from last week</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">{t("stats.apy")}</CardTitle>
+              <CardTitle className="text-xs text-slate-500">{t("stats.apy")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.apy}%</div>
-              <p className="text-xs text-green-400 mt-2">↑ 0.5% from last month</p>
+              <p className="text-xs text-green-600 mt-2">↑ 0.5% from last month</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">{t("stats.utilization")}</CardTitle>
+              <CardTitle className="text-xs text-slate-500">{t("stats.utilization")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{stats.utilization}%</div>
-              <p className="text-xs text-gray-400 mt-2">Pool utilization</p>
+              <p className="text-xs text-slate-500 mt-2">Pool utilization</p>
             </CardContent>
           </Card>
         </div>
 
         {/* TVL & Loans Timeline */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="w-5 h-5" />
@@ -115,7 +114,7 @@ export default function DefiStatsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="w-5 h-5" />
@@ -138,7 +137,7 @@ export default function DefiStatsPage() {
 
         {/* Loan Types & Reserve Info */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="bg-slate-800 border-slate-700 lg:col-span-2">
+          <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Loan Types Distribution</CardTitle>
             </CardHeader>
@@ -155,24 +154,24 @@ export default function DefiStatsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-sm">Reserve Status</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-gray-400 text-sm mb-2">Total Reserves</p>
+                <p className="text-slate-500 text-sm mb-2">Total Reserves</p>
                 <p className="text-2xl font-bold">${(stats.reserves / 1000).toFixed(0)}K</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-2">Collateral Ratio</p>
-                <p className="text-2xl font-bold text-green-400">{stats.reserveRatio}%</p>
-                <p className="text-xs text-gray-400 mt-1">Above 120% threshold ✓</p>
+                <p className="text-slate-500 text-sm mb-2">Collateral Ratio</p>
+                <p className="text-2xl font-bold text-green-600">{stats.reserveRatio}%</p>
+                <p className="text-xs text-slate-500 mt-1">Above 120% threshold ✓</p>
               </div>
               <div className="pt-2">
-                <div className="w-full bg-slate-700 rounded-full h-2">
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                   <div
-                    className="bg-green-500 h-2 rounded-full"
+                    className="bg-green-600 h-2 rounded-full"
                     style={{ width: "100%" }}
                   />
                 </div>
@@ -182,36 +181,35 @@ export default function DefiStatsPage() {
         </div>
 
         {/* Pool Health Summary */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card>
           <CardHeader>
             <CardTitle>Pool Health Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-gray-400 text-sm mb-2">Default Rate</p>
+                <p className="text-slate-500 text-sm mb-2">Default Rate</p>
                 <p className="text-2xl font-bold">0.47%</p>
-                <p className="text-xs text-gray-400">↓ 0.12% this month</p>
+                <p className="text-xs text-slate-500">↓ 0.12% this month</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-2">Avg Collateral</p>
+                <p className="text-slate-500 text-sm mb-2">Avg Collateral</p>
                 <p className="text-2xl font-bold">150%</p>
-                <p className="text-xs text-green-400">Healthy ✓</p>
+                <p className="text-xs text-green-600">Healthy ✓</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-2">Liquidations</p>
+                <p className="text-slate-500 text-sm mb-2">Liquidations</p>
                 <p className="text-2xl font-bold">{stats.liquidations}</p>
-                <p className="text-xs text-gray-400">Last 30 days</p>
+                <p className="text-xs text-slate-500">Last 30 days</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-2">Pool Status</p>
-                <p className="text-2xl font-bold text-green-400">Active</p>
-                <p className="text-xs text-green-400">Operating normally</p>
+                <p className="text-slate-500 text-sm mb-2">Pool Status</p>
+                <p className="text-2xl font-bold text-green-600">Active</p>
+                <p className="text-xs text-green-600">Operating normally</p>
               </div>
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
