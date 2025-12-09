@@ -21,8 +21,15 @@ export default function MarketSelector({ onChange }: { onChange?: (pair: string)
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <label className="text-sm text-slate-400">Mercado:</label>
-        <select value={pair} onChange={(e) => handle(e.target.value)} className="bg-slate-900/50 border border-slate-800 rounded px-2 py-1 text-sm">
+        <label className="text-sm text-slate-400" htmlFor="market-selector">Mercado:</label>
+        <select
+          id="market-selector"
+          title="Select trading pair"
+          aria-label="Select trading pair"
+          value={pair}
+          onChange={(e) => handle(e.target.value)}
+          className="bg-slate-900/50 border border-slate-800 rounded px-2 py-1 text-sm"
+        >
           {PAIRS.map(p => (
             <option key={p.symbol} value={p.symbol}>{p.symbol}</option>
           ))}

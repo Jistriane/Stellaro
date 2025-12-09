@@ -10,7 +10,11 @@ describe('WebhooksController', () => {
 
   beforeEach(() => {
     service = { verifySignature: jest.fn() } as unknown as jest.Mocked<WebhooksService>;
-    prisma = { webhookEvent: { create: jest.fn() } } as any;
+    prisma = {
+      webhookEvent: { create: jest.fn() },
+      celcoin: { findFirst: jest.fn() },
+      dock: { findFirst: jest.fn() },
+    } as any;
     controller = new WebhooksController(service, prisma as unknown as PrismaService);
   });
 

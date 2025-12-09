@@ -346,28 +346,28 @@ export default function NotificationsPage() {
                 <p className="font-medium">Email Notifications</p>
                 <p className="text-sm text-gray-400">Receive alerts via email</p>
               </div>
-              <input type="checkbox" defaultChecked className="w-5 h-5" />
+              <input type="checkbox" id="email-notif" title="Enable email notifications" aria-label="Email notifications" defaultChecked className="w-5 h-5" />
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
               <div>
                 <p className="font-medium">Push Notifications</p>
                 <p className="text-sm text-gray-400">Receive browser push alerts</p>
               </div>
-              <input type="checkbox" defaultChecked className="w-5 h-5" />
+              <input type="checkbox" id="push-notif" title="Enable push notifications" aria-label="Push notifications" defaultChecked className="w-5 h-5" />
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
               <div>
                 <p className="font-medium">Critical Only</p>
                 <p className="text-sm text-gray-400">Only critical alerts via SMS</p>
               </div>
-              <input type="checkbox" defaultChecked className="w-5 h-5" />
+              <input type="checkbox" id="critical-sms" title="Only send critical alerts via SMS" aria-label="Critical alerts SMS only" defaultChecked className="w-5 h-5" />
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
               <div>
                 <p className="font-medium">Quiet Hours</p>
                 <p className="text-sm text-gray-400">10:00 PM - 8:00 AM</p>
               </div>
-              <input type="checkbox" className="w-5 h-5" />
+              <input type="checkbox" id="quiet-hours" title="Enable quiet hours" aria-label="Quiet hours" className="w-5 h-5" />
             </div>
           </CardContent>
         </Card>

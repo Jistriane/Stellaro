@@ -140,11 +140,14 @@ export default function SettingsAdvancedPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Public Address</label>
+                  <label className="block text-sm font-medium mb-2" htmlFor="public-address">Public Address</label>
                   <div className="flex gap-2">
                     <input
+                      id="public-address"
                       type="text"
                       value={walletAddress}
+                      title="Your public wallet address"
+                      aria-label="Public wallet address"
                       readOnly
                       className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-xs font-mono"
                     />
@@ -163,11 +166,14 @@ export default function SettingsAdvancedPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Private Key</label>
+                  <label className="block text-sm font-medium mb-2" htmlFor="private-key">Private Key</label>
                   <div className="flex gap-2">
                     <input
+                      id="private-key"
                       type={showPrivateKey ? "text" : "password"}
                       value="•••••••••••••••••••••••••••••••••••••••"
+                      title="Your private key (hidden)"
+                      aria-label="Private key"
                       readOnly
                       className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-xs"
                     />
@@ -429,7 +435,7 @@ export default function SettingsAdvancedPage() {
                 <CardTitle>Language</CardTitle>
               </CardHeader>
               <CardContent>
-                <select className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white focus:outline-none focus:border-blue-500">
+                <select id="language-select" title="Select language" aria-label="Select language" className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white focus:outline-none focus:border-blue-500">
                   <option>Português (BR)</option>
                   <option>English</option>
                   <option>Español</option>

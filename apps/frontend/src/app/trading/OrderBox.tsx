@@ -55,8 +55,15 @@ export default function OrderBox({ base = 'BTC', quote = 'BRL', priceRef = 27000
       </div>
 
       <div className="flex items-center gap-2 text-sm">
-        <label>Tipo:</label>
-        <select value={type} onChange={(e) => setType(e.target.value as OrderType)} className="bg-slate-900/50 border border-slate-800 rounded px-2 py-1">
+        <label htmlFor="order-type">Tipo:</label>
+        <select
+          id="order-type"
+          title="Select order type"
+          aria-label="Select order type"
+          value={type}
+          onChange={(e) => setType(e.target.value as OrderType)}
+          className="bg-slate-900/50 border border-slate-800 rounded px-2 py-1"
+        >
           <option value="LIMIT">Limit</option>
           <option value="MARKET">Market</option>
           <option value="STOP">Stop</option>

@@ -146,6 +146,8 @@ export default function WalletPanel() {
                   value={selected}
                   onChange={(e) => setSelected(e.target.value)}
                   disabled={loading}
+                  title="Select a wallet"
+                  aria-label="Wallet selection"
                 >
                   <option value="" disabled>
                     {t("select_wallet")}
@@ -161,6 +163,8 @@ export default function WalletPanel() {
                   className="rounded-lg bg-slate-800 text-slate-100 border border-slate-600 px-3 py-2 text-sm"
                   value=""
                   disabled
+                  title="Detecting wallets"
+                  aria-label="Wallet selection (detecting)"
                 >
                   <option value="">{t("detecting_wallets")}</option>
                 </select>

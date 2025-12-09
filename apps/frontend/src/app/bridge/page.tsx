@@ -144,6 +144,8 @@ export default function BridgePage() {
                   <select
                     value={fromChain}
                     onChange={(e) => setFromChain(e.target.value)}
+                    title="Select source chain"
+                    aria-label="Select source chain"
                     className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
                   >
                     {chains.map((chain) => (
@@ -182,6 +184,8 @@ export default function BridgePage() {
               <div className="flex justify-center">
                 <button
                   onClick={handleSwapChains}
+                  title="Swap source and destination chains"
+                  aria-label="Swap chains"
                   className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
                 >
                   <ArrowRightLeft className="w-6 h-6" />
@@ -195,6 +199,8 @@ export default function BridgePage() {
                   <select
                     value={toChain}
                     onChange={(e) => setToChain(e.target.value)}
+                    title="Select destination chain"
+                    aria-label="Select destination chain"
                     className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
                   >
                     {chains.map((chain) => (
@@ -345,7 +351,7 @@ export default function BridgePage() {
         </Card>
 
         {/* Safety Info */}
-        <Card className="bg-slate-800 border-slate-700 border-yellow-900 bg-opacity-50">
+        <Card className="bg-slate-800 border-slate-700 bg-opacity-50">
           <CardContent className="pt-6">
             <div className="flex gap-3">
               <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-1" />

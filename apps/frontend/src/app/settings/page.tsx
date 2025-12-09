@@ -213,18 +213,27 @@ export default function SettingsPage() {
             <div>
               <div className="text-slate-400 text-xs">{t("account.name")}</div>
               <input className="w-full rounded bg-slate-900 px-3 py-2 border border-slate-800"
+                     id="account-name"
+                     title="Account name"
+                     aria-label="Account name"
                      value={account.name}
                      onChange={(e) => setAccount({ ...account, name: e.target.value })} />
             </div>
             <div>
               <div className="text-slate-400 text-xs">{t("account.email")}</div>
               <input className="w-full rounded bg-slate-900 px-3 py-2 border border-slate-800"
+                     id="account-email"
+                     title="Account email"
+                     aria-label="Account email"
                      value={account.email}
                      onChange={(e) => setAccount({ ...account, email: e.target.value })} />
             </div>
             <div>
               <div className="text-slate-400 text-xs">{t("account.phone")}</div>
               <input className="w-full rounded bg-slate-900 px-3 py-2 border border-slate-800"
+                     id="account-phone"
+                     title="Account phone"
+                     aria-label="Account phone"
                      value={account.phone}
                      onChange={(e) => setAccount({ ...account, phone: e.target.value })} />
             </div>
@@ -303,11 +312,11 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
-          <div>
-            <div className="text-slate-400 text-xs">{t("prefs.tx_alert")} (R$)</div>
-            <input type="number" min={0} className="rounded bg-slate-900 px-3 py-2 border border-slate-800 w-40"
-                   value={txThreshold}
-                   onChange={(e) => setTxThreshold(Number(e.target.value))} />
+            <div>
+              <div className="text-slate-400 text-xs">{t("prefs.tx_alert")} (R$)</div>
+              <input type="number" min={0} id="tx-threshold" title="Transaction alert threshold" aria-label="Transaction alert threshold (BRL)" className="rounded bg-slate-900 px-3 py-2 border border-slate-800 w-40"
+                     value={txThreshold}
+                     onChange={(e) => setTxThreshold(Number(e.target.value))} />
           </div>
         </CardContent>
       </Card>
