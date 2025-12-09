@@ -10,11 +10,11 @@ Welcome to the Stellaro project! This monorepo contains the complete architectur
 
 Login / Authentication:
 
-![Login](https://github.com/user-attachments/assets/5a3c0e4a-9b5e-4c0f-8b5e-9b5e4c0f8b5e)
+![Login](./Login%20Stellaro.png)
 
 Home / Dashboard:
 
-![Home](https://github.com/user-attachments/assets/7d2e3f1a-8c9d-4e5f-9d8c-3f1a8c9d4e5f)
+![Home](./Home%20Stellaro.png)
 
 ## 🎯 Architecture v3.0 Highlights
 
