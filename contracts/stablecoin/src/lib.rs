@@ -84,6 +84,7 @@ fn get_admin(env: &Env) -> Result<Address, Error> {
 mod test {
     use super::*;
     use std::panic::{catch_unwind, AssertUnwindSafe};
+    #[cfg(not(target_arch = "wasm32"))]
     use soroban_sdk::testutils::{Address as _, Ledger};
 
     fn expect_err<F: FnOnce()>(f: F) {

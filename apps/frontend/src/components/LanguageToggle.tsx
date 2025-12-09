@@ -40,7 +40,7 @@ export default function LanguageToggle() {
     <div className="flex items-center gap-1" role="group" aria-label="Language selector">
       <button
         type="button"
-        aria-pressed={`${locale === "pt"}`}
+        aria-pressed={locale === "pt"}
         aria-label="Switch to Brazilian Portuguese"
         title="Portuguese (Brazil)"
         className={`${baseBtn} ${locale === "pt" ? active : inactive}`}
@@ -51,7 +51,7 @@ export default function LanguageToggle() {
       <span aria-hidden className="mx-0.5 text-slate-400">|</span>
       <button
         type="button"
-        aria-pressed={`${locale === "en"}`}
+        aria-pressed={locale === "en"}
         aria-label="Switch to English"
         title="English"
         className={`${baseBtn} ${locale === "en" ? active : inactive}`}

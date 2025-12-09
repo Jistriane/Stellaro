@@ -156,6 +156,7 @@ impl LoansPoolContract {
 #[cfg(test)]
 mod test {
     use super::*;
+    #[cfg(not(target_arch = "wasm32"))]
     use soroban_sdk::testutils::Address as _;
 
     #[test]

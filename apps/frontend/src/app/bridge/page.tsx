@@ -226,6 +226,8 @@ export default function BridgePage() {
                     type="number"
                     value={toAmount}
                     disabled
+                    title="Amount to receive"
+                    aria-label="You will receive"
                     className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white opacity-60 cursor-not-allowed"
                   />
                   <span className="absolute right-4 top-3 text-gray-400">

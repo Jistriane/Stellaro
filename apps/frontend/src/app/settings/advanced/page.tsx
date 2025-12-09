@@ -263,6 +263,8 @@ export default function SettingsAdvancedPage() {
                         type="text"
                         value={key.key}
                         readOnly
+                        title="API Key"
+                        aria-label="API Key value"
                         className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-xs font-mono"
                       />
                       <Button
@@ -425,7 +427,7 @@ export default function SettingsAdvancedPage() {
               <CardContent>
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-400">Reduce spacing and font sizes</p>
-                  <input type="checkbox" className="w-5 h-5" />
+                  <input type="checkbox" id="compact-mode" title="Compact mode" aria-label="Reduce spacing and font sizes" className="w-5 h-5" />
                 </div>
               </CardContent>
             </Card>
