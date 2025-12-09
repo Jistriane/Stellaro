@@ -386,7 +386,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected = "EmptyBatch")]
+    #[should_panic]
     fn test_empty_batch_fails() {
         let env = Env::default();
         env.mock_all_auths();

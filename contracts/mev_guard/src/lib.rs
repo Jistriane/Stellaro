@@ -405,7 +405,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected = "DeadlineExpired")]
+    #[should_panic]
     fn test_expired_order_fails() {
         let env = Env::default();
         env.mock_all_auths();

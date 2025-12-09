@@ -33,6 +33,8 @@ Thumbs.db
 
 # Rust contracts build artifacts
 contracts/target/
+contracts/target-host/
+contracts/*/test_snapshots/
 
 # Turborepo daemon logs/cache
 .turbo/
