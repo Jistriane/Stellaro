@@ -55,12 +55,13 @@ export class ActionsService {
         action: 'swap',
         amountOut: params.amountIn,
       };
-    } catch (error) {
-      this.logger.error(`Swap failed: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Swap failed: ${errorMessage}`);
       return {
         ok: false,
         action: 'swap',
-        error: error.message,
+        error: errorMessage,
       };
     }
   }
@@ -107,12 +108,13 @@ export class ActionsService {
         action: 'partialLiquidation',
         liquidatedAmount: params.liquidationAmount,
       };
-    } catch (error) {
-      this.logger.error(`Partial liquidation failed: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Partial liquidation failed: ${errorMessage}`);
       return {
         ok: false,
         action: 'partialLiquidation',
-        error: error.message,
+        error: errorMessage,
       };
     }
   }
@@ -165,12 +167,13 @@ export class ActionsService {
         hedgedAmount,
         cost: (parseFloat(hedgedAmount) * 0.003).toString(),
       };
-    } catch (error) {
-      this.logger.error(`Auto hedge failed: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Auto hedge failed: ${errorMessage}`);
       return {
         ok: false,
         action: 'autoHedge',
-        error: error.message,
+        error: errorMessage,
       };
     }
   }
@@ -212,12 +215,13 @@ export class ActionsService {
         ok: true,
         action: 'stableMigration',
       };
-    } catch (error) {
-      this.logger.error(`Stable migration failed: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Stable migration failed: ${errorMessage}`);
       return {
         ok: false,
         action: 'stableMigration',
-        error: error.message,
+        error: errorMessage,
       };
     }
   }

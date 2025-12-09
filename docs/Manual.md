@@ -33,37 +33,47 @@ These domains also serve as RP IDs for Passkey authentication in their respectiv
 - **Soroban CLI**: For deploying and interacting with smart contracts.
 
 Optional for specific integrations:
+
 - **Bun**: For running the ElizaOS agent.
 - **ElizaOS CLI**: For interacting with the risk analysis agent.
 
 ### 2.2. Initial Setup
 
-1.  **Clone the repository**:
+1. **Clone the repository**:
+
     ```bash
     git clone https://github.com/Jistriane/Stellaro.git
     cd Stellaro
     ```
 
-2.  **Install dependencies**:
+2. **Install dependencies**:
+
     ```bash
     npm install
     ```
 
-3.  **Configure environment variables**:
+3. **Configure environment variables**:
+
     Copy the example file and customize it for your local environment.
+
     ```bash
     cp .env-example .env-dev
     ```
+
     Edit `.env-dev` with the necessary values. See the **Environment Variables** section for details.
 
-4.  **Start local infrastructure**:
+4. **Start local infrastructure**:
+
     This command starts the Postgres and Redis containers in the background.
+
     ```bash
     docker compose -f infra/docker-compose.dev.yml up -d
     ```
 
-5.  **Run database migrations**:
+5. **Run database migrations**:
+
     This generates the Prisma client and applies any pending database migrations.
+
     ```bash
     npm run prisma:generate -w apps/backend
     npm run prisma:migrate -w apps/backend
@@ -72,9 +82,11 @@ Optional for specific integrations:
 ### 2.3. Running the Application
 
 Start all applications in development mode:
+
 ```bash
 npm run dev
 ```
+
 - **Frontend**: Accessible at `http://localhost:3000` (or 3002 if port 3000 is busy)
 - **Backend**: Accessible at `http://localhost:3001` (port can be changed via `PORT` in `.env-dev`)
 
@@ -98,17 +110,36 @@ The `contracts/` directory contains all Soroban smart contracts. The `infra/depl
 
 ### 4.1. Deployment
 
-1.  **Import your deployer key** into the Soroban CLI:
+1. **Import your deployer key** into the Soroban CLI:
+
     ```bash
-    soroban keys add deploy --secret-key # Paste your secret key
+    soroban keys add stellaro-testnet-deploy --secret-key # Paste your secret key
     ```
 
-2.  **Run the deployment script**:
+2. **Run the deployment script**:
+
     The script compiles, deploys, and initializes all contracts. It's idempotent and safe to re-run.
+
     ```bash
+    # Quick deployment to testnet
+    ./deploy-testnet.sh
+    
+    # Or use the generic script
     ./infra/deploy_soroban.sh deploy
     ```
-    After execution, it will update `.env-dev` with the new contract IDs (`STABLECOIN_CONTRACT_ID`, `RISKLOCK_CONTRACT_ID`, etc.).
+
+    After execution, it will update `.env-testnet` (or `.env-dev`) with the new contract IDs.
+
+### Current Testnet Deployment (December 9, 2025)
+
+| Contract | Contract ID |
+|----------|-------------|
+| **Stablecoin** | `CBC4KEL4BTI2XBNMJEZFFGJDUNFHEFDSJDEMZAGHWCVXRPYTHRMXQI2L` |
+| **RiskLock** | `CAF4ZPHLAZGT4DXQLGX6F7PPE63AP2WWFWEKVPI3LN6UPOKPWSZZAZJS` |
+| **LoansPool** | `CCWS62FYOXIVA2YMORZHYDSU2NHJHUNQW4E7ONERHLMLD6RRHPFUQXZD` |
+| **Portfolio** | `CDSGXZQF4676KX2YCPIPIPRV7L7SE7DFBVKVXHICMJ26ZCO3GIENWXW5` |
+| **Governance** | `CCFMF4ZZEU3UMOQVDZNB5CHLZOAXRFPFCZOEVBI6JXZHYWFQLVHOLEJ3` |
+| **ZK Verifier** | `CCWZPTZEZZFOELDGVHP7IAO5GNVX6MSITN2G7H3ZBGG57OXPVZYYPAFO` |
 
 ### 4.2. Stablecoins (STLT-BRL, STLT-USD)
 
@@ -168,6 +199,7 @@ ElizaOS is an AI agent used for real-time risk analysis.
 ### 6.2. Other Services
 
 The platform integrates with:
+
 - **Celcoin**: For PIX and other payment services.
 - **Dock**: For card issuing and processing.
 - **Sumsub**: For KYC (Know Your Customer) processes.
@@ -177,17 +209,20 @@ Secure communication with these services is ensured via HMAC webhook verificatio
 ## 7. Recent Updates and Improvements
 
 ### 7.1. Frontend Enhancements
+
 - **Real Soroban Integration**: Replaced mock data with live blockchain interactions
 - **Wallet Integration**: Full support for Stellar wallet connections (Freighter, etc.)
 - **Dynamic Contract Calls**: Real-time data fetching from deployed smart contracts
 - **Improved UI/UX**: Updated branding and logo integration
 
 ### 7.2. Smart Contract Integration
+
 - **Contract IDs**: Environment variables for all deployed contract addresses
 - **Real-time Data**: Live balance and transaction data from the blockchain
 - **Transaction Signing**: Direct wallet integration for contract interactions
 
 ### 7.3. Development Experience
+
 - **Build Optimization**: Fixed Tailwind CSS configuration and PostCSS setup
 - **Type Safety**: Improved TypeScript definitions and error handling
 - **Environment Configuration**: Updated example files and development setup
@@ -210,6 +245,7 @@ Secure communication with these services is ensured via HMAC webhook verificatio
 ## 10. On-Chain Endpoints & Env
 
 ### Endpoints
+
 - `GET /oracles/price?asset=<code>&issuer=<account>` — aggregated price (Reflector + DEX fallback)
 - `GET /defi/blend/positions/:address` — positions enriched by Horizon balances and oracle price; includes:
   - `poolId` from `LOANS_POOL_CONTRACT_ID`
@@ -218,6 +254,7 @@ Secure communication with these services is ensured via HMAC webhook verificatio
 - `GET /memory/history/:address?cursor=<id>` — Horizon operations history with cursor pagination
 
 ### Environment Variables (backend)
+
 - `HORIZON_URL`, `SOROBAN_RPC_URL`
 - `BACKEND_URL` and/or `BACKEND_PUBLIC_URL`
 - `LOANS_POOL_CONTRACT_ID` (used to set `poolId`)
@@ -225,6 +262,7 @@ Secure communication with these services is ensured via HMAC webhook verificatio
 - `PORTFOLIO_CONTRACT_ID` (optional)
 
 ### Quick Checks
+
 ```bash
 curl "http://localhost:3001/chain/health"
 curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."

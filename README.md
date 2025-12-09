@@ -1,10 +1,8 @@
-<div align="center">
-  <img src="Logo.png" alt="Stellaro Logo" width="200"/>
-  
-  # Stellaro DeFi Credit Infrastructure on Stellar
-  
-  *DeFi Credit Infrastructure on Stellar*
-</div>
+# Stellaro DeFi Credit Infrastructure on Stellar
+
+![Stellaro Logo](Logo.png)
+
+## DeFi Credit Infrastructure on Stellar
 
 Welcome to the Stellaro project! This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 15 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
@@ -30,7 +28,8 @@ Home / Dashboard:
 ## Features
 
 ### Core Features
-- 🏦 **DeFi Credit Infrastructure** - Complete lending and borrowing platform with AI-powered risk assessment
+
+- 🏬 **DeFi Credit Infrastructure** - Complete lending and borrowing platform with AI-powered risk assessment
 - 💳 **Stablecoin STLT-BRL** - Brazilian Real-pegged stablecoin with 120%+ collateralization
 - 🏛️ **Governance System** - Progressive decentralization (Multisig → DAO)
 - 🔐 **Wallet Integration** - Freighter, Ledger, Albedo support
@@ -41,11 +40,13 @@ Home / Dashboard:
 - ⚡ **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
 
 ### Observability & Operations
+
 - 📈 **Prometheus**: Backend metrics scraping (`/metrics`), Horizon and Soroban RPC
 - 📊 **Grafana**: Automatically provisioned dashboards (Overview and DeFi)
 - 🚨 **Alerts**: Rules for availability, 5xx errors, p95 latency, DB/Redis pool, contracts and ZK proofs
 
 Quick setup (docker):
+
 ```bash
 # Prometheus (uses config from infra/prometheus/prometheus.yml)
 docker run -d --name stellaro-prometheus \
@@ -62,10 +63,12 @@ docker run -d --name stellaro-grafana \
 ```
 
 Provisioned dashboards:
+
 - `Stellaro - System Overview`: HTTP traffic, p95 latency, 5xx errors, health, contract executions, ZK verifications
 - `Stellaro - DeFi Metrics`: TVL, active loans, utilization, default rate, APY, credit score distribution
 
 ### On-Chain Backend Endpoints
+
 - `GET /oracles/price?asset=<code>&issuer=<account>`: Real-time aggregated price (Reflector + DEX fallback)
 - `GET /defi/blend/positions/:address`: DeFi positions enriched with Horizon balance + oracle price, including:
   - `poolId`: from `LOANS_POOL_CONTRACT_ID`
@@ -75,6 +78,7 @@ Provisioned dashboards:
 - `GET /memory/history/:address?cursor=<id>`: Address operation history via Horizon with cursor pagination
 
 ### Compliance & Reserve Management
+
 - `GET /compliance/reserves/check`: Check current collateralization (120% minimum)
 - `POST /compliance/reserves/proof`: Generate on-chain Proof of Reserves
 - `GET /compliance/reserves/snapshot`: Detailed reserves snapshot
@@ -84,6 +88,7 @@ Provisioned dashboards:
 - Multi-channel notification system (webhook, email, console)
 
 ### WebAuthn Authentication (Passkey)
+
 - `POST /auth/passkey/register/init`: Initialize passkey registration
 - `POST /auth/passkey/register/verify`: Verify attestation and complete registration
 - `POST /auth/passkey/login/init`: Initialize passkey login
@@ -94,6 +99,7 @@ Provisioned dashboards:
 - MFA and transaction signing support
 
 ### PIX Payments
+
 - `POST /payments/pix/charge`: Generate PIX charge for STLT mint (1 BRL = 1 STLT)
 - `POST /payments/pix/webhook`: Payment confirmation webhook (HMAC-signed)
 - `POST /payments/pix/withdrawal`: Initiate PIX withdrawal after STLT burn
@@ -103,11 +109,13 @@ Provisioned dashboards:
 - Idempotent system to prevent double-mint
 
 ### ElizaOS Agents (AI)
+
 - 3 agents: Risk Analyzer, Compliance Bot, Treasury Manager
 - 4 actions: risk analysis, compliance check, yield optimization, auto-compound
 - Telegram/Discord support via orchestrator runtime
 
 Quick start (dev):
+
 ```bash
 cd tools/eliza
 # Initialize local project (if package.json doesn't exist)
@@ -120,9 +128,11 @@ npx tsc --init
 # Run runtime
 npx ts-node src/index.ts
 ```
+
 Configuration: see `tools/eliza/README.md` and `.env.example`.
 
 Quick tests:
+
 ```bash
 curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
 curl "http://localhost:3001/defi/blend/positions/GD..."
@@ -135,6 +145,7 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 ```
 
 ### Tech Stack v3.0
+
 - **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS, Zustand, next-intl
 - **Backend**: NestJS 11, Prisma (PostgreSQL), Redis Cluster, Swagger/OpenAPI
 - **Blockchain**: Stellar, Soroban Smart Contracts (Rust)
@@ -160,20 +171,23 @@ The Stellaro platform includes 6 core smart contracts deployed on Stellar Testne
 
 | Contract | Contract ID | Purpose |
 |-------------------|-------------|-------------------|
-| **Stablecoin** | `CA2QGUHYWINO4JYADA3P4CUJC25DSMM6LPOYVFM63T5VFHGMDF3JQITA` | STLT token management and transfers |
-| **RiskLock** | `CAKSLX55PXBULHZ4W4Z5VGAE35J3OUF3VUCG7IL22LTN3DTGMVNQIQFB` | Risk management and account locking |
-| **LoansPool** | `CC2NDM5ZPXNET6LUVKKBUAAO75MMP2ISJWKF27X6WWJVC4HD3HU7344M` | Lending and borrowing operations |
-| **Portfolio** | `CCI4AQ3LMYJYTNNU2354VJ37EIC3SKV2UBXDMIA4OLPINOI6ZSOPNRKP` | Asset portfolio management |
-| **Governance** | `CA47ANKVNAFNO4EOCC3S3EJ2HKQ5DR4X55QQQ5ETCLKWXF76G5M5JBGF` | DAO governance and voting |
-| **ZK Verifier** | `CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L` ✅ | ZK-proof verification and credit scoring (initialized) |
+| **Stablecoin** | `CBC4KEL4BTI2XBNMJEZFFGJDUNFHEFDSJDEMZAGHWCVXRPYTHRMXQI2L` | STLT-BRL token management and transfers |
+| **RiskLock** | `CAF4ZPHLAZGT4DXQLGX6F7PPE63AP2WWFWEKVPI3LN6UPOKPWSZZAZJS` | Risk management and account locking |
+| **LoansPool** | `CCWS62FYOXIVA2YMORZHYDSU2NHJHUNQW4E7ONERHLMLD6RRHPFUQXZD` | Lending and borrowing operations |
+| **Portfolio** | `CDSGXZQF4676KX2YCPIPIPRV7L7SE7DFBVKVXHICMJ26ZCO3GIENWXW5` | Asset portfolio management |
+| **Governance** | `CCFMF4ZZEU3UMOQVDZNB5CHLZOAXRFPFCZOEVBI6JXZHYWFQLVHOLEJ3` | DAO governance and voting |
+| **ZK Verifier** | `CCWZPTZEZZFOELDGVHP7IAO5GNVX6MSITN2G7H3ZBGG57OXPVZYYPAFO` | ZK-proof verification and credit scoring |
 
 ### Network Configuration
+
 - **Network**: Stellar Testnet
 - **RPC URL**: `https://soroban-testnet.stellar.org`
 - **Horizon URL**: `https://horizon-testnet.stellar.org`
- - **Admin (Public Key)**: `GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD`
+- **Admin (Public Key)**: `GCKZ35K7GMUJBFKBOS2YM7FUHATM5FHHFGH7AVNGC5TXLFGV265G33QX`
+- **Deploy Date**: December 9, 2025
 
 ### Environment Variables (Backend)
+
 - `HORIZON_URL`, `SOROBAN_RPC_URL`
 - `BACKEND_URL` and/or `BACKEND_PUBLIC_URL`
 - `LOANS_POOL_CONTRACT_ID` (used for `poolId` in positions)
@@ -182,16 +196,13 @@ The Stellaro platform includes 6 core smart contracts deployed on Stellar Testne
 
 ### Deploying Contracts
 
-To deploy or update the smart contracts, use the automated deployment script:
+To deploy or update the smart contracts on testnet, use the automated deployment script:
 
 ```bash
-# Build contracts (release)
-soroban contract build --profile release
+# Quick deployment to testnet (recommended)
+./deploy-testnet.sh
 
-# Fund account on testnet (if needed)
-curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
-
-# Deploy with default settings
+# Or use the generic script
 ./infra/deploy_soroban.sh deploy
 
 # Deploy with custom parameters
@@ -199,10 +210,11 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 ```
 
 **Prerequisites:**
+
 - `soroban-cli` installed and configured
 - Rust target `wasm32v1-none` added
 - Stellar account imported with alias
- - `.env-dev` configured with CONTRACT_IDs (auto-populated by script)
+- `.env-dev` configured with CONTRACT_IDs (auto-populated by script)
 
 > Deploy reference: see `TESTNET_DEPLOY.md` and `DEPLOY_SUCCESS.md` for details, IDs and explorer links.
 
@@ -237,6 +249,7 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 20+
 - npm 10+
 - Docker & Docker Compose
@@ -246,18 +259,21 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
 
 ### Quick Setup
 
-1.  **Clone the repository**:
+1. **Clone the repository**:
+
     ```bash
     git clone https://github.com/Jistriane/Stellaro.git
     cd Stellaro
     ```
 
-2.  **Install dependencies**:
+2. **Install dependencies**:
+
     ```bash
     npm install
     ```
 
-3.  **Start infrastructure**:
+3. **Start infrastructure**:
+
     ```bash
     # PostgreSQL + Redis via Docker
     docker run -d --name stellaro-postgres \
@@ -268,6 +284,7 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
     ```
 
     Observability (optional):
+
     ```bash
     # Prometheus + Grafana (uses repository provisioning)
     docker run -d --name stellaro-prometheus \
@@ -282,34 +299,41 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
       grafana/grafana:10.4.0
     ```
 
-4.  **Configure environment**:
+4. **Configure environment**:
+
     ```bash
     cd apps/backend
     cp .env.example .env
     # Edit .env with your credentials
     ```
+
     Important fields to adjust:
+
     - `HORIZON_URL`, `SOROBAN_RPC_URL`
     - `LOANS_POOL_CONTRACT_ID`, `LOANSPOOL_INTEREST_BPS`
 
-5.  **Run migrations**:
+5. **Run migrations**:
+
     ```bash
     npx prisma migrate dev
     npx prisma generate
     ```
 
-6.  **Deploy contracts**:
+6. **Deploy contracts**:
+
     ```bash
     ./infra/deploy_soroban.sh testnet
     ```
 
-7.  **Start development**:
+7. **Start development**:
+
     ```bash
     npm run dev
     ```
 
-  #### Endpoint Health Check
-  ```bash
+#### Endpoint Health Check
+
+```bash
   curl "http://localhost:3001/chain/health"
   curl "http://localhost:3001/oracles/price?asset=STLT&issuer=CD..."
   curl "http://localhost:3001/defi/blend/positions/GD..."
@@ -318,12 +342,14 @@ curl "https://friendbot.stellar.org/?addr=<ADMIN_PUBKEY>"
   ```
 
 ### Access
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:3001
-- **API Docs**: http://localhost:3001/api
-- **Grafana** (if running): http://localhost:3000
+
+- **Frontend**: <http://localhost:3000>0>
+- **Backend API**: <http://localhost:3001>
+- **API Docs**: <http://localhost:3001/api>
+- **Grafana** (if running): <http://localhost:3000>
 
 ### Project Status
+
 - Detailed progress: `docs/PROGRESS_UPDATE_YYYYMMDD.md`
 - Task list: `TODO.md`
 
@@ -376,11 +402,10 @@ npm run test:all
 - ✅ **Serial execution** for E2E tests to prevent race conditions
 - ✅ **Comprehensive guards/services/controllers** test structure
 
-
-
 We welcome contributions to the Stellaro project! Please see our contributing guidelines and code of conduct.
 
 ### Development
+
 - Fork the repository
 - Create a feature branch
 - Make your changes
@@ -396,8 +421,4 @@ For support and questions, please open an issue on GitHub or contact the develop
 
 ---
 
-<div align="center">
-  <p>Built with ❤️ using Stellar and Soroban</p>
-</div>
-
-
+## Built with ❤️ using Stellar and Soroban

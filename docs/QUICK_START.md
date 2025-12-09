@@ -30,15 +30,15 @@ psql --version  # 15.x
 ### Accounts & API Keys
 
 1. **Stellar Account**
-   - Testnet: https://laboratory.stellar.org/#account-creator
+   - Testnet: <https://laboratory.stellar.org/#account-creator>
    - Mainnet: Use hardware wallet ou multisig
 
 2. **Reflector Network**
-   - Sign up: https://reflector.network
+   - Sign up: <https://reflector.network>
    - Get API key (free tier available)
 
 3. **Onfido (KYC)**
-   - Sign up: https://onfido.com
+   - Sign up: <https://onfido.com>
    - Sandbox API key
 
 4. **AWS Account** (for production)
@@ -142,11 +142,11 @@ cd ..
       # stellar contract invoke \
       #    --id $ZK_VERIFIER_CONTRACT_ID \
       #    --source deploy --network testnet \
-      #    -- init GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD \
+      #    -- init GCKZ35K7GMUJBFKBOS2YM7FUHATM5FHHFGH7AVNGC5TXLFGV265G33QX \
       #    0x0101010101010101010101010101010101010101010101010101010101010101 700
 
 # This will generate .env-dev with contract IDs
-# ZK Verifier status: ✅ Initialized (see ZK_VERIFIER_INIT_RESOLUTION.md)
+# ZK Verifier status: ⚠️ Requires manual initialization (run: ./tools/zk/export_vk.sh)
 ```
 
 ### 6. Start Backend
@@ -272,7 +272,8 @@ curl -X POST http://localhost:3001/compliance/reserves/proof
 ### GitHub Actions Setup
 
 1. Add secrets to repository:
-   ```
+
+   ```text
    Settings > Secrets and variables > Actions
    
    Required secrets:
@@ -284,6 +285,7 @@ curl -X POST http://localhost:3001/compliance/reserves/proof
    ```
 
 2. Push to trigger pipeline:
+
    ```bash
    git add .
    git commit -m "feat: implement oracle service"
@@ -291,7 +293,8 @@ curl -X POST http://localhost:3001/compliance/reserves/proof
    ```
 
 3. Monitor workflow:
-   ```
+
+   ```text
    https://github.com/Jistriane/Stellaro/actions
    ```
 
@@ -326,7 +329,8 @@ aws logs tail /aws/eks/stellaro-backend --follow
 
 ### Common Issues
 
-**1. Database connection failed**
+#### 1. Database connection failed
+
 ```bash
 # Check PostgreSQL is running
 docker ps | grep postgres
@@ -335,7 +339,8 @@ docker ps | grep postgres
 psql postgresql://stellar:dev@localhost:5432/stellaro_dev
 ```
 
-**2. Soroban contract deploy fails**
+#### 2. Soroban contract deploy fails
+
 ```bash
 # Check Stellar CLI version
 stellar version  # Should be 23.0.0+
@@ -348,7 +353,8 @@ stellar keys address deploy
 stellar account --id <address>
 ```
 
-**3. Reflector Oracle timeout**
+#### 3. Reflector Oracle timeout
+
 ```bash
 # Test direct connection
 curl https://api.reflector.network/api/prices/XLM/USD
@@ -356,7 +362,8 @@ curl https://api.reflector.network/api/prices/XLM/USD
 # Check firewall/proxy settings
 ```
 
-**4. Passkey registration fails**
+#### 4. Passkey registration fails
+
 ```bash
 # Ensure HTTPS (required for WebAuthn)
 # Use: https://localhost:3000 NOT http://
@@ -394,18 +401,18 @@ curl https://api.reflector.network/api/prices/XLM/USD
 
 ## 🔗 Useful Links
 
-- **Stellar Docs**: https://developers.stellar.org
-- **Soroban Docs**: https://soroban.stellar.org
-- **Reflector Network**: https://docs.reflector.network
-- **ElizaOS**: https://github.com/elizaos/eliza
-- **Passkey Kit**: https://github.com/kalepail/passkey-kit
+- **Stellar Docs**: <https://developers.stellar.org>
+- **Soroban Docs**: <https://soroban.stellar.org>
+- **Reflector Network**: <https://docs.reflector.network>
+- **ElizaOS**: <https://github.com/elizaos/eliza>
+- **Passkey Kit**: <https://github.com/kalepail/passkey-kit>
 
 ---
 
 ## 💬 Support
 
-- GitHub Issues: https://github.com/Jistriane/Stellaro/issues
-- Discord: [Stellar Developers](https://discord.gg/stellardev)
+- GitHub Issues: <https://github.com/Jistriane/Stellaro/issues>
+- Discord: [Stellar Developers](<https://discord.gg/stellardev>)
 
 ---
 
@@ -418,6 +425,7 @@ UNLICENSED - Proprietary
 **Status**: ✅ Week 1 Implementation Ready
 
 **Confiança Atual**: 68% (subiu de 55%)
+
 - ✅ Infrastructure setup completo
 - ✅ Oracle service implementado
 - ✅ Passkey session keys
