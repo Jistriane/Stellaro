@@ -1335,5 +1335,19 @@
       "title": "Tutorials",
       "subtitle": "Quick videos to learn specific tasks"
     }
+  },
+  "examples": {
+    "title": "Code Examples",
+    "subtitle": "Ready-to-use examples with Stellaro integration",
+    "ready_to_use": "Ready to Use",
+    "ready_to_use_desc": "All examples are functional and tested",
+    "copy_paste": "Copy & Paste",
+    "copy_paste_desc": "Copy and paste codes into your projects",
+    "multiple_langs": "Multiple Languages",
+    "multiple_langs_desc": "Examples in TypeScript, Python and Solidity",
+    "resources": {
+      "title": "Additional Resources",
+      "description": "Access repositories, documentation and starter kits to accelerate your development"
+    }
   }
 }

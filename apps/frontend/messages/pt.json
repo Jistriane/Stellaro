@@ -1415,6 +1415,20 @@
       "subtitle": "Vídeos rápidos para aprender tarefas específicas"
     }
   },
+  "examples": {
+    "title": "Exemplos de Código",
+    "subtitle": "Exemplos prontos para usar com integração Stellaro",
+    "ready_to_use": "Prontos para Usar",
+    "ready_to_use_desc": "Todos os exemplos são funcionais e testados",
+    "copy_paste": "Copy & Paste",
+    "copy_paste_desc": "Copie e cole os códigos em seus projetos",
+    "multiple_langs": "Múltiplas Linguagens",
+    "multiple_langs_desc": "Exemplos em TypeScript, Python e Solidity",
+    "resources": {
+      "title": "Recursos Adicionais",
+      "description": "Acesse repositórios, documentação e kits de inicialização para acelerar seu desenvolvimento"
+    }
+  },
   "docs": {
     "title": "Documentação",
     "subtitle": "Aprenda como usar o Stellaro com nossos guias completos",
