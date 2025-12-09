@@ -592,6 +592,24 @@
       "title": "Comunicados",
       "item1": "[Alerta] Proposta sobre taxas (P-001) encerra hoje às 23h59!",
       "item2": "Dica: Nunca compartilhe sua chave privada para votar."
+    },
+    "vote": {
+      "title": "Votação em Propostas",
+      "subtitle": "Participe da governança e vote em propostas importantes",
+      "voting_power": "Poder de Voto",
+      "voting_tokens": "Tokens de Votação",
+      "voting_power_label": "Poder de Voto",
+      "proposals_voted": "Propostas Votadas",
+      "voting_status": "Status de Votação",
+      "active": "Ativo",
+      "for": "A Favor",
+      "against": "Contra",
+      "quorum": "Quórum",
+      "days_remaining": "dias restantes",
+      "you_voted_for": "Você votou a favor",
+      "vote_for": "Votar a Favor",
+      "vote_against": "Votar Contra",
+      "voting_history": "Histórico de Votação"
     }
   },
   "chat": {
@@ -799,7 +817,28 @@
     "governance": {
       "title": "Painel de Governança",
       "open_proposals": "Propostas abertas: {count}",
-      "view_proposals": "Ver propostas"
+      "view_proposals": "Ver propostas",
+      "vote": {
+        "title": "Votação em Propostas",
+        "subtitle": "Participe da governança e vote em propostas importantes",
+        "voting_power": "Seu Poder de Voto",
+        "voting_tokens": "Tokens de Votação",
+        "voting_power_label": "Poder de Voto",
+        "proposals_voted": "Propostas Votadas",
+        "voting_status": "Status de Votação",
+        "active": "Ativo",
+        "active_proposals": "Propostas Ativas",
+        "status": "Status",
+        "for": "A Favor",
+        "against": "Contra",
+        "quorum": "Quórum",
+        "days_remaining": "dias restantes",
+        "vote_for": "Votar A Favor",
+        "vote_against": "Votar Contra",
+        "you_voted_for": "Você votou A FAVOR",
+        "voting_history": "Seu Histórico de Votação",
+        "vote": "Voto"
+      }
     },
     "profile": {
       "title": "Informações do Perfil",

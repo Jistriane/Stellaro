@@ -591,6 +591,24 @@
       "title": "Notices",
       "item1": "[Alert] Proposal about fees (P-001) ends today at 11:59 PM!",
       "item2": "Tip: Never share your private key to vote."
+    },
+    "vote": {
+      "title": "Proposal Voting",
+      "subtitle": "Participate in governance and vote on important proposals",
+      "voting_power": "Voting Power",
+      "voting_tokens": "Voting Tokens",
+      "voting_power_label": "Voting Power",
+      "proposals_voted": "Proposals Voted",
+      "voting_status": "Voting Status",
+      "active": "Active",
+      "for": "For",
+      "against": "Against",
+      "quorum": "Quorum",
+      "days_remaining": "days remaining",
+      "you_voted_for": "You voted in favor",
+      "vote_for": "Vote For",
+      "vote_against": "Vote Against",
+      "voting_history": "Voting History"
     }
   },
   "chat": {
@@ -798,7 +816,28 @@
     "governance": {
       "title": "Governance Panel",
       "open_proposals": "Open proposals: {count}",
-      "view_proposals": "See proposals"
+      "view_proposals": "See proposals",
+      "vote": {
+        "title": "Proposal Voting",
+        "subtitle": "Participate in governance and vote on important proposals",
+        "voting_power": "Your Voting Power",
+        "voting_tokens": "Voting Tokens",
+        "voting_power_label": "Voting Power",
+        "proposals_voted": "Proposals Voted",
+        "voting_status": "Voting Status",
+        "active": "Active",
+        "active_proposals": "Active Proposals",
+        "status": "Status",
+        "for": "For",
+        "against": "Against",
+        "quorum": "Quorum",
+        "days_remaining": "days remaining",
+        "vote_for": "Vote For",
+        "vote_against": "Vote Against",
+        "you_voted_for": "You voted FOR",
+        "voting_history": "Your Voting History",
+        "vote": "Vote"
+      }
     },
     "profile": {
       "title": "Profile Information",
