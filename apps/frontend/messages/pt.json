@@ -1403,6 +1403,18 @@
     "mark_as_read": "Marcar como lida",
     "dismiss": "Descartar"
   },
+  "learn": {
+    "title": "Aprenda",
+    "subtitle": "Desenvolva suas habilidades em DeFi com nossos cursos e tutoriais interativos",
+    "courses": {
+      "title": "Cursos",
+      "subtitle": "Aprenda com especialistas e avance no seu próprio ritmo"
+    },
+    "tutorials": {
+      "title": "Tutoriais",
+      "subtitle": "Vídeos rápidos para aprender tarefas específicas"
+    }
+  },
   "docs": {
     "title": "Documentação",
     "subtitle": "Aprenda como usar o Stellaro com nossos guias completos",

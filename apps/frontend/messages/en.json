@@ -1323,5 +1323,17 @@
     "search": "Search documentation...",
     "no_results": "No results found",
     "breadcrumb": "Documentation"
+  },
+  "learn": {
+    "title": "Learn",
+    "subtitle": "Develop your DeFi skills with our interactive courses and tutorials",
+    "courses": {
+      "title": "Courses",
+      "subtitle": "Learn from experts and progress at your own pace"
+    },
+    "tutorials": {
+      "title": "Tutorials",
+      "subtitle": "Quick videos to learn specific tasks"
+    }
   }
 }
