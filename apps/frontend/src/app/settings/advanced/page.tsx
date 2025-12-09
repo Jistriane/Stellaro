@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Settings,
   Lock,
@@ -25,6 +26,8 @@ export default function SettingsAdvancedPage() {
   const [activeTab, setActiveTab] = useState("security");
   const [copied, setCopied] = useState(false);
   const [showPrivateKey, setShowPrivateKey] = useState(false);
+  const [publicAddress, setPublicAddress] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
   const [apiKeys, setApiKeys] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
