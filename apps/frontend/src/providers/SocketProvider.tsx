@@ -13,7 +13,7 @@ type Ctx = {
 const SocketCtx = createContext<Ctx>({ status: "disconnected" });
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  // Verificar se está em ambiente de browser antes de acessar o store
+  // Check if in browser environment before accessing the store
   const isClient = typeof window !== 'undefined';
   
   if (!isClient) {

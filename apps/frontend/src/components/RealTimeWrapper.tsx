@@ -7,11 +7,11 @@ interface RealTimeWrapperProps {
 }
 
 /**
- * Wrapper component que adiciona funcionalidade de atualizações em tempo real
- * para Server Components que precisam de reatividade de carteira
+ * Wrapper component that enables real-time updates
+ * for Server Components that need wallet reactivity.
  */
 export default function RealTimeWrapper({ children }: RealTimeWrapperProps) {
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   return <>{children}</>;

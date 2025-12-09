@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 interface TradingViewProps {
-  symbols?: string[][]; // exemplo: [["XLM", "USD"], ["BTC", "USD"]]
+  symbols?: string[][]; // example: [["XLM", "USD"], ["BTC", "USD"]]
   height?: number;
   theme?: "light" | "dark";
   locale?: "pt" | "en";
@@ -13,7 +13,7 @@ export default function TradingView({
   symbols = [["XLM", "USD"]],
   height = 380,
   theme = "dark",
-  locale = "pt",
+  locale = "en",
 }: TradingViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);

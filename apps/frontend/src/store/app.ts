@@ -34,7 +34,7 @@ export type AppState = {
   balances: BalanceState;
   risk: RiskState;
   openOrders: Order[];
-  lastEvents: string[]; // guarda últimos códigos de evento (para toasts)
+  lastEvents: string[]; // keeps latest event codes (for toasts)
 
   // actions
   setLocale: (locale: Locale) => void;

@@ -12,9 +12,9 @@ import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 export default function TradingPage() {
   const t = useTranslations('trading');
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
-  // mocks simples
+  // simple mocks
   const orderBook = {
     asks: [
       { price: 270500, qty: 0.01 },
@@ -45,12 +45,12 @@ export default function TradingPage() {
   ];
 
   function brl(v: number) {
-    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    return v.toLocaleString("en-US", { style: "currency", currency: "BRL" });
   }
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho e introdução */}
+      {/* Header and intro */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('header.title')}</h1>
         <div className="text-xs text-slate-500">{t('header.platform_normal')}</div>
@@ -66,7 +66,7 @@ export default function TradingPage() {
         </CardContent>
       </Card>
 
-      {/* Seleção de mercado e métricas 24h */}
+      {/* Market selection and 24h metrics */}
       <Card>
         <CardHeader>
           <CardTitle>{t('market.title')}</CardTitle>
@@ -76,7 +76,7 @@ export default function TradingPage() {
         </CardContent>
       </Card>
 
-      {/* Grade principal: gráfico, livro e negócios */}
+      {/* Main grid: chart, book, trades */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -139,7 +139,7 @@ export default function TradingPage() {
         </div>
       </div>
 
-      {/* Caixa de ordem e ferramentas de risco */}
+      {/* Order box and risk tools */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -159,7 +159,7 @@ export default function TradingPage() {
         </Card>
       </div>
 
-      {/* Saldos, ordens e histórico */}
+      {/* Balances, orders, and history */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
@@ -259,7 +259,7 @@ export default function TradingPage() {
         </CardContent>
       </Card>
 
-      {/* Infos de mercado, taxas e atalhos */}
+      {/* Market info, fees and shortcuts */}
       <Card>
         <CardHeader>
           <CardTitle>{t('info.title')}</CardTitle>

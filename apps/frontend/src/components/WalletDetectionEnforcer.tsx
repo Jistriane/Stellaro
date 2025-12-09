@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useWalletStore } from "../state/wallet";
 
 /**
- * Componente que força a detecção robusta de carteiras
- * Deve ser usado em páginas onde a detecção de carteiras é crítica
+ * Component that enforces robust wallet detection
+ * Use it on pages where wallet detection is critical.
  */
 export default function WalletDetectionEnforcer() {
   const refreshAvailable = useWalletStore((s) => s.refreshAvailable);
@@ -14,10 +14,10 @@ export default function WalletDetectionEnforcer() {
 
     console.log("[WalletDetectionEnforcer] Starting aggressive wallet detection...");
     
-    // Força detecção imediata
+    // Force immediate detection
     refreshAvailable();
 
-    // Força detecção após um tempo (para extensões lentas)
+    // Force detection after a delay (for slow extensions)
     const timeouts = [
       setTimeout(() => {
         console.log("[WalletDetectionEnforcer] Re-checking wallets after 1s...");
@@ -40,13 +40,13 @@ export default function WalletDetectionEnforcer() {
       }, 10000),
     ];
 
-    // Escuta eventos específicos do DOM que indicam que extensões podem ter carregado
+    // Listen for DOM events that indicate extensions may have loaded
     const handleDOMChange = () => {
       console.log("[WalletDetectionEnforcer] DOM change detected, re-checking wallets...");
       refreshAvailable();
     };
 
-    // Detecta quando o documento está totalmente carregado
+    // Detect when the document is fully loaded
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', handleDOMChange);
     }
@@ -63,6 +63,6 @@ export default function WalletDetectionEnforcer() {
     };
   }, [refreshAvailable]);
 
-  // Este componente não renderiza nada
+  // This component renders nothing
   return null;
 }

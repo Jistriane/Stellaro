@@ -1,7 +1,7 @@
 /*
-  Camada de conectores para múltiplas carteiras Stellar/Soroban.
-  Implementa detecção leve no browser e métodos mínimos para obter endereço e rede.
-  Conexões que dependem de libs externas são deixadas como stubs não-bloqueantes.
+  Connector layer for multiple Stellar/Soroban wallets.
+  Implements lightweight browser detection and minimal methods to get address and network.
+  Connections that depend on external libs are left as non-blocking stubs.
 */
 
 export type StellarNetwork = "public" | "testnet";
@@ -35,7 +35,7 @@ export interface WalletConnector {
   disconnect?(): Promise<void>;
 }
 
-// Tipos mínimos dos provedores globais
+// Minimal types of global providers
 interface FreighterApi {
   getUserInfo(): Promise<{ publicKey: string; network: "PUBLIC" | "TESTNET" }>;
   signTransaction?: (
@@ -70,7 +70,7 @@ function getWindow(): ProviderWindow | null {
   return window as ProviderWindow;
 }
 
-// Normaliza diferentes formatos de retorno de endereço das carteiras
+// Normalize different wallet address return formats
 function normalizeAddress(val: unknown): string {
   if (typeof val === "string") return val;
   if (val && typeof val === "object") {
@@ -89,13 +89,13 @@ export const FreighterConnector: WalletConnector = {
     if (typeof window === "undefined") return false;
     const w = getWindow();
     
-    // Verifica múltiplas propriedades do Freighter
+    // Check multiple Freighter properties
     const hasFreighterApi = !!w?.freighterApi;
     const hasFreighter = !!w?.freighter;
     const hasFreighterGlobal = 'freighterApi' in window;
     const hasFreighterExtension = !!(window as any).freighterApi;
     
-    // Verifica se há objetos freighter no window
+    // Check if freighter objects exist on window
     const windowKeys = Object.keys(window).filter(key => key.toLowerCase().includes('freighter'));
     const hasFreighterKeys = windowKeys.length > 0;
     
@@ -119,7 +119,7 @@ export const FreighterConnector: WalletConnector = {
   async connect() {
     console.log('[freighter] Starting connection process...');
     
-    // Método 1: Tenta via pacote oficial primeiro (mais robusto no Chrome)
+    // Method 1: Try via official package first (more robust in Chrome)
     try {
       console.log('[freighter] Trying official @stellar/freighter-api package...');
       type FreighterApiCompat = {
@@ -133,7 +133,7 @@ export const FreighterConnector: WalletConnector = {
       const mod = (await import("@stellar/freighter-api")) as unknown as FreighterApiCompat & { default?: FreighterApiCompat };
       const api: FreighterApiCompat = mod.default ?? mod;
       
-      // Verifica se está conectado primeiro (se disponível)
+      // Check connection status first (when available)
       if (api.isConnected) {
         const connected = await api.isConnected();
         console.log('[freighter] isConnected result:', connected);
@@ -144,7 +144,7 @@ export const FreighterConnector: WalletConnector = {
       
       const getPk = api.getPublicKey ?? api.getAddress;
       const getNetDetails = api.getNetworkDetails ?? api.getNetwork;
-      if (!getPk) throw new Error("API da Freighter indisponível (getPublicKey/getAddress não encontrados)");
+      if (!getPk) throw new Error("Freighter API unavailable (getPublicKey/getAddress not found)");
       
       console.log('[freighter] Calling getPublicKey/getAddress...');
       const pkRes = await getPk();
@@ -160,7 +160,7 @@ export const FreighterConnector: WalletConnector = {
     } catch (error) {
       console.log('[freighter] Official package failed:', error);
       
-      // Método 2: Fallback para a API global window.freighterApi
+      // Method 2: Fallback to global window.freighterApi API
       const w = getWindow();
       const api = w?.freighterApi as FreighterApi | undefined;
       
@@ -177,7 +177,7 @@ export const FreighterConnector: WalletConnector = {
         }
       }
       
-      // Método 3: Tenta outras variações do objeto global
+      // Method 3: Try other variations of the global object
       const freighterAlternatives = ['freighter', 'FreighterApi', 'stellarFreighter'];
       for (const altName of freighterAlternatives) {
         const altApi = (window as any)[altName];
@@ -213,7 +213,7 @@ export const FreighterConnector: WalletConnector = {
   },
 };
 
-// Albedo (https://albedo.link) – detecção básica
+// Albedo (https://albedo.link) – basic detection
 export const AlbedoConnector: WalletConnector = {
   id: "albedo",
   name: "Albedo",
@@ -229,12 +229,12 @@ export const AlbedoConnector: WalletConnector = {
     const w = getWindow();
     if (!w?.albedo) throw new Error("ERR_ALBEDO_NOT_FOUND");
     const res = await w.albedo.publicKey({});
-    // Albedo não retorna rede explicitamente, assume pública por padrão
+    // Albedo does not return network explicitly, assume public by default
     return { address: res.pubkey, network: "public" };
   },
 };
 
-// Rabet (https://rabet.io) – detecção básica
+// Rabet (https://rabet.io) – basic detection
 export const RabetConnector: WalletConnector = {
   id: "rabet",
   name: "Rabet",
@@ -255,28 +255,28 @@ export const RabetConnector: WalletConnector = {
   },
 };
 
-// xBull (https://xbull.app) – detecção robusta
+// xBull (https://xbull.app) – robust detection
 export const XBullConnector: WalletConnector = {
   id: "xbull",
   name: "xBull",
   isAvailable() {
     if (typeof window === "undefined") return false;
     
-    // FORÇA DETECÇÃO: Se qualquer carteira Stellar está instalada, 
-    // assume que xBull PODE estar disponível (para testar conexão)
+    // FORCE DETECTION: If any Stellar wallet is installed,
+    // assume xBull MIGHT be available (to test connection)
     const hasFreighter = !!(window as any).freighterApi;
     const hasAnyWallet = hasFreighter || Object.keys(window).some(k => 
       k.toLowerCase().includes('stellar') || 
       k.toLowerCase().includes('wallet')
     );
     
-    // Se tem Freighter mas user está tentando xBull, talvez seja compatível
+    // If Freighter exists but the user is trying xBull, it might still be compatible
     if (hasFreighter) {
       console.debug('[wallet][detect] xbull: Freighter detected, checking compatibility...');
-      // return true; // Força tentativa de conexão
+      // return true; // Force connection attempt
     }
     
-    // Método 1: Verifica propriedades conhecidas do xBull
+    // Method 1: Check known xBull properties
     const directChecks = [
       'xbullWallet',
       'xBull',
@@ -293,7 +293,7 @@ export const XBullConnector: WalletConnector = {
       }
     }
     
-    // Método 2: Busca por qualquer propriedade que contenha "xbull"
+    // Method 2: Search for any property containing "xbull"
     const windowKeys = Object.keys(window);
     const xbullKeys = windowKeys.filter(key => key.toLowerCase().includes('xbull'));
     
@@ -302,7 +302,7 @@ export const XBullConnector: WalletConnector = {
       return true;
     }
     
-    // Método 3: Verifica se existe no 'in' operator (pode estar como não-enumerable)
+    // Method 3: Check if exists in 'in' operator (may be non-enumerable)
     const inChecks = ['xbullWallet', 'xBull', 'xBullApi'];
     for (const prop of inChecks) {
       if (prop in window) {
@@ -311,31 +311,31 @@ export const XBullConnector: WalletConnector = {
       }
     }
     
-    // MÉTODO AGRESSIVO: Se o usuário tem xBull instalado mas não detectado,
-    // sempre retorna true para tentar a conexão
+    // AGGRESSIVE METHOD: If user has xBull installed but not detected,
+    // always return true to try the connection
     console.debug('[wallet][detect] xbull not found, but forcing availability for connection attempt');
-    return true; // FORÇA DISPONIBILIDADE PARA TESTE
+    return true; // FORCE AVAILABILITY FOR TESTING
   },
   async connect() {
     console.log('[xbull] 🚀 Starting REAL xBull connection...');
     
-    // PASSO 1: Força a extensão xBull a se manifestar
+    // STEP 1: Force the xBull extension to surface
     try {
       console.log('[xbull] Step 1: Forcing xBull extension activation...');
       
-      // Dispara eventos que podem ativar extensões
+      // Dispatch events that might activate extensions
       window.dispatchEvent(new CustomEvent('xbull:activate'));
       window.dispatchEvent(new CustomEvent('stellar:ready'));
       
-      // Aguarda um pouco para a extensão responder
+      // Wait briefly for the extension to respond
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Verifica novamente após forçar ativação
+      // Check again after forced activation
       const xbullGlobal = (window as any).xbullWallet || (window as any).xBull;
       if (xbullGlobal) {
         console.log('[xbull] Found xBull after forced activation:', xbullGlobal);
         
-        // Tenta usar a API do xBull diretamente
+        // Try to use xBull API directly
         if (xbullGlobal.getPublicKey) {
           const publicKey = await xbullGlobal.getPublicKey();
           if (publicKey) {
@@ -357,7 +357,7 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] Forced activation failed:', error);
     }
     
-    // PASSO 2: Usar postMessage para comunicar com a extensão
+    // STEP 2: Use postMessage to communicate with the extension
     try {
       console.log('[xbull] Step 2: Using postMessage to communicate with xBull...');
       
@@ -366,15 +366,15 @@ export const XBullConnector: WalletConnector = {
           console.error('[xbull] ⏰ Timeout! User needs to approve connection manually.');
           console.log('[xbull] 💡 SOLUTION: Click the xBull extension icon and approve the connection!');
           reject(new Error('xBull connection timeout - Please click the xBull icon and approve the connection'));
-        }, 30000); // Aumenta timeout para 30s
+        }, 30000); // Increase timeout to 30s
         
         const messageHandler = (event: MessageEvent) => {
           console.log('[xbull] Received message:', event);
           console.log('[xbull] Message data:', event.data);
           
-          // Verifica diferentes formatos de resposta do xBull
+          // Check different response formats from xBull
           if (event.data) {
-            // Formato 1: Resposta direta com publicKey
+            // Format 1: Direct response with publicKey
             if (event.data.type === 'XBULL_RESPONSE' && event.data.publicKey) {
               clearTimeout(timeoutId);
               window.removeEventListener('message', messageHandler);
@@ -383,7 +383,7 @@ export const XBullConnector: WalletConnector = {
               return;
             }
             
-            // Formato 2: Qualquer resposta que contenha endereço Stellar
+            // Format 2: Any response containing a Stellar address
             if (event.data.publicKey && typeof event.data.publicKey === 'string' && event.data.publicKey.startsWith('G')) {
               clearTimeout(timeoutId);
               window.removeEventListener('message', messageHandler);
@@ -392,7 +392,7 @@ export const XBullConnector: WalletConnector = {
               return;
             }
             
-            // Formato 3: Resposta com address field
+            // Format 3: Response with address field
             if (event.data.address && typeof event.data.address === 'string' && event.data.address.startsWith('G')) {
               clearTimeout(timeoutId);
               window.removeEventListener('message', messageHandler);
@@ -401,11 +401,11 @@ export const XBullConnector: WalletConnector = {
               return;
             }
             
-            // Formato 4: Resposta Freighter (xBull usa protocolo Freighter!)
+            // Format 4: Freighter-style response (xBull uses the Freighter protocol!)
             if (event.data.source === 'FREIGHTER_EXTERNAL_MSG_RESPONSE' && event.data.isConnected) {
               console.log('[xbull] ✅ xBull connected via Freighter protocol!', event.data);
               
-              // Primeiro solicita acesso/autorização
+              // Request access/authorization first
               const accessRequestId = Date.now() + Math.random();
               window.postMessage({
                 source: 'FREIGHTER_EXTERNAL_MSG_REQUEST',
@@ -415,7 +415,7 @@ export const XBullConnector: WalletConnector = {
               
               console.log('[xbull] Requesting access authorization...');
               
-              // Depois pedir o endereço usando protocolo Freighter
+              // Then request the address using the Freighter protocol
               setTimeout(() => {
                 const requestId = Date.now() + Math.random();
                 window.postMessage({
@@ -426,10 +426,10 @@ export const XBullConnector: WalletConnector = {
                 console.log('[xbull] Requesting public key via Freighter protocol...');
               }, 1000);
               
-              return; // Aguarda resposta
+              return; // Wait for response
             }
             
-            // Formato 5: Resposta com chave pública via protocolo Freighter
+            // Format 5: Response with public key via Freighter protocol
             if (event.data.source === 'FREIGHTER_EXTERNAL_MSG_RESPONSE' && 'publicKey' in event.data) {
               if (event.data.publicKey && event.data.publicKey.length > 0) {
                 clearTimeout(timeoutId);
@@ -441,7 +441,7 @@ export const XBullConnector: WalletConnector = {
                 console.log('[xbull] ⚠️ Received empty publicKey, user needs to authorize first');
                 console.log('[xbull] 💡 Please click the xBull icon and approve the connection!');
                 
-                // Tentar novamente após um delay menor e limitado
+                // Retry after a short, limited delay
                 if (!event.data.retryCount || event.data.retryCount < 3) {
                   setTimeout(() => {
                     const retryRequestId = Date.now() + Math.random();
@@ -460,11 +460,11 @@ export const XBullConnector: WalletConnector = {
               }
             }
             
-            // Formato 6: Resposta do xBull (qualquer tipo que indique sucesso)
+            // Format 6: xBull response (any type indicating success)
             if (event.data.type && event.data.type.toLowerCase().includes('xbull')) {
               console.log('[xbull] xBull response detected, checking for address...', event.data);
               
-              // Procura por qualquer campo que pareça um endereço Stellar
+              // Search for any field that looks like a Stellar address
               const searchForAddress = (obj: any): string | null => {
                 if (typeof obj === 'string' && obj.startsWith('G') && obj.length === 56) {
                   return obj;
@@ -492,10 +492,10 @@ export const XBullConnector: WalletConnector = {
         
         window.addEventListener('message', messageHandler);
         
-        // Envia múltiplas mensagens para a extensão (diferentes formatos)
+        // Send multiple messages to the extension (different formats)
         const requestId = Date.now() + Math.random();
         const messages = [
-          // Protocolo Freighter (xBull é compatível!)
+          // Freighter protocol (xBull is compatible!)
           {
             source: 'FREIGHTER_EXTERNAL_MSG_REQUEST',
             messageId: requestId,
@@ -536,7 +536,7 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] postMessage method failed:', error);
     }
     
-    // PASSO 2.5: Tentar API Freighter diretamente (xBull pode ser compatível)
+    // STEP 2.5: Try Freighter API directly (xBull may be compatible)
     try {
       console.log('[xbull] Step 2.5: Trying Freighter API directly...');
       
@@ -550,7 +550,7 @@ export const XBullConnector: WalletConnector = {
         if (result && result.address) {
           console.log('[xbull] ✅ SUCCESS via Freighter API compatibility!', result.address);
           
-          // Detecta rede
+          // Detect network
           let network: StellarNetwork = "testnet";
           if (freighterApi.getNetworkDetails) {
             try {
@@ -570,17 +570,17 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] Freighter API compatibility failed:', error);
     }
     
-    // PASSO 3: Tentar através do content script injection
+    // STEP 3: Try via content script injection
     try {
       console.log('[xbull] Step 3: Attempting content script injection...');
       
-      // Cria um script que tenta acessar a extensão diretamente
+      // Create a script that tries to access the extension directly
       const script = document.createElement('script');
       script.textContent = `
         (function() {
           console.log('[xbull] Injected script running...');
           
-          // Tenta encontrar a API do xBull no contexto da página
+          // Try to find the xBull API in the page context
           if (typeof xbullWallet !== 'undefined') {
             console.log('[xbull] Found xbullWallet in page context');
             window.postMessage({
@@ -597,7 +597,7 @@ export const XBullConnector: WalletConnector = {
             }, '*');
           }
           
-          // Tenta acessar chrome.runtime se disponível
+          // Try to access chrome.runtime if available
           if (typeof chrome !== 'undefined' && chrome.runtime) {
             try {
               chrome.runtime.sendMessage('xbull-extension-id', {
@@ -620,7 +620,7 @@ export const XBullConnector: WalletConnector = {
       document.head.appendChild(script);
       document.head.removeChild(script);
       
-      // Aguarda resposta do script injetado
+      // Wait for response from the injected script
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error('Script injection timeout')), 3000);
         
@@ -647,11 +647,11 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] Content script injection failed:', error);
     }
     
-    // PASSO 4: Última tentativa - abrir popup da extensão programaticamente
+    // STEP 4: Final attempt - open the extension popup programmatically
     try {
       console.log('[xbull] Step 4: Final attempt - programmatic popup...');
       
-      // Tenta abrir a extensão programaticamente
+      // Try to open the extension programmatically
       if (typeof chrome !== 'undefined' && chrome.tabs) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id!, {
@@ -660,7 +660,7 @@ export const XBullConnector: WalletConnector = {
         });
       }
       
-      // Aguarda um pouco e tenta novamente
+      // Wait a bit and try again
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const finalCheck = (window as any).xbullWallet || (window as any).xBull;
@@ -676,39 +676,39 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] Final attempt failed:', error);
     }
     
-    // ERRO FINAL - mas com instrução para o usuário
-    console.error('[xbull] 🚨 Não foi possível conectar automaticamente com o xBull');
-    console.log('[xbull] 💡 SOLUÇÃO: Clique no ícone do xBull na barra de extensões PRIMEIRO, depois tente conectar novamente.');
+    // FINAL ERROR - with instruction for the user
+    console.error('[xbull] 🚨 Could not connect automatically with xBull');
+    console.log('[xbull] 💡 SOLUTION: Click the xBull icon in the extensions bar FIRST, then try connecting again.');
     
-    throw new Error("ERR_XBULL_NOT_FOUND - Clique no ícone do xBull primeiro e tente novamente");
+    throw new Error("ERR_XBULL_NOT_FOUND - Click the xBull icon first and try again");
   },
 };
 
-// Ledger via WebHID – placeholder não bloqueante (requer libs @ledgerhq)
+// Ledger via WebHID – non-blocking placeholder (requires @ledgerhq libs)
 export const LedgerConnector: WalletConnector = {
   id: "ledger",
   name: "Ledger (WebHID)",
   isAvailable() {
     type NavigatorHid = Navigator & { hid?: unknown };
     if (typeof navigator === "undefined") return false;
-    return Boolean((navigator as NavigatorHid).hid); // WebHID disponível
+    return Boolean((navigator as NavigatorHid).hid); // WebHID available
   },
   async connect() {
-    // Para implementação completa: usar @ledgerhq/hw-transport-webhid + app Stellar
+    // For a complete implementation: use @ledgerhq/hw-transport-webhid + Stellar app
     throw new Error("ERR_LEDGER_UNSUPPORTED");
   },
 };
 
-// Soroban "smart wallet" – sessão lógica usando soroban-client (sem provider específico)
+// Soroban "smart wallet" – logical session using soroban-client (no specific provider)
 export const SorobanSmartConnector: WalletConnector = {
   id: "soroban-smart",
   name: "Soroban Smart Wallet",
   isAvailable() {
-    // Disponível conceitualmente; depende de uma carteira (p.ex. Freighter) para assinar
+    // Conceptually available; depends on a wallet (e.g., Freighter) to sign
     return true;
   },
   async connect() {
-    // Estratégia simples: se Freighter existir, reutiliza o endereço
+    // Simple strategy: reuse the address if Freighter exists
     if (FreighterConnector.isAvailable()) {
       const s = await FreighterConnector.connect();
       return s;
@@ -717,12 +717,12 @@ export const SorobanSmartConnector: WalletConnector = {
   },
 };
 
-// Placeholder para interoperabilidade Chainlink Bridge
+// Placeholder for Chainlink Bridge interoperability
 export const ChainlinkBridgeConnector: WalletConnector = {
   id: "chainlink-bridge",
   name: "Chainlink Bridge",
   isAvailable() {
-    return true; // sempre listado como opção informativa
+    return true; // always listed as an informative option
   },
   async connect() {
     throw new Error("ERR_CHAINLINK_NOT_READY");
@@ -740,7 +740,7 @@ export const AllConnectors: WalletConnector[] = [
 ];
 
 export function detectAvailable(): WalletConnectorInfo[] {
-  // Debug: Lista todas as propriedades do window que podem ser carteiras
+  // Debug: List all window properties that might be wallets
   if (typeof window !== "undefined" && typeof console !== "undefined") {
     const walletKeys = Object.keys(window).filter(key => {
       const lowerKey = key.toLowerCase();
@@ -779,10 +779,10 @@ export function detectAvailable(): WalletConnectorInfo[] {
   return results;
 }
 
-// Função adicional para forçar re-detecção com delay
+// Additional function to force re-detection with delay
 export function forceWalletDetection(): Promise<WalletConnectorInfo[]> {
   return new Promise((resolve) => {
-    // Aguarda um pouco para extensões lentas
+    // Wait a bit for slow extensions
     setTimeout(() => {
       const results = detectAvailable();
       if (typeof console !== 'undefined') {
@@ -793,7 +793,7 @@ export function forceWalletDetection(): Promise<WalletConnectorInfo[]> {
   });
 }
 
-// Função específica para debug do xBull
+// Specific function for xBull debugging
 export function debugXBullDetection(): void {
   if (typeof window === "undefined") {
     console.log('[xbull][debug] Running on server side, no window object');
@@ -802,7 +802,7 @@ export function debugXBullDetection(): void {
 
   console.log('[xbull][debug] Starting comprehensive xBull detection...');
   
-  // Lista todas as propriedades window
+  // List all window properties
   const allKeys = Object.keys(window);
   const xbullRelatedKeys = allKeys.filter(key => 
     key.toLowerCase().includes('xbull') || 
@@ -813,7 +813,7 @@ export function debugXBullDetection(): void {
   console.log('[xbull][debug] All window keys (first 100):', allKeys.slice(0, 100));
   console.log('[xbull][debug] xBull related keys:', xbullRelatedKeys);
   
-  // Se não há chaves relacionadas, mostra mais informações
+  // If there are no related keys, show more information
   if (xbullRelatedKeys.length === 0) {
     console.log('[xbull][debug] No xBull-related keys found. Checking common wallet patterns...');
     const walletKeys = allKeys.filter(key => 
@@ -824,7 +824,7 @@ export function debugXBullDetection(): void {
     console.log('[xbull][debug] Wallet-related keys:', walletKeys);
   }
   
-  // Verifica propriedades específicas conhecidas do xBull
+  // Check specific known xBull properties
   const checks = [
     'xbullWallet',
     'xBull', 
@@ -834,7 +834,7 @@ export function debugXBullDetection(): void {
     'xBullExtension',
     'stellarXBull',
     'xBullStellar',
-    // Possíveis variações
+    // Possible variations
     'xbull',
     'XBULL',
     'XBull',
@@ -857,13 +857,13 @@ export function debugXBullDetection(): void {
     }
   });
   
-  // Verifica se há qualquer extensão Stellar
+  // Check for any Stellar extension
   console.log('[xbull][debug] Checking for any Stellar extension...');
   console.log('[xbull][debug] window.freighterApi:', !!(window as any).freighterApi);
   console.log('[xbull][debug] window.albedo:', !!(window as any).albedo);
   console.log('[xbull][debug] window.rabet:', !!(window as any).rabet);
   
-  // Verifica eventos customizados do xBull
+  // Check xBull custom events
   const events = ['xbull:ready', 'xBull:initialized', 'xbull:connected', 'xBull:ready'];
   events.forEach(eventName => {
     console.log(`[xbull][debug] Setting up event listener for: ${eventName}`);
@@ -873,11 +873,11 @@ export function debugXBullDetection(): void {
     }, { once: true });
   });
   
-  // Tenta executar a detecção
+  // Try to run detection
   const result = XBullConnector.isAvailable();
   console.log('[xbull][debug] Final detection result:', result);
   
-  // Informações adicionais sobre o estado da página
+  // Additional information about the page state
   console.log('[xbull][debug] Page state:', {
     readyState: document.readyState,
     visibilityState: document.visibilityState,
@@ -890,7 +890,7 @@ export function debugXBullDetection(): void {
   });
 }
 
-// Adiciona função global para debug fácil
+// Add global function for easy debugging
 if (typeof window !== "undefined") {
   (window as any).debugXBull = debugXBullDetection;
   console.log('[xbull][debug] Added window.debugXBull() function for manual testing');

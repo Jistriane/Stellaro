@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import LanguageToggle from "@/components/LanguageToggle";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -38,7 +37,6 @@ export default function Navbar() {
               );
             })}
           </ul>
-          <LanguageToggle />
         </nav>
       </div>
     </header>

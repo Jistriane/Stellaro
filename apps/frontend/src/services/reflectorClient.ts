@@ -1,8 +1,8 @@
 /**
  * Reflector Network Client
  * 
- * Serviço para integração com Reflector Network via backend API
- * Fornece preços em tempo real com cache inteligente
+ * Service for integration with Reflector Network via backend API
+ * Provides real-time prices with intelligent caching
  */
 
 export interface ReflectorPrice {
@@ -42,7 +42,7 @@ class ReflectorClient {
   }
 
   /**
-   * Obtém preço individual com cache
+   * Gets individual price with caching
    */
   async getPrice(assetCode: string, issuer?: string): Promise<ReflectorPrice> {
     const cacheKey = `${assetCode}:${issuer || 'native'}`;
@@ -93,7 +93,7 @@ class ReflectorClient {
   }
 
   /**
-   * Obtém múltiplos preços em paralelo
+   * Fetch multiple prices in parallel
    */
   async getPrices(assets: string[]): Promise<Map<string, ReflectorPrice>> {
     const pricePromises = assets.map((asset) => this.getPrice(asset).catch(() => null));
@@ -113,7 +113,7 @@ class ReflectorClient {
   }
 
   /**
-   * Valida se preço está dentro da margem esperada
+   * Validate if price is within the expected margin
    */
   async validatePrice(
     assetCode: string,
@@ -128,7 +128,7 @@ class ReflectorClient {
   }
 
   /**
-   * Detecta anomalias de preço via backend
+   * Detect price anomalies via backend
    */
   async detectAnomaly(
     assetCode: string,
@@ -158,7 +158,7 @@ class ReflectorClient {
   }
 
   /**
-   * Calcula valorização de portfólio
+   * Calculate portfolio valuation
    */
   async getPortfolioValuation(
     portfolio: Map<string, number>
@@ -190,7 +190,7 @@ class ReflectorClient {
   }
 
   /**
-   * Subscreve a atualizações de preço
+   * Subscribe to price updates
    */
   subscribe(callback: (prices: Map<string, ReflectorPrice>) => void): () => void {
     this.listeners.add(callback);
@@ -198,7 +198,7 @@ class ReflectorClient {
   }
 
   /**
-   * Notifica todos os listeners
+   * Notify all listeners
    */
   private notifyListeners(prices: Map<string, ReflectorPrice>) {
     this.listeners.forEach((callback) => {
@@ -211,11 +211,11 @@ class ReflectorClient {
   }
 
   /**
-   * Auto-refresh de preços a cada 30 segundos
+   * Auto-refresh prices every 30 seconds
    */
   private startAutoRefresh() {
     setInterval(() => {
-      // Refresh apenas assets que têm listeners
+      // Refresh only assets that have listeners
       if (this.listeners.size > 0 && this.priceCache.size > 0) {
         const assets = Array.from(this.priceCache.keys()).map((key) => key.split(':')[0]);
         this.getPrices(assets).catch((error) =>
@@ -226,7 +226,7 @@ class ReflectorClient {
   }
 
   /**
-   * Limpa cache
+   * Clear cache
    */
   clearCache() {
     this.priceCache.clear();

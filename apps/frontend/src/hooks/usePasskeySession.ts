@@ -4,12 +4,12 @@ import { useState, useCallback } from 'react';
 import type { PasskeyKit } from '@kalepail/passkey-kit';
 
 /**
- * Hook para gerenciar Session Keys com Passkeys
- * Permite transações sem re-autenticação por período limitado
+ * Hook to manage Session Keys with Passkeys
+ * Allows transactions without re-authentication for limited period
  */
 
 export interface SessionKeyConfig {
-  duration: number; // segundos
+  duration: number; // seconds
   maxAmount: string; // stroops
   allowedOperations: ('payment' | 'swap' | 'supply' | 'borrow')[];
   biometricRefresh: boolean;
@@ -28,18 +28,18 @@ export function usePasskeySession() {
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Cria uma Session Key com permissões limitadas
+   * Creates a Session Key with limited permissions
    */
   const createSession = useCallback(async (config: SessionKeyConfig) => {
     setLoading(true);
     setError(null);
 
     try {
-      // TODO: Integrar com @kalepail/passkey-kit quando disponível
+      // TODO: Integrate with @kalepail/passkey-kit when available
       // const passkeyKit = new PasskeyKit({ network: 'testnet' });
       // const session = await passkeyKit.createSession(config);
 
-      // Por enquanto, usar backend endpoint
+      // For now, use the backend endpoint
       const response = await fetch('/api/passkey/session/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,7 +99,7 @@ export function usePasskeySession() {
   }, [sessionKey]);
 
   /**
-   * Verifica se operação é permitida pela session key
+   * Check if operation is allowed by session key
    */
   const canExecuteOperation = useCallback((
     operation: SessionKeyConfig['allowedOperations'][number],
@@ -116,7 +116,7 @@ export function usePasskeySession() {
   }, [sessionKey]);
 
   /**
-   * Executa transação usando Session Key
+   * Execute transaction using Session Key
    */
   const executeWithSession = useCallback(async (
     operation: SessionKeyConfig['allowedOperations'][number],

@@ -7,29 +7,30 @@ import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
 export default function PixPage() {
   const t = useTranslations("pix");
-  
-  // Ativa atualizações em tempo real quando carteira conecta
+
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
-  // Estado das abas e formulários (mock)
+
+  // Tab and form state (mock)
   const [tab, setTab] = useState<"deposit" | "withdraw">("deposit");
   const [amountDep, setAmountDep] = useState<string>("");
   const [amountWdr, setAmountWdr] = useState<string>("");
   const [destKey, setDestKey] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
-  // Status do serviço (mock)
-  const service = { status: "Disponível" as "Disponível" | "Indisponível" | "Manutenção", note: "Operando normalmente" };
+  // Service status (mock)
+  const service = { status: "Available" as "Available" | "Unavailable" | "Maintenance", note: "Operating normally" };
 
-  // Saldos/limites/taxas (mock)
+  // Balances/limits/fees (mock)
   const wallet = { balanceBRL: 3211, dailyLimitBRL: 10000, feePct: 0 };
 
-  // Chave Pix temporária (mock)
-  const pixKey = useMemo(() => "pix+stelato.mock@exemplo.com", []);
+  // Temporary Pix key (mock)
+  const pixKey = useMemo(() => "pix+stelato.mock@example.com", []);
 
-  // Histórico (mock)
+  // Transaction history (mock)
   const history = [
-    { type: "Depósito", value: 500, date: "2025-08-13 11:20", status: "Concluído", key: "email@bank.com" },
-    { type: "Saque", value: 300, date: "2025-08-12 16:40", status: "Pendente", key: "+55 11 90000-0000" },
+    { type: "Deposit", value: 500, date: "2025-08-13 11:20", status: "Completed", key: "email@bank.com" },
+    { type: "Withdrawal", value: 300, date: "2025-08-12 16:40", status: "Pending", key: "+55 11 90000-0000" },
   ];
 
   async function onCopy() {
@@ -41,7 +42,7 @@ export default function PixPage() {
   }
 
   function onGenerateQR() {
-    // Apenas mock visual; integração real gerará payload EMV/BR Code
+    // Mock only; real integration would generate EMV/BR Code payload
     alert(t("deposit.qr_generated", { key: pixKey }));
   }
 
@@ -55,28 +56,28 @@ export default function PixPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
         <div className="text-xs text-slate-500">{t("header.subtitle")}</div>
       </div>
 
-      {/* Status do Serviço */}
+      {/* Service status */}
       <Card>
         <CardHeader>
           <CardTitle>{t("service.status_title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className={`px-2 py-1 rounded text-xs ${service.status === "Disponível" ? "bg-emerald-900/40 text-emerald-300" : service.status === "Manutenção" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
-              {service.status === "Disponível" ? t("service.available") : service.status === "Manutenção" ? t("service.maintenance") : t("service.unavailable")}
+            <span className={`px-2 py-1 rounded text-xs ${service.status === "Available" ? "bg-emerald-900/40 text-emerald-300" : service.status === "Maintenance" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+              {service.status === "Available" ? t("service.available") : service.status === "Maintenance" ? t("service.maintenance") : t("service.unavailable")}
             </span>
             <span className="text-slate-400">{t("service.note_ok")}</span>
           </div>
         </CardContent>
       </Card>
 
-      {/* Abas Depositar/Sacar */}
+      {/* Deposit/Withdraw tabs */}
       <Card>
         <CardHeader>
           <CardTitle>{t("ops.title")}</CardTitle>
@@ -117,7 +118,7 @@ export default function PixPage() {
                   <li>{t("deposit.i2")}</li>
                 </ol>
                 <div className="mt-1">{t("deposit.avg_time")}</div>
-                <div className="mt-1">{t("deposit.limits", { daily: wallet.dailyLimitBRL.toLocaleString("pt-BR"), fee: wallet.feePct })}</div>
+                <div className="mt-1">{t("deposit.limits", { daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
               </div>
             </div>
           ) : (
@@ -137,7 +138,7 @@ export default function PixPage() {
                 placeholder={t("withdraw.placeholder_key")}
                 className="w-full max-w-lg rounded bg-slate-900 px-3 py-2 text-sm outline-none border border-slate-800"
               />
-              <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("pt-BR"), daily: wallet.dailyLimitBRL.toLocaleString("pt-BR"), fee: wallet.feePct })}</div>
+              <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US"), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
               <div className="flex gap-2">
                 <button onClick={onRequestWithdraw} className="px-3 py-2 rounded bg-primary text-black text-sm">{t("withdraw.request")}</button>
                 <button onClick={() => confirm("OK?") && onRequestWithdraw()} className="px-3 py-2 rounded bg-slate-800 text-slate-200 text-sm">{t("withdraw.confirm")}</button>
@@ -148,7 +149,7 @@ export default function PixPage() {
         </CardContent>
       </Card>
 
-      {/* Histórico de Transações Pix */}
+      {/* Pix transaction history */}
       <Card>
         <CardHeader>
           <CardTitle>{t("history.title")}</CardTitle>
@@ -160,8 +161,8 @@ export default function PixPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
               {history.map((tItem, i) => (
                 <div key={i} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
-                  <div className="text-slate-300">{tItem.type === "Depósito" ? t("history.type_deposit") : t("history.type_withdraw")} • R$ {tItem.value.toLocaleString("pt-BR")}</div>
-                  <div className="text-xs text-slate-500">{tItem.date} • {tItem.status === "Concluído" ? t("history.status_done") : t("history.status_pending")} • {tItem.key}</div>
+                  <div className="text-slate-300">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • R$ {tItem.value.toLocaleString("en-US")}</div>
+                  <div className="text-xs text-slate-500">{tItem.date} • {tItem.status === "Completed" ? t("history.status_done") : t("history.status_pending")} • {tItem.key}</div>
                 </div>
               ))}
             </div>
@@ -169,7 +170,7 @@ export default function PixPage() {
         </CardContent>
       </Card>
 
-      {/* Alertas e Mensagens Importantes */}
+      {/* Alerts and important messages */}
       <Card>
         <CardHeader>
           <CardTitle>{t("alerts.title")}</CardTitle>
@@ -183,7 +184,7 @@ export default function PixPage() {
         </CardContent>
       </Card>
 
-      {/* Ajuda e Suporte */}
+      {/* Help and support */}
       <Card>
         <CardHeader>
           <CardTitle>{t("help.title")}</CardTitle>

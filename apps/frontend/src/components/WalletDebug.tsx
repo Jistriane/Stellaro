@@ -77,7 +77,7 @@ export default function WalletDebug() {
         <button 
           onClick={() => {
             if (typeof window !== 'undefined') {
-              // Simula a presença do xBull para teste
+              // Simulate xBull presence for testing
               (window as Record<string, unknown>).xbullWallet = {
                 getPublicKey: async () => 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789',
                 connect: async () => ({ publicKey: 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789' })

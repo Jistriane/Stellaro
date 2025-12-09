@@ -10,7 +10,7 @@ import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 export default function SettingsPage() {
   const t = useTranslations("settings");
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   const locale = useLocale();
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function SettingsPage() {
     email: "",
     phone: "",
     userId: "",
-    kyc: "Pendente" as "Verificado" | "Pendente" | "Rejeitado",
+    kyc: "Pending" as "Verified" | "Pending" | "Rejected",
   });
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [errorProfile, setErrorProfile] = useState<string | null>(null);
@@ -61,7 +61,7 @@ export default function SettingsPage() {
     };
   }, [apiUrl, t]);
 
-  // Segurança
+  // Security
   const [twoFA, setTwoFA] = useState<{ enabled: boolean; method: "SMS" | "Email" | "App" }>(
     { enabled: true, method: "App" }
   );
@@ -73,23 +73,23 @@ export default function SettingsPage() {
     ]
   );
 
-  // Preferências
+  // Preferences
   const [push, setPush] = useState(true);
-  // Opções de email virão de i18n (raw array); fallback inicial será o primeiro item
-  const emailOpts = (t.raw("prefs.email_opts") as string[]) || ["Todas", "Somente Segurança", "Nenhuma"];
-  const [emailNotif, setEmailNotif] = useState<string>(emailOpts?.[1] ?? "Somente Segurança");
+  // Email options will come from i18n (raw array); initial fallback will be the first item
+  const emailOpts = (t.raw("prefs.email_opts") as string[]) || ["All", "Security Only", "None"];
+  const [emailNotif, setEmailNotif] = useState<string>(emailOpts?.[1] ?? "Security Only");
   const [smsNotif, setSmsNotif] = useState(false);
-  const [txThreshold, setTxThreshold] = useState<number>(500); // alerta >= X
+  const [txThreshold, setTxThreshold] = useState<number>(500); // alert >= X
 
-  // Privacidade
+  // Privacy
   const [consentLGPD, setConsentLGPD] = useState(true);
   const [permissions, setPermissions] = useState({ marketing: false, analytics: true });
 
-  // Idioma e tema
+  // Language and theme
   const [lang, setLang] = useState<"pt" | "en">((locale === "en" ? "en" : "pt"));
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
-  // Integrações
+  // Integrations
   const [integrations, setIntegrations] = useState({
     externalWallet: true,
     google: false,
@@ -97,17 +97,17 @@ export default function SettingsPage() {
     autoSyncBalance: false,
   });
 
-  // Limites
+  // Limits
   const [limits, setLimits] = useState({ daily: 5000, monthly: 50000 });
   const requests = useMemo(() => [
-    { date: "2025-07-02", from: 3000, to: 5000, status: "Aprovado" },
-    { date: "2025-05-10", from: 1000, to: 3000, status: "Aprovado" },
+    { date: "2025-07-02", from: 3000, to: 5000, status: "Approved" },
+    { date: "2025-05-10", from: 1000, to: 3000, status: "Approved" },
   ], []);
 
   // App info
-  const app = { version: "1.2.5", releasedAt: "Agosto 2025" };
+  const app = { version: "1.2.5", releasedAt: "August 2025" };
 
-  // Salvar dados reais (apenas campos suportados pelo backend neste MVP)
+  // Save real data (only fields supported by backend in this MVP)
   async function saveAccount() {
     if (!apiUrl) return;
     setSaving(true);
@@ -120,7 +120,7 @@ export default function SettingsPage() {
         body: JSON.stringify({ name: account.name ?? null }),
       });
       if (res.status === 401) {
-        // sessão expirada
+        // session expired
         router.push("/login");
         return;
       }
@@ -169,7 +169,7 @@ export default function SettingsPage() {
     if (ok) alert(t("close.close_alert"));
   }
 
-  // Aplica troca de idioma: seta cookie e faz reload completo preservando outros params
+  // Apply language change: set cookie and do full reload preserving other params
   function applyLanguage(next: "pt" | "en") {
     const current = pathname || "/";
     const params = new URLSearchParams(searchParams?.toString());
@@ -197,7 +197,7 @@ export default function SettingsPage() {
         <div className="text-xs text-slate-500">{t("subtitle")}</div>
       </div>
 
-      {/* 1. Dados da Conta */}
+      {/* 1. Account Data */}
       <Card>
         <CardHeader>
           <CardTitle>{t("account.title")}</CardTitle>
@@ -243,7 +243,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className={`px-2 py-1 rounded ${account.kyc === "Verificado" ? "bg-emerald-900/40 text-emerald-300" : account.kyc === "Pendente" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>{t("account.kyc", { status: account.kyc })}</span>
+            <span className={`px-2 py-1 rounded ${account.kyc === "Verified" ? "bg-emerald-900/40 text-emerald-300" : account.kyc === "Pending" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>{t("account.kyc", { status: account.kyc })}</span>
             <button onClick={saveAccount} disabled={saving} className={`px-3 py-2 rounded text-sm ${saving ? "bg-slate-700 text-slate-400" : "bg-primary text-black"}`}>
               {saving ? "…" : t("account.save")}
             </button>
@@ -252,7 +252,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 2. Segurança */}
+      {/* 2. Security */}
       <Card>
         <CardHeader>
           <CardTitle>{t("security.title")}</CardTitle>
@@ -284,7 +284,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 3. Notificações & Preferências */}
+      {/* 3. Notifications & Preferences */}
       <Card>
         <CardHeader>
           <CardTitle>{t("prefs.title")}</CardTitle>
@@ -321,7 +321,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 4. Privacidade */}
+      {/* 4. Privacy */}
       <Card>
         <CardHeader>
           <CardTitle>{t("privacy.title")}</CardTitle>
@@ -337,7 +337,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 5. Idioma e Tema */}
+      {/* 5. Language and Theme */}
       <Card>
         <CardHeader>
           <CardTitle>{t("lang_theme.title")}</CardTitle>
@@ -367,7 +367,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 6. Integrações */}
+      {/* 6. Integrations */}
       <Card>
         <CardHeader>
           <CardTitle>{t("integrations.title")}</CardTitle>
@@ -382,7 +382,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 7. Limites de Conta */}
+      {/* 7. Account Limits */}
       <Card>
         <CardHeader>
           <CardTitle>{t("limits.title")}</CardTitle>
@@ -411,7 +411,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 8. Suporte e Ajuda */}
+      {/* 8. Support & Help */}
       <Card>
         <CardHeader>
           <CardTitle>{t("support.title")}</CardTitle>
@@ -425,7 +425,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 9. Informações Legais */}
+      {/* 9. Legal Information */}
       <Card>
         <CardHeader>
           <CardTitle>{t("legal.title")}</CardTitle>
@@ -452,7 +452,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 11. Sobre o Aplicativo */}
+      {/* 11. About the Application */}
       <Card>
         <CardHeader>
           <CardTitle>{t("about.title")}</CardTitle>

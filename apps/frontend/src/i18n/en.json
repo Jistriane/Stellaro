@@ -11,8 +11,7 @@
   "balance": "Balance",
   "address": "Address",
   "market": "Market",
-  "chart_title": "Balance (placeholder)"
-,
+  "chart_title": "Balance (placeholder)",
   "risk": {
     "title": "Risk Agent",
     "userId": "User ID",
@@ -28,5 +27,36 @@
       "execution": "Execution result"
     },
     "empty": "No data"
+  },
+  "routes": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "wallet": "Wallet",
+    "portfolio": "Portfolio",
+    "stablecoin": "Stablecoin",
+    "loans": "Loans",
+    "defi": "DeFi Stats",
+    "liquidity": "Liquidity Pools",
+    "transactions": "Transactions",
+    "bridge": "Bridge",
+    "governance": "Governance",
+    "vote": "Vote",
+    "risk": "Risk",
+    "analysis": "Analysis",
+    "insurance": "Insurance",
+    "pix": "PIX",
+    "cards": "Cards",
+    "notifications": "Notifications",
+    "chat": "Chat",
+    "help": "Help",
+    "docs": "Docs",
+    "learn": "Learn",
+    "examples": "Examples",
+    "profile": "Profile",
+    "settings": "Settings",
+    "advanced": "Advanced",
+    "trading": "Trading",
+    "login": "Login"
   }
 }

@@ -2,10 +2,10 @@
 import { create } from "zustand";
 import { AllConnectors, FreighterConnector, type WalletType, detectAvailable } from "../lib/wallets/connectors";
 
-// Tipos básicos de rede
+// Basic network types
 export type StellarNetwork = "public" | "testnet";
 
-// API global opcional (mantém compatibilidade)
+// Optional global API (maintains compatibility)
 declare global {
   interface FreighterApi {
     signTransaction(
@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-// Tipos mínimos para resposta do Horizon
+// Minimal types for Horizon response
 interface HorizonBalanceEntry {
   asset_type: string;
   balance: string;
@@ -47,7 +47,7 @@ interface WalletState {
   disconnect: () => Promise<void>;
   refreshBalance: () => Promise<void>;
   refreshAvailable: () => void;
-  // soroban mínimos
+  // soroban minimal
   getNetworkPassphrase: () => string;
   signXdr: (xdr: string) => Promise<string>;
   invokeContract: (args: { contractId: string; functionName: string; argsXdr?: string[] }) => Promise<unknown>;
@@ -60,25 +60,25 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   balance: null,
   loading: false,
   error: null,
-  // Evita SSR mismatch: popula no cliente via refreshAvailable()
+  // Avoid SSR mismatch: populate on the client via refreshAvailable()
   available: [],
   activeType: null,
 
   connectByType: async (type: WalletType) => {
     try {
       set({ loading: true, error: null });
-      // Seleciona conector
+      // Select connector
       const connector = AllConnectors.find((c) => c.id === type) ?? FreighterConnector;
-      // Permite tentar conexão mesmo que isAvailable() seja false para freighter/xbull
+      // Allow trying connection even if isAvailable() is false for freighter/xbull
       const canTry = connector.isAvailable() || type === "freighter" || type === "xbull";
       if (!canTry) {
-        const msg = `Conector ${type} indisponível neste navegador.`;
+        const msg = `Connector ${type} unavailable in this browser.`;
         throw new Error(msg);
       }
       const session = await connector.connect();
       set({ connected: true, address: session.address, network: session.network, activeType: type });
       
-      // Dispara evento personalizado para notificar conexão
+      // Fires custom event to notify connection
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent('wallet:connected', { 
           detail: { 
@@ -93,43 +93,43 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       await get().refreshBalance();
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
-      set({ error: message ?? "Falha ao conectar" });
+      set({ error: message ?? "Failed to connect" });
     } finally {
-      // Recalcula carteiras disponíveis (ex.: após instalar/ativar)
+      // Recalculates available wallets (e.g., after installing/activating)
       set({ loading: false, available: detectAvailable() });
     }
   },
 
   refreshAvailable: () => {
-    // Recalcula a lista de conectores disponíveis no contexto do cliente
+    // Recalculates list of available connectors in client context
     if (typeof window === "undefined") return;
     const list = detectAvailable();
     if (typeof console !== "undefined") console.debug("[wallet] detectAvailable (initial)", list);
     set({ available: list });
 
-    // Escuta eventos customizados das carteiras para detecção em tempo real
+    // Listens to custom wallet events for real-time detection
     const handleWalletEvent = (event: Event) => {
       if (typeof console !== "undefined") console.debug('[wallet] wallet event received:', event.type);
       setTimeout(() => {
         const updated = detectAvailable();
         if (typeof console !== "undefined") console.debug('[wallet] updated after event:', updated);
         set({ available: updated });
-      }, 100); // pequeno delay para garantir que a carteira foi inicializada
+      }, 100); // small delay to ensure the wallet is initialized
     };
 
-    // Remove listeners existentes para evitar duplicação
+    // Remove existing listeners to avoid duplication
     window.removeEventListener('freighter:ready', handleWalletEvent);
     window.removeEventListener('rabet:connected', handleWalletEvent);
     window.removeEventListener('xbull:ready', handleWalletEvent);
     window.removeEventListener('albedo:ready', handleWalletEvent);
 
-    // Adiciona listeners para eventos de carteiras
+    // Add listeners for wallet events
     window.addEventListener('freighter:ready', handleWalletEvent);
     window.addEventListener('rabet:connected', handleWalletEvent);
     window.addEventListener('xbull:ready', handleWalletEvent);
     window.addEventListener('albedo:ready', handleWalletEvent);
 
-    // Observer para mudanças no DOM que podem indicar injeção de extensões
+    // Observer for DOM changes that may indicate extension injection
     const observer = new MutationObserver((mutations) => {
       let foundWalletInjection = false;
       mutations.forEach((mutation) => {
@@ -137,7 +137,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element;
-              // Verifica se o script pode ser de uma extensão de carteira
+              // Check if script could be from a wallet extension
               if (element.tagName === 'SCRIPT' && element.hasAttribute('src')) {
                 const src = element.getAttribute('src') || '';
                 if (src.includes('freighter') || src.includes('xbull') || src.includes('albedo') || src.includes('rabet')) {
@@ -158,11 +158,11 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
     });
 
-    // Observa mudanças no document.head e document.body
+    // Observe changes in document.head and document.body
     observer.observe(document.head, { childList: true, subtree: true });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Monitora mudanças nas propriedades do window object
+    // Monitor changes in window properties
     const checkWindowChanges = () => {
       const currentKeys = Object.keys(window).filter(key => {
         const lowerKey = key.toLowerCase();
@@ -172,7 +172,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
                lowerKey.includes('xbull');
       });
       
-      // Verifica se há novas propriedades relacionadas a carteiras
+      // Check if there are new wallet-related properties
       if (currentKeys.length > 0) {
         if (typeof console !== "undefined") {
           console.debug('[wallet] Found new wallet properties on window:', currentKeys);
@@ -182,7 +182,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
     };
 
-    // Verifica periodicamente por novas propriedades (backup do observer)
+    // Periodically check for new properties (observer backup)
     const windowCheckInterval = setInterval(checkWindowChanges, 2000);
     
     // Cleanup function
@@ -198,8 +198,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     // Store cleanup function for potential future use
     (window as any).__walletDetectionCleanup = cleanup;
 
-    // Verificação assíncrona adicional: Freighter via pacote oficial
-    // Algumas vezes o Chrome não injeta window.freighterApi, mas a extensão está ativa.
+    // Additional async check: Freighter via official package
+    // Sometimes Chrome doesn't inject window.freighterApi, but the extension is active.
     (async () => {
       try {
         const freighter = (await import("@stellar/freighter-api")) as unknown as {
@@ -217,12 +217,12 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         }
       } catch {}
     })();
-    // Polling robusto: algumas extensões injetam o provider tardiamente após o load
-    // Fazemos várias tentativas para capturar a injeção tardia de diferentes carteiras.
+    // Robust polling: some extensions inject provider late after load
+    // We make multiple attempts to catch late injection of different wallets.
     const interesting = (arr: { id: WalletType; available: boolean }[]) =>
       arr.some((w) => w.available && (w.id === "freighter" || w.id === "xbull" || w.id === "albedo" || w.id === "rabet"));
     
-    // Se já encontrou carteiras, ainda faz algumas tentativas para encontrar mais
+    // If already found wallets, still makes some attempts to find more
     const initialWallets = list.filter(w => w.available).length;
     if (interesting(list) && initialWallets > 0) {
       if (typeof console !== "undefined") {
@@ -231,8 +231,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     }
     
     let attempts = 0;
-    const maxAttempts = 60; // ~20s com 350ms - muito mais tempo para extensões lentas
-    const interval = 350; // intervalo um pouco maior
+    const maxAttempts = 60; // ~20s with 350ms - more time for slow extensions
+    const interval = 350; // slightly longer interval
     
     const timer = setInterval(() => {
       attempts++;
@@ -250,10 +250,10 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       
       set({ available: next });
       
-      // Para mais cedo se encontrou carteiras OU se chegou no limite OU se página não está visível
+      // Stops earlier if found wallets OR reached limit OR page is not visible
       const shouldStop = attempts >= maxAttempts || 
                         document.visibilityState !== "visible" ||
-                        (foundWallets.length > initialWallets && attempts > 10); // Para se encontrou mais carteiras após 10 tentativas
+                        (foundWallets.length > initialWallets && attempts > 10); // Stop if found more wallets after 10 attempts
       
       if (shouldStop) {
         clearInterval(timer);
@@ -275,13 +275,13 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
   disconnect: async () => {
     try {
-      // tenta desconectar no conector ativo se suportado
+      // Attempt to disconnect on the active connector if supported
       const type = get().activeType;
       const conn = AllConnectors.find((c) => c.id === type);
       await conn?.disconnect?.();
     } catch {}
     
-    // Dispara evento personalizado para notificar desconexão
+    // Fires custom event to notify disconnection
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent('wallet:disconnected', { 
         detail: { type: get().activeType } 
@@ -299,21 +299,21 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       set({ loading: true });
       const horizon = network === "testnet" ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org";
       const res = await fetch(`${horizon}/accounts/${address}`);
-      if (!res.ok) throw new Error("Falha ao obter conta no Horizon");
+      if (!res.ok) throw new Error("Failed to fetch account from Horizon");
       const data: HorizonAccountResponse = await res.json();
-      // saldo XLM é o primeiro balance com asset_type native
+      // XLM balance is the first balance with asset_type native
       const native = (data.balances || []).find((b: HorizonBalanceEntry) => b.asset_type === "native");
       const xlm = native ? parseFloat(native.balance) : 0;
       set({ balance: xlm });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
-      set({ error: message ?? "Falha ao atualizar saldo" });
+      set({ error: message ?? "Failed to update balance" });
     } finally {
       set({ loading: false });
     }
   },
 
-  // Soroban mínimos
+  // Soroban minimums
   getNetworkPassphrase: () => {
     const net = get().network;
     return net === "testnet" ? "Test SDF Network ; September 2015" : "Public Global Stellar Network ; September 2015";
@@ -321,18 +321,18 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
   signXdr: async (xdr: string) => {
     const { activeType, address } = get();
-    if (!activeType || !address) throw new Error("Conecte uma carteira antes de assinar.");
-    if (activeType !== "freighter") throw new Error(`Assinatura não suportada para ${activeType} ainda.`);
+    if (!activeType || !address) throw new Error("Connect a wallet before signing.");
+    if (activeType !== "freighter") throw new Error(`Signing not supported for ${activeType} yet.`);
     const passphrase = get().getNetworkPassphrase();
     const api = typeof window !== "undefined" ? window.freighterApi : undefined;
-    if (!api?.signTransaction) throw new Error("Freighter não suporta signTransaction neste ambiente.");
+    if (!api?.signTransaction) throw new Error("Freighter does not support signTransaction in this environment.");
     const res = await api.signTransaction(xdr, { networkPassphrase: passphrase, accountToSign: address });
     return res.signedTxXdr as string;
   },
 
   invokeContract: async ({ contractId, functionName, argsXdr = [] }) => {
     const { connected, address, network } = get();
-    if (!connected || !address) throw new Error("Conecte uma carteira para invocar o contrato.");
+    if (!connected || !address) throw new Error("Connect a wallet to invoke the contract.");
     const { buildInvokeTransaction, submitSignedXdr } = await import("../lib/soroban/invoke");
     const { tx } = await buildInvokeTransaction({
       network,

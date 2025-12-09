@@ -19,7 +19,7 @@ function generateRealisticData(): Point[] {
     const trend = Math.sin(i / 20) * 0.002; // gentle wave pattern
     const price = basePrice + volatility + trend;
     
-    const label = ts.toLocaleString("pt-BR", { 
+    const label = ts.toLocaleString("en-US", { 
       weekday: "short", 
       hour: "2-digit", 
       minute: "2-digit" 
@@ -53,16 +53,16 @@ export default function BalanceChart() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Histórico de Saldo (XLM/USD)</CardTitle>
+        <CardTitle>Balance History (XLM/USD)</CardTitle>
         <CardDescription>
           {loading
-            ? "Carregando dados de mercado..."
-            : "Dados simulados das últimas 120h com atualização a cada 5 minutos"}
+            ? "Loading market data..."
+            : "Simulated data from the last 120h with updates every 5 minutes"}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {latest && (
-          <div className="mb-3 text-sm text-slate-300">Último preço: ${latest.toFixed(4)} USD</div>
+          <div className="mb-3 text-sm text-slate-300">Latest price: ${latest.toFixed(4)} USD</div>
         )}
         <div className="w-full min-h-[320px]">
           <ResponsiveContainer width="100%" height={320}>
@@ -79,7 +79,7 @@ export default function BalanceChart() {
                 }}
                 labelStyle={{ color: "#cbd5e1", marginBottom: "4px" }}
                 itemStyle={{ color: "#38bdf8" }}
-                formatter={(value: number) => [`$${value.toFixed(4)}`, "Preço"]}
+                formatter={(value: number) => [`$${value.toFixed(4)}`, "Price"]}
               />
               <Line
                 type="monotone"

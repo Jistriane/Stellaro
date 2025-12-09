@@ -45,7 +45,7 @@ export default function RiskPage() {
   const [limits, setLimits] = useState<RiskLimit[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function RiskPage() {
         id: 1,
         type: "login",
         timestamp: "2025-12-09T14:32:00Z",
-        description: "Login realizado a partir de novo dispositivo",
+        description: "Login from a new device",
         severity: "high",
         status: "new",
       },
@@ -63,7 +63,7 @@ export default function RiskPage() {
         id: 2,
         type: "unusual",
         timestamp: "2025-12-09T12:15:00Z",
-        description: "Padrão de transação incomum detectado",
+        description: "Unusual transaction pattern detected",
         severity: "medium",
         status: "reviewed",
       },
@@ -71,7 +71,7 @@ export default function RiskPage() {
         id: 3,
         type: "pix",
         timestamp: "2025-12-09T10:45:00Z",
-        description: "Transferência PIX de alto valor processada",
+        description: "High-value PIX transfer processed",
         severity: "medium",
         status: "resolved",
       },
@@ -79,7 +79,7 @@ export default function RiskPage() {
         id: 4,
         type: "trade",
         timestamp: "2025-12-08T16:20:00Z",
-        description: "Grande ordem de trading executada",
+        description: "Large trading order executed",
         severity: "low",
         status: "resolved",
       },
@@ -204,12 +204,12 @@ export default function RiskPage() {
             <div className="flex items-end gap-6">
               <div className="flex-1">
                 <div className="text-5xl font-bold text-slate-50 mb-2">{riskScore}</div>
-                <p className="text-slate-400 text-sm">Pontuação atual de risco</p>
+                <p className="text-slate-400 text-sm">Current risk score</p>
               </div>
               <div className="w-32 h-32 rounded-full border-8 border-slate-800 flex items-center justify-center bg-slate-800/30 relative">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-slate-50">{riskScore}%</div>
-                  <div className="text-xs text-slate-400 mt-1">do limite</div>
+                  <div className="text-xs text-slate-400 mt-1">of the limit</div>
                 </div>
                 <div
                   className={`absolute inset-0 rounded-full border-8 border-transparent border-t-8 border-r-8 ${
@@ -222,10 +222,10 @@ export default function RiskPage() {
             </div>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Tendência</span>
+                <span className="text-slate-400">Trend</span>
                 <span className="text-slate-50 font-semibold flex items-center gap-1">
                   <TrendingDown className="w-4 h-4 text-slate-400" />
-                  Melhorando
+                  Improving
                 </span>
               </div>
 
@@ -250,14 +250,14 @@ export default function RiskPage() {
                     <div>
                       <p className="text-slate-50 font-medium">{limit.name}</p>
                       <p className="text-sm text-slate-400">
-                        {limit.current.toLocaleString("pt-BR")} / {limit.limit.toLocaleString("pt-BR")} {limit.unit}
+                        {limit.current.toLocaleString("en-US")} / {limit.limit.toLocaleString("en-US")} {limit.unit}
                       </p>
                     </div>
                     <span className={`text-sm font-semibold ${isWarning ? "text-slate-200" : "text-slate-400"}`}>{percentage.toFixed(1)}%</span>
 
                   </div>
                   <Progress value={percentage} max={100} className="h-2 rounded-full" />
-                  {isWarning && <p className="text-xs text-slate-300">Limite próximo do máximo</p>}
+                  {isWarning && <p className="text-xs text-slate-300">Near maximum limit</p>}
 
                 </div>
               );
@@ -289,12 +289,12 @@ export default function RiskPage() {
                             {getEventIcon(event.type)}
                             {event.description}
                           </p>
-                          {event.status === "new" && <span className="text-xs bg-slate-600/40 text-slate-200 px-2 py-1 rounded whitespace-nowrap">Novo</span>}
+                          {event.status === "new" && <span className="text-xs bg-slate-600/40 text-slate-200 px-2 py-1 rounded whitespace-nowrap">New</span>}
 
                         </div>
                         <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {new Date(event.timestamp).toLocaleString("pt-BR")}
+                          {new Date(event.timestamp).toLocaleString("en-US")}
                         </p>
                       </div>
                       {event.status === "new" && (

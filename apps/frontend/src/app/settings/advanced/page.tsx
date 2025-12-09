@@ -444,7 +444,7 @@ export default function SettingsAdvancedPage() {
               </CardHeader>
               <CardContent>
                 <select id="language-select" title="Select language" aria-label="Select language" className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white focus:outline-none focus:border-blue-500">
-                  <option>Português (BR)</option>
+                  <option>English (US)</option>
                   <option>English</option>
                   <option>Español</option>
                 </select>

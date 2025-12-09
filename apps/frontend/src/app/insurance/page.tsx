@@ -9,33 +9,33 @@ import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 export default function InsurancePage() {
   const t = useTranslations("insurance");
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   const offers = [
-    { key: 'saldo' },
-    { key: 'cartao' },
+    { key: 'balance' },
+    { key: 'card' },
     { key: 'cyber' },
     { key: 'defi' },
   ];
 
   const myPolicies = [
-    { id: 'P-001', name: 'Saldo/Token', status: 'Ativo', until: '10/08/2026', premium: 'R$ 6,99/mês' },
-    { id: 'P-002', name: 'Cartão', status: 'Aguardando pagamento', until: '—', premium: 'R$ 4,99/mês' },
+    { id: 'P-001', name: 'Balance/Token', status: 'Active', until: '08/10/2026', premium: 'R$ 6.99/month' },
+    { id: 'P-002', name: 'Card', status: 'Awaiting payment', until: '—', premium: 'R$ 4.99/month' },
   ];
 
   const claims = [
-    { id: 'S-1001', policy: 'Saldo/Token', status: 'Em análise', openedAt: '12/08/2025' },
+    { id: 'S-1001', policy: 'Balance/Token', status: 'Under review', openedAt: '08/12/2025' },
   ];
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('header.title')}</h1>
         <div className="text-xs text-slate-500">{t('header.updated_now')}</div>
       </div>
 
-      {/* Introdução */}
+      {/* Introduction */}
       <Card>
         <CardHeader>
           <CardTitle>{t('intro.title')}</CardTitle>
@@ -48,7 +48,7 @@ export default function InsurancePage() {
         </CardContent>
       </Card>
 
-      {/* Ofertas e Tipos */}
+      {/* Offers and Types */}
       <Card>
         <CardHeader>
           <CardTitle>{t('offers.title')}</CardTitle>
@@ -67,7 +67,7 @@ export default function InsurancePage() {
         </CardContent>
       </Card>
 
-      {/* Simulador Rápido */}
+      {/* Quick Simulator */}
       <Card>
         <CardHeader>
           <CardTitle>{t('quick_sim.title')}</CardTitle>
@@ -126,7 +126,7 @@ export default function InsurancePage() {
         </CardContent>
       </Card>
 
-      {/* Processo de Contratação */}
+      {/* Contracting Process */}
       <Card>
         <CardHeader>
           <CardTitle>{t('howto.title')}</CardTitle>
@@ -144,7 +144,7 @@ export default function InsurancePage() {
         </CardContent>
       </Card>
 
-      {/* Meus Seguros */}
+      {/* My Policies */}
       <Card>
         <CardHeader>
           <CardTitle>{t('mine.title')}</CardTitle>
@@ -192,7 +192,7 @@ export default function InsurancePage() {
         </CardContent>
       </Card>
 
-      {/* FAQ, Educativo e Alertas */}
+      {/* FAQ, Educational and Alerts */}
       <Card>
         <CardHeader>
           <CardTitle>{t('faq_edu.title')}</CardTitle>

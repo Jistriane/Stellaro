@@ -20,7 +20,7 @@ type UserProfile = {
 export default function ProfilePage() {
   const t = useTranslations("profile");
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   const tc = useTranslations("common");
   // Perfil real via backend
@@ -37,7 +37,7 @@ export default function ProfilePage() {
         if (!active) return;
         setUser(data?.user ?? null);
       } catch {
-        // silencioso: mantém placeholders
+        // silent: keep placeholders
       }
     }
     load();
@@ -47,42 +47,42 @@ export default function ProfilePage() {
   }, [apiUrl]);
 
   const kyc = {
-    status: "Em andamento" as
-      | "Não iniciado"
-      | "Em andamento"
-      | "Aguardando validação"
-      | "Aprovado"
-      | "Recusado",
-    level: "Básico",
+    status: "In progress" as
+      | "Not started"
+      | "In progress"
+      | "Waiting for validation"
+      | "Approved"
+      | "Rejected",
+    level: "Basic",
     progressPct: 60,
-    nextStep: "Enviar foto do RG",
+    nextStep: "Upload ID photo",
     limitCurrent: 2000,
     limitNext: 50000,
   };
 
   const documents = [
-    { key: "rg", label: "RG (frente/verso)", status: "Em validação", preview: true },
-    { key: "selfie", label: "Selfie segurando RG", status: "Pendente", preview: false },
-    { key: "address", label: "Comprovante de endereço", status: "Aprovado", preview: true },
+    { key: "rg", label: "ID (front/back)", status: "Under review", preview: true },
+    { key: "selfie", label: "Selfie holding ID", status: "Pending", preview: false },
+    { key: "address", label: "Proof of address", status: "Approved", preview: true },
   ];
 
-  const pendingSteps = ["Enviar RG", "Enviar selfie", "Confirmar endereço"];
+  const pendingSteps = ["Upload ID", "Upload selfie", "Confirm address"];
 
   const history = [
-    { date: "2025-08-21 14:10", item: "Comprovante de endereço", status: "Aprovado" },
-    { date: "2025-08-20 10:32", item: "RG", status: "Em validação" },
-    { date: "2025-08-19 09:05", item: "Selfie", status: "Rejeitado — reenviar" },
+    { date: "2025-08-21 14:10", item: "Proof of address", status: "Approved" },
+    { date: "2025-08-20 10:32", item: "ID", status: "Under review" },
+    { date: "2025-08-19 09:05", item: "Selfie", status: "Rejected — resubmit" },
   ];
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
         <div className="text-xs text-slate-500">{t("header.updated_now")}</div>
       </div>
 
-      {/* Identidade do Usuário */}
+      {/* User Identity */}
       <Card>
         <CardHeader>
           <CardTitle>{t("identity.title")}</CardTitle>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
               <div className="text-xs text-slate-500">{t("kyc.status_label")}</div>
               <div className="text-slate-200">{kyc.status}</div>
               <div className="mt-2 text-xs text-slate-500">{t("kyc.level_label")}</div>
-              <div className="text-slate-200">{kyc.level} <span className="text-xs text-slate-500">{t("kyc.limit_current", { value: kyc.limitCurrent.toLocaleString("pt-BR") })}</span></div>
+              <div className="text-slate-200">{kyc.level} <span className="text-xs text-slate-500">{t("kyc.limit_current", { value: kyc.limitCurrent.toLocaleString("en-US") })}</span></div>
             </div>
             <div>
               <div className="text-xs text-slate-500">{t("kyc.progress")}</div>
@@ -141,13 +141,13 @@ export default function ProfilePage() {
             </div>
             <div>
               <div className="text-xs text-slate-500">{t("kyc.benefits_label")}</div>
-              <div className="text-slate-200">{t("kyc.unlock_until", { value: kyc.limitNext.toLocaleString("pt-BR") })}</div>
+              <div className="text-slate-200">{t("kyc.unlock_until", { value: kyc.limitNext.toLocaleString("en-US") })}</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Upload e Validação de Documentos */}
+      {/* Document Upload and Validation */}
       <Card>
         <CardHeader>
           <CardTitle>{t("docs.title")}</CardTitle>
@@ -174,7 +174,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Ações e Etapas Pendentes */}
+      {/* Actions and Pending Steps */}
       <Card>
         <CardHeader>
           <CardTitle>{t("steps.title")}</CardTitle>
@@ -192,7 +192,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Histórico de Submissão */}
+      {/* Submission History */}
       <Card>
         <CardHeader>
           <CardTitle>{t("history.title")}</CardTitle>
@@ -209,7 +209,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Limites e Benefícios */}
+      {/* Limits and Benefits */}
       <Card>
         <CardHeader>
           <CardTitle>{t("limits.title")}</CardTitle>
@@ -218,17 +218,17 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-slate-900 rounded p-3">
               <div className="text-xs text-slate-500">{t("limits.current")}</div>
-              <div className="text-lg font-semibold text-slate-200">R$ {kyc.limitCurrent.toLocaleString("pt-BR")}/mês</div>
+              <div className="text-lg font-semibold text-slate-200">R$ {kyc.limitCurrent.toLocaleString("en-US")}/month</div>
             </div>
             <div className="bg-slate-900 rounded p-3">
               <div className="text-xs text-slate-500">{t("limits.with_kyc")}</div>
-              <div className="text-lg font-semibold text-slate-200">R$ {kyc.limitNext.toLocaleString("pt-BR")}</div>
+              <div className="text-lg font-semibold text-slate-200">R$ {kyc.limitNext.toLocaleString("en-US")}</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Política de Privacidade e Segurança */}
+      {/* Privacy Policy and Security */}
       <Card>
         <CardHeader>
           <CardTitle>{t("privacy.title")}</CardTitle>
@@ -244,7 +244,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Suporte e Ajuda */}
+      {/* Support & Help */}
       <Card>
         <CardHeader>
           <CardTitle>{t("support.title")}</CardTitle>

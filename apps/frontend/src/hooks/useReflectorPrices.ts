@@ -1,15 +1,15 @@
 /**
  * useReflectorPrices Hook
  * 
- * Hook React para integração com Reflector Network
- * Fornece preços em tempo real com atualização automática
+ * React hook for integration with Reflector Network
+ * Provides real-time prices with automatic updates
  */
 
 import { useEffect, useState, useCallback } from 'react';
 import { reflectorClient, ReflectorPrice, PortfolioValuation } from '@/services/reflectorClient';
 
 /**
- * Hook para obter preço único com auto-refresh
+ * Hook to get single price with auto-refresh
  */
 export function useReflectorPrice(assetCode: string) {
   const [price, setPrice] = useState<ReflectorPrice | null>(null);
@@ -30,7 +30,7 @@ export function useReflectorPrice(assetCode: string) {
       })
       .finally(() => setLoading(false));
 
-    // Subscribe para atualizações
+    // Subscribe for updates
     const unsubscribe = reflectorClient.subscribe((prices) => {
       const updated = prices.get(assetCode);
       if (updated) {
@@ -45,7 +45,7 @@ export function useReflectorPrice(assetCode: string) {
 }
 
 /**
- * Hook para obter múltiplos preços
+ * Hook to get multiple prices
  */
 export function useReflectorPrices(assets: string[]) {
   const [prices, setPrices] = useState<Map<string, ReflectorPrice>>(new Map());
@@ -75,7 +75,7 @@ export function useReflectorPrices(assets: string[]) {
 
     fetchPrices();
 
-    // Subscribe para atualizações
+    // Subscribe for updates
     const unsubscribe = reflectorClient.subscribe((updatedPrices) => {
       setPrices((prev) => {
         const newMap = new Map(prev);
@@ -95,7 +95,7 @@ export function useReflectorPrices(assets: string[]) {
 }
 
 /**
- * Hook para valorização de portfólio
+ * Hook to get portfolio valuation
  */
 export function usePortfolioValuation(portfolio: Map<string, number>) {
   const [valuation, setValuation] = useState<PortfolioValuation | null>(null);
@@ -125,7 +125,7 @@ export function usePortfolioValuation(portfolio: Map<string, number>) {
   useEffect(() => {
     updateValuation();
 
-    // Auto-refresh a cada 1 minuto
+    // Auto-refresh every 1 minute
     const interval = setInterval(updateValuation, 60000);
     return () => clearInterval(interval);
   }, [updateValuation]);
@@ -134,7 +134,7 @@ export function usePortfolioValuation(portfolio: Map<string, number>) {
 }
 
 /**
- * Hook para detecção de anomalias de preço
+ * Hook for price anomaly detection
  */
 export function usePriceAnomaly(assetCode: string, windowMinutes: number = 15) {
   const [anomaly, setAnomaly] = useState<ReturnType<typeof reflectorClient.detectAnomaly> | null>(
@@ -165,7 +165,7 @@ export function usePriceAnomaly(assetCode: string, windowMinutes: number = 15) {
 }
 
 /**
- * Hook para validar preço dentro de margem
+ * Hook to validate price within tolerance
  */
 export function usePriceValidation(assetCode: string, expectedPrice: number, toleranceBps = 500) {
   const [isValid, setIsValid] = useState<boolean | null>(null);

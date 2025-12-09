@@ -14,7 +14,7 @@ export default function PortfolioPage() {
   const [wallet, setWallet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   useEffect(() => {
@@ -32,10 +32,10 @@ export default function PortfolioPage() {
     loadData();
   }, []);
 
-  // Conversões mock para estimativas
+  // Mock conversions for estimates
   const rateSTLT_BRL = 1.0; // 1 STLT ≈ 1 BRL (mock)
   const rateSTLT_USD = 0.2; // mock
-  const rateXLM_BRL = 1.75; // mock para exibição
+  const rateXLM_BRL = 1.75; // mock for display
   const rateXLM_USD = 0.35; // mock
 
   const stlt = Number.parseFloat(wallet?.stlt || "0");
@@ -72,7 +72,7 @@ export default function PortfolioPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Carregando...</div>
+          <div className="text-slate-400">Loading...</div>
         </div>
       </div>
     );
@@ -82,7 +82,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
         <div className="text-xs text-slate-500">{t("header.updated", { when: new Date().toLocaleString() })}</div>
@@ -113,7 +113,7 @@ export default function PortfolioPage() {
         </CardContent>
       </Card>
 
-      {/* Distribuição dos Ativos */}
+      {/* Asset Distribution */}
       <Card>
         <CardHeader>
           <CardTitle>{t("distribution.title")}</CardTitle>
@@ -140,7 +140,7 @@ export default function PortfolioPage() {
             })}
           </div>
 
-          {/* Referência do contrato de alocação (mock do protocolo) */}
+          {/* Allocation contract reference (mock from protocol) */}
           <div className="mt-4">
             <div className="text-xs text-slate-500">{t("distribution.protocol_ref_title")}</div>
             <ul className="text-xs grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
@@ -155,7 +155,7 @@ export default function PortfolioPage() {
         </CardContent>
       </Card>
 
-      {/* Histórico e Variação (mock) */}
+      {/* History and Variation (mock) */}
       <Card>
         <CardHeader>
           <CardTitle>{t("history.title")}</CardTitle>
@@ -168,7 +168,7 @@ export default function PortfolioPage() {
         </CardContent>
       </Card>
 
-      {/* Extrato e Relatórios */}
+      {/* Statement and Reports */}
       <Card>
         <CardHeader>
           <CardTitle>{t("reports.title")}</CardTitle>

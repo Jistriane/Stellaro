@@ -15,8 +15,8 @@ export default function WalletPage() {
   const setBalances = useAppStore((s) => s.setBalances);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
-  
-  // Ativa atualizações em tempo real quando carteira conecta
+
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
 
   useEffect(() => {

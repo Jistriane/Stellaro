@@ -1,5 +1,5 @@
 /**
- * Testes - Reflector Integration Frontend
+ * Tests - Reflector Integration Frontend
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -25,7 +25,7 @@ describe('ReflectorClient', () => {
   });
 
   describe('getPrice', () => {
-    it('deve retornar preço com timestamp', async () => {
+    it('should return price with timestamp', async () => {
       const mockPrice = {
         symbol: 'USDC',
         price: 1.0,
@@ -43,7 +43,7 @@ describe('ReflectorClient', () => {
       expect(result.price).toBe(1.0);
     });
 
-    it('deve cachear preços', async () => {
+    it('should cache prices', async () => {
       const mockPrice = {
         symbol: 'BTC',
         price: 45000,
@@ -59,7 +59,7 @@ describe('ReflectorClient', () => {
       expect(result1).toEqual(result2);
     });
 
-    it('deve fazer fallback em caso de erro', async () => {
+    it('should fallback on error', async () => {
       vi.mocked(reflectorClient.getPrice).mockRejectedValueOnce(new Error('API Error'));
 
       await expect(reflectorClient.getPrice('INVALID')).rejects.toThrow();
@@ -67,7 +67,7 @@ describe('ReflectorClient', () => {
   });
 
   describe('getPrices', () => {
-    it('deve retornar múltiplos preços em paralelo', async () => {
+    it('should return multiple prices in parallel', async () => {
       const mockPrices = new Map([
         [
           'USDC',
@@ -100,7 +100,7 @@ describe('ReflectorClient', () => {
   });
 
   describe('getPortfolioValuation', () => {
-    it('deve calcular valorização total', async () => {
+    it('should calculate total appreciation', async () => {
       const portfolio = new Map([
         ['USDC', 1000],
         ['XLM', 500],
@@ -136,7 +136,7 @@ describe('useReflectorPrice Hook', () => {
     vi.clearAllMocks();
   });
 
-  it('deve carregar preço e exibir estado loading', async () => {
+  it('should load price and show loading state', async () => {
     const mockPrice = {
       symbol: 'USDC',
       price: 1.0,
@@ -158,7 +158,7 @@ describe('useReflectorPrice Hook', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('deve exibir erro em caso de falha', async () => {
+  it('should show error on failure', async () => {
     const error = new Error('Failed to fetch price');
     vi.mocked(reflectorClient.getPrice).mockRejectedValueOnce(error);
 
@@ -178,7 +178,7 @@ describe('useReflectorPrices Hook', () => {
     vi.clearAllMocks();
   });
 
-  it('deve carregar múltiplos preços', async () => {
+  it('should load multiple prices', async () => {
     const mockPrices = new Map([
       [
         'USDC',
@@ -218,7 +218,7 @@ describe('usePortfolioValuation Hook', () => {
     vi.clearAllMocks();
   });
 
-  it('deve calcular valorização e fazer refresh periódico', async () => {
+  it('should calculate appreciation and refresh periodically', async () => {
     const portfolio = new Map([
       ['USDC', 1000],
       ['XLM', 500],

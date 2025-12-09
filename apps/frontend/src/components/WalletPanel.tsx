@@ -14,9 +14,9 @@ export default function WalletPanel() {
   const [selected, setSelected] = useState<string>("");
   const [testing, setTesting] = useState(false);
   const [mounted, setMounted] = useState(false);
-  // Removido: detecção de MetaMask (EVM)
+  // Removed: MetaMask (EVM) detection
 
-  // Traduz códigos de erro padronizados dos conectores (ERR_*) para i18n amigável
+  // Translate connector error codes (ERR_*) into friendly i18n messages
   const displayError = useMemo(() => {
     if (!error) return null;
     const msg = String(error);
@@ -28,9 +28,9 @@ export default function WalletPanel() {
     if (upper.includes("ERR_LEDGER_UNSUPPORTED")) return tLoginErr("ledger_unsupported");
     if (upper.includes("ERR_SOROBAN_NO_COMPAT")) return tLoginErr("soroban_no_compat");
     if (upper.includes("ERR_CHAINLINK_NOT_READY")) return tLoginErr("chainlink_not_ready");
-    // Erros de Horizon/saldo
+    // Horizon/balance errors
     if (msg.toLowerCase().includes("horizon")) return t("error_balances");
-    // Genérico
+    // Generic fallback
     return tLoginErr("wallet_connect_fail");
   }, [error, t, tLoginErr]);
 
@@ -50,13 +50,13 @@ export default function WalletPanel() {
   }, [activeType]);
 
   useEffect(() => {
-    // Atualiza saldo periodicamente quando conectado
+    // Refresh balance periodically when connected
     if (!connected) return;
     
-    // Atualização inicial imediata
+    // Immediate initial refresh
     refreshBalance();
     
-    // Intervalo para atualizações periódicas
+    // Interval for periodic refreshes
     const id = setInterval(() => {
       refreshBalance();
     }, 15000);
@@ -65,13 +65,13 @@ export default function WalletPanel() {
 
   useEffect(() => {
     setMounted(true);
-    // Recalcula carteiras disponíveis quando o componente monta
+    // Recomputes available wallets on mount
     refreshAvailable();
     
-    // Listener para conexões de carteira
+    // Listener for wallet connections
     const onWalletConnected = (event: CustomEvent) => {
       console.log('[WalletPanel] Wallet connected event received:', event.detail);
-      // Força atualização imediata do saldo
+      // Force an immediate balance refresh
       setTimeout(() => {
         refreshBalance();
       }, 500);
@@ -81,7 +81,7 @@ export default function WalletPanel() {
       console.log('[WalletPanel] Wallet disconnected event received:', event.detail);
     };
     
-    // E sempre que a aba voltar a ficar visível (após instalar ou habilitar extensões)
+    // Re-check when the tab becomes visible again (after installing/enabling extensions)
     const onVis = () => {
       if (document.visibilityState === "visible") refreshAvailable();
     };
@@ -100,7 +100,7 @@ export default function WalletPanel() {
     };
   }, [refreshAvailable, refreshBalance]);
 
-  // Removido: não auto-selecionar carteira. Usuário deve escolher explicitamente.
+  // Removed: do not auto-select a wallet. User must choose explicitly.
 
   async function onTestSoroban() {
     try {
@@ -176,7 +176,7 @@ export default function WalletPanel() {
                 onClick={async () => {
                   if (typeof console !== 'undefined') console.log('[wallet] Manual recheck triggered');
                   refreshAvailable();
-                  // Força uma detecção adicional após um delay
+                  // Force an additional detection after a short delay
                   const { forceWalletDetection } = await import("../lib/wallets/connectors");
                   await forceWalletDetection();
                   refreshAvailable();
@@ -187,7 +187,7 @@ export default function WalletPanel() {
                 {t("recheck")}
               </button>
             )}
-            {/* Aviso MetaMask removido */}
+            {/* MetaMask warning removed */}
             {connected ? (
               <button onClick={disconnect} className="rounded-full bg-primary text-slate-900 hover:bg-primary-600 px-4 py-2 text-sm font-medium w-full sm:w-auto">
                 {t("disconnect")}

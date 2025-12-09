@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 export default function Breadcrumbs() {
   const t = useTranslations("routes");
   const pathname = usePathname();
-  // Divide o caminho e remove primeiro segmento se for um locale
+  // Split the path and remove first segment if it's a locale
   const rawSegments = (pathname || "/").split("/").filter(Boolean);
   const segments = rawSegments[0] === "en" || rawSegments[0] === "pt" ? rawSegments.slice(1) : rawSegments;
 
@@ -15,7 +15,7 @@ export default function Breadcrumbs() {
 
   function labelFromSegment(seg: string) {
     const key = !seg ? "home" : seg.toLowerCase();
-    // Tenta traduzir via next-intl; se não houver chave, faz fallback para capitalização
+    // Try to translate via next-intl; if no key, fallback to capitalization
     try {
       const translated = t(key) as string;
       if (translated) return String(translated);

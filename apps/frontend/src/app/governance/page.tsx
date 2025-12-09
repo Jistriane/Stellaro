@@ -12,8 +12,8 @@ export default function GovernancePage() {
   const tc = useTranslations("common");
   const [governance, setGovernance] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
-  // Ativa atualizações em tempo real quando carteira conecta
+
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function GovernancePage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Carregando...</div>
+          <div className="text-slate-400">Loading...</div>
         </div>
       </div>
     );
@@ -38,40 +38,40 @@ export default function GovernancePage() {
 
   const ids = getContractIds();
 
-  // Propostas abertas (mock)
+  // Open proposals (mock)
   const openProposals = [
     {
       id: "P-001",
-      title: "Alteração da taxa de mint STLT-BRL para 0,05%",
-      status: "Aberta",
+      title: "Change STLT-BRL mint fee to 0.05%",
+      status: "Open",
       endsAt: "2025-08-22",
-      remaining: "2 dias",
-      badge: "nova",
+      remaining: "2 days",
+      badge: "new",
       votes: { yes: 65, no: 35 },
       author: governance?.admin || "GAY3LAQYJDER5XXZLM3XFCZNFEZAY26G3JXZV7GAXF7IDEQR3DKDK2TJ",
     },
     {
       id: "P-002",
-      title: "Ajuste no limite de Pix para R$ 50k",
-      status: "Aberta",
+      title: "Adjust Pix limit to R$ 50k",
+      status: "Open",
       endsAt: "2025-08-25",
-      remaining: "5 dias",
-      badge: "em destaque",
+      remaining: "5 days",
+      badge: "highlighted",
       votes: { yes: 52, no: 48 },
       author: governance?.admin || "GAY3LAQYJDER5XXZLM3XFCZNFEZAY26G3JXZV7GAXF7IDEQR3DKDK2TJ",
     },
   ];
 
-  // Seu voto (mock)
+  // Your vote (mock)
   const userVotes = {
-    "P-001": "Sim", // já votou
-  } as Record<string, "Sim" | "Não" | undefined>;
+    "P-001": "Yes", // already voted
+  } as Record<string, "Yes" | "No" | undefined>;
 
-  // Histórico de propostas (mock)
+  // Proposal history (mock)
   const pastProposals = [
-    { id: "P-990", title: "Limite de slippage no swap", status: "Aprovada", date: "2025-07-15", voters: 1023 },
-    { id: "P-991", title: "Redução de taxa de burn", status: "Rejeitada", date: "2025-07-01", voters: 876 },
-    { id: "P-992", title: "Parceria com Provedor de Oracle", status: "Encerrada", date: "2025-06-20", voters: 934 },
+    { id: "P-990", title: "Slippage limit in swap", status: "Approved", date: "2025-07-15", voters: 1023 },
+    { id: "P-991", title: "Burn fee reduction", status: "Rejected", date: "2025-07-01", voters: 876 },
+    { id: "P-992", title: "Partnership with Oracle Provider", status: "Closed", date: "2025-06-20", voters: 934 },
   ];
 
   const explorerUrl = ids.GOVERNANCE_CONTRACT_ID
@@ -80,13 +80,13 @@ export default function GovernancePage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
         <div className="text-xs text-slate-500">{t("header.updated_now")}</div>
       </div>
 
-      {/* Resumo/Admin */}
+      {/* Summary/Admin */}
       <Card>
         <CardHeader>
           <CardTitle>{t("summary.title")}</CardTitle>
@@ -115,7 +115,7 @@ export default function GovernancePage() {
         </CardContent>
       </Card>
 
-      {/* Propostas Abertas */}
+      {/* Open proposals */}
       <Card>
         <CardHeader>
           <CardTitle>{t("open.title")}</CardTitle>
@@ -172,7 +172,7 @@ export default function GovernancePage() {
         </CardContent>
       </Card>
 
-      {/* Histórico de Propostas */}
+      {/* Proposal history */}
       <Card>
         <CardHeader>
           <CardTitle>{t("history.title")}</CardTitle>
@@ -193,7 +193,7 @@ export default function GovernancePage() {
         </CardContent>
       </Card>
 
-      {/* Educação, Regras e Transparência */}
+      {/* Education, rules and transparency */}
       <Card>
         <CardHeader>
           <CardTitle>{t("education.title")}</CardTitle>
@@ -213,7 +213,7 @@ export default function GovernancePage() {
         </CardContent>
       </Card>
 
-      {/* Alertas/Comunicados */}
+      {/* Alerts/Announcements */}
       <Card>
         <CardHeader>
           <CardTitle>{t("notices.title")}</CardTitle>

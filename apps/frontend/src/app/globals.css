@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Base (light) */ /* off-white da brand */ /* quase preto sobre slate */
+  /* Base (light) */ /* off-white from the brand */ /* near-black over slate */
 
   /* Brand palette */
   --brand-slate-900: #0e1218;
@@ -11,15 +11,15 @@
   --brand-slate-600: #3b4d5c;
   --brand-slate-500: #5b7284;
 
-  --brand-primary: #5fa4e0; /* Azul do logo, mais suave */
+  --brand-primary: #5fa4e0; /* Softer logo blue */
   --brand-primary-600: #4a91d1;
   --brand-primary-700: #3a7db8;
 
-  --brand-accent-gold: #f0d4a8; /* Amarelo/dourado da estrela do logo */
+  --brand-accent-gold: #f0d4a8; /* Logo star yellow/gold */
 
-  --brand-accent-yellow: #fde047; /* amarelo vibrante */
-  --brand-accent-teal: #22d3ee;   /* ciano vibrante */
-  --brand-accent-lilac: #c4b5fd;  /* lilás vibrante */
+  --brand-accent-yellow: #fde047; /* vibrant yellow */
+  --brand-accent-teal: #22d3ee;   /* vibrant cyan */
+  --brand-accent-lilac: #c4b5fd;  /* vibrant lilac */
 
   /* Tokens base */
   --radius: 0.625rem;
@@ -29,7 +29,7 @@
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  /* Mapeamento para brand */
+  /* Mapping to brand */
   --primary: 214 95% 93%;
   --primary-foreground: 222.2 84% 4.9%;
   --secondary: 210 40% 98%;

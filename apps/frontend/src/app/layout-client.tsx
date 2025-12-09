@@ -4,7 +4,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import LanguageToggle from "@/components/LanguageToggle";
 import Toasts from "@/components/Toasts";
 
 interface LayoutClientProps {
@@ -19,7 +18,7 @@ export function LayoutClient({ children, locale }: LayoutClientProps) {
     setMounted(true);
   }, []);
 
-  // Durante SSR e pré-renderização, renderizar apenas children sem layout
+  // During SSR and pre-rendering, render only children without layout
   if (!mounted) {
     return <>{children}</>;
   }
@@ -36,17 +35,6 @@ export function LayoutClient({ children, locale }: LayoutClientProps) {
             <Suspense fallback={null}>
               <Breadcrumbs />
             </Suspense>
-            <div className="flex items-center gap-3">
-              <span
-                className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-slate-700 text-slate-400"
-                title="Locale atual detectado no servidor"
-              >
-                {locale}
-              </span>
-              <Suspense fallback={null}>
-                <LanguageToggle />
-              </Suspense>
-            </div>
           </div>
         </div>
         <div className="px-4 py-3">

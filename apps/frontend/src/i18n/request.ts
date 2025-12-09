@@ -1,15 +1,11 @@
 import {getRequestConfig} from 'next-intl/server';
-// Unificar fonte das mensagens: usar os arquivos completos em apps/frontend/messages/
-// para garantir que chaves como routes, events, settings etc. existam em ambas línguas.
-import pt from '../../messages/pt.json';
+// Use complete message files from apps/frontend/messages/
 import en from '../../messages/en.json';
 
 export default getRequestConfig(async ({locale}) => {
-  const lc = (locale === 'en' ? 'en' : 'pt') as 'en' | 'pt';
-  const messages = lc === 'en' ? en : pt;
-
+  // Force English always
   return {
-    locale: lc,
-    messages,
+    locale: 'en',
+    messages: en,
   };
 });

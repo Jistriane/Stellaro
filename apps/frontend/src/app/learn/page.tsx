@@ -35,7 +35,7 @@ interface Tutorial {
   title: string;
   description: string;
   duration: string;
-  difficulty: "Fácil" | "Médio" | "Difícil";
+  difficulty: "Easy" | "Medium" | "Hard";
   category: string;
   thumbnail: string;
 }
@@ -47,11 +47,11 @@ export default function LearnPage() {
   const courses: Course[] = [
     {
       id: "course-1",
-      title: "Introdução ao Stellaro",
+      title: "Introduction to Stellaro",
       description:
-        "Aprenda os fundamentos da plataforma Stellaro e como começar a usar.",
-      instructor: "Equipe Stellaro",
-      duration: "2 horas",
+        "Learn the fundamentals of the Stellaro platform and how to get started.",
+      instructor: "Stellaro Team",
+      duration: "2 hours",
       level: "beginner",
       icon: <BookOpen className="w-6 h-6" />,
       rating: 4.9,
@@ -60,11 +60,11 @@ export default function LearnPage() {
     },
     {
       id: "course-2",
-      title: "Trading DeFi Avançado",
+      title: "Advanced DeFi Trading",
       description:
-        "Estratégias de trading avançadas, análise técnica e gerenciamento de risco.",
-      instructor: "Dr. Analista Crypto",
-      duration: "5 horas",
+        "Advanced trading strategies, technical analysis, and risk management.",
+      instructor: "Dr. Crypto Analyst",
+      duration: "5 hours",
       level: "advanced",
       icon: <TrendingUp className="w-6 h-6" />,
       rating: 4.8,
@@ -73,11 +73,11 @@ export default function LearnPage() {
     },
     {
       id: "course-3",
-      title: "Segurança em Criptomoedas",
+      title: "Crypto Security",
       description:
-        "Proteja seus ativos com melhores práticas de segurança e gerenciamento de chaves.",
-      instructor: "Prof. Segurança",
-      duration: "3 horas",
+        "Protect your assets with best security practices and key management.",
+      instructor: "Security Professor",
+      duration: "3 hours",
       level: "beginner",
       icon: <Zap className="w-6 h-6" />,
       rating: 4.9,
@@ -86,11 +86,11 @@ export default function LearnPage() {
     },
     {
       id: "course-4",
-      title: "Gestão de Portfólio DeFi",
+      title: "DeFi Portfolio Management",
       description:
-        "Como construir e gerenciar um portfólio diversificado em DeFi.",
-      instructor: "Gestor de Carteiras",
-      duration: "4 horas",
+        "How to build and manage a diversified DeFi portfolio.",
+      instructor: "Portfolio Manager",
+      duration: "4 hours",
       level: "intermediate",
       icon: <Award className="w-6 h-6" />,
       rating: 4.7,
@@ -99,11 +99,11 @@ export default function LearnPage() {
     },
     {
       id: "course-5",
-      title: "Empréstimos e Colateral",
+      title: "Loans and Collateral",
       description:
-        "Entenda como funcionam empréstimos, colateral e liquidação em DeFi.",
-      instructor: "Especialista Financeiro",
-      duration: "3.5 horas",
+        "Understand how loans, collateral, and liquidation work in DeFi.",
+      instructor: "Financial Specialist",
+      duration: "3.5 hours",
       level: "intermediate",
       icon: <BookOpen className="w-6 h-6" />,
       rating: 4.8,
@@ -112,11 +112,11 @@ export default function LearnPage() {
     },
     {
       id: "course-6",
-      title: "Governança e DAO",
+      title: "Governance and DAOs",
       description:
-        "Participe da governança, entenda votação e propostas em DAOs.",
-      instructor: "Especialista DAO",
-      duration: "2.5 horas",
+        "Participate in governance, understand voting and proposals in DAOs.",
+      instructor: "DAO Specialist",
+      duration: "2.5 hours",
       level: "beginner",
       icon: <Users className="w-6 h-6" />,
       rating: 4.6,
@@ -128,56 +128,56 @@ export default function LearnPage() {
   const tutorials: Tutorial[] = [
     {
       id: "tut-1",
-      title: "Como Conectar Sua Carteira",
-      description: "Passo a passo para conectar diferentes carteiras ao Stellaro",
+      title: "How to Connect Your Wallet",
+      description: "Step-by-step guide to connect different wallets to Stellaro",
       duration: "5 min",
-      difficulty: "Fácil",
+      difficulty: "Easy",
       category: "Getting Started",
       thumbnail: "🔗",
     },
     {
       id: "tut-2",
-      title: "Sua Primeira Transação",
-      description: "Realize sua primeira transação de forma segura",
+      title: "Your First Transaction",
+      description: "Make your first transaction securely",
       duration: "8 min",
-      difficulty: "Fácil",
+      difficulty: "Easy",
       category: "Getting Started",
       thumbnail: "💳",
     },
     {
       id: "tut-3",
-      title: "Configurar Segurança 2FA",
-      description: "Proteja sua conta com autenticação de dois fatores",
+      title: "Set Up 2FA Security",
+      description: "Protect your account with two-factor authentication",
       duration: "6 min",
-      difficulty: "Fácil",
-      category: "Segurança",
+      difficulty: "Easy",
+      category: "Security",
       thumbnail: "🔐",
     },
     {
       id: "tut-4",
-      title: "Estratégia de Yield Farming",
-      description: "Maximize seus rendimentos com yield farming",
+      title: "Yield Farming Strategy",
+      description: "Maximize your returns with yield farming",
       duration: "15 min",
-      difficulty: "Médio",
+      difficulty: "Medium",
       category: "Trading",
       thumbnail: "🌾",
     },
     {
       id: "tut-5",
-      title: "Liquidez em Pools",
-      description: "Como fornecer liquidez e ganhar comissões",
+      title: "Liquidity in Pools",
+      description: "How to provide liquidity and earn fees",
       duration: "12 min",
-      difficulty: "Médio",
+      difficulty: "Medium",
       category: "Trading",
       thumbnail: "💧",
     },
     {
       id: "tut-6",
-      title: "Estratégia Avançada de Colateral",
-      description: "Técnicas avançadas para otimizar seu colateral",
+      title: "Advanced Collateral Strategy",
+      description: "Advanced techniques to optimize your collateral",
       duration: "20 min",
-      difficulty: "Difícil",
-      category: "Empréstimos",
+      difficulty: "Hard",
+      category: "Loans",
       thumbnail: "⚙️",
     },
   ];
@@ -202,11 +202,11 @@ export default function LearnPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Fácil":
+      case "Easy":
         return "bg-green-500/20 text-green-700";
-      case "Médio":
+      case "Medium":
         return "bg-yellow-500/20 text-yellow-700";
-      case "Difícil":
+      case "Hard":
         return "bg-red-500/20 text-red-700";
       default:
         return "";
@@ -243,10 +243,10 @@ export default function LearnPage() {
                       }`}
                     >
                       {course.level === "beginner"
-                        ? "Iniciante"
+                        ? "Beginner"
                         : course.level === "intermediate"
-                          ? "Intermediário"
-                          : "Avançado"}
+                          ? "Intermediate"
+                          : "Advanced"}
                     </div>
                   </div>
                   <CardTitle className="text-lg">{course.title}</CardTitle>
@@ -268,13 +268,13 @@ export default function LearnPage() {
                         <Clock className="w-3 h-3" />
                         {course.duration}
                       </span>
-                      <span>{course.lessons} aulas</span>
+                      <span>{course.lessons} lessons</span>
                     </div>
                     <div className="text-muted-foreground">
-                      {course.students.toLocaleString("pt-BR")} alunos
+                      {course.students.toLocaleString("en-US")} students
                     </div>
                   </div>
-                  <Button className="w-full">Começar Curso</Button>
+                  <Button className="w-full">Start Course</Button>
                 </CardContent>
               </Card>
             ))}
@@ -295,14 +295,14 @@ export default function LearnPage() {
               onClick={() => setActiveCategory("all")}
               size="sm"
             >
-              Tudo
+              All
             </Button>
             <Button
               variant={activeCategory === "Getting Started" ? "default" : "outline"}
               onClick={() => setActiveCategory("Getting Started")}
               size="sm"
             >
-              Começando
+              Getting Started
             </Button>
             <Button
               variant={activeCategory === "Trading" ? "default" : "outline"}
@@ -312,18 +312,18 @@ export default function LearnPage() {
               Trading
             </Button>
             <Button
-              variant={activeCategory === "Segurança" ? "default" : "outline"}
-              onClick={() => setActiveCategory("Segurança")}
+              variant={activeCategory === "Security" ? "default" : "outline"}
+              onClick={() => setActiveCategory("Security")}
               size="sm"
             >
-              Segurança
+              Security
             </Button>
             <Button
-              variant={activeCategory === "Empréstimos" ? "default" : "outline"}
-              onClick={() => setActiveCategory("Empréstimos")}
+              variant={activeCategory === "Loans" ? "default" : "outline"}
+              onClick={() => setActiveCategory("Loans")}
               size="sm"
             >
-              Empréstimos
+              Loans
             </Button>
           </div>
 
@@ -353,7 +353,7 @@ export default function LearnPage() {
                         </span>
                       </div>
                       <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-600">
-                        Ver Vídeo <ArrowRight className="w-3 h-3 ml-1" />
+                        Watch Video <ArrowRight className="w-3 h-3 ml-1" />
                       </Button>
                     </div>
                   </div>
@@ -369,15 +369,15 @@ export default function LearnPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Video className="w-5 h-5" />
-                Webinários
+                Webinars
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Assista webinários ao vivo com especialistas da comunidade
+                Watch live webinars with community specialists
               </p>
               <Button variant="outline" size="sm">
-                Ver Webinários
+                View Webinars
               </Button>
             </CardContent>
           </Card>
@@ -386,15 +386,15 @@ export default function LearnPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <BookOpen className="w-5 h-5" />
-                Artigos
+                Articles
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Leia artigos aprofundados sobre DeFi e Stellaro
+                Read in-depth articles about DeFi and Stellaro
               </p>
               <Button variant="outline" size="sm">
-                Ler Artigos
+                Read Articles
               </Button>
             </CardContent>
           </Card>
@@ -403,15 +403,15 @@ export default function LearnPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Users className="w-5 h-5" />
-                Comunidade
+                Community
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Conecte-se com outros usuários e compartilhe experiências
+                Connect with other users and share experiences
               </p>
               <Button variant="outline" size="sm">
-                Entrar na Comunidade
+                Join the Community
               </Button>
             </CardContent>
           </Card>

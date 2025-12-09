@@ -39,21 +39,21 @@ export default function DocsPage() {
       articles: [
         {
           id: "intro",
-          title: "O que é Stellaro?",
+          title: "What is Stellaro?",
           preview:
-            "Stellaro é uma infraestrutura de crédito DeFi na rede Stellar com ofertas de financiamento, gestão de risco e operação de carteiras tokenizadas.",
+            "Stellaro is a DeFi credit infrastructure on the Stellar network with financing offers, risk management, and tokenized wallet operations.",
         },
         {
           id: "setup",
-          title: "Configurar Sua Conta",
+          title: "Set Up Your Account",
           preview:
-            "Aprenda como criar uma conta, conectar sua carteira e completar a verificação KYC.",
+            "Learn how to create an account, connect your wallet, and complete KYC verification.",
         },
         {
           id: "dashboard",
-          title: "Entendendo o Dashboard",
+          title: "Understanding the Dashboard",
           preview:
-            "Guia completo sobre como navegador e usar o painel principal da aplicação.",
+            "Complete guide on how to navigate and use the application's main dashboard.",
         },
       ],
     },
@@ -61,22 +61,22 @@ export default function DocsPage() {
       id: "wallets",
       icon: <Wallet className="w-5 h-5" />,
       title: t("sections.wallets"),
-      description: "Gerencie suas carteiras e ativos digitais",
+      description: "Manage your wallets and digital assets",
       articles: [
         {
           id: "connect",
-          title: "Conectar Carteira",
-          preview: "Como conectar diferentes tipos de carteiras ao Stellaro.",
+          title: "Connect Wallet",
+          preview: "How to connect different wallet types to Stellaro.",
         },
         {
           id: "assets",
-          title: "Gerenciar Ativos",
-          preview: "Adicione, remova e rastreie seus ativos digitais.",
+          title: "Manage Assets",
+          preview: "Add, remove, and track your digital assets.",
         },
         {
           id: "transactions",
-          title: "Histórico de Transações",
-          preview: "Como visualizar e exportar seu histórico de transações.",
+          title: "Transaction History",
+          preview: "How to view and export your transaction history.",
         },
       ],
     },
@@ -84,23 +84,23 @@ export default function DocsPage() {
       id: "loans",
       icon: <DollarSign className="w-5 h-5" />,
       title: t("sections.loans"),
-      description: "Solicite empréstimos e gerencie colateral",
+      description: "Request loans and manage collateral",
       articles: [
         {
           id: "request",
-          title: "Solicitar Empréstimo",
+          title: "Request a Loan",
           preview:
-            "Passo a passo para solicitar um empréstimo com garantia de colateral.",
+            "Step-by-step guide to request a loan with collateral.",
         },
         {
           id: "collateral",
-          title: "Gerenciar Colateral",
-          preview: "Como adicionar, retirar e monitorar seu colateral.",
+          title: "Manage Collateral",
+          preview: "How to add, withdraw, and monitor your collateral.",
         },
         {
           id: "repayment",
-          title: "Pagamento de Empréstimos",
-          preview: "Calendário de pagamento e opções de reembolso.",
+          title: "Loan Repayments",
+          preview: "Payment schedule and repayment options.",
         },
       ],
     },
@@ -108,23 +108,23 @@ export default function DocsPage() {
       id: "trading",
       icon: <TrendingUp className="w-5 h-5" />,
       title: t("sections.trading"),
-      description: "Faça trading e execute estratégias de liquidez",
+      description: "Trade and execute liquidity strategies",
       articles: [
         {
           id: "spot",
-          title: "Trading Spot",
-          preview: "Realize operações de compra e venda de ativos.",
+          title: "Spot Trading",
+          preview: "Execute buy and sell orders.",
         },
         {
           id: "pools",
-          title: "Pools de Liquidez",
+          title: "Liquidity Pools",
           preview:
-            "Como fornecer liquidez e ganhar comissões nas pools DeFi.",
+            "How to provide liquidity and earn fees in DeFi pools.",
         },
         {
           id: "orders",
-          title: "Gerenciar Ordens",
-          preview: "Crie, monitore e cancele suas ordens de trading.",
+          title: "Manage Orders",
+          preview: "Create, monitor, and cancel your trading orders.",
         },
       ],
     },
@@ -132,24 +132,24 @@ export default function DocsPage() {
       id: "governance",
       icon: <Vote className="w-5 h-5" />,
       title: t("sections.governance"),
-      description: "Participe da governança do protocolo",
+      description: "Participate in protocol governance",
       articles: [
         {
           id: "voting",
-          title: "Como Votar",
+          title: "How to Vote",
           preview:
-            "Participe das decisões da DAO votando em propostas importantes.",
+            "Take part in DAO decisions by voting on key proposals.",
         },
         {
           id: "proposals",
-          title: "Criar Propostas",
+          title: "Create Proposals",
           preview:
-            "Sugestões para melhorias e mudanças no protocolo Stellaro.",
+            "Suggestions for improvements and changes to the Stellaro protocol.",
         },
         {
           id: "rewards",
-          title: "Recompensas de Governança",
-          preview: "Ganhe tokens por participar ativamente da governança.",
+          title: "Governance Rewards",
+          preview: "Earn tokens by actively participating in governance.",
         },
       ],
     },
@@ -157,24 +157,24 @@ export default function DocsPage() {
       id: "security",
       icon: <Lock className="w-5 h-5" />,
       title: t("sections.security"),
-      description: "Proteja sua conta e seus ativos",
+      description: "Protect your account and assets",
       articles: [
         {
           id: "2fa",
-          title: "Autenticação de Dois Fatores",
-          preview: "Configure 2FA para proteger sua conta com um nível extra.",
+          title: "Two-Factor Authentication",
+          preview: "Set up 2FA to protect your account with an extra layer.",
         },
         {
           id: "kyc",
-          title: "Verificação KYC",
+          title: "KYC Verification",
           preview:
-            "Como completar a verificação de identidade Know Your Customer.",
+            "How to complete Know Your Customer identity verification.",
         },
         {
           id: "best_practices",
-          title: "Melhores Práticas de Segurança",
+          title: "Security Best Practices",
           preview:
-            "Dicas essenciais para manter seus ativos seguros no Stellaro.",
+            "Essential tips to keep your assets safe on Stellaro.",
         },
       ],
     },
@@ -261,7 +261,7 @@ export default function DocsPage() {
                         size="sm"
                         className="text-blue-500 hover:text-blue-600"
                       >
-                        Ler Mais →
+                        Read More →
                       </Button>
                     </CardContent>
                   </Card>
@@ -292,7 +292,7 @@ export default function DocsPage() {
                 {t("api.description")}
               </p>
               <Button variant="outline" size="sm">
-                Ver API Docs
+                View API Docs
               </Button>
             </CardContent>
           </Card>
@@ -309,7 +309,7 @@ export default function DocsPage() {
                 {t("faq.description")}
               </p>
               <Button variant="outline" size="sm">
-                Acessar FAQ
+                Open FAQ
               </Button>
             </CardContent>
           </Card>
@@ -318,15 +318,15 @@ export default function DocsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Zap className="w-4 h-4" />
-                Guias Rápidos
+                Quick Guides
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Tutoriais passo a passo para tarefas comuns
+                Step-by-step tutorials for common tasks
               </p>
               <Button variant="outline" size="sm">
-                Explorar
+                Explore
               </Button>
             </CardContent>
           </Card>
@@ -340,10 +340,10 @@ export default function DocsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Artigos e atualizações sobre Stellaro
+                Articles and updates about Stellaro
               </p>
               <Button variant="outline" size="sm">
-                Ler Blog
+                Read Blog
               </Button>
             </CardContent>
           </Card>

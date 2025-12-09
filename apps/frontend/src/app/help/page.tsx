@@ -9,7 +9,7 @@ type Category = { key: string; title: string; qas: QA[] };
 
 export default function HelpPage() {
   const t = useTranslations("help");
-  // Busca
+  // Search
   const [query, setQuery] = useState("");
   const topQuestions = useMemo(
     () => [
@@ -20,9 +20,9 @@ export default function HelpPage() {
     [t]
   );
 
-  // Mock de categorias e perguntas
+  // Mock categories and questions from translations
   const categories: Category[] = useMemo(() => {
-    // Função para buscar perguntas e respostas direto do JSON
+    // Function to fetch questions and answers directly from JSON
     const getQas = (categoryKey: string) => {
       try {
         const categoryData = (t.raw(`categories.${categoryKey}`) as any);
@@ -66,7 +66,7 @@ export default function HelpPage() {
     ];
   }, [t]);
 
-  // Feedback por pergunta
+  // Per-question feedback
   const [feedback, setFeedback] = useState<Record<string, "up" | "down" | undefined>>({});
   const setQFeedback = (key: string, dir: "up" | "down") => setFeedback((f) => ({ ...f, [key]: dir }));
 
@@ -81,7 +81,7 @@ export default function HelpPage() {
       .filter((c) => c.qas.length > 0);
   }, [categories, query]);
 
-  // Status dos serviços (mock)
+  // Service status (mock)
   const status = { pix: "OK", cards: "OK", platform: "OK" } as const;
 
   return (
@@ -91,7 +91,7 @@ export default function HelpPage() {
         <div className="text-xs text-slate-500">{t("subtitle")}</div>
       </div>
 
-      {/* Busca e top perguntas */}
+      {/* Search and top questions */}
       <Card>
         <CardHeader>
           <CardTitle>{t("search_title")}</CardTitle>
@@ -114,20 +114,20 @@ export default function HelpPage() {
         </CardContent>
       </Card>
 
-      {/* Status dos serviços */}
+      {/* Service status */}
       <Card>
         <CardHeader>
           <CardTitle>{t("status_title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3 text-sm">
           <span className="px-2 py-1 rounded bg-emerald-900/40 text-emerald-300">Pix: {status.pix}</span>
-          <span className="px-2 py-1 rounded bg-emerald-900/40 text-emerald-300">Cartões: {status.cards}</span>
-          <span className="px-2 py-1 rounded bg-emerald-900/40 text-emerald-300">Plataforma: {status.platform}</span>
+          <span className="px-2 py-1 rounded bg-emerald-900/40 text-emerald-300">Cards: {status.cards}</span>
+          <span className="px-2 py-1 rounded bg-emerald-900/40 text-emerald-300">Platform: {status.platform}</span>
           <div className="text-xs text-slate-500">{t("status_incidents")}</div>
         </CardContent>
       </Card>
 
-      {/* FAQ por categoria (accordions) */}
+      {/* FAQ by category (accordions) */}
       <Card>
         <CardHeader>
           <CardTitle>{t("faq_title")}</CardTitle>
@@ -171,7 +171,7 @@ export default function HelpPage() {
         </CardContent>
       </Card>
 
-      {/* Tutoriais e vídeos */}
+      {/* Tutorials and videos */}
       <Card>
         <CardHeader>
           <CardTitle>{t("tutorials_title")}</CardTitle>
@@ -199,7 +199,7 @@ export default function HelpPage() {
         </CardContent>
       </Card>
 
-      {/* Dicas de segurança */}
+      {/* Security tips */}
       <Card>
         <CardHeader>
           <CardTitle>{t("security_title")}</CardTitle>
@@ -215,7 +215,7 @@ export default function HelpPage() {
         </CardContent>
       </Card>
 
-      {/* Acesso rápido */}
+      {/* Quick access */}
       <Card>
         <CardHeader>
           <CardTitle>{t("quick_access_title")}</CardTitle>

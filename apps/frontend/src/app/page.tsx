@@ -21,7 +21,7 @@ export default function Home() {
 
         <Card className="w-full border-slate-700/60 bg-slate-950/50 backdrop-blur shadow-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-slate-100">Mercado em tempo real</CardTitle>
+            <CardTitle className="text-lg text-slate-100">Real-time Market</CardTitle>
           </CardHeader>
           <CardContent>
             <TradingView symbols={[["XLM", "USD"], ["BTC", "USD"]]} height={480} theme="dark" locale={lc} />

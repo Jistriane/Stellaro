@@ -13,10 +13,10 @@ export default function Toasts() {
 
   useEffect(() => {
     if (!events.length) return;
-    // Mostra o mais recente
+    // Show the most recent
     const [latest] = events;
     setVisible((v) => [latest, ...v].slice(0, 3));
-    // Limpa fila global (opcional para evitar duplicação)
+    // Clear global queue (optional to avoid duplication)
     clear();
   }, [events, clear]);
 

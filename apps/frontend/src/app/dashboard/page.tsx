@@ -15,8 +15,8 @@ import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
-  
-  // Ativa atualizações em tempo real quando carteira conecta
+
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   const [data, setData] = useState<{
@@ -48,7 +48,7 @@ export default function DashboardPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Carregando...</div>
+          <div className="text-slate-400">Loading...</div>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ export default function DashboardPage() {
   const { loans, portfolio, gov, balances } = data;
   const ids = getContractIds();
 
-  // Mocks locais para UI (i18n)
+  // Local mocks for UI (i18n)
   const recentActivities = [
     {
       date: "2025-08-20",
@@ -97,7 +97,7 @@ export default function DashboardPage() {
     { kind: "risk", text: t("notifications.items.review_collateral") },
   ];
 
-  // Conversões estimadas (mock)
+  // Estimated conversions (mock)
   const stlt = Number.parseFloat(balances.stlt || "0");
   const xlm = Number.parseFloat(balances.xlm || "0");
   const rateBRL = 1.0; // 1 STLT ~= 1 BRL (mock)
@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Branding + Saudação */}
+      {/* Branding + Greeting */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-primary font-bold">S</div>
@@ -124,15 +124,15 @@ export default function DashboardPage() {
         <div className="text-xs text-slate-500">{t("greeting.updated_now")}</div>
       </div>
 
-      {/* Saldos */}
+      {/* Balances */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>STLT-BRL</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">R$ {stltBRL.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}</div>
-            <div className="text-xs text-slate-500">{t("balances.estimated_stlt_balance", { amount: stlt.toLocaleString("pt-BR", { maximumFractionDigits: 4 }) })}</div>
+            <div className="text-2xl font-semibold">R$ {stltBRL.toLocaleString("en-US", { maximumFractionDigits: 2 })}</div>
+            <div className="text-xs text-slate-500">{t("balances.estimated_stlt_balance", { amount: stlt.toLocaleString("en-US", { maximumFractionDigits: 4 }) })}</div>
           </CardContent>
         </Card>
         <Card>
@@ -155,7 +155,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Atalhos */}
+      {/* Quick access */}
       <Card>
         <CardHeader>
           <CardTitle>{t("quick_access.title")}</CardTitle>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Atividades Recentes + Notificações */}
+      {/* Recent activities + Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
@@ -214,7 +214,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Empréstimos */}
+      {/* Loans */}
       <Card>
         <CardHeader>
           <CardTitle>{t("loans.title")}</CardTitle>
@@ -264,7 +264,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Governança */}
+      {/* Governance */}
       <Card>
         <CardHeader>
           <CardTitle>{t("governance.title")}</CardTitle>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Perfil */}
+      {/* Profile */}
       <Card>
         <CardHeader>
           <CardTitle>{t("profile.title")}</CardTitle>

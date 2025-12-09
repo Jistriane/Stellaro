@@ -3,14 +3,20 @@ import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import axios from 'axios';
+
+jest.mock('axios');
 
 describe('NotificationService', () => {
   let service;
   let prisma;
   let redis;
   let configService;
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
 
   beforeAll(async () => {
+    mockedAxios.post.mockResolvedValue({ status: 200 });
+
     prisma = {
       notification: {
         create: jest.fn().mockResolvedValue({ id: '1', userId: 'U1', message: 'test' }),

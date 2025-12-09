@@ -1,11 +1,11 @@
 /**
  * Dashboard Component - Stellaro
  * 
- * Exibe metricas em tempo real:
- * - TVL total (via Reflector)
+ * Shows real-time metrics:
+ * - Total TVL (via Reflector)
  * - Portfolio valuation
- * - Gráficos de APY
- * - Alertas de anomalias
+ * - APY charts
+ * - Anomaly alerts
  */
 
 'use client';
@@ -26,11 +26,11 @@ interface DashboardMetric {
 }
 
 export function ReflectorDashboard() {
-  // Assets monitorados
+  // Monitored assets
   const trackedAssets = ['USDC', 'USDT', 'BTC', 'ETH', 'XLM'];
   const { prices, loading: pricesLoading, error: pricesError } = useReflectorPrices(trackedAssets);
 
-  // Portfolio do usuário (exemplo - seria vindo de estado/BD real)
+  // User portfolio (mock - would come from real state/db)
   const userPortfolio = new Map<string, number>([
     ['USDC', 1000],
     ['XLM', 500],
@@ -38,48 +38,48 @@ export function ReflectorDashboard() {
   ]);
   const { valuation, loading: valuationLoading, error: valuationError } = usePortfolioValuation(userPortfolio);
 
-  // Detecção de anomalias
+  // Anomaly detection
   const { anomaly: btcAnomaly, loading: btcAnomalyLoading } = usePriceAnomaly('BTC', 15);
   const { anomaly: ethAnomaly } = usePriceAnomaly('ETH', 15);
 
-  // Estado local
+  // Local state
   const [selectedAsset, setSelectedAsset] = useState<string>('USDC');
 
-  // Calcula TVL total
-  const totalTvl = Array.from(prices.values()).reduce((sum, price) => sum + price.price * 100, 0); // Multiplicador estimado
+  // Calculate total TVL (rough multiplier)
+  const totalTvl = Array.from(prices.values()).reduce((sum, price) => sum + price.price * 100, 0);
 
-  // Dados para gráfico de APY (exemplo estático - seria dinâmico)
+  // APY chart data (static example - would be dynamic)
   const apyChartData = [
-    { name: 'Semana 1', apy: 8.5 },
-    { name: 'Semana 2', apy: 8.7 },
-    { name: 'Semana 3', apy: 8.9 },
-    { name: 'Semana 4', apy: 8.6 },
-    { name: 'Semana 5', apy: 9.2 },
-    { name: 'Semana 6', apy: 9.5 },
+    { name: 'Week 1', apy: 8.5 },
+    { name: 'Week 2', apy: 8.7 },
+    { name: 'Week 3', apy: 8.9 },
+    { name: 'Week 4', apy: 8.6 },
+    { name: 'Week 5', apy: 9.2 },
+    { name: 'Week 6', apy: 9.5 },
   ];
 
   const metrics: DashboardMetric[] = [
     {
-      label: 'TVL Total',
+      label: 'Total TVL',
       value: totalTvl,
       unit: 'USD',
       change: 125000,
       changePercent: 2.5,
     },
     {
-      label: 'Seu Portfolio',
+      label: 'Your Portfolio',
       value: valuation?.totalUSD || 0,
       unit: 'USD',
     },
     {
-      label: 'APY Médio',
+      label: 'Average APY',
       value: 9.1,
       unit: '%',
       change: 0.6,
       changePercent: 7.1,
     },
     {
-      label: 'Total Emprestado',
+      label: 'Total Borrowed',
       value: 5234100,
       unit: 'USD',
     },
@@ -91,11 +91,11 @@ export function ReflectorDashboard() {
       <div className="space-y-2">
         <h1 className="text-4xl font-bold">Stellaro DeFi Dashboard</h1>
         <p className="text-gray-600">
-          Powered by Reflector Network - Preços em tempo real
+          Powered by Reflector Network - Real-time Prices
         </p>
       </div>
 
-      {/* Métricas Principais */}
+      {/* Key metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {metrics.map((metric) => (
           <Card key={metric.label}>
@@ -107,7 +107,7 @@ export function ReflectorDashboard() {
             <CardContent>
               <div className="space-y-1">
                 <div className="text-2xl font-bold">
-                  {metric.value.toLocaleString('pt-BR', {
+                  {metric.value.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -115,7 +115,7 @@ export function ReflectorDashboard() {
                 </div>
                 {metric.changePercent !== undefined && (
                   <p className="text-xs text-green-600 font-medium">
-                    +{metric.changePercent.toFixed(1)}% vs. semana anterior
+                    +{metric.changePercent.toFixed(1)}% vs. previous week
                   </p>
                 )}
               </div>
@@ -124,40 +124,40 @@ export function ReflectorDashboard() {
         ))}
       </div>
 
-      {/* Alertas de Anomalias */}
+      {/* Anomaly alerts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {btcAnomaly?.isAnomaly && (
           <Alert variant={btcAnomaly.severity === 'CRITICAL' ? 'destructive' : 'default'}>
             <AlertDescription>
-              <strong>⚠️ Anomalia BTC:</strong> Desvio de {btcAnomaly.zScore.toFixed(2)}σ
-              detectado. {btcAnomaly.recommendation}
+              <strong>⚠️ BTC anomaly:</strong> Deviation of {btcAnomaly.zScore.toFixed(2)}σ
+              detected. {btcAnomaly.recommendation}
             </AlertDescription>
           </Alert>
         )}
         {ethAnomaly?.isAnomaly && (
           <Alert variant={ethAnomaly.severity === 'CRITICAL' ? 'destructive' : 'default'}>
             <AlertDescription>
-              <strong>⚠️ Anomalia ETH:</strong> Desvio de {ethAnomaly.zScore.toFixed(2)}σ
-              detectado. {ethAnomaly.recommendation}
+              <strong>⚠️ ETH anomaly:</strong> Deviation of {ethAnomaly.zScore.toFixed(2)}σ
+              detected. {ethAnomaly.recommendation}
             </AlertDescription>
           </Alert>
         )}
       </div>
 
-      {/* Seção de Preços */}
+      {/* Prices Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Preços em Tempo Real (Reflector Network)</CardTitle>
-          <CardDescription>Atualizado a cada 30 segundos</CardDescription>
+          <CardTitle>Real-time Prices (Reflector Network)</CardTitle>
+          <CardDescription>Updated every 30 seconds</CardDescription>
         </CardHeader>
         <CardContent>
           {pricesLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-              <span className="ml-2">Carregando preços...</span>
+              <span className="ml-2">Loading prices...</span>
             </div>
           ) : pricesError ? (
-            <div className="text-red-600">Erro ao carregar preços: {pricesError.message}</div>
+            <div className="text-red-600">Error loading prices: {pricesError.message}</div>
           ) : (
             <div className="space-y-2">
               {Array.from(prices.entries()).map(([asset, price]) => (
@@ -174,19 +174,19 @@ export function ReflectorDashboard() {
                     <div>
                       <p className="font-bold text-lg">{asset}</p>
                       <p className="text-xs text-gray-500">
-                        Atualizado: {new Date(price.timestamp).toLocaleTimeString('pt-BR')}
+                        Updated: {new Date(price.timestamp).toLocaleTimeString('en-US')}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-mono font-bold text-xl">
-                        ${price.price.toLocaleString('pt-BR', {
+                        ${price.price.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
                       </p>
                       {price.confidence && (
                         <p className="text-xs text-gray-500">
-                          Confiança: {(price.confidence * 100).toFixed(0)}%
+                          Confidence: {(price.confidence * 100).toFixed(0)}%
                         </p>
                       )}
                     </div>
@@ -198,11 +198,11 @@ export function ReflectorDashboard() {
         </CardContent>
       </Card>
 
-      {/* Gráfico APY */}
+      {/* APY chart */}
       <Card>
         <CardHeader>
-          <CardTitle>APY Histórico</CardTitle>
-          <CardDescription>Taxa de yield nos últimos meses</CardDescription>
+          <CardTitle>Historical APY</CardTitle>
+          <CardDescription>Yield rate over the last months</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -225,63 +225,59 @@ export function ReflectorDashboard() {
         </CardContent>
       </Card>
 
-      {/* Portfolio do Usuário */}
+      {/* User Portfolio */}
       <Card>
         <CardHeader>
-          <CardTitle>Seu Portfolio</CardTitle>
-          <CardDescription>Valorização em tempo real</CardDescription>
+          <CardTitle>Your Portfolio</CardTitle>
+          <CardDescription>Real-time valuation</CardDescription>
         </CardHeader>
         <CardContent>
           {valuationLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-              <span className="ml-2">Calculando valorização...</span>
+              <span className="ml-2">Calculating valuation...</span>
             </div>
           ) : valuationError ? (
             <div className="text-red-600">
-              Erro ao calcular valorização: {valuationError.message}
+              Error calculating valuation: {valuationError.message}
             </div>
           ) : valuation ? (
             <div className="space-y-4">
-              {/* Total */}
               <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
-                <p className="text-sm text-gray-600">Valor Total</p>
-                <p className="text-3xl font-bold">
-                  ${valuation.totalUSD.toLocaleString('pt-BR', {
+                <p className="text-sm text-gray-600">Total value</p>
+                <p className="text-2xl font-bold">
+                  ${valuation.totalUSD.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </p>
+                <p className="text-xs text-gray-500">
+                  Updated {new Date(valuation.lastUpdate).toLocaleTimeString('en-US')}
+                </p>
               </div>
 
-              {/* Breakdown */}
               <div className="space-y-2">
                 {Array.from(valuation.assets.entries()).map(([asset, data]) => (
-                  <div key={asset} className="bg-gray-50 p-3 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-semibold">{asset}</p>
-                        <p className="text-sm text-gray-600">
-                          {data.quantity.toFixed(4)} {asset}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">
-                          ${data.value.toLocaleString('pt-BR', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          @ ${data.price.toFixed(2)}
-                        </p>
-                      </div>
+                  <div key={asset} className="flex justify-between items-center border border-gray-100 rounded-lg p-3">
+                    <div>
+                      <p className="font-semibold">{asset}</p>
+                      <p className="text-sm text-gray-600">
+                        {data.quantity.toFixed(4)} {asset} @ ${data.price.toFixed(2)}
+                      </p>
                     </div>
+                    <p className="font-bold">
+                      ${data.value.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
-          ) : null}
+          ) : (
+            <div className="text-sm text-gray-500">No portfolio data available.</div>
+          )}
         </CardContent>
       </Card>
 
@@ -297,8 +293,8 @@ export function ReflectorDashboard() {
           >
             Reflector Network
           </a>{' '}
-          | Última atualização:{' '}
-          {new Date().toLocaleTimeString('pt-BR')}
+          | Last update:{' '}
+          {new Date().toLocaleTimeString('en-US')}
         </p>
       </div>
     </div>

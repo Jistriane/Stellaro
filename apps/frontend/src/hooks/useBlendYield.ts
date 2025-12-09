@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { Asset, Networks } from '@stellar/stellar-sdk';
 
 /**
- * Hook para otimizar yield usando Blend Protocol
- * Integração real com @blend-capital/blend-sdk
+ * Hook to optimize yield using Blend Protocol
+ * Real integration with @blend-capital/blend-sdk
  */
 
 export interface BlendPool {
@@ -32,17 +32,17 @@ export function useBlendYield(asset: string, network: 'testnet' | 'mainnet' = 't
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Busca pools disponíveis do Blend Protocol
+  // Fetch available pools from Blend Protocol
   const fetchPools = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // TODO: Integração real com Blend SDK quando disponível
+      // TODO: Real integration with Blend SDK when available
       // const blendClient = new BlendClient({ network });
       // const pools = await blendClient.getPools(asset);
       
-      // Por enquanto, usar endpoint do backend que faz a integração
+      // For now, use backend endpoint that does the integration
       const response = await fetch(`/api/defi/blend/pools?asset=${asset}&network=${network}`);
       
       if (!response.ok) {
@@ -59,11 +59,11 @@ export function useBlendYield(asset: string, network: 'testnet' | 'mainnet' = 't
     }
   };
 
-  // Encontra pool ótimo baseado em APY e risco
+  // Find optimal pool based on APY and risk
   const findOptimalPool = (currentPoolId?: string): OptimizationResult | null => {
     if (pools.length === 0) return null;
 
-    // Calcula score composto (APY / risco)
+    // Calculate composite score (APY / risk)
     const rankedPools = pools
       .map(pool => ({
         ...pool,

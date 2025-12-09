@@ -1,6 +1,5 @@
 export default {
-  locales: ['pt', 'en'],
-  defaultLocale: 'pt',
-  // Align with middleware
-  localePrefix: 'as-needed'
+  locales: ['en'],
+  defaultLocale: 'en',
+  localePrefix: 'never'
 } as const;

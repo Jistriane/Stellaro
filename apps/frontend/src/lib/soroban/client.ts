@@ -1,9 +1,9 @@
-// Utilitários leves para Soroban com import dinâmico
-// Evita quebrar o build quando o SDK não está instalado.
+// Light utilities for Soroban with dynamic import
+// Avoids breaking the build when SDK is not installed.
 
 export type SorobanNetwork = "public" | "testnet";
 
-// Tipos mínimos para SorobanRpc
+// Minimal types for SorobanRpc
 interface SorobanRpcServerOptions { allowHttp?: boolean }
 export interface SorobanRpcServer {
   getAccount(address: string): Promise<unknown>;
@@ -30,13 +30,13 @@ export function getNetworkPassphrase(network: SorobanNetwork): string {
 
 export async function getSorobanServer(network: SorobanNetwork): Promise<SorobanRpcServer> {
   try {
-    // Import dinâmico para não exigir dependência em tempo de build
+    // Dynamic import to not require dependency at build time
     const sdk = (await import("@stellar/stellar-sdk")) as SdkWithSorobanRpc;
     const url = getRpcUrl(network);
     const Server = sdk?.SorobanRpc?.Server;
-    if (!Server) throw new Error("SorobanRpc não disponível no SDK instalado.");
+    if (!Server) throw new Error("SorobanRpc not available in the installed SDK.");
     return new Server(url, { allowHttp: false });
   } catch {
-    throw new Error("Pacote @stellar/stellar-sdk não encontrado. Instale-o para usar chamadas Soroban (npm i @stellar/stellar-sdk).");
+    throw new Error("Package @stellar/stellar-sdk not found. Install it to use Soroban calls (npm i @stellar/stellar-sdk).");
   }
 }

@@ -12,7 +12,7 @@ export default function LoansPage() {
   const t = useTranslations("loans");
   const tc = useTranslations("common");
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   const [data, setData] = useState<{
@@ -40,7 +40,7 @@ export default function LoansPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Carregando...</div>
+          <div className="text-slate-400">Loading...</div>
         </div>
       </div>
     );
@@ -59,7 +59,7 @@ export default function LoansPage() {
   const { pool, wallet } = data;
   const ids = getContractIds();
 
-  // Mocks de empréstimos ativos do usuário
+  // Mock active user loans
   const activeLoans = [
     {
       id: "L-001",
@@ -68,9 +68,9 @@ export default function LoansPage() {
       currency: "BRL",
       collateralXLM: 300,
       balanceDue: 2890,
-      interest_apr_bps: pool.interest_bps ?? 0, // usar pool como referência com fallback
+      interest_apr_bps: pool.interest_bps ?? 0, // use pool as reference with fallback
       dueInDays: 12,
-      status: "Em dia",
+      status: "Up to Date",
     },
     {
       id: "L-002",
@@ -81,27 +81,27 @@ export default function LoansPage() {
       balanceDue: 450,
       interest_apr_bps: pool.interest_bps ?? 0,
       dueInDays: 2,
-      status: "Próx. Ven.",
+      status: "Next Due",
     },
   ];
 
-  // Histórico (quitados/liquidados)
+  // History (paid off/liquidated)
   const historyLoans = [
-    { id: "H-101", start: "2025-06-01", amount: 800, paidAt: "2025-06-28", status: "Quitado" },
+    { id: "H-101", start: "2025-06-01", amount: 800, paidAt: "2025-06-28", status: "Paid" },
   ];
 
-  const ltvPct = ((pool.ltv_bps ?? 0) / 100).toFixed(0); // exibição amigável
+  const ltvPct = ((pool.ltv_bps ?? 0) / 100).toFixed(0); // friendly display
   const interestPct = ((pool.interest_bps ?? 0) / 100).toFixed(2);
 
   return (
     <div className="p-6 space-y-6">
-      {/* Título e timestamp */}
+      {/* Title and timestamp */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
         <div className="text-xs text-slate-500">{t("header.updated_now")}</div>
       </div>
 
-      {/* Introdução e avisos */}
+      {/* Introduction and warnings */}
       <Card>
         <CardHeader>
           <CardTitle>{t("intro.title")}</CardTitle>
@@ -114,7 +114,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Resumo do Pool / Parâmetros */}
+      {/* Pool Summary / Parameters */}
       <Card>
         <CardHeader>
           <CardTitle>{t("pool.title")}</CardTitle>
@@ -132,7 +132,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Empréstimos Ativos */}
+      {/* Active Loans */}
       <Card>
         <CardHeader>
           <CardTitle>{t("active.title")}</CardTitle>
@@ -189,7 +189,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Histórico de Empréstimos */}
+      {/* Loan History */}
       <Card>
         <CardHeader>
           <CardTitle>{t("history.title")}</CardTitle>
@@ -210,7 +210,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Simulador de Empréstimo (interativo) */}
+      {/* Loan Simulator (interactive) */}
       <Card>
         <CardHeader>
           <CardTitle>{t("simulator.title")}</CardTitle>
@@ -222,7 +222,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Condições e Requisitos */}
+      {/* Conditions and Requirements */}
       <Card>
         <CardHeader>
           <CardTitle>{t("conditions.title")}</CardTitle>
@@ -250,7 +250,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Passo-a-passo de contratação */}
+      {/* Step-by-step contracting */}
       <Card>
         <CardHeader>
           <CardTitle>{t("steps.title")}</CardTitle>
@@ -269,7 +269,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Gestão de Garantias e Limite */}
+      {/* Collateral and Limit Management */}
       <Card>
         <CardHeader>
           <CardTitle>{t("collateral.title")}</CardTitle>
@@ -298,7 +298,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Alertas e Recomendações */}
+      {/* Alerts and Recommendations */}
       <Card>
         <CardHeader>
           <CardTitle>{t("alerts.title")}</CardTitle>
@@ -311,7 +311,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Ajuda e FAQ */}
+      {/* Help & FAQ */}
       <Card>
         <CardHeader>
           <CardTitle>{t("faq.title")}</CardTitle>
@@ -326,7 +326,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Informações Legais e Contratuais */}
+      {/* Legal and Contractual Information */}
       <Card>
         <CardHeader>
           <CardTitle>{t("legal.title")}</CardTitle>
@@ -341,7 +341,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Conteúdo Educativo e Alertas */}
+      {/* Educational Content and Alerts */}
       <Card>
         <CardHeader>
           <CardTitle>{t("education.title")}</CardTitle>
@@ -355,7 +355,7 @@ export default function LoansPage() {
         </CardContent>
       </Card>
 
-      {/* Ações rápidas */}
+      {/* Quick actions */}
       <div className="flex flex-wrap gap-2">
         <button className="px-4 py-2 rounded bg-emerald-600 text-white text-sm">{t("quick.apply")}</button>
         <button className="px-4 py-2 rounded bg-slate-800 text-slate-200 text-sm">{t("quick.simulate")}</button>

@@ -1,8 +1,62 @@
 {
   "deploy_now": "Deploy agora",
-  "docs": "Documentação",
-  "learn": "Aprenda",
-  "examples": "Exemplos",
+  "docs": {
+    "title": "Documentação",
+    "subtitle": "Aprenda como usar o Stellaro com nossos guias completos",
+    "getting_started": {
+      "title": "Começando",
+      "description": "Introdução ao Stellaro e primeiros passos"
+    },
+    "guides": {
+      "title": "Guias",
+      "description": "Guias detalhados sobre funcionalidades"
+    },
+    "api": {
+      "title": "API",
+      "description": "Documentação técnica da API"
+    },
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "description": "Respostas para dúvidas comuns"
+    },
+    "sections": {
+      "wallets": "Carteiras & Ativos",
+      "loans": "Empréstimos & Colateral",
+      "trading": "Trading & Liquidez",
+      "governance": "Governança & Votação",
+      "security": "Segurança & Privacidade",
+      "defi": "DeFi & Rendimentos"
+    },
+    "search": "Pesquisar documentação...",
+    "no_results": "Nenhum resultado encontrado",
+    "breadcrumb": "Documentação"
+  },
+  "learn": {
+    "title": "Aprenda",
+    "subtitle": "Desenvolva suas habilidades em DeFi com nossos cursos e tutoriais interativos",
+    "courses": {
+      "title": "Cursos",
+      "subtitle": "Aprenda com especialistas e avance no seu próprio ritmo"
+    },
+    "tutorials": {
+      "title": "Tutoriais",
+      "subtitle": "Vídeos rápidos para aprender tarefas específicas"
+    }
+  },
+  "examples": {
+    "title": "Exemplos de Código",
+    "subtitle": "Exemplos prontos para usar com integração Stellaro",
+    "ready_to_use": "Prontos para Usar",
+    "ready_to_use_desc": "Todos os exemplos são funcionais e testados",
+    "copy_paste": "Copy & Paste",
+    "copy_paste_desc": "Copie e cole os códigos em seus projetos",
+    "multiple_langs": "Múltiplas Linguagens",
+    "multiple_langs_desc": "Exemplos em TypeScript, Python e Solidity",
+    "resources": {
+      "title": "Recursos Adicionais",
+      "description": "Acesse repositórios, documentação e kits de inicialização para acelerar seu desenvolvimento"
+    }
+  },
   "go_next": "Ir para o site do Next.js",
   "hero_title": "Infra de crédito DeFi na Stellar",
   "hero_subtitle": "Financie, gerencie risco e opere carteiras tokenizadas com transparência e automação.",
@@ -299,8 +353,7 @@
       "security_note": "Por segurança, exibimos parcialmente até autenticação adicional (mock).",
       "available_balance": "Saldo disponível",
       "daily_limit": "Limite diário",
-      "status": "Status",
-      "cvv_reveal": "CVV: {cvv} (mock - proteção visual)."
+      "status": "Status"
     },
     "transactions": {
       "title": "Transações Recentes",
@@ -897,72 +950,47 @@
         "open_proposal": "Proposta de voto aberta",
         "kyc_selfie_pending": "Selfie KYC pendente",
         "review_collateral": "Atenção: revise seu colateral"
-      }
+      },
+      "subtitle": "Gerencie seus alertas e notificações importantes",
+      "total": "Total de Notificações",
+      "unread": "Não lido",
+      "critical": "Crítico",
+      "all_time": "Sempre",
+      "need_attention": "Precisa de sua atenção",
+      "require_action": "Requer ação imediata",
+      "all_filter": "Tudo",
+      "unread_filter": "Não lido",
+      "critical_filter": "Crítico",
+      "warnings_filter": "Avisos",
+      "success_filter": "Sucesso",
+      "mark_all_read": "Marcar tudo como lido",
+      "no_notifications": "Sem notificações aqui",
+      "all_caught_up": "Você está em dia!",
+      "no_match": "Nenhuma notificação corresponde a este filtro.",
+      "settings_title": "Configurações de Notificação",
+      "email_notifications": "Notificações por Email",
+      "email_desc": "Receba alertas por email",
+      "push_notifications": "Notificações Push",
+      "push_desc": "Receba alertas push do navegador",
+      "critical_only": "Apenas Críticos",
+      "critical_sms": "Apenas alertas críticos via SMS",
+      "quiet_hours": "Horas Quietas",
+      "quiet_hours_desc": "22:00 - 08:00",
+      "mark_as_read": "Marcar como lido",
+      "dismiss": "Descartar"
     },
-    "analytics": {
-      "title": "Analytics Stellaro",
-      "subtitle": "Métricas e dados em tempo real do protocolo",
-      "loading": "Carregando dados...",
-      "tvl": "TVL Total",
-      "apy": "APY Médio",
-      "loans": "Empréstimos Ativos",
-      "defaultRate": "Taxa de Inadimplência",
-      "tvlHistory": "Histórico de TVL",
-      "assetDistribution": "Distribuição de Ativos",
-      "performanceMetrics": "Métricas de Performance",
-      "utilization": "Taxa de Utilização",
-      "liquidationRatio": "Ratio de Liquidação",
-      "healthyStatus": "Saudável",
-      "reserveRatio": "Ratio de Reserva",
-      "surplusCollateral": "Superávit de Colateral"
-    }
+    "analytics": {}
   },
   "defi": {
-    "stats": {
-      "title": "Estatísticas DeFi",
-      "subtitle": "Métricas e dados do protocolo em tempo real",
-      "tvl": "TVL Total",
-      "loans": "Empréstimos Ativos",
-      "apy": "APY Médio",
-      "utilization": "Taxa de Utilização"
-    }
+    "stats": {}
   },
   "liquidity": {
-    "pools": {
-      "title": "Pools de Liquidez",
-      "subtitle": "Gerencie sua liquidez e ganhe recompensas"
-    }
+    "pools": {}
   },
   "transactions": {
-    "history": {
-      "title": "Histórico de Transações",
-      "subtitle": "Acompanhe todas as suas operações na plataforma"
-    }
+    "history": {}
   },
-  "bridge": {
-    "title": "Bridge de Tokens",
-    "subtitle": "Transfira tokens entre diferentes blockchains com segurança",
-    "from_chain": "Rede de Origem",
-    "to_chain": "Rede de Destino",
-    "amount": "Quantidade",
-    "you_will_receive": "Você receberá",
-    "bridge_protocol": "Protocolo de Bridge",
-    "fees_summary": "Resumo de Taxas",
-    "bridge_fee": "Taxa de Bridge",
-    "network_fee": "Taxa de Rede",
-    "total_cost": "Custo Total",
-    "bridge_button": "Transferir Tokens",
-    "bridging": "Transferindo...",
-    "confirmation_time": "Tempo de Confirmação",
-    "average_bridge_time": "Tempo médio de transferência",
-    "supported_chains": "Redes Suportadas",
-    "select_source_destination": "Selecione origem e destino",
-    "min_amount": "Quantidade Mínima",
-    "minimum_bridge_value": "Valor mínimo para transferência",
-    "recent_bridge_transactions": "Transações Recentes",
-    "safety_information": "Informações de Segurança",
-    "safety_message": "Sempre verifique se está transferindo para o endereço correto. Transações de bridge são irreversíveis. Verifique as taxas e protocolos antes de prosseguir."
-  },
+  "bridge": {},
   "loans": {
     "header": {
       "title": "Empréstimos",
@@ -1377,96 +1405,31 @@
     }
   },
   "notifications": {
-    "title": "Notificações & Alertas",
-    "subtitle": "Gerencie seus alertas e notificações importantes",
-    "view": "ver",
-    "items": {
-      "open_proposal": "Proposta de voto aberta",
-      "kyc_selfie_pending": "Selfie KYC pendente",
-      "review_collateral": "Atenção: revise seu colateral"
-    },
-    "total": "Total de Notificações",
+    "title": "Notificações",
+    "subtitle": "Fique atualizado com as atividades da sua conta",
+    "total": "Total",
+    "all_time": "Todo o período",
     "unread": "Não lidas",
-    "critical": "Críticas",
-    "all_time": "Todos os tempos",
     "need_attention": "Precisam de atenção",
-    "require_action": "Requerem ação imediata",
+    "critical": "Críticas",
+    "require_action": "Requerem ação",
     "all_filter": "Todas",
     "unread_filter": "Não lidas",
     "critical_filter": "Críticas",
     "warnings_filter": "Avisos",
     "success_filter": "Sucesso",
     "mark_all_read": "Marcar todas como lidas",
-    "no_notifications": "Nenhuma notificação aqui",
-    "all_caught_up": "Você está em dia!",
-    "no_match": "Nenhuma notificação corresponde a este filtro.",
-    "settings_title": "Configurações de Notificação",
-    "email_notifications": "Notificações por Email",
-    "email_desc": "Receba alertas por email",
-    "push_notifications": "Notificações Push",
-    "push_desc": "Receba alertas de push do navegador",
-    "critical_only": "Apenas Críticas",
-    "critical_sms": "Apenas alertas críticos por SMS",
-    "quiet_hours": "Horas Silenciosas",
-    "quiet_hours_desc": "22:00 - 08:00",
     "mark_as_read": "Marcar como lida",
-    "dismiss": "Descartar"
-  },
-  "learn": {
-    "title": "Aprenda",
-    "subtitle": "Desenvolva suas habilidades em DeFi com nossos cursos e tutoriais interativos",
-    "courses": {
-      "title": "Cursos",
-      "subtitle": "Aprenda com especialistas e avance no seu próprio ritmo"
-    },
-    "tutorials": {
-      "title": "Tutoriais",
-      "subtitle": "Vídeos rápidos para aprender tarefas específicas"
-    }
-  },
-  "examples": {
-    "title": "Exemplos de Código",
-    "subtitle": "Exemplos prontos para usar com integração Stellaro",
-    "ready_to_use": "Prontos para Usar",
-    "ready_to_use_desc": "Todos os exemplos são funcionais e testados",
-    "copy_paste": "Copy & Paste",
-    "copy_paste_desc": "Copie e cole os códigos em seus projetos",
-    "multiple_langs": "Múltiplas Linguagens",
-    "multiple_langs_desc": "Exemplos em TypeScript, Python e Solidity",
-    "resources": {
-      "title": "Recursos Adicionais",
-      "description": "Acesse repositórios, documentação e kits de inicialização para acelerar seu desenvolvimento"
-    }
-  },
-  "docs": {
-    "title": "Documentação",
-    "subtitle": "Aprenda como usar o Stellaro com nossos guias completos",
-    "getting_started": {
-      "title": "Começando",
-      "description": "Introdução ao Stellaro e primeiros passos"
-    },
-    "guides": {
-      "title": "Guias",
-      "description": "Guias detalhados sobre funcionalidades"
-    },
-    "api": {
-      "title": "API",
-      "description": "Documentação técnica da API"
-    },
-    "faq": {
-      "title": "Perguntas Frequentes",
-      "description": "Respostas para dúvidas comuns"
-    },
-    "sections": {
-      "wallets": "Carteiras & Ativos",
-      "loans": "Empréstimos & Colateral",
-      "trading": "Trading & Liquidez",
-      "governance": "Governança & Votação",
-      "security": "Segurança & Privacidade",
-      "defi": "DeFi & Rendimentos"
-    },
-    "search": "Pesquisar documentação...",
-    "no_results": "Nenhum resultado encontrado",
-    "breadcrumb": "Documentação"
+    "dismiss": "Dispensar",
+    "settings_title": "Configurações de Notificações",
+    "email_notifications": "Notificações por Email",
+    "email_desc": "Receber notificações por email",
+    "push_notifications": "Notificações Push",
+    "push_desc": "Receber notificações push no seu dispositivo",
+    "critical_only": "Apenas Críticas",
+    "critical_sms": "Receber alertas críticos por SMS",
+    "quiet_hours": "Horário Silencioso",
+    "quiet_hours_desc": "Não receber notificações durante horários específicos",
+    "items": {}
   }
 }

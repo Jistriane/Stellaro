@@ -35,8 +35,8 @@ export default function ExamplesPage() {
   const examples: CodeExample[] = [
     {
       id: "ex-1",
-      title: "Conectar Carteira",
-      description: "Exemplo de como conectar uma carteira Web3 ao Stellaro",
+      title: "Connect Wallet",
+      description: "Example of how to connect a Web3 wallet to Stellaro",
       category: "wallet",
       language: "typescript",
       icon: <Wallet className="w-6 h-6" />,
@@ -49,10 +49,10 @@ export function ConnectWallet() {
   return (
     <div>
       {address ? (
-        <p>Conectado: {address}</p>
+        <p>Connected: {address}</p>
       ) : (
         <button onClick={() => connect({ connector: connectors[0] })}>
-          Conectar Carteira
+          Connect Wallet
         </button>
       )}
     </div>
@@ -61,8 +61,8 @@ export function ConnectWallet() {
     },
     {
       id: "ex-2",
-      title: "Executar Transação",
-      description: "Exemplo de execução de uma transação simples",
+      title: "Execute Transaction",
+      description: "Example of executing a simple transaction",
       category: "trading",
       language: "typescript",
       icon: <TrendingUp className="w-6 h-6" />,
@@ -79,13 +79,13 @@ export function SendTransaction() {
     })
   }
 
-  return <button onClick={handleSend}>Enviar Transação</button>
+  return <button onClick={handleSend}>Send Transaction</button>
 }`,
     },
     {
       id: "ex-3",
-      title: "Chamar Função Contrato",
-      description: "Exemplo de chamada de função de contrato inteligente",
+      title: "Call Contract Function",
+      description: "Example of calling a smart contract function",
       category: "defi",
       language: "typescript",
       icon: <Code className="w-6 h-6" />,
@@ -101,15 +101,15 @@ export function DepositToken() {
 
   return (
     <button onClick={() => write({ args: ['100'] })}>
-      Depositar 100 Tokens
+      Deposit 100 Tokens
     </button>
   )
 }`,
     },
     {
       id: "ex-4",
-      title: "Ler Dados do Contrato",
-      description: "Exemplo de leitura de dados do contrato inteligente",
+      title: "Read Contract Data",
+      description: "Example of reading smart contract data",
       category: "defi",
       language: "typescript",
       icon: <Lock className="w-6 h-6" />,
@@ -124,13 +124,13 @@ export function GetBalance() {
     args: ['0x...'],
   })
 
-  return <p>Saldo: {balance?.toString()}</p>
+  return <p>Balance: {balance?.toString()}</p>
 }`,
     },
     {
       id: "ex-5",
-      title: "Requisitar Empréstimo",
-      description: "Exemplo de requisição de empréstimo com colateral",
+      title: "Request Loan",
+      description: "Example of a loan request with collateral",
       category: "loans",
       language: "typescript",
       icon: <DollarSign className="w-6 h-6" />,
@@ -147,19 +147,19 @@ export function RequestLoan() {
     write({
       args: [
         '1000000000000000000', // 1 token
-        '2000000000000000000', // colateral
-        86400 * 30, // 30 dias
+        '2000000000000000000', // collateral
+        86400 * 30, // 30 days
       ],
     })
   }
 
-  return <button onClick={handleRequest}>Solicitar Empréstimo</button>
+  return <button onClick={handleRequest}>Request Loan</button>
 }`,
     },
     {
       id: "ex-6",
-      title: "Participar de Votação",
-      description: "Exemplo de votação em proposta de governança",
+      title: "Participate in Voting",
+      description: "Example of voting on a governance proposal",
       category: "governance",
       language: "typescript",
       icon: <Vote className="w-6 h-6" />,
@@ -180,16 +180,16 @@ export function VoteOnProposal() {
 
   return (
     <div>
-      <button onClick={() => handleVote(true)}>Votar Sim</button>
-      <button onClick={() => handleVote(false)}>Votar Não</button>
+      <button onClick={() => handleVote(true)}>Vote Yes</button>
+      <button onClick={() => handleVote(false)}>Vote No</button>
     </div>
   )
 }`,
     },
     {
       id: "ex-7",
-      title: "Monitorar Eventos",
-      description: "Exemplo de escuta de eventos de contrato",
+      title: "Monitor Events",
+      description: "Example of listening to contract events",
       category: "defi",
       language: "typescript",
       icon: <Zap className="w-6 h-6" />,
@@ -202,19 +202,19 @@ export function MonitorEvents() {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider)
 
     contract.on('Transfer', (from, to, value) => {
-      console.log('Transferência:', { from, to, value })
+      console.log('Transfer:', { from, to, value })
     })
 
     return () => contract.removeAllListeners()
   }, [])
 
-  return <p>Monitorando eventos...</p>
+  return <p>Monitoring events...</p>
 }`,
     },
     {
       id: "ex-8",
-      title: "Calcular Rendimento",
-      description: "Exemplo de cálculo de rendimento APY",
+      title: "Calculate Yield",
+      description: "Example of APY calculation",
       category: "trading",
       language: "typescript",
       icon: <TrendingUp className="w-6 h-6" />,
@@ -232,7 +232,7 @@ export function MonitorEvents() {
   return (
     <div>
       <p>APY: {apy.toFixed(2)}%</p>
-      <p>Rendimento anual estimado: {(apy * 10).toFixed(2)}</p>
+      <p>Estimated annual return: {(apy * 10).toFixed(2)}</p>
     </div>
   )
 }`,
@@ -251,12 +251,12 @@ export function MonitorEvents() {
   };
 
   const categoryLabels: Record<string, string> = {
-    all: "Todos",
-    wallet: "Carteira",
+    all: "All",
+    wallet: "Wallet",
     trading: "Trading",
     defi: "DeFi",
-    loans: "Empréstimos",
-    governance: "Governança",
+    loans: "Loans",
+    governance: "Governance",
   };
 
   return (
@@ -362,12 +362,12 @@ export function MonitorEvents() {
                   {copiedId === example.id ? (
                     <>
                       <Check className="w-4 h-4 mr-2" />
-                      Copiado!
+                      Copied!
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-2" />
-                      Copiar Código
+                      Copy Code
                     </>
                   )}
                 </Button>

@@ -1,14 +1,14 @@
-// Funções auxiliares para invocar contratos Soroban usando @stellar/stellar-sdk
-// Mantém imports dinâmicos para não quebrar SSR.
+// Helper functions to invoke Soroban contracts using @stellar/stellar-sdk
+// Keep dynamic imports to not break SSR.
 import { getNetworkPassphrase, getRpcUrl } from "./client";
 import type { SorobanNetwork } from "./client";
 
 export type InvokeArgs = {
   network: SorobanNetwork;
-  sourceAddress: string; // conta do usuário (ex.: Freighter)
+  sourceAddress: string; // user account (e.g. Freighter)
   contractId: string;
   functionName: string;
-  // argumentos já em formato de xdr (base64) ou valores prontos para o SDK; para simplicidade usaremos xdr strings
+  // arguments already in xdr format (base64) or ready values for SDK; for simplicity we'll use xdr strings
   argsXdr?: string[];
 };
 
@@ -36,10 +36,10 @@ export async function buildInvokeTransaction({ network, sourceAddress, contractI
   const rpcUrl = getRpcUrl(network);
   const server = new sdk.SorobanRpc.Server(rpcUrl, { allowHttp: false });
 
-  // Carrega conta do usuário
+  // Load user account
   const account = (await server.getAccount(sourceAddress)) as unknown as import("@stellar/stellar-sdk").Account;
 
-  // Monta invocação
+  // Build invocation
   const contract = new sdk.Contract(contractId);
   const args = argsXdr.map((a: string) => sdk.xdr.ScVal.fromXDR(a, "base64"));
 
@@ -49,14 +49,14 @@ export async function buildInvokeTransaction({ network, sourceAddress, contractI
   })
     // invoke()
     .addOperation(contract.call(functionName, ...args))
-    // recomendado para soroban
+    // recommended for Soroban
     .setTimeout(30)
     .build();
 
-  // Simula para obter footprint e ajustar
+  // Simulate to obtain footprint and adjust
   const sim = await server.simulateTransaction(tx);
   if (sdk.SorobanRpc.Api.isSimulationError(sim)) {
-    throw new Error("Falha ao simular transação Soroban: " + JSON.stringify(sim, null, 2));
+    throw new Error("Failed to simulate Soroban transaction: " + JSON.stringify(sim, null, 2));
   }
 
   const prepared = sdk.SorobanRpc.assembleTransaction(tx, sim);
@@ -70,9 +70,9 @@ export async function submitSignedXdr(network: SorobanNetwork, signedXdr: string
   const tx = sdk.TransactionBuilder.fromXDR(signedXdr, getNetworkPassphrase(network)) as import("@stellar/stellar-sdk").Transaction;
   const send = await server.sendTransaction(tx);
   if (send.errorResult) {
-    throw new Error("Envio falhou: " + send.errorResult);
+    throw new Error("Send failed: " + send.errorResult);
   }
-  // Se for transação que modifica estado, devemos aguardar confirmação
+  // If transaction modifies state, we must wait for confirmation
   let getResp = await server.getTransaction(send.hash);
   while (getResp.status === "NOT_FOUND") {
     await new Promise((r) => setTimeout(r, 1000));

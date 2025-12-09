@@ -14,7 +14,7 @@ export default function StablecoinPage() {
   const [wallet, setWallet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
-  // Ativa atualizações em tempo real quando carteira conecta
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   useEffect(() => {
@@ -36,13 +36,13 @@ export default function StablecoinPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Carregando...</div>
+          <div className="text-slate-400">Loading...</div>
         </div>
       </div>
     );
   }
 
-  // Saldos (mock): usamos saldo STLT do usuário e exibimos equivalentes
+  // Balances (mock): use the user's STLT balance and show equivalents
   const stlt = Number.parseFloat(wallet?.stlt || "0");
   const rateBRL = 1.0; // 1 STLT ≈ 1 BRL (mock)
   const rateUSD = 0.2; // mock
@@ -50,10 +50,10 @@ export default function StablecoinPage() {
   const stltBRL = stlt * rateBRL;
   const stltUSD = stlt * rateUSD;
 
-  // Extrato de movimentações (mock)
+  // Transaction history (mock)
   const movements = [
     { date: "2025-08-13", type: "Mint", asset: "STLT-BRL", amount: 3500, status: "OK" },
-    { date: "2025-08-10", type: "Envio", asset: "STLT-USD", amount: 2000, status: "OK" },
+    { date: "2025-08-10", type: "Transfer", asset: "STLT-USD", amount: 2000, status: "OK" },
     { date: "2025-08-03", type: "Burn", asset: "STLT-BRL", amount: 500, status: "OK" },
   ];
 
@@ -63,21 +63,21 @@ export default function StablecoinPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Título */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
         <div className="text-xs text-slate-500">{t("header.updated", { when: new Date().toLocaleString() })}</div>
       </div>
 
-      {/* Saldos */}
+      {/* Balances */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>{t("balances.brl.title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">{t("balances.brl.value", { value: `R$ ${stltBRL.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}` })}</div>
-            <div className="text-xs text-slate-500">{t("balances.common.balance", { amount: stlt.toLocaleString("pt-BR", { maximumFractionDigits: 4 }) })}</div>
+            <div className="text-2xl font-semibold">{t("balances.brl.value", { value: `R$ ${stltBRL.toLocaleString("en-US", { maximumFractionDigits: 2 })}` })}</div>
+            <div className="text-xs text-slate-500">{t("balances.common.balance", { amount: stlt.toLocaleString("en-US", { maximumFractionDigits: 4 }) })}</div>
           </CardContent>
         </Card>
         <Card>
@@ -105,7 +105,7 @@ export default function StablecoinPage() {
         </Card>
       </div>
 
-      {/* Ações Disponíveis (mock) */}
+      {/* Available actions (mock) */}
       <Card>
         <CardHeader>
           <CardTitle>{t("actions.title")}</CardTitle>
@@ -121,7 +121,7 @@ export default function StablecoinPage() {
         </CardContent>
       </Card>
 
-      {/* Movimentações Recentes */}
+      {/* Recent movements */}
       <Card>
         <CardHeader>
           <CardTitle>{t("movements.title")}</CardTitle>
@@ -131,7 +131,7 @@ export default function StablecoinPage() {
             {movements.map((m) => (
               <li key={`${m.date}-${m.type}-${m.amount}`} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
                 <div>
-                  <div className="text-slate-200">{t("movements.item_line", { date: m.date, type: m.type, amount: m.amount.toLocaleString("pt-BR"), asset: m.asset })}</div>
+                  <div className="text-slate-200">{t("movements.item_line", { date: m.date, type: m.type, amount: m.amount.toLocaleString("en-US"), asset: m.asset })}</div>
                   <div className="text-xs text-slate-500">{t("movements.status", { status: m.status })}</div>
                 </div>
                 <Link href="/wallet" className="text-xs underline text-slate-300">{t("movements.view_wallet")}</Link>
@@ -141,7 +141,7 @@ export default function StablecoinPage() {
         </CardContent>
       </Card>
 
-      {/* Informações Educativas */}
+      {/* Educational info */}
       <Card>
         <CardHeader>
           <CardTitle>{t("edu.title")}</CardTitle>
@@ -162,7 +162,7 @@ export default function StablecoinPage() {
         </CardContent>
       </Card>
 
-      {/* Taxas e Políticas */}
+      {/* Fees and policies */}
       <Card>
         <CardHeader>
           <CardTitle>{t("fees.title")}</CardTitle>
@@ -170,14 +170,14 @@ export default function StablecoinPage() {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
             <div>{t("fees.mint_burn")}: <b>0%</b></div>
-            <div>{t("fees.transfer")}: <b>0,1%</b></div>
+            <div>{t("fees.transfer")}: <b>0.1%</b></div>
             <div>{t("fees.limits")}: <b>{t("fees.limits_value")}</b></div>
           </div>
           <div className="text-xs text-slate-500 mt-2">{t("fees.note_governance")}</div>
         </CardContent>
       </Card>
 
-      {/* Status da Rede e Provedor */}
+      {/* Network and provider status */}
       <Card>
         <CardHeader>
           <CardTitle>{t("status.title")}</CardTitle>
@@ -192,7 +192,7 @@ export default function StablecoinPage() {
         </CardContent>
       </Card>
 
-      {/* Ajuda */}
+      {/* Help */}
       <div className="flex items-center justify-between">
         <Link href="/help" className="text-sm underline text-slate-300">{t("help.need_help")}</Link>
         <div className="text-xs text-amber-400">{t("help.warning")}</div>

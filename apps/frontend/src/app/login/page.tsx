@@ -44,13 +44,13 @@ export default function LoginPage() {
     if (upper.includes("ERR_LEDGER_UNSUPPORTED")) return tLoginErrors("ledger_unsupported");
     if (upper.includes("ERR_SOROBAN_NO_COMPAT")) return tLoginErrors("soroban_no_compat");
     if (upper.includes("ERR_CHAINLINK_NOT_READY")) return tLoginErrors("chainlink_not_ready");
-    // Fallback para a própria mensagem se não for um código de erro conhecido
-    // Isso mantém as mensagens de erro de passkey/email que já são i18n
+    // Fallback to the message itself if not a known error code
+    // This keeps passkey/email error messages that are already i18n
     return msg;
   }, [error, tLoginErrors]);
 
   useEffect(() => {
-    // Integra detecção global de carteiras
+    // Integrates global wallet detection
     refreshWalletAvailable();
   }, [refreshWalletAvailable]);
 
@@ -70,11 +70,11 @@ export default function LoginPage() {
     }
   }, [walletAvailable]);
 
-  // Detecção de Freighter agora é feita inteiramente pelo wallet store
-  // O useEffect acima já sincroniza o estado local com o store
+  // Freighter detection is now done entirely by wallet store
+  // The useEffect above already syncs local state with the store
 
-  // Detecção de Albedo agora é feita inteiramente pelo wallet store
-  // O useEffect acima já sincroniza o estado local com o store
+  // Albedo detection is now done entirely by wallet store
+  // The useEffect above already syncs local state with the store
 
   function base64urlToArrayBuffer(base64url: string): ArrayBuffer {
     const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
@@ -97,9 +97,9 @@ export default function LoginPage() {
     setError("");
     setLoadingPasskeyReg(true);
     try {
-      // Verifica compatibilidade do WebAuthn
+      // Check WebAuthn compatibility
       if (!navigator.credentials || !window.PublicKeyCredential) {
-        setError("WebAuthn não é suportado neste navegador.");
+        setError("WebAuthn is not supported in this browser.");
         return;
       }
 
@@ -168,7 +168,7 @@ export default function LoginPage() {
       });
       if (!verifyRes.ok) throw new Error(tLoginErrors("passkey_register_verify_fail"));
 
-      // 3) Sinaliza sucesso (pode manter o usuário logado se backend setar cookie)
+      // 3) Signals success (may keep user logged in if backend sets cookie)
       setLoggedIn(true, undefined);
       pushEvent("LOGGED_IN");
     } catch (e: unknown) {
@@ -184,9 +184,9 @@ export default function LoginPage() {
     setError("");
     setLoadingPasskey(true);
     try {
-      // Verifica compatibilidade do WebAuthn
+      // Check WebAuthn compatibility
       if (!navigator.credentials || !window.PublicKeyCredential) {
-        setError("WebAuthn não é suportado neste navegador.");
+        setError("WebAuthn is not supported in this browser.");
         return;
       }
 
@@ -308,7 +308,7 @@ export default function LoginPage() {
       if (!nres.ok) throw new Error(tLoginErrors("wallet_connect_fail"));
       const { nonce } = await nres.json();
 
-      // 2) Assina o nonce (implementação específica por carteira)
+      // 2) Signs the nonce (implementation specific per wallet)
       let signature: string | undefined;
       
       if (kind === "freighter") {
@@ -346,7 +346,7 @@ export default function LoginPage() {
       });
       if (!vres.ok) throw new Error(tLoginErrors("wallet_connect_fail"));
 
-      // 4) Atualiza estado e saldos
+      // 4) Update state and balances
       setLoggedIn(true, pubkey);
       pushEvent("WALLET_CONNECTED");
       pushEvent("LOGGED_IN");
@@ -383,7 +383,7 @@ export default function LoginPage() {
     setError("");
     setLoadingEmail(true);
     try {
-      // 1) Inicia envio de código
+      // 1) Initiate code sending
       const initRes = await fetch(`${apiUrl}/auth/email/init`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -393,13 +393,13 @@ export default function LoginPage() {
       if (!initRes.ok) throw new Error(tLoginErrors("email_init_fail"));
       const initJson: { ok: boolean; code?: string } = await initRes.json();
 
-      // 2) Solicita o código ao usuário (DEV: mostramos código retornado, se vier)
+      // 2) Requests code from user (DEV: we show returned code if provided)
       const hint = initJson.code ? ` (DEV: ${initJson.code})` : "";
       const input = window.prompt(`${t("email_prompt")}${hint}`) ?? "";
       const code = input.trim();
       if (!code) throw new Error(tLoginErrors("email_code_required"));
 
-      // 3) Verifica código e recebe cookie HttpOnly
+      // 3) Verifies code and receives HttpOnly cookie
       const verifyRes = await fetch(`${apiUrl}/auth/email/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -10,11 +10,12 @@ type Message = { role: Role; content: string; time: string };
 
 export default function ChatPage() {
   const t = useTranslations("chat");
-  
-  // Ativa atualizações em tempo real quando carteira conecta
+
+  // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
+
   const locale = useLocale();
-  // Identidade mock do usuário
+  // Mock user identity
   const userName = "Jistriane";
 
   // Estado do chat
@@ -31,7 +32,7 @@ export default function ChatPage() {
   const [feedback, setFeedback] = useState<"up" | "down" | undefined>(undefined);
   const [feedbackComment, setFeedbackComment] = useState("");
 
-  // Sugestões rápidas
+  // Quick suggestions
   const quickSuggestions = useMemo(
     () => (t.raw("suggestions") as string[]) ?? [],
     [t]
@@ -64,7 +65,7 @@ export default function ChatPage() {
 
   function mockAssistantReply(userText: string) {
     setTyping(true);
-    // Sugestão de links úteis baseada em palavras-chave (mock)
+    // Suggest useful links based on keywords (mock)
     const hints: string[] = [];
     const lower = userText.toLowerCase();
     if (lower.includes("pix")) hints.push(t("hint_pix"));
@@ -96,7 +97,7 @@ export default function ChatPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Cabeçalho, boas-vindas e status */}
+      {/* Header, greeting and status */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-emerald-700 grid place-items-center text-black font-bold">E</div>
@@ -118,7 +119,7 @@ export default function ChatPage() {
           <CardTitle>{t("conversation")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Sugestões rápidas */}
+          {/* Quick suggestions */}
           <div className="flex flex-wrap gap-2">
             {quickSuggestions.map((s) => (
               <button
@@ -136,7 +137,7 @@ export default function ChatPage() {
             ))}
           </div>
 
-          {/* Histórico */}
+          {/* Message history */}
           <div ref={scrollRef} className="h-[420px] overflow-auto bg-slate-900 rounded p-3 space-y-3">
             {messages.map((m, idx) => (
               <div key={idx} className={`max-w-[85%] ${m.role === "user" ? "ml-auto text-sky-100" : m.role === "assistant" ? "text-emerald-100" : "text-slate-300"}`}>
@@ -153,7 +154,7 @@ export default function ChatPage() {
             )}
           </div>
 
-          {/* Entrada de mensagem + anexos */}
+          {/* Message input + attachments */}
           <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
             <label className="text-xs text-slate-400">
               <span className="px-3 py-2 rounded bg-slate-800 cursor-pointer inline-block">{t("attach")}</span>
@@ -186,14 +187,14 @@ export default function ChatPage() {
             </div>
           </div>
 
-          {/* Ações de escalonamento e status */}
+          {/* Escalation actions and status */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
             <button onClick={requestHuman} className="px-3 py-1.5 rounded bg-slate-800">{t("escalate")}</button>
             <span>{t("who_answers")} {channelStatus === "online" ? t("who_online") : channelStatus === "handover" ? t("who_handover") : t("who_offline")}</span>
             <span>{t("human_available")}</span>
           </div>
 
-          {/* Links úteis */}
+          {/* Useful links */}
           <div className="flex flex-wrap gap-2 text-xs">
             <a href="/help" className="px-3 py-1.5 rounded bg-slate-800">{t("links.help")}</a>
             <a href="/help" className="px-3 py-1.5 rounded bg-slate-800">{t("links.faq")}</a>
@@ -201,12 +202,12 @@ export default function ChatPage() {
             <a href="/pix" className="px-3 py-1.5 rounded bg-slate-800">{t("links.pix_status")}</a>
           </div>
 
-          {/* Segurança e Privacidade */}
+          {/* Security and Privacy */}
           <div className="text-xs text-amber-300/90 bg-amber-900/20 border border-amber-800/50 rounded px-3 py-2">
             ⚠️ {t("privacy")} <a href="/docs" className="underline">{t("privacy_link")}</a>
           </div>
 
-          {/* Avaliação do atendimento */}
+          {/* Service evaluation */}
           <div className="flex flex-col gap-2">
             <div className="text-xs text-slate-400">{t("feedback_title")}</div>
             <div className="flex items-center gap-2">

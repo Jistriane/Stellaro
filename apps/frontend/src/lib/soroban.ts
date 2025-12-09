@@ -1,5 +1,5 @@
-// Camada de consultas (leituras). Priorizar dados reais quando possível.
-// TODO: integrar leituras de contratos via Soroban RPC/Backend.
+// Query layer (reads). Prioritize real data when possible.
+// TODO: integrate contract reads via Soroban RPC/Backend.
 
 export type ContractIds = {
   STABLECOIN_CONTRACT_ID?: string;
@@ -21,7 +21,7 @@ export function getContractIds(): ContractIds {
   };
 }
 
-// Stubs de views. Evitar valores fictícios.
+// View stubs. Avoid fictitious values.
 export async function viewStablecoin() {
   return {
     risk_threshold_bps: undefined,
@@ -74,13 +74,13 @@ export async function viewGovernance() {
   };
 }
 
-// Retorna saldos reais via Horizon quando pubkey é fornecida. Caso contrário, retorna zeros sem inventar dados.
+// Returns real balances via Horizon when pubkey is provided. Otherwise, returns zeros without making up data.
 export async function getWalletBalances(pubkey?: string) {
   const ids = getContractIds();
   if (!pubkey) {
     return { publicKey: undefined, xlm: "0", stlt: "0" } as { publicKey?: string; xlm: string; stlt: string };
   }
-  const horizon = "https://horizon.stellar.org"; // TODO: permitir testnet via configuração global
+  const horizon = "https://horizon.stellar.org"; // TODO: allow testnet via global config
   try {
     const res = await fetch(`${horizon}/accounts/${encodeURIComponent(pubkey)}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`Horizon ${res.status}`);

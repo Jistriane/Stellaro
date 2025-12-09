@@ -5,8 +5,8 @@ import { useAppStore } from "../store/app";
 import { getWalletBalances } from "../lib/soroban";
 
 /**
- * Hook para gerenciar atualizações em tempo real
- * Atualiza dados automaticamente quando a carteira é conectada/desconectada
+ * Hook to manage real-time updates
+ * Automatically updates data when wallet is connected/disconnected
  */
 export function useRealTimeUpdates() {
   const walletConnected = useWalletStore((s) => s.connected);
@@ -14,7 +14,7 @@ export function useRealTimeUpdates() {
   const refreshBalance = useWalletStore((s) => s.refreshBalance);
   const setBalances = useAppStore((s) => s.setBalances);
 
-  // Efeito para atualizações quando carteira conecta/desconecta
+  // Effect for updates when wallet connects/disconnects
   useEffect(() => {
     let balanceInterval: NodeJS.Timeout | null = null;
     let sorobanInterval: NodeJS.Timeout | null = null;
@@ -22,14 +22,14 @@ export function useRealTimeUpdates() {
     if (walletConnected && walletAddress) {
       console.log('[realtime] Wallet connected, starting real-time updates for:', walletAddress);
 
-      // Atualiza saldo XLM do Horizon a cada 10 segundos
+      // Updates XLM balance from Horizon every 10 seconds
       const updateHorizonBalance = () => {
         refreshBalance().catch(error => {
           console.warn('[realtime] Failed to update Horizon balance:', error);
         });
       };
 
-      // Atualiza saldos Soroban (STLT) a cada 15 segundos
+      // Updates Soroban balances (STLT) every 15 seconds
       const updateSorobanBalances = async () => {
         try {
           const balances = await getWalletBalances(walletAddress);
@@ -40,11 +40,11 @@ export function useRealTimeUpdates() {
         }
       };
 
-      // Atualização inicial imediata
+      // Immediate initial update
       updateHorizonBalance();
       updateSorobanBalances();
 
-      // Configurar intervalos
+      // Set up intervals
       balanceInterval = setInterval(updateHorizonBalance, 10000); // 10s
       sorobanInterval = setInterval(updateSorobanBalances, 15000); // 15s
 
@@ -52,7 +52,7 @@ export function useRealTimeUpdates() {
     } else {
       console.log('[realtime] Wallet disconnected, stopping real-time updates');
       
-      // Limpar saldos quando desconecta
+      // Clear balances when disconnected
       setBalances({ xlm: 0, stlt: 0 });
     }
 
@@ -69,14 +69,14 @@ export function useRealTimeUpdates() {
     };
   }, [walletConnected, walletAddress, refreshBalance, setBalances]);
 
-  // Efeito para reagir a mudanças de visibilidade da página
+  // Effect to react to page visibility changes
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && walletConnected && walletAddress) {
         console.log('[realtime] Page became visible, refreshing data...');
         refreshBalance();
         
-        // Atualizar saldos Soroban também
+        // Update Soroban balances too
         getWalletBalances(walletAddress)
           .then(balances => {
             setBalances({ xlm: balances.xlm, stlt: balances.stlt });
