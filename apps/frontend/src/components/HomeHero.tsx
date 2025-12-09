@@ -8,7 +8,6 @@ export default function HomeHero() {
 
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800/70 shadow-2xl rounded-3xl min-h-[340px] sm:min-h-[420px] lg:min-h-[500px] flex items-center justify-center">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,59,126,0.35),rgba(2,6,23,0.9))]" />
       <div className="relative z-10 flex flex-col items-center gap-5 px-6 py-12 text-center max-w-4xl mx-auto">
         <div className="p-4 rounded-full bg-slate-900/70 border border-slate-700/70">
           <Image
