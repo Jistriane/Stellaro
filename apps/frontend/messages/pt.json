@@ -40,11 +40,9 @@
     "learn": "Aprenda",
     "examples": "Exemplos"
   },
-
   "common": {
     "soon": "Em breve"
   },
-
   "trading": {
     "header": {
       "title": "Trading",
@@ -133,7 +131,6 @@
       "tips": "Dicas: spoofing, manipulação e golpes de engenharia social são riscos reais. Proteja-se."
     }
   },
-
   "risk": {
     "title": "Painel de Risco",
     "header": {
@@ -231,9 +228,12 @@
     },
     "footer": {
       "warning": "A gestão de risco envolve monitoramento e análise. Sempre consulte nossa equipe para decisões importantes."
+    },
+    "analysis": {
+      "title": "Análise de Risco Detalhada",
+      "subtitle": "Visualize métricas e indicadores de risco do seu portfólio com análises em profundidade."
     }
-  }
-  ,
+  },
   "events": {
     "BALANCE_UPDATED": "Seu saldo foi atualizado",
     "ORDER_FILLED": "Uma ordem foi executada",
@@ -241,8 +241,7 @@
     "RISK_SCORE": "Seu score de risco mudou",
     "WALLET_CONNECTED": "Carteira conectada",
     "LOGGED_IN": "Login realizado com sucesso"
-  }
-  ,
+  },
   "wallet": {
     "title": "Carteira Stellar",
     "select_wallet": "Selecione uma carteira",
@@ -269,8 +268,7 @@
     "invoke_success": "Invocação enviada com sucesso. Veja o console para detalhes.",
     "invoke_error_prefix": "Erro ao invocar contrato: ",
     "error_balances": "Erro ao obter saldos."
-  }
-  ,
+  },
   "cards": {
     "header": {
       "title": "Cartões",
@@ -332,8 +330,7 @@
       "request_sent": "Solicitação de cartão {kind} enviada (mock). Status: Em análise.",
       "virtual_canceled": "Cartão virtual cancelado (mock)."
     }
-  }
-  ,
+  },
   "pix": {
     "header": {
       "title": "Pix",
@@ -397,12 +394,11 @@
       "faq_pix": "Dúvidas sobre Pix",
       "support": "Falar com suporte"
     }
-  }
-  ,
+  },
   "login": {
     "login": {
       "title": "Bem-vindo ao Stellaro",
-      "subtitle": "\u201cSua ponte entre blockchain e o mundo real.\u201d",
+      "subtitle": "“Sua ponte entre blockchain e o mundo real.”",
       "auth": "Autenticação",
       "passkey_login": "Entrar com Passkey",
       "passkey_login_loading": "Verificando passkey...",
@@ -460,8 +456,7 @@
       "email_verify_fail": "Código inválido ou expirado. Tente novamente.",
       "email_code_required": "Informe o código de verificação recebido por e-mail"
     }
-  }
-  ,
+  },
   "help": {
     "title": "Ajuda, FAQ & Suporte",
     "subtitle": "Encontre respostas rápidas ou fale com nosso time (08h–22h).",
@@ -499,49 +494,103 @@
       "account": {
         "title": "Minha conta e segurança",
         "qas": [
-          { "q": "Como recuperar minha senha?", "a": "Use a opção 'Esqueci minha senha' na tela de login. Você receberá um e-mail para redefini-la (mock)." },
-          { "q": "Como ativar autenticação de dois fatores (2FA)?", "a": "Vá em Configurações > Segurança e ative o 2FA. Escolha SMS, e-mail ou app autenticador (mock)." },
-          { "q": "Como bloquear minha conta?", "a": "Vá em Configurações > Segurança > Bloqueio de Emergência. Em casos suspeitos, contate o suporte imediatamente (mock)." }
+          {
+            "q": "Como recuperar minha senha?",
+            "a": "Use a opção 'Esqueci minha senha' na tela de login. Você receberá um e-mail para redefini-la (mock)."
+          },
+          {
+            "q": "Como ativar autenticação de dois fatores (2FA)?",
+            "a": "Vá em Configurações > Segurança e ative o 2FA. Escolha SMS, e-mail ou app autenticador (mock)."
+          },
+          {
+            "q": "Como bloquear minha conta?",
+            "a": "Vá em Configurações > Segurança > Bloqueio de Emergência. Em casos suspeitos, contate o suporte imediatamente (mock)."
+          }
         ]
       },
       "pix": {
         "title": "Depósitos e saques (Pix)",
         "qas": [
-          { "q": "Como depositar via Pix?", "a": "Na página de Pix, gere um QR Code ou use a chave Pix exibida. O crédito é instantâneo na maioria dos casos (mock)." },
-          { "q": "Por que meu Pix ainda não chegou?", "a": "Verifique o status do Pix em Ajuda > Status dos Serviços. Durante manutenção/instabilidade pode haver atraso (mock)." },
-          { "q": "Quais são os limites e taxas?", "a": "Veja Configurações > Limites de Conta e a Política de Taxas na seção Legal (mock)." }
+          {
+            "q": "Como depositar via Pix?",
+            "a": "Na página de Pix, gere um QR Code ou use a chave Pix exibida. O crédito é instantâneo na maioria dos casos (mock)."
+          },
+          {
+            "q": "Por que meu Pix ainda não chegou?",
+            "a": "Verifique o status do Pix em Ajuda > Status dos Serviços. Durante manutenção/instabilidade pode haver atraso (mock)."
+          },
+          {
+            "q": "Quais são os limites e taxas?",
+            "a": "Veja Configurações > Limites de Conta e a Política de Taxas na seção Legal (mock)."
+          }
         ]
       },
       "cards": {
         "title": "Cartões",
         "qas": [
-          { "q": "Como solicitar um cartão?", "a": "Acesse Cartões e clique em 'Solicitar'. Siga as instruções para emissão (mock)." },
-          { "q": "Como desbloquear meu cartão?", "a": "Na página de Cartões, use a ação 'Desbloquear' após receber o cartão físico (mock)." },
-          { "q": "Como pedir 2ª via?", "a": "Na página de Cartões, selecione o cartão e escolha 'Solicitar 2ª via'. Custos podem se aplicar (mock)." }
+          {
+            "q": "Como solicitar um cartão?",
+            "a": "Acesse Cartões e clique em 'Solicitar'. Siga as instruções para emissão (mock)."
+          },
+          {
+            "q": "Como desbloquear meu cartão?",
+            "a": "Na página de Cartões, use a ação 'Desbloquear' após receber o cartão físico (mock)."
+          },
+          {
+            "q": "Como pedir 2ª via?",
+            "a": "Na página de Cartões, selecione o cartão e escolha 'Solicitar 2ª via'. Custos podem se aplicar (mock)."
+          }
         ]
       },
       "kyc": {
         "title": "KYC e privacidade",
         "qas": [
-          { "q": "Por que precisamos de KYC?", "a": "Para cumprir exigências regulatórias e prevenir fraudes. Protegemos seus dados conforme a LGPD (mock)." },
-          { "q": "Quais documentos são aceitos?", "a": "Documento oficial com foto (RG, CNH, passaporte) e comprovante de residência recente (mock)." },
-          { "q": "Meu KYC foi recusado, e agora?", "a": "Verifique a legibilidade dos documentos e tente novamente. Se persistir, contate o suporte (mock)." }
+          {
+            "q": "Por que precisamos de KYC?",
+            "a": "Para cumprir exigências regulatórias e prevenir fraudes. Protegemos seus dados conforme a LGPD (mock)."
+          },
+          {
+            "q": "Quais documentos são aceitos?",
+            "a": "Documento oficial com foto (RG, CNH, passaporte) e comprovante de residência recente (mock)."
+          },
+          {
+            "q": "Meu KYC foi recusado, e agora?",
+            "a": "Verifique a legibilidade dos documentos e tente novamente. Se persistir, contate o suporte (mock)."
+          }
         ]
       },
       "gov": {
         "title": "Governança",
         "qas": [
-          { "q": "Como votar em propostas?", "a": "Vá à página de Governança, veja as propostas ativas e confirme o voto com sua carteira (mock)." },
-          { "q": "Quem pode participar?", "a": "Detentores de tokens de governança conforme as regras da DAO (mock)." },
-          { "q": "Qual é o cronograma?", "a": "Cada proposta exibe prazos de discussão, votação e execução (mock)." }
+          {
+            "q": "Como votar em propostas?",
+            "a": "Vá à página de Governança, veja as propostas ativas e confirme o voto com sua carteira (mock)."
+          },
+          {
+            "q": "Quem pode participar?",
+            "a": "Detentores de tokens de governança conforme as regras da DAO (mock)."
+          },
+          {
+            "q": "Qual é o cronograma?",
+            "a": "Cada proposta exibe prazos de discussão, votação e execução (mock)."
+          }
         ]
       },
       "tokens": {
         "title": "Tokens, saldo e performance",
         "qas": [
-          { "q": "Como meu saldo é calculado?", "a": "Com base em posições, preços de referência e histórico de transações (mock)." },
-          { "q": "Há limites de movimentação?", "a": "Sim. Veja Configurações > Limites de Conta para valores diários e mensais (mock)." },
-          { "q": "Posso exportar meu histórico?", "a": "Sim. Em Configurações > Privacidade, solicite a exportação dos seus dados (mock)." }
+          {
+            "q": "Como meu saldo é calculado?",
+            "a": "Com base em posições, preços de referência e histórico de transações (mock)."
+          },
+          {
+            "q": "Há limites de movimentação?",
+            "a": "Sim. Veja Configurações > Limites de Conta para valores diários e mensais (mock)."
+          },
+          {
+            "q": "Posso exportar meu histórico?",
+            "a": "Sim. Em Configurações > Privacidade, solicite a exportação dos seus dados (mock)."
+          }
         ]
       }
     }
@@ -694,7 +743,11 @@
       "sms": "SMS",
       "on": "Ligado",
       "off": "Desligado",
-      "email_opts": ["Todas", "Somente Segurança", "Nenhuma"],
+      "email_opts": [
+        "Todas",
+        "Somente Segurança",
+        "Nenhuma"
+      ],
       "tx_alert": "Alertar transações acima de"
     },
     "privacy": {
@@ -789,15 +842,6 @@
     "status": {
       "completed": "concluída",
       "pending": "pendente"
-    },
-    "notifications": {
-      "title": "Notificações & Alertas",
-      "view": "ver",
-      "items": {
-        "open_proposal": "Proposta de voto aberta",
-        "kyc_selfie_pending": "Selfie KYC pendente",
-        "review_collateral": "Atenção: revise seu colateral"
-      }
     },
     "loans": {
       "title": "Empréstimos Ativos",
@@ -1149,8 +1193,7 @@
       "support_title": "Atendimento especializado: chat, telefone ou formulário.",
       "support_hours": "Seg–Sex, 9h–18h • Resposta média: 30min"
     }
-  }
-  ,
+  },
   "portfolio": {
     "header": {
       "title": "Portfólio",
@@ -1190,8 +1233,7 @@
       "n2": "Tokens podem apresentar volatilidade elevada. Avalie seu perfil de risco.",
       "n3": "Mantenha práticas de segurança: proteja suas chaves e ative 2FA quando disponível."
     }
-  }
-  ,
+  },
   "stablecoin": {
     "header": {
       "title": "Stablecoin",
@@ -1266,8 +1308,7 @@
       "need_help": "Precisa de ajuda?",
       "warning": "Algumas operações podem ficar indisponíveis enquanto a integração é concluída."
     }
-  }
-  ,
+  },
   "profile": {
     "header": {
       "title": "Perfil & KYC",
@@ -1325,5 +1366,41 @@
       "contact": "Falar com suporte",
       "faq": "FAQ: KYC e prazos"
     }
+  },
+  "notifications": {
+    "title": "Notificações & Alertas",
+    "subtitle": "Gerencie seus alertas e notificações importantes",
+    "view": "ver",
+    "items": {
+      "open_proposal": "Proposta de voto aberta",
+      "kyc_selfie_pending": "Selfie KYC pendente",
+      "review_collateral": "Atenção: revise seu colateral"
+    },
+    "total": "Total de Notificações",
+    "unread": "Não lidas",
+    "critical": "Críticas",
+    "all_time": "Todos os tempos",
+    "need_attention": "Precisam de atenção",
+    "require_action": "Requerem ação imediata",
+    "all_filter": "Todas",
+    "unread_filter": "Não lidas",
+    "critical_filter": "Críticas",
+    "warnings_filter": "Avisos",
+    "success_filter": "Sucesso",
+    "mark_all_read": "Marcar todas como lidas",
+    "no_notifications": "Nenhuma notificação aqui",
+    "all_caught_up": "Você está em dia!",
+    "no_match": "Nenhuma notificação corresponde a este filtro.",
+    "settings_title": "Configurações de Notificação",
+    "email_notifications": "Notificações por Email",
+    "email_desc": "Receba alertas por email",
+    "push_notifications": "Notificações Push",
+    "push_desc": "Receba alertas de push do navegador",
+    "critical_only": "Apenas Críticas",
+    "critical_sms": "Apenas alertas críticos por SMS",
+    "quiet_hours": "Horas Silenciosas",
+    "quiet_hours_desc": "22:00 - 08:00",
+    "mark_as_read": "Marcar como lida",
+    "dismiss": "Descartar"
   }
 }

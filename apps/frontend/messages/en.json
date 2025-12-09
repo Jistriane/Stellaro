@@ -231,6 +231,10 @@
     },
     "footer": {
       "warning": "Risk management involves monitoring and analysis. Always consult our team for important decisions."
+    },
+    "analysis": {
+      "title": "Detailed Risk Analysis",
+      "subtitle": "View metrics and risk indicators of your portfolio with in-depth analysis."
     }
   }
   ,
@@ -791,12 +795,39 @@
     },
     "notifications": {
       "title": "Notifications & Alerts",
+      "subtitle": "Manage your important alerts and notifications",
       "view": "view",
       "items": {
         "open_proposal": "Voting proposal open",
         "kyc_selfie_pending": "KYC selfie pending",
         "review_collateral": "Attention: review your collateral"
-      }
+      },
+      "total": "Total Notifications",
+      "unread": "Unread",
+      "critical": "Critical",
+      "all_time": "All time",
+      "need_attention": "Need your attention",
+      "require_action": "Require immediate action",
+      "all_filter": "All",
+      "unread_filter": "Unread",
+      "critical_filter": "Critical",
+      "warnings_filter": "Warnings",
+      "success_filter": "Success",
+      "mark_all_read": "Mark all as read",
+      "no_notifications": "No notifications here",
+      "all_caught_up": "You're all caught up!",
+      "no_match": "No notifications match this filter.",
+      "settings_title": "Notification Settings",
+      "email_notifications": "Email Notifications",
+      "email_desc": "Receive alerts via email",
+      "push_notifications": "Push Notifications",
+      "push_desc": "Receive browser push alerts",
+      "critical_only": "Critical Only",
+      "critical_sms": "Only critical alerts via SMS",
+      "quiet_hours": "Quiet Hours",
+      "quiet_hours_desc": "10:00 PM - 8:00 AM",
+      "mark_as_read": "Mark as read",
+      "dismiss": "Dismiss"
     },
     "loans": {
       "title": "Active Loans",

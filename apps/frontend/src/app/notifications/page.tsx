@@ -131,16 +131,16 @@ export default function NotificationsPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
+    <div className="p-6 space-y-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
-            <p className="text-gray-400">{t("subtitle")}</p>
+            <p className="text-muted-foreground">{t("subtitle")}</p>
           </div>
           <div className="relative">
-            <Bell className="w-8 h-8 text-gray-400" />
+            <Bell className="w-8 h-8 text-muted-foreground" />
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {unreadCount}
@@ -151,35 +151,35 @@ export default function NotificationsPage() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Total Notifications</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">{t("total")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{notifications.length}</p>
-              <p className="text-xs text-gray-400 mt-1">All time</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("all_time")}</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Unread</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">{t("unread")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-yellow-400">{unreadCount}</p>
-              <p className="text-xs text-gray-400 mt-1">Need your attention</p>
+              <p className="text-3xl font-bold text-yellow-500">{unreadCount}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("need_attention")}</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Critical</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">{t("critical")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-red-400">
+              <p className="text-3xl font-bold text-red-500">
                 {notifications.filter((n) => n.severity === "critical").length}
               </p>
-              <p className="text-xs text-gray-400 mt-1">Require immediate action</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("require_action")}</p>
             </CardContent>
           </Card>
         </div>
@@ -191,7 +191,7 @@ export default function NotificationsPage() {
             onClick={() => setFilter("all")}
             size="sm"
           >
-            All
+            {t("all_filter")}
           </Button>
           <Button
             variant={filter === "unread" ? "default" : "outline"}
@@ -199,28 +199,28 @@ export default function NotificationsPage() {
             size="sm"
             className={unreadCount > 0 ? "relative" : ""}
           >
-            Unread {unreadCount > 0 && `(${unreadCount})`}
+            {t("unread_filter")} {unreadCount > 0 && `(${unreadCount})`}
           </Button>
           <Button
             variant={filter === "critical" ? "default" : "outline"}
             onClick={() => setFilter("critical")}
             size="sm"
           >
-            Critical
+            {t("critical_filter")}
           </Button>
           <Button
             variant={filter === "warning" ? "default" : "outline"}
             onClick={() => setFilter("warning")}
             size="sm"
           >
-            Warnings
+            {t("warnings_filter")}
           </Button>
           <Button
             variant={filter === "success" ? "default" : "outline"}
             onClick={() => setFilter("success")}
             size="sm"
           >
-            Success
+            {t("success_filter")}
           </Button>
         </div>
 
@@ -232,7 +232,7 @@ export default function NotificationsPage() {
             onClick={handleMarkAllAsRead}
             className="text-blue-400"
           >
-            Mark all as read
+            {t("mark_all_read")}
           </Button>
         )}
 
@@ -244,14 +244,14 @@ export default function NotificationsPage() {
               return (
                 <Card
                   key={notif.id}
-                  className={`border-slate-700 transition-all ${
-                    notif.read ? "bg-slate-800 opacity-75" : "bg-slate-800 border-l-4 border-l-blue-500"
+                  className={`transition-all ${
+                    notif.read ? "opacity-75" : "border-l-4 border-l-blue-500"
                   }`}
                 >
                   <CardContent className="pt-6">
                     <div className="flex gap-4">
                       {/* Icon */}
-                      <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center ${notif.color}`}>
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-secondary flex items-center justify-center ${notif.color}`}>
                         <IconComponent className="w-5 h-5" />
                       </div>
 
@@ -265,8 +265,8 @@ export default function NotificationsPage() {
                                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                               )}
                             </div>
-                            <p className="text-gray-400 text-sm mt-1">{notif.message}</p>
-                            <p className="text-xs text-gray-500 mt-2">{notif.timestamp}</p>
+                            <p className="text-muted-foreground text-sm mt-1">{notif.message}</p>
+                            <p className="text-xs text-muted-foreground mt-2">{notif.timestamp}</p>
                           </div>
 
                           {/* Severity Badge */}
@@ -298,17 +298,17 @@ export default function NotificationsPage() {
                               className="text-blue-400 hover:text-blue-300"
                             >
                               <Check className="w-4 h-4 mr-1" />
-                              Mark as read
+                              {t("mark_as_read")}
                             </Button>
                           )}
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => handleDelete(notif.id)}
-                            className="text-gray-400 hover:text-red-400"
+                            className="text-muted-foreground hover:text-red-500"
                           >
                             <X className="w-4 h-4 mr-1" />
-                            Dismiss
+                            {t("dismiss")}
                           </Button>
                         </div>
                       </div>
@@ -318,14 +318,14 @@ export default function NotificationsPage() {
               );
             })
           ) : (
-            <Card className="bg-slate-800 border-slate-700">
+            <Card>
               <CardContent className="pt-8 pb-8 text-center">
-                <Bell className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-400 mb-2">No notifications here</p>
-                <p className="text-sm text-gray-500">
+                <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">{t("no_notifications")}</p>
+                <p className="text-sm text-muted-foreground">
                   {filter === "all"
-                    ? "You're all caught up!"
-                    : "No notifications match this filter."}
+                    ? t("all_caught_up")
+                    : t("no_match")}
                 </p>
               </CardContent>
             </Card>
@@ -333,39 +333,39 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notification Settings */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
-              Notification Settings
+              {t("settings_title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
               <div>
-                <p className="font-medium">Email Notifications</p>
-                <p className="text-sm text-gray-400">Receive alerts via email</p>
+                <p className="font-medium">{t("email_notifications")}</p>
+                <p className="text-sm text-muted-foreground">{t("email_desc")}</p>
               </div>
               <input type="checkbox" id="email-notif" title="Enable email notifications" aria-label="Email notifications" defaultChecked className="w-5 h-5" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
               <div>
-                <p className="font-medium">Push Notifications</p>
-                <p className="text-sm text-gray-400">Receive browser push alerts</p>
+                <p className="font-medium">{t("push_notifications")}</p>
+                <p className="text-sm text-muted-foreground">{t("push_desc")}</p>
               </div>
               <input type="checkbox" id="push-notif" title="Enable push notifications" aria-label="Push notifications" defaultChecked className="w-5 h-5" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
               <div>
-                <p className="font-medium">Critical Only</p>
-                <p className="text-sm text-gray-400">Only critical alerts via SMS</p>
+                <p className="font-medium">{t("critical_only")}</p>
+                <p className="text-sm text-muted-foreground">{t("critical_sms")}</p>
               </div>
               <input type="checkbox" id="critical-sms" title="Only send critical alerts via SMS" aria-label="Critical alerts SMS only" defaultChecked className="w-5 h-5" />
             </div>
-            <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
               <div>
-                <p className="font-medium">Quiet Hours</p>
-                <p className="text-sm text-gray-400">10:00 PM - 8:00 AM</p>
+                <p className="font-medium">{t("quiet_hours")}</p>
+                <p className="text-sm text-muted-foreground">{t("quiet_hours_desc")}</p>
               </div>
               <input type="checkbox" id="quiet-hours" title="Enable quiet hours" aria-label="Quiet hours" className="w-5 h-5" />
             </div>
