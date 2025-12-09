@@ -890,6 +890,15 @@
       "kyc_pending": "pendente",
       "complete_kyc": "Completar KYC"
     },
+    "notifications": {
+      "title": "Notificações & Alertas",
+      "view": "ver",
+      "items": {
+        "open_proposal": "Proposta de voto aberta",
+        "kyc_selfie_pending": "Selfie KYC pendente",
+        "review_collateral": "Atenção: revise seu colateral"
+      }
+    },
     "analytics": {
       "title": "Analytics Stellaro",
       "subtitle": "Métricas e dados em tempo real do protocolo",
