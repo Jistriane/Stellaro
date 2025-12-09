@@ -125,10 +125,10 @@ export default function WalletPanel() {
   }
 
   return (
-    <Card className="w-full max-w-xl border-slate-600/40 bg-white/50 dark:bg-slate-900/40 backdrop-blur shadow-md">
+    <Card className="w-full max-w-4xl border-slate-600/40 bg-white/50 dark:bg-slate-900/40 backdrop-blur shadow-md">
       <CardHeader className="pb-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3 min-w-0">
             <Image src="/logo.png" alt="Stellaro" width={42} height={42} className="rounded-md" />
             <div>
               <CardTitle className="text-slate-700 dark:text-foreground">{t("title")}</CardTitle>
@@ -138,11 +138,11 @@ export default function WalletPanel() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2 sm:justify-end w-full sm:w-auto">
             {!connected && (
               mounted ? (
                 <select
-                  className="rounded-lg bg-slate-800 text-slate-100 border border-slate-600 px-3 py-2 text-sm"
+                  className="rounded-lg bg-slate-800 text-slate-100 border border-slate-600 px-3 py-2 text-sm w-full sm:w-64 min-w-[220px]"
                   value={selected}
                   onChange={(e) => setSelected(e.target.value)}
                   disabled={loading}
@@ -160,7 +160,7 @@ export default function WalletPanel() {
                 </select>
               ) : (
                 <select
-                  className="rounded-lg bg-slate-800 text-slate-100 border border-slate-600 px-3 py-2 text-sm"
+                  className="rounded-lg bg-slate-800 text-slate-100 border border-slate-600 px-3 py-2 text-sm w-full sm:w-64 min-w-[220px]"
                   value=""
                   disabled
                   title="Detecting wallets"
@@ -181,7 +181,7 @@ export default function WalletPanel() {
                   await forceWalletDetection();
                   refreshAvailable();
                 }}
-                className="rounded-full bg-slate-700 text-slate-100 hover:bg-slate-600 px-3 py-2 text-xs"
+                className="rounded-full bg-slate-700 text-slate-100 hover:bg-slate-600 px-3 py-2 text-xs w-full sm:w-auto"
                 title={t("recalc_title")}
               >
                 {t("recheck")}
@@ -189,13 +189,13 @@ export default function WalletPanel() {
             )}
             {/* Aviso MetaMask removido */}
             {connected ? (
-              <button onClick={disconnect} className="rounded-full bg-primary text-slate-900 hover:bg-primary-600 px-4 py-2 text-sm font-medium">
+              <button onClick={disconnect} className="rounded-full bg-primary text-slate-900 hover:bg-primary-600 px-4 py-2 text-sm font-medium w-full sm:w-auto">
                 {t("disconnect")}
               </button>
             ) : (
               <button
                 onClick={() => (selected === "freighter" ? connectFreighter() : connectByType(selected as WalletType))}
-                className="rounded-full bg-primary text-slate-900 hover:bg-primary-600 px-4 py-2 text-sm font-medium"
+                className="rounded-full bg-primary text-slate-900 hover:bg-primary-600 px-4 py-2 text-sm font-medium w-full sm:w-auto"
                 disabled={loading || !selected}
               >
                 {loading
