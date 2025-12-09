@@ -79,16 +79,16 @@ export default function SettingsAdvancedPage() {
   const walletAddress = "stellar1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
-          <p className="text-gray-400">Advanced settings and integrations</p>
+          <p className="text-muted-foreground">Advanced settings and integrations</p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 flex-wrap border-b border-slate-700">
+        <div className="flex gap-2 flex-wrap border-b border-border">
           {[
             { id: "security", label: "Security", icon: Lock },
             { id: "api", label: "API Keys", icon: Code },
@@ -101,8 +101,8 @@ export default function SettingsAdvancedPage() {
               onClick={() => setActiveTab(id)}
               className={`px-4 py-2 flex items-center gap-2 border-b-2 transition-colors ${
                 activeTab === id
-                  ? "border-blue-500 text-white"
-                  : "border-transparent text-gray-400 hover:text-white"
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -115,7 +115,7 @@ export default function SettingsAdvancedPage() {
         {activeTab === "security" && (
           <div className="space-y-6">
             {/* Two-Factor Auth */}
-            <Card className="bg-slate-800 border-slate-700">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-4 h-4" />
@@ -123,10 +123,10 @@ export default function SettingsAdvancedPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-slate-700 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
                   <div>
                     <p className="font-medium">Status</p>
-                    <p className="text-sm text-gray-400">TOTP/Authenticator app</p>
+                    <p className="text-sm text-muted-foreground">TOTP/Authenticator app</p>
                   </div>
                   <Badge className="bg-green-900 text-green-200">✓ Enabled</Badge>
                 </div>
@@ -137,7 +137,7 @@ export default function SettingsAdvancedPage() {
             </Card>
 
             {/* Wallet Security */}
-            <Card className="bg-slate-800 border-slate-700">
+            <Card>
               <CardHeader>
                 <CardTitle>Wallet Address & Keys</CardTitle>
               </CardHeader>
@@ -152,7 +152,7 @@ export default function SettingsAdvancedPage() {
                       title="Your public wallet address"
                       aria-label="Public wallet address"
                       readOnly
-                      className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-xs font-mono"
+                      className="flex-1 px-3 py-2 bg-secondary border border-border rounded text-xs font-mono"
                     />
                     <Button
                       size="sm"
@@ -178,7 +178,7 @@ export default function SettingsAdvancedPage() {
                       title="Your private key (hidden)"
                       aria-label="Private key"
                       readOnly
-                      className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-xs"
+                      className="flex-1 px-3 py-2 bg-secondary border border-border rounded text-xs"
                     />
                     <Button
                       size="sm"
@@ -188,13 +188,13 @@ export default function SettingsAdvancedPage() {
                       <Eye className="w-4 h-4" />
                     </Button>
                   </div>
-                  <p className="text-xs text-yellow-400 mt-2 flex items-center gap-1">
+                  <p className="text-xs text-yellow-600 mt-2 flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
                     Never share your private key with anyone
                   </p>
                 </div>
 
-                <Button variant="outline" className="w-full text-yellow-400">
+                <Button variant="outline" className="w-full">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Rotate Private Key
                 </Button>
@@ -202,26 +202,26 @@ export default function SettingsAdvancedPage() {
             </Card>
 
             {/* Active Sessions */}
-            <Card className="bg-slate-800 border-slate-700">
+            <Card>
               <CardHeader>
                 <CardTitle>Active Sessions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                   <div>
                     <p className="font-medium text-sm">Safari on macOS</p>
-                    <p className="text-xs text-gray-400">IP: 192.168.1.1 • Last active: now</p>
+                    <p className="text-xs text-muted-foreground">IP: 192.168.1.1 • Last active: now</p>
                   </div>
                   <Badge variant="outline" className="bg-green-900 text-green-200">
                     Current
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                   <div>
                     <p className="font-medium text-sm">Chrome on Windows</p>
-                    <p className="text-xs text-gray-400">IP: 203.0.113.42 • Last active: 2 days ago</p>
+                    <p className="text-xs text-muted-foreground">IP: 203.0.113.42 • Last active: 2 days ago</p>
                   </div>
-                  <Button size="sm" variant="ghost" className="text-red-400">
+                  <Button size="sm" variant="ghost" className="text-red-600">
                     Logout
                   </Button>
                 </div>
@@ -236,20 +236,20 @@ export default function SettingsAdvancedPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-xl font-bold mb-1">API Keys</h3>
-                <p className="text-sm text-gray-400">Manage your API keys for integrations</p>
+                <p className="text-sm text-muted-foreground">Manage your API keys for integrations</p>
               </div>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Button size="sm">
                 + New Key
               </Button>
             </div>
 
             {apiKeys.map((key) => (
-              <Card key={key.id} className="bg-slate-800 border-slate-700">
+              <Card key={key.id}>
                 <CardContent className="pt-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">{key.name}</p>
-                      <p className="text-xs text-gray-400 mt-1">Created {key.created}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Created {key.created}</p>
                     </div>
                     <Badge
                       variant={key.status === "active" ? "default" : "outline"}
@@ -260,7 +260,7 @@ export default function SettingsAdvancedPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-400 mb-2">Key</p>
+                    <p className="text-xs text-muted-foreground mb-2">Key</p>
                     <div className="flex gap-2">
                       <input
                         type="text"
@@ -268,7 +268,7 @@ export default function SettingsAdvancedPage() {
                         readOnly
                         title="API Key"
                         aria-label="API Key value"
-                        className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-xs font-mono"
+                        className="flex-1 px-3 py-2 bg-secondary border border-border rounded text-xs font-mono"
                       />
                       <Button
                         size="sm"
@@ -284,13 +284,13 @@ export default function SettingsAdvancedPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>Last used: {key.lastUsed}</span>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => handleRevokeKey(key.id)}
-                      className="text-red-400 hover:text-red-300"
+                      className="text-red-600"
                     >
                       Revoke
                     </Button>
@@ -330,13 +330,13 @@ export default function SettingsAdvancedPage() {
                 description: "Email notifications",
               },
             ].map((integration) => (
-              <Card key={integration.name} className="bg-slate-800 border-slate-700">
+              <Card key={integration.name}>
                 <CardContent className="pt-6 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <span className="text-3xl">{integration.icon}</span>
                     <div>
                       <p className="font-medium">{integration.name}</p>
-                      <p className="text-xs text-gray-400">{integration.description}</p>
+                      <p className="text-xs text-muted-foreground">{integration.description}</p>
                     </div>
                   </div>
                   <Button
