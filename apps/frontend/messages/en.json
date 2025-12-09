@@ -1292,5 +1292,36 @@
       "contact": "Contact support",
       "faq": "FAQ: KYC and timelines"
     }
+  },
+  "docs": {
+    "title": "Documentation",
+    "subtitle": "Learn how to use Stellaro with our comprehensive guides",
+    "getting_started": {
+      "title": "Getting Started",
+      "description": "Introduction to Stellaro and first steps"
+    },
+    "guides": {
+      "title": "Guides",
+      "description": "Detailed guides about features"
+    },
+    "api": {
+      "title": "API",
+      "description": "Technical API documentation"
+    },
+    "faq": {
+      "title": "FAQ",
+      "description": "Answers to common questions"
+    },
+    "sections": {
+      "wallets": "Wallets & Assets",
+      "loans": "Loans & Collateral",
+      "trading": "Trading & Liquidity",
+      "governance": "Governance & Voting",
+      "security": "Security & Privacy",
+      "defi": "DeFi & Yields"
+    },
+    "search": "Search documentation...",
+    "no_results": "No results found",
+    "breadcrumb": "Documentation"
   }
 }

@@ -1402,5 +1402,36 @@
     "quiet_hours_desc": "22:00 - 08:00",
     "mark_as_read": "Marcar como lida",
     "dismiss": "Descartar"
+  },
+  "docs": {
+    "title": "Documentação",
+    "subtitle": "Aprenda como usar o Stellaro com nossos guias completos",
+    "getting_started": {
+      "title": "Começando",
+      "description": "Introdução ao Stellaro e primeiros passos"
+    },
+    "guides": {
+      "title": "Guias",
+      "description": "Guias detalhados sobre funcionalidades"
+    },
+    "api": {
+      "title": "API",
+      "description": "Documentação técnica da API"
+    },
+    "faq": {
+      "title": "Perguntas Frequentes",
+      "description": "Respostas para dúvidas comuns"
+    },
+    "sections": {
+      "wallets": "Carteiras & Ativos",
+      "loans": "Empréstimos & Colateral",
+      "trading": "Trading & Liquidez",
+      "governance": "Governança & Votação",
+      "security": "Segurança & Privacidade",
+      "defi": "DeFi & Rendimentos"
+    },
+    "search": "Pesquisar documentação...",
+    "no_results": "Nenhum resultado encontrado",
+    "breadcrumb": "Documentação"
   }
 }
