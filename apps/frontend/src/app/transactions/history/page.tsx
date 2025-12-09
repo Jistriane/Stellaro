@@ -101,12 +101,11 @@ export default function TransactionHistoryPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="p-6 space-y-6">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-4xl font-bold mb-2">{t("history.title")}</h1>
-            <p className="text-gray-400">{t("history.subtitle")}</p>
+            <h1 className="text-2xl font-semibold mb-1">{t("history.title")}</h1>
+            <p className="text-xs text-slate-500">{t("history.subtitle")}</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
@@ -121,15 +120,15 @@ export default function TransactionHistoryPage() {
         </div>
 
         {/* Search & Filters */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card>
           <CardContent className="pt-6">
             <div className="flex gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search transaction ID or hash..."
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -160,14 +159,14 @@ export default function TransactionHistoryPage() {
         </Card>
 
         {/* Transactions Table */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card>
           <CardHeader>
             <CardTitle>Transaction History</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="border-b border-slate-700">
+                <thead className="border-b border-slate-200 dark:border-slate-700">
                   <tr>
                     <th className="text-left py-2 px-2">ID</th>
                     <th className="text-left py-2 px-2">Type</th>
@@ -180,7 +179,7 @@ export default function TransactionHistoryPage() {
                 </thead>
                 <tbody>
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-slate-700 hover:bg-slate-700/50">
+                    <tr key={tx.id} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                       <td className="font-mono text-xs py-2 px-2">{tx.id}</td>
                       <td className="py-2 px-2">
                         <Badge className={getTypeColor(tx.type)}>
@@ -191,15 +190,15 @@ export default function TransactionHistoryPage() {
                       <td className="font-bold py-2 px-2">
                         {tx.amount.toLocaleString()}
                       </td>
-                      <td className="text-xs text-gray-400 py-2 px-2">
+                      <td className="text-xs text-slate-500 py-2 px-2">
                         {tx.date} {tx.time}
                       </td>
                       <td className="py-2 px-2">
-                        <Badge variant="outline" className="bg-green-900 text-green-200">
+                        <Badge variant="outline" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                           ✓ {tx.status}
                         </Badge>
                       </td>
-                      <td className="font-mono text-xs text-gray-400 hover:text-white cursor-pointer py-2 px-2">
+                      <td className="font-mono text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer py-2 px-2">
                         {tx.hash}
                       </td>
                     </tr>
@@ -212,39 +211,38 @@ export default function TransactionHistoryPage() {
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Total Transactions</CardTitle>
+              <CardTitle className="text-xs text-slate-500">Total Transactions</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{transactions.length}</p>
-              <p className="text-xs text-gray-400 mt-1">Last 30 days</p>
+              <p className="text-xs text-slate-500 mt-1">Last 30 days</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Total Volume</CardTitle>
+              <CardTitle className="text-xs text-slate-500">Total Volume</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">
                 ${transactions.reduce((sum, tx) => sum + tx.amount, 0).toLocaleString()}
               </p>
-              <p className="text-xs text-gray-400 mt-1">Moved this month</p>
+              <p className="text-xs text-slate-500 mt-1">Moved this month</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Success Rate</CardTitle>
+              <CardTitle className="text-xs text-slate-500">Success Rate</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-green-400">100%</p>
-              <p className="text-xs text-gray-400 mt-1">All transactions succeeded</p>
+              <p className="text-3xl font-bold text-green-600">100%</p>
+              <p className="text-xs text-slate-500 mt-1">All transactions succeeded</p>
             </CardContent>
           </Card>
         </div>
-      </div>
     </div>
   );
 }

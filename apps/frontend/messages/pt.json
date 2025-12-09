@@ -841,6 +841,36 @@
       "subtitle": "Gerencie sua liquidez e ganhe recompensas"
     }
   },
+  "transactions": {
+    "history": {
+      "title": "Histórico de Transações",
+      "subtitle": "Acompanhe todas as suas operações na plataforma"
+    }
+  },
+  "bridge": {
+    "title": "Bridge de Tokens",
+    "subtitle": "Transfira tokens entre diferentes blockchains com segurança",
+    "from_chain": "Rede de Origem",
+    "to_chain": "Rede de Destino",
+    "amount": "Quantidade",
+    "you_will_receive": "Você receberá",
+    "bridge_protocol": "Protocolo de Bridge",
+    "fees_summary": "Resumo de Taxas",
+    "bridge_fee": "Taxa de Bridge",
+    "network_fee": "Taxa de Rede",
+    "total_cost": "Custo Total",
+    "bridge_button": "Transferir Tokens",
+    "bridging": "Transferindo...",
+    "confirmation_time": "Tempo de Confirmação",
+    "average_bridge_time": "Tempo médio de transferência",
+    "supported_chains": "Redes Suportadas",
+    "select_source_destination": "Selecione origem e destino",
+    "min_amount": "Quantidade Mínima",
+    "minimum_bridge_value": "Valor mínimo para transferência",
+    "recent_bridge_transactions": "Transações Recentes",
+    "safety_information": "Informações de Segurança",
+    "safety_message": "Sempre verifique se está transferindo para o endereço correto. Transações de bridge são irreversíveis. Verifique as taxas e protocolos antes de prosseguir."
+  },
   "loans": {
     "header": {
       "title": "Empréstimos",
