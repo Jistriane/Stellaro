@@ -222,14 +222,13 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 
 **📚 Comprehensive documentation for v3.0 architecture:**
 
-- **[Quick Start Guide](./docs/QUICK_START.md)** - Week 1 implementation guide
+- **[Quick Start Guide](./docs/QUICK_START_GUIDE.md)** - Week 1 implementation guide
 - **[Architecture Decision Records](./docs/ADRs.md)** - Technical decisions and rationale
 - **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide (9/9 suites, 46 tests)
 - **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive testing status (63 suites, 270+ tests)
 - **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics (35.11%)
-- **[Progress Report](./docs/PROGRESS.md)** - Implementation status and metrics
-- **[English Manual](./docs/Manual.EN.md)** - Complete user and developer guide
-- **[Portuguese Manual](./docs/Manual.pt-BR.md)** - Complete guide in Portuguese
+- **[Project Completion Report](./docs/PROJECT_COMPLETION_REPORT.md)** - Implementation status and metrics
+- **[Manual (EN)](./docs/Manual.md)** - Complete user and developer guide
 
 ### Key Features Documentation
 
@@ -350,10 +349,10 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 
 ### Project Status
 
-- Detailed progress: `docs/PROGRESS_UPDATE_YYYYMMDD.md`
-- Task list: `TODO.md`
+- Detailed progress: [PROJECT_COMPLETION_REPORT.md](./docs/PROJECT_COMPLETION_REPORT.md)
+- Task list: [ACTION_GUIDE_NEXT_STEPS.md](./docs/ACTION_GUIDE_NEXT_STEPS.md)
 
-**📖 For detailed setup, see [QUICK_START.md](./QUICK_START.md)**
+**📖 For detailed setup, see [QUICK_START_GUIDE.md](./docs/QUICK_START_GUIDE.md)**
 
 ## Testing
 
