@@ -179,42 +179,42 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 
 ```mermaid
 flowchart LR
-  subgraph UI[Client Layer]
-    U[User Wallet / Passkey]
-    F[Frontend\nNext.js]
+  subgraph UI["Client Layer"]
+    U["User Wallet / Passkey"]
+    F["Frontend - Next.js"]
     U --> F
   end
 
-  subgraph API[Application Layer]
-    B[Backend API\nNestJS]
+  subgraph API["Application Layer"]
+    B["Backend API - NestJS"]
   end
 
-  subgraph AGENTS[AI and Business Automation]
-    A1[Risk Agent\nElizaOS]
-    A2[Compliance and Reserve\nKYC/AML]
-    A3[Payments\nPIX / Card Rails]
+  subgraph AGENTS["AI and Business Automation"]
+    A1["Risk Agent - ElizaOS"]
+    A2["Compliance and Reserve - KYC/AML"]
+    A3["Payments - PIX/Card Rails"]
   end
 
-  subgraph CHAIN[On-Chain Layer (Soroban)]
-    C1[Stablecoin]
-    C2[Loans Pool]
-    C3[Portfolio]
-    C4[Governance]
-    C5[ZK Verifier]
-    C6[Batch Executor]
-    C7[MEV Guard]
+  subgraph CHAIN["On-Chain Layer - Soroban"]
+    C1["Stablecoin"]
+    C2["Loans Pool"]
+    C3["Portfolio"]
+    C4["Governance"]
+    C5["ZK Verifier"]
+    C6["Batch Executor"]
+    C7["MEV Guard"]
   end
 
-  subgraph DATA[Data and Integrations]
-    O1[Reflector / DEX Oracles]
-    O2[Horizon / Soroban RPC]
+  subgraph DATA["Data and Integrations"]
+    O1["Reflector and DEX Oracles"]
+    O2["Horizon and Soroban RPC"]
     D1[(PostgreSQL)]
     D2[(Redis)]
   end
 
-  subgraph OBS[Observability]
-    M1[Prometheus]
-    M2[Grafana]
+  subgraph OBS["Observability"]
+    M1["Prometheus"]
+    M2["Grafana"]
     M1 --> M2
   end
 
