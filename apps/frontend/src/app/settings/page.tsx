@@ -2,8 +2,9 @@
 
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
@@ -14,8 +15,6 @@ export default function SettingsPage() {
   useRealTimeUpdates();
   const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   // Perfil real do backend
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL, []);
   const [account, setAccount] = useState({
@@ -171,15 +170,16 @@ export default function SettingsPage() {
 
   // Apply language change: set cookie and do full reload preserving other params
   function applyLanguage(next: "pt" | "en") {
-    const current = pathname || "/";
-    const params = new URLSearchParams(searchParams?.toString());
+    const currentPath = typeof window !== "undefined" ? window.location.pathname : "/";
+    const currentSearch = typeof window !== "undefined" ? window.location.search : "";
+    const params = new URLSearchParams(currentSearch);
     try {
       document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000`;
     } catch {}
     // remove ?lang se existir
     if (params.has("lang")) params.delete("lang");
     const qs = params.toString();
-    const cleanHref = qs ? `${current}?${qs}` : current;
+    const cleanHref = qs ? `${currentPath}?${qs}` : currentPath;
     const hrefWithBuster = `${cleanHref}${qs ? "&" : "?"}_l=${Date.now()}`;
     setLang(next);
     if (typeof window !== "undefined") {
@@ -418,9 +418,9 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm">
           <div className="flex flex-wrap gap-2">
-            <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("support.help_center")}</a>
-            <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("support.open_ticket")}</a>
-            <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("support.report_bug")}</a>
+            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("support.help_center")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("support.open_ticket")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("support.report_bug")}</Link>
           </div>
         </CardContent>
       </Card>
@@ -432,11 +432,11 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="text-sm">
           <div className="flex flex-wrap gap-2">
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.terms")}</a>
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.privacy")}</a>
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.fees")}</a>
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.contracts")}</a>
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.transparency")}</a>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.terms")}</Link>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.privacy")}</Link>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.fees")}</Link>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.contracts")}</Link>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("legal.transparency")}</Link>
           </div>
         </CardContent>
       </Card>

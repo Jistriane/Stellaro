@@ -80,7 +80,7 @@ export NEXT_PUBLIC_LOANS_POOL_MAINNET="CC..."
 # Build and deploy frontend
 cd apps/frontend
 npm run build
-npm run deploy:prod  # or vercel deploy --prod
+npm run build:pages
 
 # Verify site is accessible
 curl https://stellaro.io/
@@ -169,9 +169,6 @@ kubectl scale deployment stellaro-backend --replicas=3
 # Build static site
 cd apps/frontend
 npm run build
-
-# Deploy to Vercel
-vercel deploy --prod
 
 # Deploy to AWS S3 + CloudFront
 aws s3 sync out/ s3://stellaro-prod/

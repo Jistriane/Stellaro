@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
@@ -191,8 +192,8 @@ export default function PixPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 text-sm">
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("help.faq_pix")}</a>
-            <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.support")}</a>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("help.faq_pix")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.support")}</Link>
           </div>
         </CardContent>
       </Card>

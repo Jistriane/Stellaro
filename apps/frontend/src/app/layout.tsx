@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { getLocale, getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { LayoutClient } from "./layout-client";
-
-// Keep force-dynamic to avoid hydration/locale mismatches
-export const dynamic = "force-dynamic";
+import enMessages from "../../messages/en.json";
 
 // Geist fonts commented for build compatibility
 // const geistSans = Geist({
@@ -29,13 +26,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const locale = "en";
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
       <body className="antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={enMessages}>
           <LayoutClient>{children}</LayoutClient>
         </NextIntlClientProvider>
       </body>

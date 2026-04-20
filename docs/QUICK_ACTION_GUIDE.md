@@ -277,8 +277,8 @@ Coverage: 57.62% (exceeds 50% target)
 # Build production
 npm run build
 
-# Deploy frontend (Vercel)
-vercel --prod
+# Deploy frontend (GitHub Pages)
+gh workflow run github-pages-deploy.yml
 
 # Deploy backend (Docker)
 docker build -t stellaro-backend .

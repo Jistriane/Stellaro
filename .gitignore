@@ -53,5 +53,4 @@ agents/venv/
 
 # Rust/Emacs flycheck temp files
 contracts/target/flycheck0/
-.vercel
 .env*.local

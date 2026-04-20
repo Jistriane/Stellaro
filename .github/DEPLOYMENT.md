@@ -8,28 +8,10 @@ Stellaro has three main deployment paths:
 
 | Target | Workflow | Trigger | Environment |
 |--------|----------|---------|-------------|
-| **Vercel** | `frontend-deploy.yml` | Push to master/main (PR preview) | Production-like |
 | **GitHub Pages** | `github-pages-deploy.yml` | Push to master/main | Static/Documentation |
 | **Stellar Testnet** | `deploy-contracts.yml` | Manual (`workflow_dispatch`) or tags | Testing |
 
 ## Frontend Deployments
-
-### Vercel Preview & Production
-
-The frontend automatically deploys to Vercel on every push and PR:
-
-- **Pull Requests**: Creates preview environment, posts URL as sticky comment
-- **Push to master/main**: Deploys to production environment
-- **Status**: Check GitHub Actions > Frontend Deploy
-
-**Requirements:**
-- `VERCEL_TOKEN` - Vercel API token
-- `VERCEL_ORG_ID` - Vercel organization ID  
-- `VERCEL_PROJECT_ID` - Vercel project ID
-
-**Setup:**
-1. Go to Repository Settings > Secrets and variables > Actions
-2. Create secrets with your Vercel credentials (from `vercel.com/account/tokens`)
 
 ### GitHub Pages Static Export
 
@@ -118,9 +100,6 @@ All workflows can be manually triggered via GitHub CLI or the UI:
 # Frontend tests
 gh workflow run frontend-tests.yml
 
-# Frontend deploy to Vercel
-gh workflow run frontend-deploy.yml
-
 # GitHub Pages deploy
 gh workflow run github-pages-deploy.yml
 
@@ -157,17 +136,12 @@ Key environment variables used in deployments:
 ## Security Best Practices
 
 1. **Never commit secrets** - All keys/tokens go in GitHub Secrets only
-2. **Rotate secrets** - Periodically update Vercel tokens and Soroban keys
-3. **Limit scope** - Use minimal permissions (Vercel tokens, key accounts)
+2. **Rotate secrets** - Periodically update deployment keys and Soroban keys
+3. **Limit scope** - Use minimal permissions (deployment keys, key accounts)
 4. **Audit deployments** - Check GitHub Actions logs for unauthorized runs
 5. **Require reviews** - Consider requiring approvals before manual contract deploys
 
 ## Troubleshooting
-
-### Vercel deployment fails
-- Check `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` in GitHub Secrets
-- Ensure token has project access: `vercel.com/account/tokens`
-- Verify project ID matches: `vercel projects ls`
 
 ### Pages deployment shows 404
 - Check GitHub Pages settings: Repository > Settings > Pages
@@ -188,7 +162,6 @@ Key environment variables used in deployments:
 ## Related Files
 
 - Frontend build config: `apps/frontend/next.config.mjs`
-- Vercel config: `vercel.json`
 - Contract deployment script: `./deploy-testnet.sh`
 - GitHub Actions: `.github/workflows/*.yml`
 - Environment configs: `.env-dev`, `.env-testnet`

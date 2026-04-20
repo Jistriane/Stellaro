@@ -6,6 +6,25 @@ const resolvedBasePath =
   process.env.NEXT_PUBLIC_BASE_PATH ||
   (isGitHubPages && repositoryName ? `/${repositoryName}` : '');
 
+const securityHeaders = [
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  {
+    key: 'X-Frame-Options',
+    value: 'DENY',
+  },
+  {
+    key: 'Referrer-Policy',
+    value: 'strict-origin-when-cross-origin',
+  },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=()'
+  },
+];
+
 const nextConfig = {
   poweredByHeader: false,
   typescript: {
@@ -19,31 +38,6 @@ const nextConfig = {
     contentSecurityPolicy: "script-src 'none'; frame-src 'none'; sandbox;",
     contentDispositionType: 'attachment',
   },
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
-          },
-        ],
-      },
-    ];
-  },
   ...(isGitHubPages
     ? {
         output: 'export',
@@ -52,12 +46,20 @@ const nextConfig = {
         assetPrefix: resolvedBasePath,
       }
     : {}),
+  ...(!isGitHubPages
+    ? {
+        async headers() {
+          return [
+            {
+              source: '/:path*',
+              headers: securityHeaders,
+            },
+          ];
+        },
+      }
+    : {}),
 };
 
-// Only apply next-intl plugin when NOT building for GitHub Pages
-// (next-intl is incompatible with static export)
-const withNextIntl = isGitHubPages
-  ? (config) => config
-  : createNextIntlPlugin('./src/i18n/request.ts');
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 export default withNextIntl(nextConfig);

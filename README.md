@@ -160,10 +160,9 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 
 ### Frontend (Testnet)
 
-- **URL**: https://stellaro-frontend-testnet.vercel.app
-- **Platform**: Vercel (automatic deployment on push to master)
+- **URL**: https://jistriane.github.io/Stellaro/
+- **Platform**: GitHub Pages (automatic deployment on push to master)
 - **Status**: Active
-- **Static Pages**: https://jistriane.github.io/Stellaro/ (GitHub Pages, auto-updated)
 - **Last Deployment**: December 9, 2025
 
 ### Deployment Workflows
@@ -172,8 +171,6 @@ Stellaro uses fully automated GitHub Actions workflows for continuous deployment
 
 | Platform | Trigger | Status | Details |
 |----------|---------|--------|---------|
-| **Vercel (Preview)** | Pull Request | ✅ Active | Auto-preview URL in PR comments |
-| **Vercel (Production)** | Push to master | ✅ Active | Live at https://stellaro-frontend-testnet.vercel.app |
 | **GitHub Pages** | Push to master | ✅ Active | Static export at https://jistriane.github.io/Stellaro/ |
 | **Smart Contracts** | Manual + Tags | ✅ Ready | Manual workflow for Stellar Testnet deploys |
 | **Frontend Tests** | Push/PR | ✅ Active | Lint + build validation gating |
@@ -320,7 +317,7 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 
 - **[Start Here](./docs/START_HERE.md)** - Current documentation entry point
 - **[Architecture Decision Records](./docs/ADRs.md)** - Technical decisions and rationale
-- **[Deployment Guide](./.github/DEPLOYMENT.md)** - Automated CI/CD workflows (Vercel, GitHub Pages, Testnet)
+- **[Deployment Guide](./.github/DEPLOYMENT.md)** - Automated CI/CD workflows (GitHub Pages, Testnet)
 - **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide (9/9 suites, 46 tests)
 - **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive testing status (63 suites, 270+ tests)
 - **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics (35.11%)

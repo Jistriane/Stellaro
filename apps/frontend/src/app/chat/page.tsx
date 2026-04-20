@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
@@ -196,15 +197,15 @@ export default function ChatPage() {
 
           {/* Useful links */}
           <div className="flex flex-wrap gap-2 text-xs">
-            <a href="/help" className="px-3 py-1.5 rounded bg-slate-800">{t("links.help")}</a>
-            <a href="/help" className="px-3 py-1.5 rounded bg-slate-800">{t("links.faq")}</a>
-            <a href="/docs" className="px-3 py-1.5 rounded bg-slate-800">{t("links.articles")}</a>
-            <a href="/pix" className="px-3 py-1.5 rounded bg-slate-800">{t("links.pix_status")}</a>
+            <Link href="/help" className="px-3 py-1.5 rounded bg-slate-800">{t("links.help")}</Link>
+            <Link href="/help" className="px-3 py-1.5 rounded bg-slate-800">{t("links.faq")}</Link>
+            <Link href="/docs" className="px-3 py-1.5 rounded bg-slate-800">{t("links.articles")}</Link>
+            <Link href="/pix" className="px-3 py-1.5 rounded bg-slate-800">{t("links.pix_status")}</Link>
           </div>
 
           {/* Security and Privacy */}
           <div className="text-xs text-amber-300/90 bg-amber-900/20 border border-amber-800/50 rounded px-3 py-2">
-            ⚠️ {t("privacy")} <a href="/docs" className="underline">{t("privacy_link")}</a>
+            ⚠️ {t("privacy")} <Link href="/docs" className="underline">{t("privacy_link")}</Link>
           </div>
 
           {/* Service evaluation */}

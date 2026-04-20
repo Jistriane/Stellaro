@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -177,10 +178,10 @@ export default function HelpPage() {
           <CardTitle>{t("tutorials_title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2 text-sm">
-          <a href="/pix" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_pix")}</a>
-          <a href="/cards" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_cards")}</a>
-          <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_denied")}</a>
-          <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_docs")}</a>
+          <Link href="/pix" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_pix")}</Link>
+          <Link href="/cards" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_cards")}</Link>
+          <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_denied")}</Link>
+          <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("tutorials_docs")}</Link>
         </CardContent>
       </Card>
 
@@ -190,7 +191,7 @@ export default function HelpPage() {
           <CardTitle>{t("support_title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2 text-sm items-center">
-          <a href="/chat" className="px-3 py-2 rounded bg-primary text-black">{t("open_chat")}</a>
+          <Link href="/chat" className="px-3 py-2 rounded bg-primary text-black">{t("open_chat")}</Link>
           <a href="mailto:suporte@stelato.app" className="px-3 py-2 rounded bg-slate-800">{t("email")}</a>
           <a href="https://api.whatsapp.com/send?phone=5500000000000" target="_blank" rel="noopener noreferrer" className="px-3 py-2 rounded bg-slate-800">{t("whatsapp")}</a>
           <a href="https://t.me/stelato_suporte" target="_blank" rel="noopener noreferrer" className="px-3 py-2 rounded bg-slate-800">{t("telegram")}</a>
@@ -211,7 +212,7 @@ export default function HelpPage() {
             <li>{t("sec_tip3")}</li>
             <li>{t("sec_tip4")}</li>
           </ul>
-          <div className="text-xs text-slate-500 mt-2">{t("fraud_docs")} <a href="/docs" className="underline">Docs</a>.</div>
+          <div className="text-xs text-slate-500 mt-2">{t("fraud_docs")} <Link href="/docs" className="underline">Docs</Link>.</div>
         </CardContent>
       </Card>
 
@@ -221,9 +222,9 @@ export default function HelpPage() {
           <CardTitle>{t("quick_access_title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2 text-sm">
-          <a href="/login" className="px-3 py-2 rounded bg-slate-800">{t("recover_account")}</a>
-          <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("report_suspicious")}</a>
-          <a href="/cards" className="px-3 py-2 rounded bg-slate-800">{t("cancel_card")}</a>
+          <Link href="/login" className="px-3 py-2 rounded bg-slate-800">{t("recover_account")}</Link>
+          <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("report_suspicious")}</Link>
+          <Link href="/cards" className="px-3 py-2 rounded bg-slate-800">{t("cancel_card")}</Link>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
@@ -225,7 +226,7 @@ export default function CardsPage() {
             {t("settings.tip")}
           </div>
           <div>
-            <a href="/docs" className="underline text-slate-300">{t("settings.docs_link")}</a>
+            <Link href="/docs" className="underline text-slate-300">{t("settings.docs_link")}</Link>
           </div>
         </CardContent>
       </Card>
@@ -248,9 +249,9 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 text-sm">
-            <a href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("help.how_to_use")}</a>
-            <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.dispute")}</a>
-            <a href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.quick_support")}</a>
+            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("help.how_to_use")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.dispute")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.quick_support")}</Link>
           </div>
         </CardContent>
       </Card>

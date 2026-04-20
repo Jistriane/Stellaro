@@ -471,10 +471,7 @@ snyk test --severity-threshold=high
 cd apps/frontend
 npm run build
 
-# Option A: Vercel Deployment (Recommended)
-vercel deploy --prod
-
-# Option B: AWS S3 + CloudFront
+# Option A: AWS S3 + CloudFront
 aws s3 sync out/ s3://stellaro-prod/ --delete
 aws cloudfront create-invalidation --distribution-id E... --paths "/*"
 
