@@ -156,12 +156,12 @@ Expected:
 
 ## Security Notes
 
-⚠️ **Important:** These optimizations maintain the same security guarantees:
+ **Important:** These optimizations maintain the same security guarantees:
 
-1. ✅ Range validation still enforced (300-850 score range)
-2. ✅ All sensitive inputs remain private
-3. ✅ Soundness: cannot prove false statements
-4. ✅ Zero-knowledge: no information leaked
+1.  Range validation still enforced (300-850 score range)
+2.  All sensitive inputs remain private
+3.  Soundness: cannot prove false statements
+4.  Zero-knowledge: no information leaked
 
 The optimizations are purely computational and do not affect cryptographic security.
 
@@ -187,11 +187,11 @@ const VERIFICATION_KEY: &str = include_str!("../../circuits/verification_key_opt
 
 ## Next Steps
 
-1. ✅ Run `setup-circom.sh` to verify constraint count
-2. ⏳ Generate new proving/verification keys
-3. ⏳ Update Soroban contract with new verification key
-4. ⏳ Run integration tests
-5. ⏳ Benchmark proof generation in production environment
+1.  Run `setup-circom.sh` to verify constraint count
+2.  Generate new proving/verification keys
+3.  Update Soroban contract with new verification key
+4.  Run integration tests
+5.  Benchmark proof generation in production environment
 
 ## References
 

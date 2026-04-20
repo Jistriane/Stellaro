@@ -437,4 +437,80 @@ export class ActionsService {
       error: res.error,
     };
   }
+
+  async stablecoinTransfer(params: {
+    from: string; // Address (string)
+    to: string; // Address (string)
+    amount: string | number; // i128/u128 compat
+    dryRun?: boolean;
+    userId?: string;
+    proposalId?: string;
+  }): Promise<{
+    ok: boolean;
+    method: 'transfer';
+    contractId: string;
+    dryRun?: { estimatedFee: number };
+    txHash?: string;
+    error?: string;
+  }> {
+    const contractId =
+      process.env.STABLECOIN_CONTRACT_ID ?? 'demo-stablecoin-contract';
+    const args = [params.from, params.to, params.amount];
+
+    if (params.dryRun) {
+      const sim = await this.chain.simulateContractCallReal({
+        contractId,
+        method: 'transfer',
+        args,
+      });
+      await this.prisma.riskExecution.create({
+        data: {
+          userId: params.userId ?? 'system',
+          proposalId: params.proposalId,
+          action: 'stablecoin.transfer',
+          params: params as Prisma.InputJsonValue,
+          executed: false,
+          contractId,
+          method: 'transfer',
+          network: this.chain.getConfig().network,
+          dryRun: true,
+        },
+      });
+      return {
+        ok: sim.ok,
+        method: 'transfer',
+        contractId,
+        dryRun: { estimatedFee: sim.estimatedFee },
+      };
+    }
+
+    const res = await this.chain.submitTxReal({
+      contractId,
+      method: 'transfer',
+      args,
+    });
+
+    await this.prisma.riskExecution.create({
+      data: {
+        userId: params.userId ?? 'system',
+        proposalId: params.proposalId,
+        action: 'stablecoin.transfer',
+        params: params as Prisma.InputJsonValue,
+        executed: res.ok,
+        txHash: res.txHash,
+        contractId,
+        method: 'transfer',
+        network: this.chain.getConfig().network,
+        dryRun: false,
+      },
+    });
+
+    return {
+      ok: res.ok,
+      method: 'transfer',
+      contractId,
+      txHash: res.txHash,
+      error: res.error,
+    };
+  }
 }

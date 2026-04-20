@@ -10,6 +10,7 @@ describe('ActionsController', () => {
   const actionsStub = {
     stablecoinMintGuarded: jest.fn(),
     stablecoinBurn: jest.fn(),
+    stablecoinTransfer: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -176,6 +177,88 @@ describe('ActionsController', () => {
       await expect(controller.stablecoinBurn(body)).rejects.toThrow(
         new HttpException(
           'Invalid body: from, amount are required',
+          HttpStatus.BAD_REQUEST,
+        ),
+      );
+    });
+  });
+
+  describe('stablecoinTransfer', () => {
+    it('should transfer stablecoin with valid params', async () => {
+      const body = {
+        from: 'GA...FROM',
+        to: 'GB...TO',
+        amount: 250,
+        dryRun: true,
+      };
+      const mockResult = { ok: true, method: 'transfer' };
+      actionsStub.stablecoinTransfer.mockResolvedValue(mockResult);
+
+      const result = await controller.stablecoinTransfer(body);
+
+      expect(result).toEqual(mockResult);
+      expect(actionsStub.stablecoinTransfer).toHaveBeenCalledWith({
+        from: 'GA...FROM',
+        to: 'GB...TO',
+        amount: 250,
+        dryRun: true,
+        userId: undefined,
+        proposalId: undefined,
+      });
+    });
+
+    it('should transfer with metadata', async () => {
+      const body = {
+        from: 'GA...FROM',
+        to: 'GB...TO',
+        amount: '1000',
+        userId: 'user-3',
+        proposalId: 'prop-3',
+      };
+      const mockResult = { ok: true, method: 'transfer' };
+      actionsStub.stablecoinTransfer.mockResolvedValue(mockResult);
+
+      const result = await controller.stablecoinTransfer(body);
+
+      expect(result).toEqual(mockResult);
+      expect(actionsStub.stablecoinTransfer).toHaveBeenCalledWith({
+        from: 'GA...FROM',
+        to: 'GB...TO',
+        amount: '1000',
+        dryRun: false,
+        userId: 'user-3',
+        proposalId: 'prop-3',
+      });
+    });
+
+    it('should throw BAD_REQUEST if from is missing', async () => {
+      const body = { to: 'GB...', amount: 250 } as any;
+
+      await expect(controller.stablecoinTransfer(body)).rejects.toThrow(
+        new HttpException(
+          'Invalid body: from, to, amount are required',
+          HttpStatus.BAD_REQUEST,
+        ),
+      );
+    });
+
+    it('should throw BAD_REQUEST if to is missing', async () => {
+      const body = { from: 'GA...', amount: 250 } as any;
+
+      await expect(controller.stablecoinTransfer(body)).rejects.toThrow(
+        new HttpException(
+          'Invalid body: from, to, amount are required',
+          HttpStatus.BAD_REQUEST,
+        ),
+      );
+    });
+
+    it('should throw BAD_REQUEST if amount is missing', async () => {
+      const body = { from: 'GA...', to: 'GB...' } as any;
+
+      await expect(controller.stablecoinTransfer(body)).rejects.toThrow(
+        new HttpException(
+          'Invalid body: from, to, amount are required',
           HttpStatus.BAD_REQUEST,
         ),
       );

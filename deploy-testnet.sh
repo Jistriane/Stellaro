@@ -19,6 +19,12 @@ set -euo pipefail
 echo "🚀 Iniciando deploy automático na Stellar Testnet..."
 echo ""
 
+if ! command -v soroban >/dev/null 2>&1; then
+  echo "❌ Erro: soroban CLI não encontrado no PATH"
+  echo "   Instale com: cargo install --locked soroban-cli"
+  exit 1
+fi
+
 # Configurações
 ALIAS="stellaro-testnet-deploy"
 RPC="https://soroban-testnet.stellar.org"
@@ -30,6 +36,8 @@ CONTRACTS_DIR="$ROOT_DIR/contracts"
 RISK_BPS=7000      # 70% risk threshold
 LTV_BPS=6000       # 60% Loan-to-Value
 INTEREST_BPS=1500  # 15% APY
+MAX_SLIPPAGE_BPS=500 # 5% max slippage para MEV Guard
+MIN_BLOCK_DELAY=10   # delay mínimo (em blocos) para criação de ordens protegidas
 
 # Verificar se a chave existe
 echo "🔑 Verificando chave de deploy..."
@@ -59,6 +67,32 @@ LOANS_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/loans_pool.wasm"
 PORTFOLIO_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/portfolio.wasm"
 GOV_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/governance.wasm"
 ZK_VERIFIER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/zk_verifier.wasm"
+BATCH_EXECUTOR_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/batch_executor.wasm"
+MEV_GUARD_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/mev_guard.wasm"
+
+validate_contract_id() {
+  local id="$1"
+  [[ "$id" =~ ^C[A-Z0-9]{55}$ ]]
+}
+
+ensure_wasm_exists() {
+  local wasm="$1"
+  local name="$2"
+  if [[ ! -f "$wasm" ]]; then
+    echo "❌ Erro: WASM não encontrado para $name"
+    echo "   Caminho esperado: $wasm"
+    exit 1
+  fi
+}
+
+ensure_wasm_exists "$STABLECOIN_WASM" "Stablecoin"
+ensure_wasm_exists "$RISKLOCK_WASM" "RiskLock"
+ensure_wasm_exists "$LOANS_WASM" "Loans Pool"
+ensure_wasm_exists "$PORTFOLIO_WASM" "Portfolio"
+ensure_wasm_exists "$GOV_WASM" "Governance"
+ensure_wasm_exists "$ZK_VERIFIER_WASM" "ZK Verifier"
+ensure_wasm_exists "$BATCH_EXECUTOR_WASM" "Batch Executor"
+ensure_wasm_exists "$MEV_GUARD_WASM" "MEV Guard"
 
 # Função de deploy
 deploy_contract() {
@@ -73,7 +107,7 @@ deploy_contract() {
     --source-account "$ALIAS" \
     --wasm "$wasm" 2>&1 | grep -Eo 'C[A-Z0-9]{55}' | head -n1)
   
-  if [[ -z "$id" ]]; then
+  if [[ -z "$id" ]] || ! validate_contract_id "$id"; then
     echo "❌ Erro ao fazer deploy de $name"
     exit 1
   fi
@@ -144,6 +178,14 @@ sleep 2
 ZK_VERIFIER_ID=$(deploy_contract "$ZK_VERIFIER_WASM" "ZK Verifier")
 sleep 2
 
+# 7. Batch Executor
+BATCH_EXECUTOR_ID=$(deploy_contract "$BATCH_EXECUTOR_WASM" "Batch Executor")
+sleep 2
+
+# 8. MEV Guard
+MEV_GUARD_ID=$(deploy_contract "$MEV_GUARD_WASM" "MEV Guard")
+sleep 2
+
 echo ""
 echo "✅ Todos os contratos foram deployados!"
 echo ""
@@ -196,6 +238,23 @@ sleep 1
 echo "⚠️  ZK Verifier requer inicialização manual com verification key"
 echo "   Use: tools/zk/export_vk.sh"
 
+# 7. Batch Executor
+if is_initialized "$BATCH_EXECUTOR_ID" "get_admin"; then
+  echo "⚠️  Batch Executor já inicializado"
+else
+  init_contract "$BATCH_EXECUTOR_ID" "Batch Executor" \
+    init --admin "$ADMIN"
+fi
+sleep 1
+
+# 8. MEV Guard
+if is_initialized "$MEV_GUARD_ID" "get_admin"; then
+  echo "⚠️  MEV Guard já inicializado"
+else
+  init_contract "$MEV_GUARD_ID" "MEV Guard" \
+    init --admin "$ADMIN" --max-slippage-bps "$MAX_SLIPPAGE_BPS" --min-block-delay "$MIN_BLOCK_DELAY"
+fi
+
 echo ""
 echo "✅ Inicialização concluída!"
 echo ""
@@ -231,6 +290,8 @@ upsert_env_var "$ROOT_ENV" "LOANSPOOL_CONTRACT_ID" "$LOANSPOOL_ID"
 upsert_env_var "$ROOT_ENV" "PORTFOLIO_CONTRACT_ID" "$PORTFOLIO_ID"
 upsert_env_var "$ROOT_ENV" "GOVERNANCE_CONTRACT_ID" "$GOVERNANCE_ID"
 upsert_env_var "$ROOT_ENV" "ZK_VERIFIER_CONTRACT_ID" "$ZK_VERIFIER_ID"
+upsert_env_var "$ROOT_ENV" "BATCH_EXECUTOR_CONTRACT_ID" "$BATCH_EXECUTOR_ID"
+upsert_env_var "$ROOT_ENV" "MEV_GUARD_CONTRACT_ID" "$MEV_GUARD_ID"
 
 # Criar/atualizar .env-testnet no backend
 if [[ -d "$ROOT_DIR/apps/backend" ]]; then
@@ -244,6 +305,8 @@ if [[ -d "$ROOT_DIR/apps/backend" ]]; then
   upsert_env_var "$BACKEND_ENV" "PORTFOLIO_CONTRACT_ID" "$PORTFOLIO_ID"
   upsert_env_var "$BACKEND_ENV" "GOVERNANCE_CONTRACT_ID" "$GOVERNANCE_ID"
   upsert_env_var "$BACKEND_ENV" "ZK_VERIFIER_CONTRACT_ID" "$ZK_VERIFIER_ID"
+  upsert_env_var "$BACKEND_ENV" "BATCH_EXECUTOR_CONTRACT_ID" "$BATCH_EXECUTOR_ID"
+  upsert_env_var "$BACKEND_ENV" "MEV_GUARD_CONTRACT_ID" "$MEV_GUARD_ID"
 fi
 
 echo "✓ Configurações salvas em: $ROOT_ENV"
@@ -272,12 +335,16 @@ cat <<EOF
   4. Portfolio:    $PORTFOLIO_ID
   5. Governance:   $GOVERNANCE_ID
   6. ZK Verifier:  $ZK_VERIFIER_ID
+  7. Batch Exec.:  $BATCH_EXECUTOR_ID
+  8. MEV Guard:    $MEV_GUARD_ID
 
 ⚙️  Parâmetros Configurados:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   • Risk Threshold:  ${RISK_BPS} bps (70%)
   • LTV Ratio:       ${LTV_BPS} bps (60%)
   • Interest Rate:   ${INTEREST_BPS} bps (15% APY)
+  • Max Slippage:    ${MAX_SLIPPAGE_BPS} bps (5%)
+  • Min Block Delay: ${MIN_BLOCK_DELAY}
 
 📁 Arquivos Atualizados:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,9 +1,9 @@
-# 🤖 Guia de Operação - ElizaOS Agents Stellaro
+# Guia de Operação - ElizaOS Agents Stellaro
 
 **Última Atualização**: 7 de dezembro de 2025  
 **Status**: Production-Ready
 
-## 📋 Índice
+## Índice
 
 1. [Arquitetura dos Agents](#arquitetura)
 2. [Setup e Instalação](#setup)
@@ -271,7 +271,7 @@ export const analyzeRiskAction: Action = {
       {
         user: "stellaro-risk",
         content: {
-          text: "Your health factor is 1.45. All systems green! 🟢"
+          text: "Your health factor is 1.45. All systems green! "
         }
       }
     ]
@@ -421,10 +421,10 @@ curl http://localhost:3100/health
 
 # Resposta esperada:
 # {
-#   "status": "healthy",
-#   "uptime": 3600,
-#   "memoryUsage": "128MB",
-#   "lastAction": "2025-12-07T10:30:00Z"
+# "status": "healthy",
+# "uptime": 3600,
+# "memoryUsage": "128MB",
+# "lastAction": "2025-12-07T10:30:00Z"
 # }
 ```
 

@@ -2,15 +2,15 @@
 
 **Last Updated**: 2025-12-03
 
-## 📊 Overall Status
+## Overall Status
 
 | Category | Status | Suites | Tests | Coverage |
 |-----------|--------|--------|--------|----------|
-| **Unit Tests** | ✅ | 63/63 | 270/271 | 35.11% |
-| **E2E Tests** | ✅ | 9/9 | 46/46 | 100% |
-| **Total** | ✅ | 72/72 | 316/317 | - |
+| **Unit Tests** |  | 63/63 | 270/271 | 35.11% |
+| **E2E Tests** |  | 9/9 | 46/46 | 100% |
+| **Total** |  | 72/72 | 316/317 | - |
 
-## 🎯 Unit Tests (35.11% Coverage)
+## Unit Tests (35.11% Coverage)
 
 ### Coverage by Category
 
@@ -25,67 +25,67 @@
 
 | Service | Coverage | Testes | Status |
 |---------|----------|--------|--------|
-| Webhooks | 100% | 7 | ⭐⭐ |
-| Security | 100% | 6 | ⭐⭐ |
-| Wallets | 86.36% | 8 | ⭐ |
-| Governance | 81.08% | 9 | ⭐ |
-| PIX | 75.65% | 27 | ⭐ |
-| Risk | 73.52% | 9 | ⭐ |
-| Redis | 61.76% | 9 | ✅ |
-| ZK | 56.30% | 13 | ✅ |
-| Defi | 56.25% | 8 | ✅ |
-| Oracles | 51.44% | 10 | ✅ |
-| Compliance | 51.42% | 18 | ✅ |
-| Auth | 50.70% | 30 | ✅ |
-| Soroban | 50.42% | 25 | ✅ |
-| Notifications | 42.85% | 7 | ⏳ |
-| Chain | 42.10% | 17 | ⏳ |
-| Actions | 40.14% | 24 | ⏳ |
-| Passkey | 34.64% | 11 | ⏳ |
-| Eliza | 33.33% | 11 | ⏳ |
-| Reserve Manager | - | 20 | ⏳ |
+| Webhooks | 100% | 7 |  |
+| Security | 100% | 6 |  |
+| Wallets | 86.36% | 8 |  |
+| Governance | 81.08% | 9 |  |
+| PIX | 75.65% | 27 |  |
+| Risk | 73.52% | 9 |  |
+| Redis | 61.76% | 9 |  |
+| ZK | 56.30% | 13 |  |
+| Defi | 56.25% | 8 |  |
+| Oracles | 51.44% | 10 |  |
+| Compliance | 51.42% | 18 |  |
+| Auth | 50.70% | 30 |  |
+| Soroban | 50.42% | 25 |  |
+| Notifications | 42.85% | 7 |  |
+| Chain | 42.10% | 17 |  |
+| Actions | 40.14% | 24 |  |
+| Passkey | 34.64% | 11 |  |
+| Eliza | 33.33% | 11 |  |
+| Reserve Manager | - | 20 |  |
 
 ### Controllers Testados (4 specs)
 
 | Controller | Testes | Status |
 |-----------|--------|--------|
-| Wallets | 4 | ✅ |
-| Actions | 9 | ✅ |
-| Auth | 11 | ✅ |
-| Governance | 6 | ✅ |
+| Wallets | 4 |  |
+| Actions | 9 |  |
+| Auth | 11 |  |
+| Governance | 6 |  |
 
-## 🚀 E2E Tests (100% Passing)
+## E2E Tests (100% Passing)
 
 ### Suites (9 total, 46 testes)
 
 | Suite | Testes | Tempo | Status |
 |-------|--------|-------|--------|
-| `auth.e2e-spec.ts` | 5 | ~0.8s | ✅ |
-| `auth-flow.e2e-spec.ts` | 4 | ~0.7s | ✅ |
-| `actions-flow.e2e-spec.ts` | 6 | ~0.9s | ✅ |
-| `pix.e2e-spec.ts` | 8 | ~1.0s | ✅ |
-| `positions.e2e-spec.ts` | 3 | ~0.6s | ✅ |
-| `reserves.e2e-spec.ts` | 5 | ~0.8s | ✅ |
-| `oracles.e2e-spec.ts` | 4 | ~0.7s | ✅ |
-| `zk.e2e-spec.ts` | 7 | ~0.9s | ✅ |
-| `app.e2e-spec.ts` | 4 | ~0.6s | ✅ |
-| **Total** | **46** | **~7s** | ✅ |
+| `auth.e2e-spec.ts` | 5 | ~0.8s |  |
+| `auth-flow.e2e-spec.ts` | 4 | ~0.7s |  |
+| `actions-flow.e2e-spec.ts` | 6 | ~0.9s |  |
+| `pix.e2e-spec.ts` | 8 | ~1.0s |  |
+| `positions.e2e-spec.ts` | 3 | ~0.6s |  |
+| `reserves.e2e-spec.ts` | 5 | ~0.8s |  |
+| `oracles.e2e-spec.ts` | 4 | ~0.7s |  |
+| `zk.e2e-spec.ts` | 7 | ~0.9s |  |
+| `app.e2e-spec.ts` | 4 | ~0.6s |  |
+| **Total** | **46** | **~7s** |  |
 
 ### Infraestrutura de Isolamento
 
 **Mocks/Stubs**:
-- ✅ Prisma in-memory (users, wallets, passkeys, PIX)
-- ✅ Redis stub (cache + ZK counters)
-- ✅ Reserve Manager stub (compliance)
-- ✅ Ingestor stub (sem polling)
+- Prisma in-memory (users, wallets, passkeys, PIX)
+- Redis stub (cache + ZK counters)
+- Reserve Manager stub (compliance)
+- Ingestor stub (sem polling)
 
 **Configuração**:
-- ✅ PIX em modo stub (`PIX_MODE=stub`)
-- ✅ ZK sem RPC (contract não configurado)
-- ✅ Zero open handles
-- ✅ Tempo: ~7s em modo serial
+- PIX em modo stub (`PIX_MODE=stub`)
+- ZK sem RPC (contract não configurado)
+- Zero open handles
+- Tempo: ~7s em modo serial
 
-## 📈 Evolução de Coverage
+## Evolução de Coverage
 
 | Data | Statements | Branches | Functions | Lines | Suites |
 |------|-----------|----------|-----------|-------|--------|
@@ -93,7 +93,7 @@
 | 2025-12-03 | 36.40% | 33.33% | 33.70% | 37.18% | 23/23 |
 | **Delta** | **+5.33%** | **+4.00%** | **+4.91%** | **+5.46%** | **+4** |
 
-## 🎯 Metas de Coverage
+## Metas de Coverage
 
 ### Curto Prazo (1-2 semanas)
 - [ ] Statements: 50% (+13.6%)
@@ -116,7 +116,7 @@
 - [ ] Lines: 80%+
 - [ ] Testes de carga/stress
 
-## 🔧 Comandos Úteis
+## Comandos Úteis
 
 ### Unit Tests
 
@@ -154,7 +154,7 @@ npm run test:e2e:cov
 npm run test:all
 ```
 
-## 📝 Próximos Passos
+## Próximos Passos
 
 ### Alta Prioridade
 
@@ -192,36 +192,36 @@ npm run test:all
    - Testes de segurança (OWASP)
    - Testes de mutação (Stryker)
 
-## 📚 Documentação
+## Documentação
 
 - **[E2E Testing Infrastructure](./E2E_TESTING.md)** - Guia completo de E2E
 - **[Progress Report](./PROGRESS.md)** - Status detalhado do projeto
 - **[Backend README](../apps/backend/README.md)** - Setup e comandos
 
-## 🏆 Conquistas Recentes
+## Conquistas Recentes
 
 ### 2025-12-03
 
-✅ **E2E 100% Passing**
+ **E2E 100% Passing**
 - 9 suites, 46 testes
 - Zero open handles
 - Isolamento completo de dependências
 - Tempo: ~7s
 
-✅ **Unit Coverage 36%**
+ **Unit Coverage 36%**
 - 23 suites, 231 testes
 - 4 controllers com specs
 - 19 services testados
 - +5.33% em statements
 
-✅ **Infraestrutura**
+ **Infraestrutura**
 - Mocks centralizados (`test-utils.ts`)
 - Scripts npm organizados
 - Documentação completa
 
-## 🐛 Issues Conhecidos
+## Issues Conhecidos
 
-### Resolvidos ✅
+### Resolvidos 
 
 1. ~~Worker leak warning no ElizaService~~ - Adicionado `.unref()`
 2. ~~Controllers sem coverage~~ - 4 specs implementados
@@ -229,7 +229,7 @@ npm run test:all
 4. ~~PIX double-mint~~ - Mock atualizado com suporte `where.id/txId`
 5. ~~Oracles queries incorretas~~ - Corrigido para `base/quote`
 
-### Pendentes ⏳
+### Pendentes 
 
 1. DTOs sem coverage (não prioritário)
 2. Alguns services com coverage < 40%
@@ -237,6 +237,6 @@ npm run test:all
 
 ---
 
-**Status Geral**: 🟢 Produção-ready (277/278 testes passing)
+**Status Geral**:  Produção-ready (277/278 testes passing)
 
 **Próxima Meta**: 50% coverage unit + 70% coverage E2E

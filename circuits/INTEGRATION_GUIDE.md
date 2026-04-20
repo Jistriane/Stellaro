@@ -53,7 +53,7 @@ snarkjs r1cs info credit_score_optimized.r1cs
 Expected output:
 ```
 # of Wires: ~5,000
-# of Constraints: ~45,000 (✅ <50K target)
+# of Constraints: ~45,000 ( <50K target)
 # of Private Inputs: 5
 # of Public Inputs: 2
 # of Outputs: 1
@@ -118,38 +118,38 @@ npm test
 
 Expected output:
 ```
-🧪 Testing ZK Proof Generation
+ Testing ZK Proof Generation
 
-📥 Input Data:
+ Input Data:
   Public: minScore=650, timestamp=1702857600
   Private: actualScore=720 (hidden in proof)
 
-1️⃣  Generating witness...
-   ✅ Witness generated in 45ms
+  Generating witness...
+    Witness generated in 45ms
 
-2️⃣  Generating proof...
-   ✅ Proof generated in 850ms
+  Generating proof...
+    Proof generated in 850ms
 
-3️⃣  Verifying proof...
-   ✅ Proof verified in 35ms
+  Verifying proof...
+    Proof verified in 35ms
 
-📊 Results:
+ Results:
    Witness Time: 45ms
    Proof Time: 850ms
    Verify Time: 35ms
    Total Time: 930ms
-   Verified: ✅ YES
+   Verified:  YES
    Proof Size: 1152 bytes (1.13 KB)
 
-🎯 Performance Targets:
-   Witness < 100ms: ✅ (45ms)
-   Proof < 1000ms: ✅ (850ms)
-   Verify < 50ms: ✅ (35ms)
+ Performance Targets:
+   Witness < 100ms:  (45ms)
+   Proof < 1000ms:  (850ms)
+   Verify < 50ms:  (35ms)
 
-🔒 Testing Security (invalid proof)...
-   ✅ Circuit correctly rejected invalid input
+ Testing Security (invalid proof)...
+    Circuit correctly rejected invalid input
 
-✅ All tests passed!
+ All tests passed!
 ```
 
 ## Step 4: Update Soroban Contract
@@ -454,11 +454,11 @@ curl -X POST http://localhost:3000/api/credit-proof/verify \
 
 ## Security Considerations
 
-1. ✅ **Private Inputs Never Leave Client:** Proof generation should ideally be client-side
-2. ✅ **Zero-Knowledge:** No sensitive data revealed in proof
-3. ✅ **Soundness:** Cannot forge valid proof for invalid score
-4. ✅ **Replay Protection:** Timestamp prevents old proof reuse
-5. ⚠️ **Trusted Setup:** Initial ceremony requires trust (can use multi-party computation)
+1.  **Private Inputs Never Leave Client:** Proof generation should ideally be client-side
+2.  **Zero-Knowledge:** No sensitive data revealed in proof
+3.  **Soundness:** Cannot forge valid proof for invalid score
+4.  **Replay Protection:** Timestamp prevents old proof reuse
+5.  **Trusted Setup:** Initial ceremony requires trust (can use multi-party computation)
 
 ## Troubleshooting
 
@@ -477,12 +477,12 @@ curl -X POST http://localhost:3000/api/credit-proof/verify \
 
 ## Next Steps
 
-1. ✅ Test circuit optimization
-2. ⏳ Generate production keys with multi-party ceremony
-3. ⏳ Deploy updated Soroban contract
-4. ⏳ Integrate with backend API
-5. ⏳ Add frontend UI for proof generation
-6. ⏳ Load test end-to-end flow
+1.  Test circuit optimization
+2.  Generate production keys with multi-party ceremony
+3.  Deploy updated Soroban contract
+4.  Integrate with backend API
+5.  Add frontend UI for proof generation
+6.  Load test end-to-end flow
 
 ## References
 

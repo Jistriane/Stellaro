@@ -54,7 +54,7 @@ ComplianceBot → [GATE] → Execute → Stellaro
 
 ## Installation
 
-⚠️ **IMPORTANT:** Microsoft Agent Framework is in preview and requires `--pre` flag
+ **IMPORTANT:** Microsoft Agent Framework is in preview and requires `--pre` flag
 
 ```bash
 cd agents

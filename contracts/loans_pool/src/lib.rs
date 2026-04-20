@@ -17,6 +17,11 @@ pub struct RepayEvent {
     pub event: bool,
 }
 
+#[contractevent]
+pub struct WithdrawEvent {
+    pub event: bool,
+}
+
 #[derive(Clone)]
 #[contracttype]
 enum DataKey {
@@ -25,6 +30,7 @@ enum DataKey {
     LtvBps, // 0..=10000
     InterestBps, // juros anualizados simplificado
     Position(Address), // saldo devedor por tomador
+    LenderPosition(Address), // saldo de liquidez por provedor
     ReentrancyLock, // Global reentrancy protection
 }
 
@@ -98,6 +104,12 @@ impl LoansPoolContract {
         assert!(amount > 0, "amount");
         let liq = read_u128(&env, &DataKey::TotalLiquidity);
         write_u128(&env, &DataKey::TotalLiquidity, liq.saturating_add(amount));
+        let lender = read_u128(&env, &DataKey::LenderPosition(from.clone()));
+        write_u128(
+            &env,
+            &DataKey::LenderPosition(from),
+            lender.saturating_add(amount),
+        );
         env.events().publish_event(&DepositEvent { event: true });
         
         release_lock(&env);
@@ -140,6 +152,26 @@ impl LoansPoolContract {
         release_lock(&env);
     }
 
+    pub fn withdraw(env: Env, lender: Address, amount: u128) {
+        acquire_lock(&env);
+
+        lender.require_auth();
+        assert!(amount > 0, "amount");
+
+        let lender_pos = read_u128(&env, &DataKey::LenderPosition(lender.clone()));
+        assert!(lender_pos >= amount, "insufficient lender balance");
+
+        let liq = read_u128(&env, &DataKey::TotalLiquidity);
+        assert!(liq >= amount, "insufficient liquidity");
+
+        write_u128(&env, &DataKey::LenderPosition(lender), lender_pos - amount);
+        write_u128(&env, &DataKey::TotalLiquidity, liq - amount);
+
+        env.events().publish_event(&WithdrawEvent { event: true });
+
+        release_lock(&env);
+    }
+
     pub fn params(env: Env) -> (u32, u32) {
         (read_u32(&env, &DataKey::LtvBps), read_u32(&env, &DataKey::InterestBps))
     }
@@ -150,6 +182,10 @@ impl LoansPoolContract {
 
     pub fn total_liquidity(env: Env) -> u128 {
         read_u128(&env, &DataKey::TotalLiquidity)
+    }
+
+    pub fn lender_position(env: Env, lender: Address) -> u128 {
+        read_u128(&env, &DataKey::LenderPosition(lender))
     }
 }
 
@@ -189,6 +225,7 @@ mod test {
 
         client.deposit(&depositor, &500000000u128); // +500M
         assert_eq!(client.total_liquidity(), 1500000000u128);
+        assert_eq!(client.lender_position(&depositor), 1500000000u128);
     }
 
     #[test]
@@ -338,5 +375,39 @@ mod test {
         client.repay(&borrower1, &2000000000u128);
         assert_eq!(client.position(&borrower1), 1000000000u128);
         assert_eq!(client.total_liquidity(), 5000000000u128); // 3B + 2B
+    }
+
+    #[test]
+    fn withdraw_reduces_lender_position_and_liquidity() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1200u32);
+        client.deposit(&depositor, &1000000000u128);
+
+        client.withdraw(&depositor, &400000000u128);
+
+        assert_eq!(client.lender_position(&depositor), 600000000u128);
+        assert_eq!(client.total_liquidity(), 600000000u128);
+    }
+
+    #[test]
+    #[should_panic(expected = "insufficient lender balance")]
+    fn withdraw_more_than_lender_balance_panics() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let depositor = Address::generate(&env);
+        let contract_id = env.register(LoansPoolContract, ());
+        let client = LoansPoolContractClient::new(&env, &contract_id);
+
+        client.init(&admin, &6000u32, &1200u32);
+        client.deposit(&depositor, &100000000u128);
+
+        client.withdraw(&depositor, &200000000u128);
     }
 }

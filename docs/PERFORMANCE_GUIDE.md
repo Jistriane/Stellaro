@@ -1,18 +1,18 @@
-# 🚀 Performance Optimization Guide - Stellaro
+# Performance Optimization Guide - Stellaro
 
 **Última Atualização**: 7 de dezembro de 2025  
 **Target**: Sub-1s página load, 99.9% uptime, <100ms latência API
 
-## 📊 Métricas de Referência
+## Métricas de Referência
 
 | Métrica | Target | Atual | Status |
 |---------|--------|-------|--------|
-| **LCP** (Largest Contentful Paint) | < 2.5s | TBD | 🟡 |
-| **FID** (First Input Delay) | < 100ms | TBD | 🟡 |
-| **CLS** (Cumulative Layout Shift) | < 0.1 | TBD | 🟡 |
-| **TTL** (Time To Live) | < 3s | TBD | 🟡 |
-| **API Latency P95** | < 100ms | TBD | 🟡 |
-| **Cache Hit Rate** | > 80% | TBD | 🟡 |
+| **LCP** (Largest Contentful Paint) | < 2.5s | TBD |  |
+| **FID** (First Input Delay) | < 100ms | TBD |  |
+| **CLS** (Cumulative Layout Shift) | < 0.1 | TBD |  |
+| **TTL** (Time To Live) | < 3s | TBD |  |
+| **API Latency P95** | < 100ms | TBD |  |
+| **Cache Hit Rate** | > 80% | TBD |  |
 
 ---
 
@@ -21,7 +21,7 @@
 ### 1.1 Code Splitting & Lazy Loading
 
 ```typescript
-// ✅ BOM: Import dinâmico com suspense
+//  BOM: Import dinâmico com suspense
 import dynamic from 'next/dynamic';
 
 const DashboardChart = dynamic(
@@ -44,7 +44,7 @@ export function Dashboard() {
 ### 1.2 Image Optimization
 
 ```typescript
-// ✅ BOM: Next.js Image component
+//  BOM: Next.js Image component
 import Image from 'next/image';
 
 export function Hero() {
@@ -106,7 +106,7 @@ function MyApp({ Component, pageProps }) {
 ### 2.1 Redis Caching Strategy
 
 ```typescript
-// ✅ Implementado: Multi-layer cache
+//  Implementado: Multi-layer cache
 // apps/backend/src/cache/cache.service.ts
 
 // Uso em controller
@@ -128,7 +128,7 @@ export class DashboardController {
 ### 2.2 Database Query Optimization
 
 ```typescript
-// ✅ Implementado: Query optimization service
+//  Implementado: Query optimization service
 // apps/backend/src/database/optimization.service.ts
 
 // Exemplo: Eager loading com Prisma
@@ -166,7 +166,7 @@ DATABASE_URL="postgresql://user:pass@host:5432/stellaro?schema=public&sslmode=re
 ### 2.4 Rate Limiting
 
 ```typescript
-// ✅ BOM: Rate limiter middleware
+//  BOM: Rate limiter middleware
 import { RateLimit } from 'express-rate-limit';
 
 const limiter = new RateLimit({
@@ -196,7 +196,7 @@ async login(@Body() dto: LoginDto) {
 ### 2.5 Compression Middleware
 
 ```typescript
-// ✅ BOM: Gzip compression
+//  BOM: Gzip compression
 import compression from 'compression';
 
 app.use(compression({
@@ -243,7 +243,7 @@ app.use(compression({
 ### 3.2 Versionamento de Assets
 
 ```typescript
-// ✅ BOM: Hash automático
+//  BOM: Hash automático
 // Next.js com webpack gera automatically:
 // - static/abc123def456.js (hash do conteúdo)
 // - stylesheet/xyz789.css
@@ -261,7 +261,7 @@ app.use(compression({
 ### 4.1 Índices Estratégicos
 
 ```sql
--- ✅ Implementado: optimization.service.ts
+--  Implementado: optimization.service.ts
 
 -- Índice simples para WHERE clauses
 CREATE INDEX idx_users_email ON users(email);
@@ -327,7 +327,7 @@ GET /api/dashboard
 ### 5.2 Parallel Requests
 
 ```typescript
-// ✅ BOM: Executar em paralelo
+//  BOM: Executar em paralelo
 async function getDashboard(userId: string) {
   // Evitar Promise.all() se uma falhar todas falham
   // Usar Promise.allSettled() para resiliência
@@ -453,35 +453,35 @@ k6 run load-test.js
 
 ## Checklist de Implementação
 
-### ✅ Frontend
+### Frontend
 - [ ] Code splitting automático
 - [ ] Lazy loading de images
 - [ ] Web Vitals monitoring
 - [ ] Bundle size < 200KB
 - [ ] CloudFront CDN configurado
 
-### ✅ Backend
+### Backend
 - [ ] Redis L1/L2 cache
 - [ ] Database indices otimizados
 - [ ] Connection pooling ativo
 - [ ] Rate limiting implementado
 - [ ] Compression middleware
 
-### ✅ Database
+### Database
 - [ ] Índices nas 10 queries mais comuns
 - [ ] Query monitoring ativo
 - [ ] Archive de dados antigos
 - [ ] Backup automático
 - [ ] pg_stat_statements habilitado
 
-### ✅ Infrastructure
+### Infrastructure
 - [ ] CDN (CloudFront/Cloudflare)
 - [ ] Kubernetes HPA configurado
 - [ ] Monitoring (Prometheus)
 - [ ] Load testing (k6/Gatling)
 - [ ] Alert thresholds definidos
 
-### ✅ Produção
+### Produção
 - [ ] P95 latência < 100ms
 - [ ] Cache hit rate > 80%
 - [ ] Error rate < 0.1%

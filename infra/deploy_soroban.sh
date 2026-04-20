@@ -9,7 +9,7 @@ set -euo pipefail
 #       soroban keys add deploy --secret-key   # (vai pedir para colar a chave secreta começando com S...)
 #
 # Uso:
-#   ./infra/deploy_soroban.sh <ALIAS_DA_CONTA> [ADMIN_PUBKEY] [RISK_BPS] [LTV_BPS] [INTEREST_BPS]
+#   ./infra/deploy_soroban.sh <ALIAS_DA_CONTA> [ADMIN_PUBKEY] [RISK_BPS] [LTV_BPS] [INTEREST_BPS] [MAX_SLIPPAGE_BPS] [MIN_BLOCK_DELAY]
 # Ex.:
 #   ./infra/deploy_soroban.sh deploy GB... 7000 6000 1500
 #   ./infra/deploy_soroban.sh deploy       # (usa endereço do alias como admin e defaults 7000/6000/1500)
@@ -21,6 +21,12 @@ ALIAS=${1:-deploy}
 RPC=${RPC:-"https://soroban-testnet.stellar.org"}
 PASSPHRASE=${PASSPHRASE:-"Test SDF Network ; September 2015"}
 
+if ! command -v soroban >/dev/null 2>&1; then
+  echo "Erro: soroban CLI não encontrado no PATH"
+  echo "Instale com: cargo install --locked soroban-cli"
+  exit 1
+fi
+
 # Descobrir a public key (admin) se não foi informada
 if [[ ${2:-} == "" ]]; then
   ADMIN=$(soroban keys public-key "$ALIAS")
@@ -29,9 +35,10 @@ else
 fi
 
 RISK_BPS=${3:-7000}
-ZK_VERIFIER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/zk_verifier.wasm"
 LTV_BPS=${4:-6000}
 INTEREST_BPS=${5:-1500}
+MAX_SLIPPAGE_BPS=${6:-500}
+MIN_BLOCK_DELAY=${7:-10}
 
 ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
 CONTRACTS_DIR="$ROOT_DIR/contracts"
@@ -44,6 +51,33 @@ RISKLOCK_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/risklock.wasm"
 LOANS_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/loans_pool.wasm"
 PORTFOLIO_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/portfolio.wasm"
 GOV_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/governance.wasm"
+ZK_VERIFIER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/zk_verifier.wasm"
+BATCH_EXECUTOR_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/batch_executor.wasm"
+MEV_GUARD_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/mev_guard.wasm"
+
+validate_contract_id() {
+  local id="$1"
+  [[ "$id" =~ ^C[A-Z0-9]{55}$|^[0-9a-fA-F]{64}$ ]]
+}
+
+ensure_wasm_exists() {
+  local wasm="$1"
+  local name="$2"
+  if [[ ! -f "$wasm" ]]; then
+    echo "Erro: WASM não encontrado para $name"
+    echo "Caminho esperado: $wasm"
+    exit 1
+  fi
+}
+
+ensure_wasm_exists "$STABLECOIN_WASM" "stablecoin"
+ensure_wasm_exists "$RISKLOCK_WASM" "risklock"
+ensure_wasm_exists "$LOANS_WASM" "loans_pool"
+ensure_wasm_exists "$PORTFOLIO_WASM" "portfolio"
+ensure_wasm_exists "$GOV_WASM" "governance"
+ensure_wasm_exists "$ZK_VERIFIER_WASM" "zk_verifier"
+ensure_wasm_exists "$BATCH_EXECUTOR_WASM" "batch_executor"
+ensure_wasm_exists "$MEV_GUARD_WASM" "mev_guard"
 
 deploy_one() {
   local wasm="$1"
@@ -108,28 +142,44 @@ would_init_succeed() {
 }
 
 echo "==> Deploying stablecoin"
-STABLECOIN_ID=$(deploy_one "$STABLECOIN_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+STABLECOIN_ID=$(deploy_one "$STABLECOIN_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$STABLECOIN_ID"; then echo "Erro: Contract ID inválido para stablecoin"; exit 1; fi
 echo "STABLECOIN_ID=$STABLECOIN_ID"
 
 echo "==> Deploying risklock"
-RISKLOCK_ID=$(deploy_one "$RISKLOCK_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+RISKLOCK_ID=$(deploy_one "$RISKLOCK_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$RISKLOCK_ID"; then echo "Erro: Contract ID inválido para risklock"; exit 1; fi
 echo "RISKLOCK_ID=$RISKLOCK_ID"
 
 echo "==> Deploying loans_pool"
-LOANSPOOL_ID=$(deploy_one "$LOANS_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+LOANSPOOL_ID=$(deploy_one "$LOANS_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$LOANSPOOL_ID"; then echo "Erro: Contract ID inválido para loans_pool"; exit 1; fi
 echo "LOANSPOOL_ID=$LOANSPOOL_ID"
 
 echo "==> Deploying portfolio"
-PORTFOLIO_ID=$(deploy_one "$PORTFOLIO_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+PORTFOLIO_ID=$(deploy_one "$PORTFOLIO_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$PORTFOLIO_ID"; then echo "Erro: Contract ID inválido para portfolio"; exit 1; fi
 echo "PORTFOLIO_ID=$PORTFOLIO_ID"
 
 echo "==> Deploying governance"
-GOVERNANCE_ID=$(deploy_one "$GOV_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+GOVERNANCE_ID=$(deploy_one "$GOV_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$GOVERNANCE_ID"; then echo "Erro: Contract ID inválido para governance"; exit 1; fi
 echo "GOVERNANCE_ID=$GOVERNANCE_ID"
 
 echo "==> Deploying ZK Verifier"
-ZK_VERIFIER_ID=$(deploy_one "$ZK_VERIFIER_WASM" | grep -Eo '\b[0-9a-f]{64}\b' | tail -n1)
+ZK_VERIFIER_ID=$(deploy_one "$ZK_VERIFIER_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$ZK_VERIFIER_ID"; then echo "Erro: Contract ID inválido para zk_verifier"; exit 1; fi
 echo "ZK_VERIFIER_ID=$ZK_VERIFIER_ID"
+
+echo "==> Deploying batch_executor"
+BATCH_EXECUTOR_ID=$(deploy_one "$BATCH_EXECUTOR_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$BATCH_EXECUTOR_ID"; then echo "Erro: Contract ID inválido para batch_executor"; exit 1; fi
+echo "BATCH_EXECUTOR_ID=$BATCH_EXECUTOR_ID"
+
+echo "==> Deploying mev_guard"
+MEV_GUARD_ID=$(deploy_one "$MEV_GUARD_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$MEV_GUARD_ID"; then echo "Erro: Contract ID inválido para mev_guard"; exit 1; fi
+echo "MEV_GUARD_ID=$MEV_GUARD_ID"
 
 # Inicializações (idempotentes)
 
@@ -168,6 +218,27 @@ else
   invoke_init "$GOVERNANCE_ID" init --admin "$ADMIN"
 fi
 
+echo "==> Init batch_executor (idempotente)"
+if soroban contract invoke --id "$BATCH_EXECUTOR_ID" \
+    --rpc-url "$RPC" --network-passphrase "$PASSPHRASE" \
+    --source-account "$ALIAS" --send no -- get_admin >/dev/null 2>&1; then
+  echo "batch_executor já inicializado; pulando."
+else
+  invoke_init "$BATCH_EXECUTOR_ID" init --admin "$ADMIN"
+fi
+
+echo "==> Init mev_guard (idempotente)"
+if soroban contract invoke --id "$MEV_GUARD_ID" \
+    --rpc-url "$RPC" --network-passphrase "$PASSPHRASE" \
+    --source-account "$ALIAS" --send no -- get_admin >/dev/null 2>&1; then
+  echo "mev_guard já inicializado; pulando."
+else
+  invoke_init "$MEV_GUARD_ID" init \
+    --admin "$ADMIN" \
+    --max-slippage-bps "$MAX_SLIPPAGE_BPS" \
+    --min-block-delay "$MIN_BLOCK_DELAY"
+fi
+
 # Persistência dos IDs em .env-dev
 
 upsert_env_var() {
@@ -189,6 +260,8 @@ persist_envs() {
   upsert_env_var "$file" PORTFOLIO_CONTRACT_ID "$PORTFOLIO_ID"
   upsert_env_var "$file" GOVERNANCE_CONTRACT_ID "$GOVERNANCE_ID"
   upsert_env_var "$file" ZK_VERIFIER_CONTRACT_ID "$ZK_VERIFIER_ID"
+  upsert_env_var "$file" BATCH_EXECUTOR_CONTRACT_ID "$BATCH_EXECUTOR_ID"
+  upsert_env_var "$file" MEV_GUARD_CONTRACT_ID "$MEV_GUARD_ID"
   upsert_env_var "$file" STELLAR_PUBLIC_KEY "$ADMIN"
 }
 
@@ -214,6 +287,8 @@ LOANSPOOL_ID=$LOANSPOOL_ID
 PORTFOLIO_ID=$PORTFOLIO_ID
 GOVERNANCE_ID=$GOVERNANCE_ID
 ZK_VERIFIER_ID=$ZK_VERIFIER_ID
+BATCH_EXECUTOR_ID=$BATCH_EXECUTOR_ID
+MEV_GUARD_ID=$MEV_GUARD_ID
 ==========================
 
 Dica: IDs gravados em $ROOT_ENV. Se existir, também atualizado: $BACKEND_ENV

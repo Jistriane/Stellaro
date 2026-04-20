@@ -49,13 +49,14 @@ export class IngestorService implements OnModuleInit {
     const rpcUrl = process.env.SOROBAN_RPC_URL;
     if (!rpcUrl) return; // disabled
     try {
-      const { SorobanRpc } = require('@stellar/stellar-sdk');
-      if (!SorobanRpc || !SorobanRpc.Server) {
+      const sdk = require('@stellar/stellar-sdk');
+      const rpc = sdk.rpc ?? sdk.SorobanRpc;
+      if (!rpc || typeof rpc.Server !== 'function') {
         throw new Error(
           'SorobanRpc.Server indisponível. Atualize @stellar/stellar-sdk ou verifique compatibilidade.',
         );
       }
-      const server = new SorobanRpc.Server(rpcUrl, {
+      const server = new rpc.Server(rpcUrl, {
         allowHttp: rpcUrl.startsWith('http://'),
       });
 

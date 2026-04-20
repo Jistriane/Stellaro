@@ -4,7 +4,7 @@
 **BLOCKER**: Contract `init` function fails via Stellar CLI with "Missing Entry VerificationKey" error.
 
 ## Context
-- **Contract ID (new)**: `CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L`
+- **Contract ID (current testnet deploy)**: `CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY`
 - **Wasm Hash**: `3b3a1fdb53986a64233036e728a4aeffefcd2e50f592c170de47eb16387dcecf`
 - **Network**: Stellar Testnet
 - **CLI Version**: 23.1.4 (upgrading to 23.2.1)
@@ -13,7 +13,7 @@
 ## Problem
 All attempts to initialize the ZK Verifier contract via `stellar contract invoke` fail with:
 ```
-❌ error: Missing Entry VerificationKey
+ error: Missing Entry VerificationKey
 ```
 
 ### Attempts Made
@@ -68,8 +68,8 @@ pub type VerificationKey = BytesN<32>;
 
 2. **Contract deployed successfully**:
    ```
-   ✅ Deployed!
-   CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L
+    Deployed!
+   CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY
    ```
 
 3. **Exported functions detected**:
@@ -120,7 +120,7 @@ This suggests the CLI is somehow invoking the wrong function or the contract is 
    - Version 23.1.4 may have known issues with BytesN types
    - Background compilation: ~141/618 crates
    
-2. **Execute SDK-based init script** ✅ (ready to run)
+2. **Execute SDK-based init script**  (ready to run)
    ```bash
    npm install --save-dev @stellar/stellar-sdk tsx
    tools/zk/init_contract_sdk.ts
@@ -145,7 +145,7 @@ This suggests the CLI is somehow invoking the wrong function or the contract is 
    - **Not recommended**: Breaks initialization atomicity
 
 ## Files Updated
-- `.env-dev`: `ZK_VERIFIER_CONTRACT_ID=CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L`
+- `.env-dev`: `ZK_VERIFIER_CONTRACT_ID=CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY`
 - `apps/backend/.env-dev`: Same
 - VK generated and stored: `circuits/credit_score_verification_key.base64`
 - **NEW**: `tools/zk/init_contract_sdk.ts` - SDK-based initialization script

@@ -481,6 +481,90 @@ describe('ActionsService', () => {
     });
   });
 
+  describe('stablecoinTransfer', () => {
+    const validTransferParams = {
+      from: 'sender-address',
+      to: 'recipient-address',
+      amount: '250',
+      userId: 'user-123',
+    };
+
+    it('should simulate transfer with dry run', async () => {
+      process.env.STABLECOIN_CONTRACT_ID = 'stablecoin-contract';
+      mockChainService.simulateContractCallReal.mockResolvedValue({
+        ok: true,
+        estimatedFee: 1200,
+      });
+      mockPrismaService.riskExecution.create.mockResolvedValue({});
+
+      const result = await service.stablecoinTransfer({
+        ...validTransferParams,
+        dryRun: true,
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.method).toBe('transfer');
+      expect(result.dryRun?.estimatedFee).toBe(1200);
+      expect(mockPrismaService.riskExecution.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          action: 'stablecoin.transfer',
+          dryRun: true,
+        }),
+      });
+    });
+
+    it('should execute actual transfer', async () => {
+      process.env.STABLECOIN_CONTRACT_ID = 'stablecoin-contract';
+      mockChainService.submitTxReal.mockResolvedValue({
+        ok: true,
+        txHash: 'transfer-tx-hash',
+      });
+      mockPrismaService.riskExecution.create.mockResolvedValue({});
+
+      const result = await service.stablecoinTransfer(validTransferParams);
+
+      expect(result.ok).toBe(true);
+      expect(result.txHash).toBe('transfer-tx-hash');
+      expect(mockPrismaService.riskExecution.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          action: 'stablecoin.transfer',
+          executed: true,
+          dryRun: false,
+        }),
+      });
+    });
+
+    it('should handle transfer failure', async () => {
+      process.env.STABLECOIN_CONTRACT_ID = 'stablecoin-contract';
+      mockChainService.submitTxReal.mockResolvedValue({
+        ok: false,
+        error: 'Transfer failed',
+      });
+      mockPrismaService.riskExecution.create.mockResolvedValue({});
+
+      const result = await service.stablecoinTransfer(validTransferParams);
+
+      expect(result.ok).toBe(false);
+      expect(result.error).toContain('Transfer failed');
+    });
+
+    it('should use default contract ID when not configured', async () => {
+      delete process.env.STABLECOIN_CONTRACT_ID;
+      mockChainService.simulateContractCallReal.mockResolvedValue({
+        ok: true,
+        estimatedFee: 1000,
+      });
+      mockPrismaService.riskExecution.create.mockResolvedValue({});
+
+      const result = await service.stablecoinTransfer({
+        ...validTransferParams,
+        dryRun: true,
+      });
+
+      expect(result.contractId).toBe('demo-stablecoin-contract');
+    });
+  });
+
   describe('integration scenarios', () => {
     it('should handle multiple operations in sequence', async () => {
       process.env.STABLECOIN_CONTRACT_ID = 'stablecoin-contract';

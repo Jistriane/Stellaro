@@ -1,4 +1,4 @@
-# 🚀 QUICK DEPLOY GUIDE - STELLARO (Production Deployment)
+# QUICK DEPLOY GUIDE - STELLARO (Production Deployment)
 
 **Last Updated**: December 9, 2025  
 **Purpose**: Fast mainnet deployment with minimal steps  
@@ -7,7 +7,7 @@
 
 ---
 
-## ⚡ EXPRESS DEPLOYMENT (5 STEPS)
+## EXPRESS DEPLOYMENT (5 STEPS)
 
 ### Step 1: Prepare Environment (5 minutes)
 
@@ -39,12 +39,12 @@ cargo build --release
 
 # Expected output:
 # Deploying to Stellar Mainnet...
-# ✅ Stablecoin deployed: CA...
-# ✅ Loans Pool deployed: CC...
-# ✅ RiskLock deployed: CA...
-# ✅ Portfolio deployed: CA...
-# ✅ Governance deployed: CC...
-# ✅ ZK Verifier deployed: CB...
+# Stablecoin deployed: CA...
+# Loans Pool deployed: CC...
+# RiskLock deployed: CA...
+# Portfolio deployed: CA...
+# Governance deployed: CC...
+# ZK Verifier deployed: CB...
 # Total cost: ~9 XLM
 ```
 
@@ -101,12 +101,12 @@ npm run test:e2e -- --testNamePattern="mainnet"
 # Check all dashboards showing green ✓
 
 # Launch complete!
-echo "✅ Stellaro Live on Mainnet!"
+echo " Stellaro Live on Mainnet!"
 ```
 
 ---
 
-## 📋 DEPLOYMENT CHECKLIST
+## DEPLOYMENT CHECKLIST
 
 Before running any command, verify:
 
@@ -122,7 +122,7 @@ Before running any command, verify:
 
 ---
 
-## 🔧 DETAILED COMMAND REFERENCE
+## DETAILED COMMAND REFERENCE
 
 ### Contract Deployment
 
@@ -219,7 +219,7 @@ npm run health:full
 
 ---
 
-## 🚨 ROLLBACK PROCEDURE (If Needed)
+## ROLLBACK PROCEDURE (If Needed)
 
 ```bash
 # Stop current deployment
@@ -241,7 +241,7 @@ curl http://localhost:3001/health
 
 ---
 
-## 📊 VERIFICATION STEPS
+## VERIFICATION STEPS
 
 After deployment, verify:
 
@@ -273,7 +273,7 @@ docker logs stellaro-backend | grep ERROR
 
 ---
 
-## ⚙️ CONFIGURATION TEMPLATES
+## CONFIGURATION TEMPLATES
 
 ### .env-mainnet
 
@@ -373,7 +373,7 @@ volumes:
 
 ---
 
-## 🎯 COMMON DEPLOYMENT SCENARIOS
+## COMMON DEPLOYMENT SCENARIOS
 
 ### Scenario 1: Fresh Mainnet Deployment
 
@@ -437,7 +437,7 @@ git merge hotfix/issue-name
 
 ---
 
-## 📞 SUPPORT & TROUBLESHOOTING
+## SUPPORT & TROUBLESHOOTING
 
 ### Service Won't Start
 
@@ -507,7 +507,7 @@ curl https://soroban-mainnet.stellar.org -X POST -H "Content-Type: application/j
 
 ---
 
-## 🔒 SECURITY CHECKLIST
+## SECURITY CHECKLIST
 
 Before going live:
 
@@ -523,7 +523,7 @@ Before going live:
 
 ---
 
-## 📈 POST-DEPLOYMENT MONITORING
+## POST-DEPLOYMENT MONITORING
 
 ```bash
 # Monitor logs in real-time
@@ -548,15 +548,15 @@ curl http://localhost:9090/api/v1/query?query=up
 
 ---
 
-## 🎉 DEPLOYMENT COMPLETE!
+## DEPLOYMENT COMPLETE!
 
 Once all steps are complete:
 
-1. ✅ Monitor for first 24 hours
-2. ✅ Gather user feedback
-3. ✅ Review metrics and logs
-4. ✅ Enable real integrations if all good
-5. ✅ Begin marketing campaign
+1.  Monitor for first 24 hours
+2.  Gather user feedback
+3.  Review metrics and logs
+4.  Enable real integrations if all good
+5.  Begin marketing campaign
 
 **Contact**: Refer to ACTION_GUIDE_NEXT_STEPS.md for detailed post-deployment plan.
 

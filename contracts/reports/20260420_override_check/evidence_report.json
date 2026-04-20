@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-04-20T03:22:21Z",
+  "startedAt": "2026-04-20T03:22:13Z",
+  "network": "testnet",
+  "sourceAddress": "GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX",
+  "gitCommit": "80e64c55",
+  "envFile": "/home/jistriane/Stellaro/Stellaro/contracts/.env-testnet",
+  "runFlags": {
+    "abiStrict": 0,
+    "runMutations": 0,
+    "runTransactional": 0,
+    "strictOnchainOnly": 0,
+    "strictRequired": 0
+  },
+  "contracts": {
+    "stablecoin": "CAB2HQ7XQ2CS4ROO4E3PZVJASXUNEKWTDFGRRGIPVUFHGQC24HKZHJIZ",
+    "batchExecutor": "CB4JL3UCIUGGZNPFEO3AJF6YEPB7YXA5RL7ESLQSCRDCH2VIPML7NT6K",
+    "mevGuard": "CAST73A5BQGH2EWIV2OUZ4553OEBQRMSFIKB4VFZLFCXKX5HT3Y62ZXS",
+    "soroswapRouter": ""
+  },
+  "steps": [
+    {
+      "name": "abi_check",
+      "status": "pass",
+      "exitCode": 0,
+      "log": "/home/jistriane/Stellaro/Stellaro/contracts/reports/20260420_override_check/abi_check.log"
+    },
+    {
+      "name": "smoke_read_only",
+      "status": "fail",
+      "exitCode": 1,
+      "log": "/home/jistriane/Stellaro/Stellaro/contracts/reports/20260420_override_check/smoke_read_only.log"
+    },
+    {
+      "name": "smoke_mutation",
+      "status": "skipped",
+      "exitCode": 0,
+      "log": ""
+    },
+    {
+      "name": "transactional_e2e",
+      "status": "skipped",
+      "exitCode": 0,
+      "log": ""
+    }
+  ]
+}

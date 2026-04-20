@@ -14,7 +14,6 @@ export default function HomeHero() {
           alt="Stellaro logo"
           width={148}
           height={148}
-          priority
           className="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 object-contain"
         />
         <div className="space-y-3">

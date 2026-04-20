@@ -6,7 +6,7 @@
 
 Welcome to the Stellaro project! This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 15 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
-## 🎨 Interface Screenshots
+## Interface Screenshots
 
 Login / Authentication:
 
@@ -16,34 +16,34 @@ Home / Dashboard:
 
 ![Home](./Home%20Stellaro.png)
 
-## 🎯 Architecture v3.0 Highlights
+## Architecture v3.0 Highlights
 
-- **🤖 AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring
-- **⚡ Sub-second Oracles** - Reflector Network integration (<500ms latency)
-- **🔐 Passkey Sessions** - Biometric authentication with session keys for batch operations
-- **💰 120% Collateralization** - Automated reserve monitoring with emergency freeze
-- **🏗️ Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster
-- **📊 Progressive Decentralization** - Multisig 3/5 → DAO governance roadmap
+- **AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring
+- **Sub-second Oracles** - Reflector Network integration (<500ms latency)
+- **Passkey Sessions** - Biometric authentication with session keys for batch operations
+- **120% Collateralization** - Automated reserve monitoring with emergency freeze
+- **Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster
+- **Progressive Decentralization** - Multisig 3/5 -> DAO governance roadmap
 
 ## Features
 
 ### Core Features
 
-- 🏬 **DeFi Credit Infrastructure** - Complete lending and borrowing platform with AI-powered risk assessment
-- 💳 **Stablecoin STLT-BRL** - Brazilian Real-pegged stablecoin with 120%+ collateralization
-- 🏛️ **Governance System** - Progressive decentralization (Multisig → DAO)
-- 🔐 **Wallet Integration** - Freighter, Ledger, Albedo support
-- 📱 **PIX Integration** - Instant BRL mint/burn via Stellar Anchors
-- 🎯 **KYC/AML Compliance** - Multi-tier (0/1/2) via Onfido + Chainalysis
-- 🔒 **Security Features** - Passkey authentication, session keys, reserve monitoring
-- 🤖 **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
-- ⚡ **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
+- **DeFi Credit Infrastructure** - Complete lending and borrowing platform with AI-powered risk assessment
+- **Stablecoin STLT-BRL** - Brazilian Real-pegged stablecoin with 120%+ collateralization
+- **Governance System** - Progressive decentralization (Multisig → DAO)
+- **Wallet Integration** - Freighter, Ledger, Albedo support
+- **PIX Integration** - Instant BRL mint/burn via Stellar Anchors
+- **KYC/AML Compliance** - Multi-tier (0/1/2) via Onfido + Chainalysis
+- **Security Features** - Passkey authentication, session keys, reserve monitoring
+- **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
+- **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
 
 ### Observability & Operations
 
-- 📈 **Prometheus**: Backend metrics scraping (`/metrics`), Horizon and Soroban RPC
-- 📊 **Grafana**: Automatically provisioned dashboards (Overview and DeFi)
-- 🚨 **Alerts**: Rules for availability, 5xx errors, p95 latency, DB/Redis pool, contracts and ZK proofs
+- **Prometheus**: Backend metrics scraping (`/metrics`), Horizon and Soroban RPC
+- **Grafana**: Automatically provisioned dashboards (Overview and DeFi)
+- **Alerts**: Rules for availability, 5xx errors, p95 latency, DB/Redis pool, contracts and ZK proofs
 
 Quick setup (docker):
 
@@ -162,7 +162,7 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 
 - **URL**: https://stellaro-frontend-testnet.vercel.app
 - **Platform**: Vercel
-- **Status**: ✅ Active
+- **Status**: Active
 - **Last Deployment**: December 9, 2025
 - **Deployment URL**: https://stellaro-frontend-testnet-c9oxyqhwh.vercel.app
 
@@ -175,26 +175,96 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 - **`packages/`**: Shared UI components and configurations across the monorepo.
 - **`infra/`**: Docker files, deployment scripts, and CI/CD configurations.
 
+## Project Flow Diagram
+
+```mermaid
+flowchart LR
+  subgraph UI[Client Layer]
+    U[User Wallet / Passkey]
+    F[Frontend\nNext.js]
+    U --> F
+  end
+
+  subgraph API[Application Layer]
+    B[Backend API\nNestJS]
+  end
+
+  subgraph AGENTS[AI and Business Automation]
+    A1[Risk Agent\nElizaOS]
+    A2[Compliance and Reserve\nKYC/AML]
+    A3[Payments\nPIX / Card Rails]
+  end
+
+  subgraph CHAIN[On-Chain Layer (Soroban)]
+    C1[Stablecoin]
+    C2[Loans Pool]
+    C3[Portfolio]
+    C4[Governance]
+    C5[ZK Verifier]
+    C6[Batch Executor]
+    C7[MEV Guard]
+  end
+
+  subgraph DATA[Data and Integrations]
+    O1[Reflector / DEX Oracles]
+    O2[Horizon / Soroban RPC]
+    D1[(PostgreSQL)]
+    D2[(Redis)]
+  end
+
+  subgraph OBS[Observability]
+    M1[Prometheus]
+    M2[Grafana]
+    M1 --> M2
+  end
+
+  F --> B
+  A1 --> B
+  A2 --> B
+  A3 --> B
+
+  B --> C1
+  B --> C2
+  B --> C3
+  B --> C4
+  B --> C5
+  B --> C6
+  B --> C7
+
+  C6 --> C1
+  C6 --> C2
+  C6 --> C7
+  C7 --> C6
+
+  B --> O1
+  B --> O2
+  B --> D1
+  B --> D2
+  B --> M1
+```
+
 ## Deployed Smart Contracts
 
-The Stellaro platform includes 6 core smart contracts deployed on Stellar Testnet:
+The Stellaro platform includes 8 smart contracts deployed on Stellar Testnet:
 
 | Contract | Contract ID | Purpose |
 |-------------------|-------------|-------------------|
-| **Stablecoin** | `CBC4KEL4BTI2XBNMJEZFFGJDUNFHEFDSJDEMZAGHWCVXRPYTHRMXQI2L` | STLT-BRL token management and transfers |
-| **RiskLock** | `CAF4ZPHLAZGT4DXQLGX6F7PPE63AP2WWFWEKVPI3LN6UPOKPWSZZAZJS` | Risk management and account locking |
-| **LoansPool** | `CCWS62FYOXIVA2YMORZHYDSU2NHJHUNQW4E7ONERHLMLD6RRHPFUQXZD` | Lending and borrowing operations |
-| **Portfolio** | `CDSGXZQF4676KX2YCPIPIPRV7L7SE7DFBVKVXHICMJ26ZCO3GIENWXW5` | Asset portfolio management |
-| **Governance** | `CCFMF4ZZEU3UMOQVDZNB5CHLZOAXRFPFCZOEVBI6JXZHYWFQLVHOLEJ3` | DAO governance and voting |
-| **ZK Verifier** | `CCWZPTZEZZFOELDGVHP7IAO5GNVX6MSITN2G7H3ZBGG57OXPVZYYPAFO` | ZK-proof verification and credit scoring |
+| **Stablecoin** | `CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG` | STLT-BRL token management and transfers |
+| **RiskLock** | `CAMEHWI55A4CJ5UE7YN5V7NPP4ZPVMOE6ZSIF5JQKQXVJHLENMB464VO` | Risk management and account locking |
+| **LoansPool** | `CAXAKWLYXOHZBUEKHGSOILJR3CU5ICEREZTA3LYYFIJPK3ZQQLCZEYW7` | Lending and borrowing operations |
+| **Portfolio** | `CC6NTQNQ6CM42F2DB44CYZE24O7IJ7VNMSEHVKPX57NVCV46MEIGKUNB` | Asset portfolio management |
+| **Governance** | `CCUHIZXPRMZQJ2E2YY6BBRP3YSXBGX4HDHZDVVMF2XM3WZIDOYGM47MP` | DAO governance and voting |
+| **ZK Verifier** | `CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY` | ZK-proof verification and credit scoring |
+| **Batch Executor** | `CAHWOMBTMVUWGMRWSJY2TPCBMPO3A3LODCBE6MFXMA6XR4ALZZCGTN7I` | Atomic batch execution for DeFi operations |
+| **MEV Guard** | `CDHQZQ5YMNVAPKXJ6LVBDSJC4QVZL4UD2TIKSTDYGATMBTWEV7ZSOG3M` | Protected swaps and anti-MEV controls |
 
 ### Network Configuration
 
 - **Network**: Stellar Testnet
 - **RPC URL**: `https://soroban-testnet.stellar.org`
 - **Horizon URL**: `https://horizon-testnet.stellar.org`
-- **Admin (Public Key)**: `GCKZ35K7GMUJBFKBOS2YM7FUHATM5FHHFGH7AVNGC5TXLFGV265G33QX`
-- **Deploy Date**: December 9, 2025
+- **Admin (Public Key)**: `GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX`
+- **Deploy Date**: April 15, 2026
 
 ### Environment Variables (Backend)
 
@@ -226,34 +296,34 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 - Stellar account imported with alias
 - `.env-dev` configured with CONTRACT_IDs (auto-populated by script)
 
-> Deploy reference: see `TESTNET_DEPLOY.md` and `DEPLOY_SUCCESS.md` for details, IDs and explorer links.
+> Deploy reference: see `docs/CONTRACT_DEPLOYMENT_GUIDE.md` and `docs/RELEASE_READINESS_TESTNET_20260420.md` for details, IDs, and validation evidence.
 
 ## Documentation
 
-**📚 Comprehensive documentation for v3.0 architecture:**
+**Comprehensive documentation for v3.0 architecture:**
 
-- **[Quick Start Guide](./docs/QUICK_START_GUIDE.md)** - Week 1 implementation guide
+- **[Start Here](./docs/START_HERE.md)** - Current documentation entry point
 - **[Architecture Decision Records](./docs/ADRs.md)** - Technical decisions and rationale
 - **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide (9/9 suites, 46 tests)
 - **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive testing status (63 suites, 270+ tests)
 - **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics (35.11%)
-- **[Project Completion Report](./docs/PROJECT_COMPLETION_REPORT.md)** - Implementation status and metrics
+- **[Continuation Readme](./CONTINUATION_README.md)** - Current implementation status and continuity
 - **[Manual (EN)](./docs/Manual.md)** - Complete user and developer guide
 
 ### Key Features Documentation
 
 | Feature | Status | Documentation |
 |---------|--------|---------------|
-| Reflector Oracle | ✅ Implemented | `src/oracles/reflector-oracle.service.ts` |
-| Passkey Sessions | ✅ Implemented | `src/passkey/passkey-session.service.ts` |
-| Reserve Manager | ✅ Implemented | `src/compliance/reserve-manager.service.ts` |
-| CI/CD Pipeline | ✅ Implemented | `.github/workflows/ci.yml` |
-| Kubernetes Setup | ✅ Implemented | `infra/k8s/` |
-| E2E Tests | ✅ Implemented | `apps/backend/test/` (9/9 suites, 46 tests, 100% passing) |
-| Unit Tests | ✅ Implemented | `apps/backend/src/**/*.spec.ts` (65 suites, 414+ tests) |
-| Test Coverage | ✅ Target Exceeded | 57.62% overall (exceeds 50% target by +7.62%) |
-| ZK Credit Score | 🔄 In Progress | Week 3-4 |
-| PIX Integration | ✅ Implemented | `src/payments/pix.service.ts` |
+| Reflector Oracle | Implemented | `src/oracles/reflector-oracle.service.ts` |
+| Passkey Sessions | Implemented | `src/passkey/passkey-session.service.ts` |
+| Reserve Manager | Implemented | `src/compliance/reserve-manager.service.ts` |
+| CI/CD Pipeline | Implemented | `.github/workflows/ci.yml` |
+| Kubernetes Setup | Implemented | `infra/k8s/` |
+| E2E Tests | Implemented | `apps/backend/test/` (9/9 suites, 46 tests, 100% passing) |
+| Unit Tests | Implemented | `apps/backend/src/**/*.spec.ts` (65 suites, 414+ tests) |
+| Test Coverage | Target Exceeded | 57.62% overall (exceeds 50% target by +7.62%) |
+| ZK Credit Score | In Progress | Week 3-4 |
+| PIX Integration | Implemented | `src/payments/pix.service.ts` |
 
 ## Getting Started
 
@@ -352,17 +422,17 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 
 ### Access
 
-- **Frontend**: <http://localhost:3000>0>
+- **Frontend**: <http://localhost:3000>
 - **Backend API**: <http://localhost:3001>
 - **API Docs**: <http://localhost:3001/api>
 - **Grafana** (if running): <http://localhost:3000>
 
 ### Project Status
 
-- Detailed progress: [PROJECT_COMPLETION_REPORT.md](./docs/PROJECT_COMPLETION_REPORT.md)
+- Detailed progress: [CONTINUATION_README.md](./CONTINUATION_README.md)
 - Task list: [ACTION_GUIDE_NEXT_STEPS.md](./docs/ACTION_GUIDE_NEXT_STEPS.md)
 
-**📖 For detailed setup, see [QUICK_START_GUIDE.md](./docs/QUICK_START_GUIDE.md)**
+**For detailed setup, see [DEV_ENVIRONMENT_SETUP.md](./docs/DEV_ENVIRONMENT_SETUP.md).**
 
 ## Testing
 
@@ -405,11 +475,11 @@ npm run test:all
 
 ### Test Features
 
-- ✅ **Isolated test environment** with in-memory Prisma, Redis stubs
-- ✅ **Mocked external dependencies** (Soroban RPC, ZK proofs, PIX providers)
-- ✅ **Global teardown** for clean resource cleanup
-- ✅ **Serial execution** for E2E tests to prevent race conditions
-- ✅ **Comprehensive guards/services/controllers** test structure
+- **Isolated test environment** with in-memory Prisma, Redis stubs
+- **Mocked external dependencies** (Soroban RPC, ZK proofs, PIX providers)
+- **Global teardown** for clean resource cleanup
+- **Serial execution** for E2E tests to prevent race conditions
+- **Comprehensive guards/services/controllers** test structure
 
 We welcome contributions to the Stellaro project! Please see our contributing guidelines and code of conduct.
 
@@ -430,4 +500,4 @@ For support and questions, please open an issue on GitHub or contact the develop
 
 ---
 
-## Built with ❤️ using Stellar and Soroban
+## Built with Stellar and Soroban

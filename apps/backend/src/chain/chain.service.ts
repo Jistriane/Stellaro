@@ -86,7 +86,11 @@ export class ChainService {
     try {
       const StellarSdk = require('@stellar/stellar-sdk');
       const cfg = this.getConfig();
-      const server = new StellarSdk.SorobanRpc.Server(cfg.sorobanRpcUrl, {
+      const rpc = StellarSdk.rpc ?? StellarSdk.SorobanRpc;
+      if (!rpc || typeof rpc.Server !== 'function') {
+        throw new Error('Soroban RPC SDK unavailable');
+      }
+      const server = new rpc.Server(cfg.sorobanRpcUrl, {
         allowHttp: true,
       });
 
@@ -130,7 +134,11 @@ export class ChainService {
       if (!cfg.secretKey) {
         return { ok: false, error: 'missing WALLET_SECRET_DEV' };
       }
-      const server = new StellarSdk.SorobanRpc.Server(cfg.sorobanRpcUrl, {
+      const rpc = StellarSdk.rpc ?? StellarSdk.SorobanRpc;
+      if (!rpc || typeof rpc.Server !== 'function') {
+        return { ok: false, error: 'Soroban RPC SDK unavailable' };
+      }
+      const server = new rpc.Server(cfg.sorobanRpcUrl, {
         allowHttp: true,
       });
 

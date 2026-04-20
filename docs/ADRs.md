@@ -17,14 +17,14 @@ Migrar para PostgreSQL 15+ com deployment Multi-AZ no AWS RDS.
 ### Consequences
 
 **Positives**:
-- ✅ Suporta 10k+ conexões concorrentes
-- ✅ Replicação nativa para HA
-- ✅ Backup point-in-time
-- ✅ Compatibility com ORMs modernos (Prisma)
+- Suporta 10k+ conexões concorrentes
+- Replicação nativa para HA
+- Backup point-in-time
+- Compatibility com ORMs modernos (Prisma)
 
 **Negatives**:
-- ⚠️ Custo adicional (~$400/mês RDS)
-- ⚠️ Complexidade de setup (mitigado por Terraform)
+- Custo adicional (~$400/mês RDS)
+- Complexidade de setup (mitigado por Terraform)
 
 ### Implementation
 
@@ -55,9 +55,9 @@ Usar Reflector Network como oracle primário, com fallbacks para Stellar DEX e C
 
 | Fonte | Latência | Custo/1k calls | Confiabilidade |
 |-------|----------|----------------|----------------|
-| Reflector | <500ms | $0.01 | ⭐⭐⭐⭐⭐ |
-| Stellar DEX | <1s | Grátis | ⭐⭐⭐⭐ |
-| Chainlink | <10s | $0.10 | ⭐⭐⭐⭐⭐ |
+| Reflector | <500ms | $0.01 |  |
+| Stellar DEX | <1s | Grátis |  |
+| Chainlink | <10s | $0.10 |  |
 
 ### Implementation
 
@@ -182,14 +182,14 @@ Roadmap de descentralização em 3 fases:
 ### Security Tradeoffs
 
 **Why NOT fully decentralized desde início**:
-- 🔴 Exploits requerem resposta rápida (ex: PancakeSwap DNS hack)
-- 🔴 Parâmetros iniciais podem precisar ajustes (LTV, taxas)
-- 🔴 Compliance pode exigir intervention (freeze de contas ilícitas)
+- Exploits requerem resposta rápida (ex: PancakeSwap DNS hack)
+- Parâmetros iniciais podem precisar ajustes (LTV, taxas)
+- Compliance pode exigir intervention (freeze de contas ilícitas)
 
 **Mitigations**:
-- ✅ Timelock previne rug pulls
-- ✅ Multisig elimina single point of failure
-- ✅ Auditoria pública de todas ações admin
+- Timelock previne rug pulls
+- Multisig elimina single point of failure
+- Auditoria pública de todas ações admin
 
 ---
 
@@ -212,14 +212,14 @@ MVP 100% Stellar/Soroban. Cross-chain bridges apenas Fase 2.
 |---------|--------------|-------------|
 | Tx Cost | $0.00001 | $2+ (Ethereum) |
 | Finality | <5s | 12min+ |
-| Complexity | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Security | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ (bridge risk) |
+| Complexity |  |  |
+| Security |  |  (bridge risk) |
 
 **95% dos use cases cobertos**:
-- ✅ Stablecoin BRL
-- ✅ Lending/borrowing
-- ✅ DEX swaps
-- ✅ PIX integration
+- Stablecoin BRL
+- Lending/borrowing
+- DEX swaps
+- PIX integration
 
 ---
 
@@ -263,9 +263,9 @@ const KYC_TIERS = {
 ### Compliance
 
 Atende requisitos BACEN e FATF para AML/CTF:
-- ✅ Monitoring contínuo (Chainalysis)
-- ✅ Limits progressivos
-- ✅ Enhanced due diligence para high-value
+- Monitoring contínuo (Chainalysis)
+- Limits progressivos
+- Enhanced due diligence para high-value
 
 ---
 
@@ -298,9 +298,9 @@ Lending Decision (automated)
 
 ### Privacy Model
 
-- ✅ TX history nunca exposta (ZK proof)
-- ✅ Score calculado sem revelar detalhes
-- ✅ User controla quais dados compartilhar
+- TX history nunca exposta (ZK proof)
+- Score calculado sem revelar detalhes
+- User controla quais dados compartilhar
 
 ### Explainability
 
@@ -363,10 +363,10 @@ Manter estrutura monorepo com Turborepo.
 
 ### Benefits
 
-- ✅ Shared UI components (`packages/ui`)
-- ✅ Parallel builds
-- ✅ Incremental compilation
-- ✅ Unified dependency management
+- Shared UI components (`packages/ui`)
+- Parallel builds
+- Incremental compilation
+- Unified dependency management
 
 ```json
 {
@@ -385,16 +385,16 @@ Manter estrutura monorepo com Turborepo.
 
 | ADR | Status | Impact | Effort |
 |-----|--------|--------|--------|
-| 001 - PostgreSQL | ✅ Accepted | CRITICAL | M (1w) |
-| 002 - Reflector Oracle | ✅ Accepted | CRITICAL | M (3d) |
-| 003 - Session Keys | ✅ Accepted | HIGH | M (1w) |
-| 004 - Collateralization | ✅ Accepted | CRITICAL | M (1w) |
-| 005 - Progressive Decentral | ✅ Accepted | HIGH | L (2w) |
-| 006 - Stellar-Only | ✅ Accepted | MEDIUM | - |
-| 007 - KYC Tiers | ✅ Accepted | CRITICAL | L (2w) |
-| 008 - AI Risk Agent | ✅ Accepted | HIGH | L (2w) |
-| 009 - AWS EKS | ✅ Accepted | HIGH | M (1w) |
-| 010 - Monorepo | ✅ Implemented | MEDIUM | - |
+| 001 - PostgreSQL |  Accepted | CRITICAL | M (1w) |
+| 002 - Reflector Oracle |  Accepted | CRITICAL | M (3d) |
+| 003 - Session Keys |  Accepted | HIGH | M (1w) |
+| 004 - Collateralization |  Accepted | CRITICAL | M (1w) |
+| 005 - Progressive Decentral |  Accepted | HIGH | L (2w) |
+| 006 - Stellar-Only |  Accepted | MEDIUM | - |
+| 007 - KYC Tiers |  Accepted | CRITICAL | L (2w) |
+| 008 - AI Risk Agent |  Accepted | HIGH | L (2w) |
+| 009 - AWS EKS |  Accepted | HIGH | M (1w) |
+| 010 - Monorepo |  Implemented | MEDIUM | - |
 
 ---
 

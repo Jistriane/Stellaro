@@ -1,9 +1,9 @@
-# 🌐 Guia de Setup - Reflector Network
+# Guia de Setup - Reflector Network
 
 **Última Atualização**: 7 de dezembro de 2025  
 **Status**: Production-Ready
 
-## 📋 Índice
+## Índice
 
 1. [O que é Reflector Network?](#o-que-é)
 2. [Arquitetura](#arquitetura)
@@ -20,20 +20,20 @@
 
 Reflector Network é um **oracle de preços descentralizado** para Stellar que oferece:
 
-✅ **Sub-segundo latency** - Preços em tempo real  
-✅ **Multi-source aggregation** - Múltiplas exchange como fonte  
-✅ **ZK-Proofs** - Validação criptográfica de preços  
-✅ **Low cost** - Integrado ao Soroban com taxa mínima  
+ **Sub-segundo latency** - Preços em tempo real  
+ **Multi-source aggregation** - Múltiplas exchange como fonte  
+ **ZK-Proofs** - Validação criptográfica de preços  
+ **Low cost** - Integrado ao Soroban com taxa mínima  
 
 ### Comparação com Alternativas
 
 | Feature | Reflector | Chainlink | Band Protocol |
 |---------|-----------|-----------|---------------|
 | Latency | <1s | 1-5min | 1-3min |
-| Stellar Native | ✅ | ❌ | ❌ |
-| Descentralizado | ✅ | ✅ | ✅ |
+| Stellar Native |  |  |  |
+| Descentralizado |  |  |  |
 | Cost (Stellar) | $0.001/update | N/A | N/A |
-| ZK Support | ✅ | ❌ | ❌ |
+| ZK Support |  |  |  |
 
 ---
 
@@ -75,11 +75,11 @@ curl -s https://api-testnet.reflector.network/api/v1/prices/USDC | jq '.'
 
 # Resposta esperada:
 # {
-#   "asset": "USDC:GCZXWVNJ7F723JHHDV7VWYXPUQR4FNHQHW6ZMCR5I3FQUV4LHVECBHM",
-#   "price": "1.0",
-#   "timestamp": 1701944400,
-#   "sources": ["Binance", "Kraken", "Coinbase"],
-#   "aggregation_method": "median"
+# "asset": "USDC:GCZXWVNJ7F723JHHDV7VWYXPUQR4FNHQHW6ZMCR5I3FQUV4LHVECBHM",
+# "price": "1.0",
+# "timestamp": 1701944400,
+# "sources": ["Binance", "Kraken", "Coinbase"],
+# "aggregation_method": "median"
 # }
 ```
 
@@ -164,11 +164,11 @@ curl -X GET "http://localhost:3001/api/reflector/prices/USDC" \
 
 # Resposta esperada:
 # {
-#   "symbol": "USDC",
-#   "price": 1.0,
-#   "timestamp": 1701944400000,
-#   "source": "reflector",
-#   "confidence": 0.99
+# "symbol": "USDC",
+# "price": 1.0,
+# "timestamp": 1701944400000,
+# "source": "reflector",
+# "confidence": 0.99
 # }
 ```
 

@@ -4,7 +4,7 @@
 
 The Stellaro backend has a complete E2E test suite isolated from external dependencies (PostgreSQL, Redis, Soroban RPC). All 9 suites (46 tests) pass consistently without open handles.
 
-**Status**: ✅ 100% Passing (9/9 suites, 46/46 tests)
+**Status**: 100% Passing (9/9 suites, 46/46 tests)
 
 **Runtime**: ~7s in serial mode (`--runInBand`)
 
@@ -368,7 +368,7 @@ Se aparecer warning de open handles, rodar com `--detectOpenHandles`:
 npm run test:e2e:detect
 ```
 
-**Status atual**: ✅ Zero open handles detectados
+**Status atual**:  Zero open handles detectados
 
 ### Testes Falhando
 
@@ -431,4 +431,4 @@ Se testes PIX falharem com double-mint:
 
 **Última Atualização**: 2025-12-03
 
-**Status**: ✅ Produção-ready (9/9 suites passing, zero open handles)
+**Status**: Produção-ready (9/9 suites passing, zero open handles)

@@ -1,8 +1,0 @@
-{
-  "buildCommand": "bash apps/frontend/build-vercel.sh",
-  "outputDirectory": "apps/frontend/.next",
-  "env": {
-    "NEXT_PUBLIC_NETWORK": "testnet"
-  },
-  "framework": "nextjs"
-}

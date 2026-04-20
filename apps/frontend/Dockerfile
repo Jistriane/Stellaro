@@ -31,7 +31,7 @@ RUN npm ci --only=production
 # Copy build output
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/next-intl.config.ts ./
 
 # Create non-root user

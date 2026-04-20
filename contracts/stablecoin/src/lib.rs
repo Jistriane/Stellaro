@@ -25,6 +25,13 @@ pub struct BurnEvent {
 }
 
 #[contractevent]
+pub struct TransferEvent {
+    pub from: Address,
+    pub to: Address,
+    pub amount: u128,
+}
+
+#[contractevent]
 pub struct ClawbackEvent {
     pub from: Address,
     pub amount: u128,
@@ -286,6 +293,43 @@ mod test {
         // Try to burn from locked address (should error)
         expect_err(|| client.burn(&user1, &user1, &500_000_000_000u128));
     }
+
+    #[test]
+    fn test_transfer_success_and_balance_compatibility() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let user2 = Address::generate(&env);
+
+        let contract_id = env.register(StablecoinContract, ());
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &4000u32);
+
+        client.mint_guarded(&admin, &user1, &1_000_000u128, &1000u32);
+        assert_eq!(client.balance(&user1), 1_000_000i128);
+
+        client.transfer(&user1, &user2, &250_000i128);
+        assert_eq!(client.balance_of(&user1), 750_000u128);
+        assert_eq!(client.balance_of(&user2), 250_000u128);
+    }
+
+    #[test]
+    fn test_transfer_invalid_amount_and_insufficient_balance() {
+        let env = Env::default();
+        env.mock_all_auths();
+        let admin = Address::generate(&env);
+        let user1 = Address::generate(&env);
+        let user2 = Address::generate(&env);
+
+        let contract_id = env.register(StablecoinContract, ());
+        let client = StablecoinContractClient::new(&env, &contract_id);
+        client.init(&admin, &4000u32);
+        client.mint_guarded(&admin, &user1, &10u128, &1000u32);
+
+        expect_err(|| client.transfer(&user1, &user2, &0i128));
+        expect_err(|| client.transfer(&user1, &user2, &11i128));
+    }
 }
 
 #[contract]
@@ -381,6 +425,16 @@ impl StablecoinContract {
 
     pub fn balance_of(env: Env, owner: Address) -> u128 {
         read_u128(&env, &DataKey::Balance(owner))
+    }
+
+    // Compatibilidade com consumidores que esperam ABI de token em i128
+    pub fn balance(env: Env, owner: Address) -> i128 {
+        let bal = read_u128(&env, &DataKey::Balance(owner));
+        if bal > i128::MAX as u128 {
+            i128::MAX
+        } else {
+            bal as i128
+        }
     }
 
     pub fn total_supply(env: Env) -> u128 {
@@ -519,6 +573,44 @@ impl StablecoinContract {
         write_u128(&env, &DataKey::TotalSupply, ts - amount);
         env.events().publish_event(&BurnEvent { from, amount });
         
+        release_lock(&env);
+        Ok(())
+    }
+
+    // Transferência direta entre contas (compatível com Batch Executor)
+    pub fn transfer(env: Env, from: Address, to: Address, amount: i128) -> Result<(), Error> {
+        acquire_lock(&env)?;
+
+        from.require_auth();
+        if amount <= 0 {
+            release_lock(&env);
+            return Err(Error::InvalidAmount);
+        }
+        if read_bool(&env, &DataKey::Paused) {
+            release_lock(&env);
+            return Err(Error::ContractPaused);
+        }
+        if Self::is_locked(env.clone(), from.clone()) || Self::is_locked(env.clone(), to.clone()) {
+            release_lock(&env);
+            return Err(Error::AccountLocked);
+        }
+
+        let amount_u = amount as u128;
+        let from_bal = read_u128(&env, &DataKey::Balance(from.clone()));
+        if from_bal < amount_u {
+            release_lock(&env);
+            return Err(Error::InsufficientBalance);
+        }
+
+        let to_bal = read_u128(&env, &DataKey::Balance(to.clone()));
+        write_u128(&env, &DataKey::Balance(from.clone()), from_bal - amount_u);
+        write_u128(&env, &DataKey::Balance(to.clone()), to_bal.saturating_add(amount_u));
+        env.events().publish_event(&TransferEvent {
+            from,
+            to,
+            amount: amount_u,
+        });
+
         release_lock(&env);
         Ok(())
     }

@@ -1,10 +1,10 @@
-# 🚀 STELLARO MAINNET DEPLOYMENT - RESULTADO FINAL
+# STELLARO MAINNET DEPLOYMENT - RESULTADO FINAL
 
-## Status: PARCIALMENTE CONCLUÍDO ✅
+## Status: PARCIALMENTE CONCLUÍDO 
 
 ### Contratos Deployados com Sucesso: 1/6
 
-**1️⃣ Loans Pool** ✅
+** Loans Pool** 
 
 - Contract ID: CBFNCF723K2QK634YWV6FYWLCORFXJBSTLKRNVX64IMFY7BNH67KEVEA
 - Custo: ~12.79 XLM
@@ -13,11 +13,11 @@
 
 ### Contratos Pendentes: 5/6
 
-- ❌ Stablecoin (falta ~2.5 XLM)
-- ❌ RiskLock (falta ~1.5 XLM)
-- ❌ Portfolio (falta ~1.5 XLM)
-- ❌ Governance (falta ~1.2 XLM)
-- ❌ ZK Verifier (falta ~2 XLM)
+- Stablecoin (falta ~2.5 XLM)
+- RiskLock (falta ~1.5 XLM)
+- Portfolio (falta ~1.5 XLM)
+- Governance (falta ~1.2 XLM)
+- ZK Verifier (falta ~2 XLM)
 
 ## Análise Financeira
 
@@ -70,11 +70,11 @@ soroban contract deploy \
 
 ## Dados Técnicos
 
-### WASM Compilados ✅
+### WASM Compilados 
 
 - stablecoin.wasm: 20K (Pronto)
 - risklock.wasm: 8.3K (Pronto)
-- loans_pool.wasm: 13K (✅ Deployado)
+- loans_pool.wasm: 13K ( Deployado)
 - portfolio.wasm: 7.7K (Pronto)
 - governance.wasm: 9.4K (Pronto)
 - zk_verifier.wasm: 23K (Pronto)
@@ -82,13 +82,13 @@ soroban contract deploy \
 ### Histórico de Deploy
 
 ```text
-TX 1: Stablecoin - TxInsufficientBalance ❌
-TX 2: RiskLock - TxSubmissionTimeout ⚠️
-TX 3: Loans Pool - ✅ SUCESSO
-TX 4: Portfolio - TxInsufficientBalance ❌
-TX 5: Governance - TxInsufficientBalance ❌
-TX 6: ZK Verifier - TxInsufficientBalance ❌
-TX 7-11: Retry todos - Insuficientes ❌
+TX 1: Stablecoin - TxInsufficientBalance 
+TX 2: RiskLock - TxSubmissionTimeout 
+TX 3: Loans Pool -  SUCESSO
+TX 4: Portfolio - TxInsufficientBalance 
+TX 5: Governance - TxInsufficientBalance 
+TX 6: ZK Verifier - TxInsufficientBalance 
+TX 7-11: Retry todos - Insuficientes 
 ```
 
 ## Arquivo de Configuração
@@ -101,9 +101,9 @@ MAINNET_LOANS_POOL_CONTRACT_ID=CBFNCF723K2QK634YWV6FYWLCORFXJBSTLKRNVX64IMFY7BNH
 
 ## Conclusão
 
-✅ **Arquitetura comprovada** - Os contratos foram corrigidos e compilados com sucesso
-✅ **Primeiro deploy realizado** - Loans Pool está live em mainnet
-⚠️ **Financiamento necessário** - Precisa de ~10-15 XLM adicionais para completar
+ **Arquitetura comprovada** - Os contratos foram corrigidos e compilados com sucesso
+ **Primeiro deploy realizado** - Loans Pool está live em mainnet
+ **Financiamento necessário** - Precisa de ~10-15 XLM adicionais para completar
 
 **Próximo passo**: Transferir 10-15 XLM para a conta e reexecutar `./deploy-remaining.sh`
 

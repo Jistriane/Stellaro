@@ -4,19 +4,19 @@ AI-powered agents for DeFi risk management, compliance, and treasury optimizatio
 
 ## Agents
 
-### 1. **Stellaro Risk** 🛡️
+### 1. **Stellaro Risk** 
 - Portfolio risk analysis
 - Volatility monitoring
 - Liquidity risk detection
 - Automated risk mitigation
 
-### 2. **Compliance Bot** 📋
+### 2. **Compliance Bot** 
 - KYC/AML monitoring
 - Transaction limit enforcement
 - Regulatory compliance checks
 - Suspicious activity detection
 
-### 3. **Treasury Manager** 💰
+### 3. **Treasury Manager** 
 - Yield optimization
 - Auto-compound rewards
 - Portfolio rebalancing

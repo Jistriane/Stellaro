@@ -64,4 +64,32 @@ export class ActionsController {
       proposalId: body.proposalId,
     });
   }
+
+  @Post('stablecoin/transfer')
+  async stablecoinTransfer(
+    @Body()
+    body: {
+      from: string;
+      to: string;
+      amount: string | number;
+      dryRun?: boolean;
+      userId?: string;
+      proposalId?: string;
+    },
+  ) {
+    if (!body?.from || !body?.to || body.amount === undefined) {
+      throw new HttpException(
+        'Invalid body: from, to, amount are required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return this.actions.stablecoinTransfer({
+      from: body.from,
+      to: body.to,
+      amount: body.amount,
+      dryRun: Boolean(body.dryRun),
+      userId: body.userId,
+      proposalId: body.proposalId,
+    });
+  }
 }

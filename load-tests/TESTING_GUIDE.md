@@ -160,52 +160,52 @@ cd load-tests
 ```
 
 This will:
-1. ✅ Check backend status
-2. ✅ Check frontend status
-3. 🔥 Run k6 load tests (100 VUs, 2 minutes)
-4. 🔒 Run npm audit (security)
-5. 🔒 Run Snyk scan (if available)
-6. 📊 Run Lighthouse (frontend performance)
-7. ⚡ Run API response benchmarks
+1.  Check backend status
+2.  Check frontend status
+3.  Run k6 load tests (100 VUs, 2 minutes)
+4.  Run npm audit (security)
+5.  Run Snyk scan (if available)
+6.  Run Lighthouse (frontend performance)
+7.  Run API response benchmarks
 
 **Example Output:**
 ```
-🚀 Stellaro Performance Testing Suite
+ Stellaro Performance Testing Suite
 ======================================
 
-1️⃣  Checking backend status...
-✅ Backend is running
+  Checking backend status...
+ Backend is running
 
-2️⃣  Checking frontend status...
-✅ Frontend is running
+  Checking frontend status...
+ Frontend is running
 
-3️⃣  Running Load Tests (k6)...
+  Running Load Tests (k6)...
 [... k6 output ...]
-✅ Load tests completed
+ Load tests completed
 
-4️⃣  Running Security Audit (npm)...
-✅ No security vulnerabilities found
+  Running Security Audit (npm)...
+ No security vulnerabilities found
 
-5️⃣  Running Security Scan (Snyk)...
-✅ No issues found
+  Running Security Scan (Snyk)...
+ No issues found
 
-6️⃣  Running Lighthouse Performance Test...
-✅ Lighthouse report generated: load-tests/lighthouse-report.html
+  Running Lighthouse Performance Test...
+ Lighthouse report generated: load-tests/lighthouse-report.html
 
-7️⃣  Running API Response Time Benchmark...
+  Running API Response Time Benchmark...
 Endpoint | Avg Response Time
 ---------|------------------
 Health   | 0.012s
 Prices   | 0.145s
 
 ======================================
-🎉 Performance Testing Complete!
+ Performance Testing Complete!
 
-📊 Results Summary:
-  - Load Test: ✅ All thresholds passed
-  - Security: ✅ No vulnerabilities
-  - Frontend: ✅ Performance score: 95
-  - API Benchmark: ✅ All endpoints < 500ms
+ Results Summary:
+  - Load Test:  All thresholds passed
+  - Security:  No vulnerabilities
+  - Frontend:  Performance score: 95
+  - API Benchmark:  All endpoints < 500ms
 ```
 
 ## Performance Targets
@@ -292,20 +292,20 @@ Password: admin
 ### Alerts
 
 Set up alerts in Grafana for:
-- ⚠️ P95 latency > 1000ms
-- 🚨 Error rate > 1%
-- 🚨 CPU usage > 80%
-- 🚨 Memory usage > 90%
-- 🚨 Disk usage > 85%
+- P95 latency > 1000ms
+- Error rate > 1%
+- CPU usage > 80%
+- Memory usage > 90%
+- Disk usage > 85%
 
 ## Next Steps
 
-1. ✅ Run initial baseline: `./performance-suite.sh`
-2. ⏳ Identify bottlenecks from k6 output
-3. ⏳ Optimize slow endpoints
-4. ⏳ Re-run tests to verify improvements
-5. ⏳ Set up continuous monitoring in production
-6. ⏳ Configure alerts for critical metrics
+1.  Run initial baseline: `./performance-suite.sh`
+2.  Identify bottlenecks from k6 output
+3.  Optimize slow endpoints
+4.  Re-run tests to verify improvements
+5.  Set up continuous monitoring in production
+6.  Configure alerts for critical metrics
 
 ## References
 

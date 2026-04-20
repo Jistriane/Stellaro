@@ -1,12 +1,38 @@
-# 🔗 Tarefas de Integração de Contratos
+# Tarefas de Integração de Contratos
 
-**Status**: Janeiro 2025  
+**Status**: Atualizado em Abril 2026  
 **Contratos Deployados**: 6/8  
-**Contratos Pendentes**: 2 (Batch Executor, MEV Guard)
+**Contratos com pendências de integração**: validações finais de stablecoin/router/MEV em testnet
 
-## 📋 Batch Executor - Integrações Pendentes
+**Validação operacional (Abr/2026):**  `contracts/scripts/testnet_integration_smoke.sh` executado com sucesso em modo read-only na testnet (Stablecoin, Batch Executor, MEV Guard).
+
+**Observação importante:** os contratos atualmente deployados em testnet ainda não expõem todas as novas funções de configuração (`set_stablecoin_contract`, `set_dex_router`, etc.), exigindo redeploy/upgrade para validar o modo de mutação completo.
+
+**Diagnóstico de ABI (Abr/2026):**  `contracts/scripts/testnet_abi_upgrade_check.sh` criado e executado na testnet.
+
+**Automação pós-upgrade (Abr/2026):**  `contracts/scripts/testnet_post_upgrade_validate.sh` criado para encadear check estrito de ABI + smoke com mutações.
+
+**Redeploy mínimo automatizado (Abr/2026):**  `contracts/scripts/redeploy_upgrade_batch_mev_testnet.sh` criado para upgrade de `batch_executor` + `mev_guard` com persistência de IDs e validação pós-upgrade.
+
+**Runbook objetivo:**  checklist operacional em `docs/TESTNET_UPGRADE_CHECKLIST.md`.
+
+**E2E transacional on-chain (Abr/2026):**  `contracts/scripts/testnet_transactional_e2e.sh` criado para validar mint + batch payment + protected swap em sequência.
+
+**Evidência automatizada (Abr/2026):**  `contracts/scripts/testnet_generate_evidence_report.sh` criado para gerar pacote auditável (Markdown + JSON + logs).
+
+**Métodos faltantes confirmados no deploy atual:**
+- `batch_executor.set_stablecoin_contract`
+- `batch_executor.get_stablecoin_contract`
+- `batch_executor.set_dex_router`
+- `batch_executor.get_dex_router`
+- `mev_guard.set_dex_router`
+- `mev_guard.get_dex_router`
+
+## Batch Executor - Integrações Pendentes
 
 ### 1. execute_payment() - Token Contract Integration
+
+**Status Atual (Abr/2026):**  Implementado no `batch_executor` com contrato de stablecoin configurável (`set_stablecoin_contract`) e override por operação via `asset`.
 
 **Arquivo**: `contracts/batch_executor/src/lib.rs:248`
 
@@ -18,39 +44,30 @@ fn execute_payment(
     to: &Address,
     from: &Address,
 ) -> Result<i128, Error> {
-    if operation.amount <= 0 {
-        return Err(Error::InvalidOperation);
-    }
-
-    // TODO: Integrar com token contract real
-    // Implementação necessária:
-    // 1. Importar StablecoinClient ou TokenClient
-    // 2. Chamar token.transfer(from, to, amount)
-    // 3. Validar balance antes da transferência
-    // 4. Retornar amount transferido ou erro
-
-    // Exemplo:
-    // let token_client = StablecoinClient::new(env, &operation.target);
-    // token_client.transfer(from, to, &operation.amount)?;
-
-    Ok(operation.amount)
+    // Implementação atual:
+    // 1. Resolve token por prioridade: operation.asset -> stablecoin configurada
+    // 2. Valida balance via token.balance(signer)
+    // 3. Executa token.transfer(signer, to, amount)
+    // 4. Retorna amount transferido
 }
 ```
 
 **Passos**:
 
-1. [ ] Importar `StablecoinClient` do contrato Stablecoin deployado
-2. [ ] Obter contract ID do Stablecoin do environment (.env-testnet)
-3. [ ] Implementar validação de balance
-4. [ ] Implementar chamada `transfer()`
-5. [ ] Adicionar testes de integração
-6. [ ] Testar com Stablecoin deployado na Testnet
+1. [x] Integrar transferência real de token via `balance` + `transfer`
+2. [x] Suporte a contrato padrão configurável de stablecoin
+3. [x] Override por operação via campo `asset`
+4. [x] Testes unitários/integration-style adicionados
+5. [ ] Validar fluxo com Stablecoin real deployado na Testnet
+6. [x] Script de smoke testnet criado (`contracts/scripts/testnet_integration_smoke.sh`)
 
 **Contract ID Stablecoin**: `CDWWZ7XPQVRVYQK7UGRVRCSZGPJXWRKSTGNXBUNGNWGXQXDTZLQDZH6`
 
 ---
 
-### 2. execute_swap() - Soroswap Integration
+### 2. execute_swap() - Router Integration
+
+**Status Atual (Abr/2026):**  Implementado no `batch_executor` com router DEX configurável (`set_dex_router`) e fallback de simulação quando router/asset não estão disponíveis.
 
 **Arquivo**: `contracts/batch_executor/src/lib.rs:262`
 
@@ -60,12 +77,11 @@ fn execute_swap(
     operation: &Operation,
     signer: &Address,
 ) -> Result<i128, Error> {
-    // TODO: Integrar com Soroswap
-    // Implementação necessária:
-    // 1. Importar SoroswapRouter SDK
-    // 2. Decodificar params para obter: token_in, token_out, min_amount_out
-    // 3. Chamar router.swap_exact_tokens_for_tokens()
-    // 4. Retornar amount_out recebido
+    // Implementação atual:
+    // 1. Decodifica min_amount_out de operation.params
+    // 2. Monta path [asset(token_in), target(token_out)]
+    // 3. Chama router.swap_exact_tokens_for_tokens()
+    // 4. Retorna amount_out validando min_out
 
     // Exemplo:
     // let router = SoroswapRouterClient::new(env, &SOROSWAP_ROUTER_ADDRESS);
@@ -85,18 +101,21 @@ fn execute_swap(
 
 **Passos**:
 
-1. [ ] Adicionar dependência Soroswap SDK no Cargo.toml
-2. [ ] Obter Soroswap Router contract ID (Testnet)
-3. [ ] Implementar `decode_swap_params()` helper
-4. [ ] Implementar chamada `swap_exact_tokens_for_tokens()`
-5. [ ] Adicionar validação de slippage
+1. [x] Implementar decode de `min_amount_out` via `operation.params`
+2. [x] Implementar chamada real `swap_exact_tokens_for_tokens()` via `env.invoke_contract`
+3. [x] Adicionar validação de `min_amount_out` em runtime
+4. [x] Adicionar teste unitário/integration-style (`test_execute_batch_real_router_swap`)
+5. [ ] Obter Soroswap Router contract ID (Testnet) e configurar ambiente
 6. [ ] Testes com Soroswap Testnet
+7. [x] Script base de smoke para set/get de router em testnet criado
 
 **Soroswap Router (Testnet)**: TBD (consultar docs Soroswap)
 
 ---
 
 ### 3. execute_supply() - LoansPool Integration
+
+**Status Atual (Abr/2026):**  Implementado no `batch_executor` com chamada real para `deposit`.
 
 **Arquivo**: `contracts/batch_executor/src/lib.rs:270`
 
@@ -127,17 +146,19 @@ fn execute_supply(
 
 **Passos**:
 
-1. [ ] Importar `LoansPoolClient` do contrato LoansPool
-2. [ ] Usar contract ID deployado: `CBHMJ...IY2Y`
-3. [ ] Implementar chamada `supply()`
-4. [ ] Retornar LP tokens (shares) recebidos
-5. [ ] Testes de integração com LoansPool Testnet
+1. [x] Chamada real para pool implementada via `env.invoke_contract(..., "deposit", ...)`
+2. [x] Validação de amount e target
+3. [x] Retorno compatível (shares 1:1 provisório)
+4. [x] Teste de integração de ciclo da pool adicionado em unit tests
+5. [ ] Testes com LoansPool Testnet (pendente)
 
 **Contract ID LoansPool**: `CBHMJFPJDMQHAQKWJDWGRGVFB7RPPZUEMH5UDG56PG5SW3XDW6IY2Y`
 
 ---
 
 ### 4. execute_borrow() - LoansPool Integration
+
+**Status Atual (Abr/2026):**  Implementado no `batch_executor` com chamada real para `borrow`.
 
 **Arquivo**: `contracts/batch_executor/src/lib.rs:278`
 
@@ -167,11 +188,21 @@ fn execute_borrow(
 }
 ```
 
-**Passos**: Similar a `execute_supply()` + validação de collateral
+**Passos**:
+
+1. [x] Decodificação de `collateral_value` a partir de `operation.params`
+2. [x] Chamada real para `borrow` na pool
+3. [x] Validação de `collateral_value > 0`
+4. [x] Teste de integração de ciclo da pool adicionado em unit tests
+5. [ ] Testes com LoansPool Testnet (pendente)
 
 ---
 
 ### 5. execute_repay() & execute_withdraw()
+
+**Status Atual (Abr/2026):**  `execute_repay` e `execute_withdraw` implementados no `batch_executor`.
+
+**Atualização complementar:**  `withdraw` também foi implementado no `loans_pool` com controle de posição do provedor (`LenderPosition`).
 
 **Arquivos**: `contracts/batch_executor/src/lib.rs:286, 294`
 
@@ -187,13 +218,21 @@ fn execute_withdraw(env: &Env, operation: &Operation, signer: &Address) -> Resul
 }
 ```
 
-**Passos**: Similar às anteriores, usando métodos `repay()` e `withdraw()` do LoansPool
+**Passos**:
+
+1. [x] Chamada real para `repay` na pool
+2. [x] Chamada real para `withdraw` na pool
+3. [x] Implementação de `withdraw` no `loans_pool`
+4. [x] Testes de `withdraw` no `loans_pool` adicionados e passando
+5. [ ] Testes com LoansPool Testnet (pendente)
 
 ---
 
-## 🛡️ MEV Guard - Integrações Pendentes
+## MEV Guard - Status de Integração
 
-### 1. execute_atomic_swap() - Soroswap Integration
+### 1. execute_atomic_swap() - Router Integration
+
+**Status Atual (Abr/2026):**  Implementado com chamada real via router configurável (`set_dex_router`) e fallback de simulação quando não há router configurado.
 
 **Arquivo**: `contracts/mev_guard/src/lib.rs:259`
 
@@ -202,12 +241,11 @@ fn execute_atomic_swap(
     env: &Env,
     order: &ProtectedOrder,
 ) -> Result<i128, Error> {
-    // TODO: Integrar com DEX real (Soroswap)
-    // Implementação necessária:
-    // 1. Importar SoroswapRouter
-    // 2. Implementar multi-hop swap routing
-    // 3. Calcular amount_out real (não simulado)
-    // 4. Aplicar proteção MEV (reentrancy guard já existe)
+    // Implementação atual:
+    // 1. Se houver router configurado, invoca swap_exact_tokens_for_tokens
+    // 2. Usa path multi-hop recebido na ordem protegida
+    // 3. Valida amount_out > 0
+    // 4. Mantém fallback de simulação para ambiente sem router
 
     // Exemplo:
     // let router = SoroswapRouterClient::new(env, &SOROSWAP_ROUTER_ADDRESS);
@@ -227,7 +265,7 @@ fn execute_atomic_swap(
     //
     // Ok(current_amount)
 
-    // SIMULAÇÃO ATUAL (remover após integração):
+    // Fallback de simulação (manter apenas para ambientes sem router):
     let mut current_amount = order.amount_in;
     for _ in 0..order.path.len() - 1 {
         current_amount = (current_amount * 997) / 1000; // 0.3% fee
@@ -238,12 +276,14 @@ fn execute_atomic_swap(
 
 **Passos**:
 
-1. [ ] Adicionar Soroswap SDK no Cargo.toml
-2. [ ] Implementar `get_pair()` para cada hop
-3. [ ] Implementar swap atomico com slippage protection
-4. [ ] Integrar com price oracles para validação de preço justo
-5. [ ] Testes de proteção MEV (front-running scenarios)
-6. [ ] Testes com Soroswap Testnet
+1. [x] Adicionar suporte a router DEX configurável via storage (`DataKey::DexRouter`)
+2. [x] Invocar swap real via `env.invoke_contract(..., "swap_exact_tokens_for_tokens", ...)`
+3. [x] Cobrir fluxo com teste unitário/integration-style (`test_execute_protected_swap_uses_configured_router`)
+4. [ ] Conectar especificamente ao Soroswap SDK/ABI oficial (quando versão/endereços forem fixados)
+5. [ ] Integrar com price oracles para validação de preço justo
+6. [ ] Testes avançados de proteção MEV (front-running/sandwich/JIT)
+7. [ ] Testes com Soroswap Testnet
+8. [x] Script base de smoke para set/get de router em testnet criado
 
 **Cenários de Teste MEV**:
 
@@ -253,7 +293,7 @@ fn execute_atomic_swap(
 
 ---
 
-## 📦 Dependências Necessárias
+## Dependências Necessárias
 
 ### Cargo.toml Updates
 
@@ -282,7 +322,7 @@ LOANS_POOL_CONTRACT_ID=CBHMJFPJDMQHAQKWJDWGRGVFB7RPPZUEMH5UDG56PG5SW3XDW6IY2Y
 
 ---
 
-## 🧪 Plano de Testes
+## Plano de Testes
 
 ### Testes de Integração - Batch Executor
 
@@ -327,7 +367,7 @@ fn test_front_running_protection() {
 
 ---
 
-## 📅 Timeline de Implementação
+## Timeline de Implementação
 
 ### Sprint 1 (Semana 1-2)
 
@@ -340,9 +380,9 @@ fn test_front_running_protection() {
 
 **Deliverables**:
 
-- ✅ Todos métodos integrados com contratos reais
-- ✅ Testes de integração passando
-- ✅ Documentação atualizada
+- Todos métodos integrados com contratos reais
+- Testes de integração passando
+- Documentação atualizada
 
 ### Sprint 2 (Semana 3-4)
 
@@ -354,22 +394,22 @@ fn test_front_running_protection() {
 
 **Deliverables**:
 
-- ✅ 8/8 contratos deployados na Testnet
-- ✅ Todos testes E2E passando
-- ✅ Performance benchmarks (gas costs)
+- 8/8 contratos deployados na Testnet
+- Todos testes E2E passando
+- Performance benchmarks (gas costs)
 
 ---
 
-## ✅ Checklist de Conclusão
+## Checklist de Conclusão
 
 ### Batch Executor
 
-- [ ] execute_payment() integrado com Stablecoin
-- [ ] execute_swap() integrado com Soroswap
-- [ ] execute_supply() integrado com LoansPool
-- [ ] execute_borrow() integrado com LoansPool
-- [ ] execute_repay() integrado com LoansPool
-- [ ] execute_withdraw() integrado com LoansPool
+- [x] execute_payment() integrado com Stablecoin configurável
+- [x] execute_swap() integrado com router DEX configurável
+- [x] execute_supply() integrado com LoansPool
+- [x] execute_borrow() integrado com LoansPool
+- [x] execute_repay() integrado com LoansPool
+- [x] execute_withdraw() integrado com LoansPool
 - [ ] Testes de integração (6+ cenários)
 - [ ] Gas benchmarks (vs transações individuais)
 - [ ] Deployado na Testnet
@@ -377,7 +417,7 @@ fn test_front_running_protection() {
 
 ### MEV Guard
 
-- [ ] execute_atomic_swap() integrado com Soroswap
+- [x] execute_atomic_swap() integrado com router DEX configurável
 - [ ] Multi-hop routing implementado
 - [ ] Price oracle integration
 - [ ] Front-running protection validada
@@ -389,17 +429,17 @@ fn test_front_running_protection() {
 
 ---
 
-## 📚 Recursos
+## Recursos
 
 - [Soroswap Documentation](https://docs.soroswap.finance/)
 - [Stellar SDK Documentation](https://stellar.github.io/js-stellar-sdk/)
 - [Soroban Examples](https://github.com/stellar/soroban-examples)
 - [Blend Capital SDK](https://docs.blend.capital/)
 
-## 🤝 Contato
+## Contato
 
 Para dúvidas ou sugestões sobre estas integrações, consulte:
 
 - `contracts/README.md` - Guia de deployment de contratos
-- `docs/QUICK_START.md` - Guia de início rápido
+- `CONTINUATION_README.md` - Guia de continuidade e estado atual
 - `docs/TODO.EN.md` - Lista completa de tarefas

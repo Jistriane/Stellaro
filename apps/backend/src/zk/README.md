@@ -2,11 +2,11 @@
 
 Este módulo implementa verificação de provas ZK Groth16 via smart contract Soroban na rede Stellar.
 
-## 📋 Visão Geral
+## Visão Geral
 
 O módulo ZK permite que aplicações verifiquem provas de conhecimento-zero (ZK) para credit scoring sem revelar dados sensíveis dos usuários. A verificação é feita on-chain através do contrato `ZK Verifier` implantado na Stellar Testnet.
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 ┌─────────────┐      HTTP       ┌──────────────┐    Soroban RPC    ┌─────────────────┐
@@ -21,7 +21,7 @@ O módulo ZK permite que aplicações verifiquem provas de conhecimento-zero (ZK
                                  └──────────────┘
 ```
 
-## 🔌 Endpoints
+## Endpoints
 
 ### POST `/zk/verify`
 Verifica uma prova Groth16 e armazena o credit score on-chain (se válido).
@@ -74,13 +74,13 @@ Recupera o credit score de um usuário armazenado no contrato.
 }
 ```
 
-## ⚙️ Configuração
+## Configuração
 
 Adicione as seguintes variáveis no `.env`:
 
 ```bash
 # Contrato ZK Verifier na Testnet
-ZK_VERIFIER_CONTRACT_ID=CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L
+ZK_VERIFIER_CONTRACT_ID=CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY
 
 # RPC da Stellar (opcional, usa default se não definido)
 SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
@@ -89,7 +89,7 @@ SOROBAN_RPC_URL=https://soroban-testnet.stellar.org
 STELLAR_NETWORK=testnet
 ```
 
-## 🔐 Smart Contract
+## Smart Contract
 
 O contrato `ZK Verifier` expõe as seguintes funções:
 
@@ -130,7 +130,7 @@ fn is_creditworthy(env: Env, user: Address) -> bool
 
 Verifica se o usuário tem score válido acima do mínimo.
 
-## 🧪 Testes
+## Testes
 
 Execute os testes unitários:
 
@@ -139,20 +139,20 @@ npm test -- zk.service.spec.ts
 ```
 
 **Cobertura:**
-- ✅ Rejeita proofs expirados
-- ✅ Rejeita score inválido
-- ✅ Rejeita nonce ausente
-- ✅ Rejeita proof ausente
-- ✅ Rejeita proof com tamanho inválido
-- ✅ Retorna erro quando contrato não configurado
-- ✅ Trata endereços válidos
+- Rejeita proofs expirados
+- Rejeita score inválido
+- Rejeita nonce ausente
+- Rejeita proof ausente
+- Rejeita proof com tamanho inválido
+- Retorna erro quando contrato não configurado
+- Trata endereços válidos
 
-## 📦 Dependências
+## Dependências
 
 - `@stellar/stellar-sdk` v14.4.0 - SDK Stellar para Soroban RPC
 - `@nestjs/config` - Gerenciamento de configuração
 
-## 🔄 Fluxo de Verificação
+## Fluxo de Verificação
 
 1. **Cliente** gera prova Groth16 localmente usando circuit ZK
 2. **Cliente** envia proof + public inputs + metadata para `/zk/verify`
@@ -162,7 +162,7 @@ npm test -- zk.service.spec.ts
 6. **Contrato** armazena o CreditScore se válido
 7. **Backend** retorna resultado para o cliente
 
-## 🚀 Próximos Passos
+## Próximos Passos
 
 ### Week 3-4
 - [ ] Integrar circuito Groth16 real (substituir stub)
@@ -176,7 +176,7 @@ npm test -- zk.service.spec.ts
 - [ ] Métricas e monitoramento de verificações
 - [ ] Rate limiting por usuário/IP
 
-## 📚 Referências
+## Referências
 
 - [Groth16 Paper](https://eprint.iacr.org/2016/260.pdf)
 - [Stellar SDK Docs](https://stellar.github.io/js-stellar-sdk/)
@@ -184,15 +184,15 @@ npm test -- zk.service.spec.ts
 - [snarkjs](https://github.com/iden3/snarkjs)
 - [Circom](https://docs.circom.io/)
 
-## 🔗 Links Úteis
+## Links Úteis
 
-- **Contrato Explorer**: https://stellar.expert/explorer/testnet/contract/CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L
-- **Init Transaction**: https://stellar.expert/explorer/testnet/tx/9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
+- **Contrato Explorer**: https://stellar.expert/explorer/testnet/contract/CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY
+- **Deploy Transaction**: https://stellar.expert/explorer/testnet/tx/bc5361d30001c0f040798266d72fce92d742ef2d9481b48e7924069748de77d6
 - **Contract Source**: `contracts/zk_verifier/src/lib.rs`
 - **Initialization Script**: `tools/zk/init_contract_sdk.ts`
 
 ---
 
-**Status**: ✅ Integrado e testado na Testnet  
-**Contract ID**: `CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L`  
-**Last Updated**: 2025-12-02
+**Status**: Integrado e testado na Testnet  
+**Contract ID**: `CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY`  
+**Last Updated**: 2026-04-15

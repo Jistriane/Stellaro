@@ -1,7 +1,7 @@
-# ZK Verifier Initialization - Resolution ✅
+# ZK Verifier Initialization - Resolution 
 
-**Date**: December 9, 2025 (Updated)  
-**Status**: ⚠️ **DEPLOYED - REQUIRES MANUAL INITIALIZATION**
+**Date**: April 15, 2026 (Updated)  
+**Status**: **DEPLOYED - REQUIRES MANUAL INITIALIZATION**
 
 ## Summary
 
@@ -9,15 +9,15 @@ The ZK Verifier smart contract has been successfully deployed on Stellar Testnet
 
 ## Contract Details
 
-- **Contract ID**: `CCWZPTZEZZFOELDGVHP7IAO5GNVX6MSITN2G7H3ZBGG57OXPVZYYPAFO`
-- **Admin**: `GCKZ35K7GMUJBFKBOS2YM7FUHATM5FHHFGH7AVNGC5TXLFGV265G33QX`
+- **Contract ID**: `CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY`
+- **Admin**: `GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX`
 - **Network**: Stellar Testnet
 - **RPC**: <https://soroban-testnet.stellar.org>
-- **Deploy Date**: December 9, 2025
+- **Deploy Date**: April 15, 2026
 
 ## Initialization Status
 
-⚠️ **Pending Manual Initialization**
+ **Pending Manual Initialization**
 
 To initialize the ZK Verifier, run:
 
@@ -29,7 +29,7 @@ To initialize the ZK Verifier, run:
 
 For historical reference, the previous contract was successfully initialized:
 
-- **Old Contract ID**: `CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L`
+- **Old Contract ID**: archived in historical logs (superseded by current deployment)
 - **Old Admin**: `GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD`
 
 ## Problem History
@@ -37,15 +37,15 @@ For historical reference, the previous contract was successfully initialized:
 The initialization process encountered a blocker where all attempts to initialize via Stellar CLI failed with error:
 
 ```text
-❌ error: Missing Entry VerificationKey
+ error: Missing Entry VerificationKey
 ```
 
 ### Attempts Made
 
-1. ✅ Stellar CLI 23.1.4 - multiple parameter formats (positional, named, hex, base64) - **FAILED**
-2. ✅ Upgrade to CLI 23.2.1 - retry with all format variations - **FAILED**
-3. ✅ Recompile contract - redeploy to new ID - **FAILED**
-4. ✅ **SDK approach** - TypeScript script using @stellar/stellar-sdk v14.4.0 - **SUCCESS** ✅
+1.  Stellar CLI 23.1.4 - multiple parameter formats (positional, named, hex, base64) - **FAILED**
+2.  Upgrade to CLI 23.2.1 - retry with all format variations - **FAILED**
+3.  Recompile contract - redeploy to new ID - **FAILED**
+4.  **SDK approach** - TypeScript script using @stellar/stellar-sdk v14.4.0 - **SUCCESS** 
 
 ### Root Cause Analysis
 
@@ -112,34 +112,34 @@ const sendResponse = await server.sendTransaction(transaction);
 ### Execution Output
 
 ```text
-📂 Loading environment from: .env-dev
+ Loading environment from: .env-dev
 Loaded 27 environment variables
 
-🔧 Initializing ZK Verifier Contract via Stellar SDK...
+ Initializing ZK Verifier Contract via Stellar SDK...
 
-📍 Contract: CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L
-👤 Admin: GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD
-🌐 Network: Testnet (https://soroban-testnet.stellar.org)
+ Contract: CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY
+ Admin: GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD
+ Network: Testnet (https://soroban-testnet.stellar.org)
 
-🔑 Verification Key (hex): 0101010101010101010101010101010101010101010101010101010101010101
-📊 Min Score: 700
+ Verification Key (hex): 0101010101010101010101010101010101010101010101010101010101010101
+ Min Score: 700
 
-✅ Source account loaded
-📦 Transaction built, simulating...
-✅ Simulation successful
-✍️  Transaction signed
-📤 Submitting transaction...
-✅ Transaction submitted: 9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
-⏳ Waiting for confirmation...
+ Source account loaded
+ Transaction built, simulating...
+ Simulation successful
+  Transaction signed
+ Submitting transaction...
+ Transaction submitted: 9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
+ Waiting for confirmation...
 
-✅ Contract initialized successfully!
-🔗 Transaction: 9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
-🔍 Explorer: https://stellar.expert/explorer/testnet/tx/9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
+ Contract initialized successfully!
+ Transaction: 9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
+ Explorer: https://stellar.expert/explorer/testnet/tx/9a6dea7e48df2c7447a47a804b4cb77aa5b70cdb8762904787db7a9d2e6395f0
 
-🔍 Verifying initialization...
-✅ Contract is responsive post-initialization
+ Verifying initialization...
+ Contract is responsive post-initialization
 
-🎉 Initialization complete!
+ Initialization complete!
 ```
 
 ## Verification
@@ -156,7 +156,7 @@ After successful initialization, the contract is fully operational:
 ```bash
 # Test get_score (should return None - no score set yet)
 stellar contract invoke \
-  --id CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L \
+  --id CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY \
   --source deploy \
   --network testnet \
   -- \
@@ -194,7 +194,7 @@ stellar contract invoke \
 
 - [x] Update `.env-dev` with initialized contract ID (already set)
 - [ ] Update `TESTNET_DEPLOY.md` with initialization instructions
-- [ ] Document SDK approach in `QUICK_START.md`
+- [ ] Document SDK approach in `CONTINUATION_README.md`
 
 ### Backend Integration (Week 2)
 

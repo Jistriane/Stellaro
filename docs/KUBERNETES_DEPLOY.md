@@ -1,8 +1,8 @@
-# 📘 Guia de Deploy Kubernetes - Stellaro
+# Guia de Deploy Kubernetes - Stellaro
 
 **Última Atualização**: 7 de dezembro de 2025
 
-## 📋 Índice
+## Índice
 
 1. [Pré-requisitos](#pré-requisitos)
 2. [Estrutura de Deployment](#estrutura)

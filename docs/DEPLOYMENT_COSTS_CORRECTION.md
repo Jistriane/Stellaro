@@ -1,13 +1,13 @@
-# 💰 DEPLOYMENT COSTS CORRECTION (English) - Stellaro Mainnet
+# DEPLOYMENT COSTS CORRECTION (English) - Stellaro Mainnet
 
 **Date**: December 7, 2025  
-**Status**: 🟢 Costs Corrected  
-**Previous Estimate**: ❌ 150 XLM (INCORRECT)  
-**Actual Cost**: ✅ 10-15 XLM (CORRECT)
+**Status**: Costs Corrected  
+**Previous Estimate**:  150 XLM (INCORRECT)  
+**Actual Cost**:  10-15 XLM (CORRECT)
 
 ---
 
-## 🎯 REAL DEPLOYMENT COSTS - STELLAR/SOROBAN
+## REAL DEPLOYMENT COSTS - STELLAR/SOROBAN
 
 ### The Truth
 
@@ -49,7 +49,7 @@ FOR 6 CONTRACTS:
 
 ---
 
-## ❌ WHY 150 XLM IS WRONG
+## WHY 150 XLM IS WRONG
 
 ### Comparison
 
@@ -65,7 +65,7 @@ This would be:
 ### What Actually Happens
 
 ```
-✅ CORRECT COSTS
+ CORRECT COSTS
 You pay per:
   1. CPU instructions executed (very cheap)
   2. Storage bytes used (very cheap)  
@@ -79,15 +79,15 @@ Total: ~0.15 XLM per contract = $0.018 USD
 
 ---
 
-## 🔍 LIKELY CAUSES OF THE 150 XLM ERROR
+## LIKELY CAUSES OF THE 150 XLM ERROR
 
-### 1. Confusing Account Reserves with Fees ⚠️
+### 1. Confusing Account Reserves with Fees 
 
 ```
-❌ WRONG:
+ WRONG:
 "My contract costs 150 XLM to deploy"
 
-✅ CORRECT:
+ CORRECT:
 "My contract needs 150 XLM in account reserves 
  (locked but recoverable when you close the contract)"
 ```
@@ -99,35 +99,35 @@ Total: ~0.15 XLM per contract = $0.018 USD
 - This is RESERVE (locked), not FEE (spent)
 - You get it back when entries are deleted
 
-### 2. Wrong Fee Calculation 🔴
+### 2. Wrong Fee Calculation 
 
 ```
-❌ INCORRECT CALCULATION
+ INCORRECT CALCULATION
 cpuInstructions: 1,000,000
 costPerInstruction: 150 stroops  
 total: 150,000,000 stroops = 15 XLM ← TOO HIGH
 
-✅ CORRECT CALCULATION
+ CORRECT CALCULATION
 cpuInstructions: 1,000,000
 costPerInstruction: 0.1 stroops  
 total: 100,000 stroops = 0.01 XLM ← CORRECT
 ```
 
-### 3. Deploy Loop Bug 🐛
+### 3. Deploy Loop Bug 
 
 ```bash
-# ❌ BAD - Infinite loop deploying same contract
+# BAD - Infinite loop deploying same contract
 while true; do
   stellar contract deploy --wasm contract.wasm
 done
 # Would eventually cost 150 XLM after 1000 deploys!
 
-# ✅ GOOD - Deploy once, reuse
+# GOOD - Deploy once, reuse
 CONTRACT_ID=$(stellar contract deploy --wasm contract.wasm)
 # Cost: just 0.15 XLM once
 ```
 
-### 4. Testnet vs Mainnet Confusion 🔄
+### 4. Testnet vs Mainnet Confusion 
 
 ```
 Testnet = FREE (Friendbot gives 10,000 XLM for testing)
@@ -140,23 +140,23 @@ Mainnet costs ~$1.50
 
 ---
 
-## ✅ CORRECTED STATUS
+## CORRECTED STATUS
 
 ### Mainnet Launch Requirements
 
 **Now Updated**:
-- ❌ Old: 150 XLM required
-- ✅ New: 10-15 XLM required
+- Old: 150 XLM required
+- New: 10-15 XLM required
 
 ### Impact
 
 - Before: Difficult to launch (high cost)
-- After: Easy to launch (low cost) ✅
-- Project Status: **READY FOR MAINNET** 🚀
+- After: Easy to launch (low cost) 
+- Project Status: **READY FOR MAINNET** 
 
 ---
 
-## 🚀 How to Deploy (Correctly)
+## How to Deploy (Correctly)
 
 ### Minimal Cost Approach
 
@@ -166,7 +166,7 @@ Mainnet costs ~$1.50
 
 set -e
 
-echo "🚀 Deploying Stellaro (Cost: ~10-12 XLM)"
+echo " Deploying Stellaro (Cost: ~10-12 XLM)"
 
 # 1. Check balance
 BALANCE=$(stellar account balance $KEY --network mainnet)
@@ -174,7 +174,7 @@ echo "Balance: $BALANCE XLM"
 
 # Verify sufficient funds
 if (( BALANCE < 15 )); then
-  echo "❌ Need at least 15 XLM, have $BALANCE"
+  echo " Need at least 15 XLM, have $BALANCE"
   exit 1
 fi
 
@@ -187,26 +187,26 @@ for contract in stablecoin lending zk_credit oracle mev_guard vault; do
     --source $KEY \
     --network mainnet
   
-  echo "✅ $contract deployed"
+  echo " $contract deployed"
 done
 
 echo ""
-echo "✅ All contracts deployed!"
-echo "💰 Spent: ~10-12 XLM"
+echo " All contracts deployed!"
+echo " Spent: ~10-12 XLM"
 ```
 
 ---
 
-## 📊 Final Verification
+## Final Verification
 
 ### Before Launching
 
 ```
-✅ Actual cost needed: ~10-15 XLM
-✅ All 6 contracts ready
-✅ Testnet deployment verified
-✅ Mainnet funding available
-✅ Ready to proceed
+ Actual cost needed: ~10-15 XLM
+ All 6 contracts ready
+ Testnet deployment verified
+ Mainnet funding available
+ Ready to proceed
 ```
 
 ### Timeline
@@ -219,7 +219,7 @@ Today+2d:  Mainnet live
 
 ---
 
-## 🎉 Conclusion
+## Conclusion
 
 **Stellaro is ready for mainnet with minimal cost!**
 
@@ -230,5 +230,5 @@ Today+2d:  Mainnet live
 
 ---
 
-**Status**: ✅ COST CORRECTION COMPLETE  
+**Status**: COST CORRECTION COMPLETE  
 **Next Step**: Acquire ~15 XLM and deploy to mainnet

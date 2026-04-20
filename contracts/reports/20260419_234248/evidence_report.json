@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-04-20T02:43:07Z",
+  "startedAt": "2026-04-20T02:42:48Z",
+  "network": "testnet",
+  "sourceAddress": "GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX",
+  "gitCommit": "80e64c55",
+  "envFile": "/home/jistriane/Stellaro/Stellaro/contracts/.env-testnet",
+  "contracts": {
+    "stablecoin": "CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG",
+    "batchExecutor": "CAY7ENLTGHHZ2T25KFRIYTZKIYPWVJVLHRZCZTLHYQYGR6TGXD3AP3RB",
+    "mevGuard": "CDJLPMIC7MXQNA6ZPDTTJ73DL52UM63XF7NZAPOVU2X4LGKGTGAQB6ZZ",
+    "soroswapRouter": ""
+  },
+  "steps": [
+    {
+      "name": "abi_check",
+      "status": "pass",
+      "exitCode": 0,
+      "log": "/home/jistriane/Stellaro/Stellaro/contracts/reports/20260419_234248/abi_check.log"
+    },
+    {
+      "name": "smoke_read_only",
+      "status": "pass",
+      "exitCode": 0,
+      "log": "/home/jistriane/Stellaro/Stellaro/contracts/reports/20260419_234248/smoke_read_only.log"
+    },
+    {
+      "name": "smoke_mutation",
+      "status": "pass",
+      "exitCode": 0,
+      "log": "/home/jistriane/Stellaro/Stellaro/contracts/reports/20260419_234248/smoke_mutation.log"
+    },
+    {
+      "name": "transactional_e2e",
+      "status": "fail",
+      "exitCode": 1,
+      "log": "/home/jistriane/Stellaro/Stellaro/contracts/reports/20260419_234248/transactional_e2e.log"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 Zero-Knowledge proof circuit for privacy-preserving credit score verification on Stellar/Soroban.
 
-## 📋 Quick Start
+## Quick Start
 
 ### Option 1: Automatic Setup (Recommended)
 
@@ -13,9 +13,9 @@ Run everything in one command:
 ```
 
 This will:
-1. ✅ Compile the optimized circuit
-2. ✅ Generate proving and verification keys
-3. ✅ Run tests to verify everything works
+1.  Compile the optimized circuit
+2.  Generate proving and verification keys
+3.  Run tests to verify everything works
 
 ### Option 2: Manual Setup
 
@@ -30,7 +30,7 @@ This will:
 cd test && npm install && npm test
 ```
 
-## 📁 Files Overview
+## Files Overview
 
 ### Core Circuit Files
 - `credit_score_optimized.circom` - Optimized ZK circuit (~45K constraints)
@@ -55,13 +55,13 @@ cd test && npm install && npm test
 - `test/test-proof-generation.js` - Comprehensive test suite
 - `test/package.json` - Test dependencies
 
-## 🎯 What Does This Circuit Do?
+## What Does This Circuit Do?
 
 Proves that a user has a credit score ≥ `minScore` **WITHOUT revealing**:
-- ❌ Actual credit score
-- ❌ Transaction history
-- ❌ Account balance
-- ❌ Personal data
+- Actual credit score
+- Transaction history
+- Account balance
+- Personal data
 
 ### Public Inputs (visible on-chain)
 - `minScore`: Minimum required score (e.g., 650)
@@ -74,7 +74,7 @@ Proves that a user has a credit score ≥ `minScore` **WITHOUT revealing**:
 - `liquidityProvided`: Liquidity contributions
 - `salt`: Random value for privacy
 
-## 🔬 Technical Specifications
+## Technical Specifications
 
 | Metric | Value |
 |--------|-------|
@@ -84,14 +84,14 @@ Proves that a user has a credit score ≥ `minScore` **WITHOUT revealing**:
 | **Verification Time** | <50ms |
 | **Security** | 128-bit (BN254 curve) |
 
-## 📊 Performance Comparison
+## Performance Comparison
 
 | Version | Constraints | Proof Time | Improvement |
 |---------|-------------|------------|-------------|
 | Original | ~150,000 | ~3s | Baseline |
 | **Optimized** | **~45,000** | **<1s** | **70% faster** |
 
-## 🔧 Requirements
+## Requirements
 
 ### System Requirements
 - **circom**: Circuit compiler (v2.1.0+)
@@ -119,46 +119,46 @@ snarkjs --version  # Should show: snarkjs@0.7.x
 node --version  # Should show: v16.x or higher
 ```
 
-## 🧪 Testing
+## Testing
 
 After running `./quick-setup.sh`, you should see:
 
 ```
-🧪 Testing ZK Proof Generation
+ Testing ZK Proof Generation
 
-📥 Input Data:
+ Input Data:
   Public: minScore=650, timestamp=1702857600
   Private: actualScore=720 (hidden in proof)
 
-1️⃣  Generating witness...
-   ✅ Witness generated in 45ms
+  Generating witness...
+    Witness generated in 45ms
 
-2️⃣  Generating proof...
-   ✅ Proof generated in 850ms
+  Generating proof...
+    Proof generated in 850ms
 
-3️⃣  Verifying proof...
-   ✅ Proof verified in 35ms
+  Verifying proof...
+    Proof verified in 35ms
 
-📊 Results:
+ Results:
    Witness Time: 45ms
    Proof Time: 850ms
    Verify Time: 35ms
    Total Time: 930ms
-   Verified: ✅ YES
+   Verified:  YES
    Proof Size: 1152 bytes (1.13 KB)
 
-🎯 Performance Targets:
-   Witness < 100ms: ✅ (45ms)
-   Proof < 1000ms: ✅ (850ms)
-   Verify < 50ms: ✅ (35ms)
+ Performance Targets:
+   Witness < 100ms:  (45ms)
+   Proof < 1000ms:  (850ms)
+   Verify < 50ms:  (35ms)
 
-🔒 Testing Security (invalid proof)...
-   ✅ Circuit correctly rejected invalid input
+ Testing Security (invalid proof)...
+    Circuit correctly rejected invalid input
 
-✅ All tests passed!
+ All tests passed!
 ```
 
-## 🔐 Security Notes
+## Security Notes
 
 ### Trusted Setup
 - Uses Powers of Tau ceremony (pot16 = 2^16 constraints)
@@ -166,15 +166,15 @@ After running `./quick-setup.sh`, you should see:
 - For production: Use multi-party computation (MPC) ceremony
 
 ### Zero-Knowledge Properties
-1. ✅ **Soundness**: Cannot forge valid proof for invalid score
-2. ✅ **Zero-Knowledge**: No information leaked about private inputs
-3. ✅ **Completeness**: Valid proofs always verify
+1.  **Soundness**: Cannot forge valid proof for invalid score
+2.  **Zero-Knowledge**: No information leaked about private inputs
+3.  **Completeness**: Valid proofs always verify
 
 ### Replay Protection
 - `timestamp` prevents reusing old proofs
 - Smart contract should check timestamp freshness
 
-## 🚀 Integration with Soroban
+## Integration with Soroban
 
 After setup, integrate with the `zk_verifier` Soroban contract:
 
@@ -189,13 +189,13 @@ After setup, integrate with the `zk_verifier` Soroban contract:
 
 See `INTEGRATION_GUIDE.md` for detailed steps.
 
-## 📚 Documentation
+## Documentation
 
 - **Optimization Guide**: `OPTIMIZATION_GUIDE.md` - How we reduced constraints by 70%
 - **Integration Guide**: `INTEGRATION_GUIDE.md` - Soroban contract integration
 - **Test Suite**: `test/test-proof-generation.js` - Comprehensive testing
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### "circom: command not found"
 ```bash
@@ -225,17 +225,17 @@ Manually download:
 wget https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_16.ptau -O pot16_final.ptau
 ```
 
-## 📞 Support
+## Support
 
 For issues or questions:
 - Check `OPTIMIZATION_GUIDE.md` for technical details
 - Review `INTEGRATION_GUIDE.md` for integration help
 - See test output for debugging hints
 
-## 📝 License
+## License
 
 Part of the Stellaro project.
 
 ---
 
-**Ready to start?** Run `./quick-setup.sh` now! 🚀
+**Ready to start?** Run `./quick-setup.sh` now! 

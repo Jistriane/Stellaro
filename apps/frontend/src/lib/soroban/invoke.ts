@@ -28,13 +28,25 @@ interface SorobanRpcNS {
     sim: unknown
   ) => import("@stellar/stellar-sdk").Transaction;
 }
-type SdkWithSorobanRpc = typeof import("@stellar/stellar-sdk") & { SorobanRpc: SorobanRpcNS };
+type SdkWithRpc = typeof import("@stellar/stellar-sdk") & {
+  rpc?: SorobanRpcNS;
+  SorobanRpc?: SorobanRpcNS;
+};
+
+function getRpcNamespace(sdk: SdkWithRpc): SorobanRpcNS {
+  const rpc = sdk.rpc ?? sdk.SorobanRpc;
+  if (!rpc) {
+    throw new Error("Soroban RPC namespace not available in @stellar/stellar-sdk.");
+  }
+  return rpc;
+}
 
 export async function buildInvokeTransaction({ network, sourceAddress, contractId, functionName, argsXdr = [] }: InvokeArgs): Promise<{ tx: import("@stellar/stellar-sdk").Transaction; passphrase: string }> {
-  const sdk = (await import("@stellar/stellar-sdk")) as SdkWithSorobanRpc;
+  const sdk = (await import("@stellar/stellar-sdk")) as SdkWithRpc;
+  const rpc = getRpcNamespace(sdk);
   const passphrase = getNetworkPassphrase(network);
   const rpcUrl = getRpcUrl(network);
-  const server = new sdk.SorobanRpc.Server(rpcUrl, { allowHttp: false });
+  const server = new rpc.Server(rpcUrl, { allowHttp: false });
 
   // Load user account
   const account = (await server.getAccount(sourceAddress)) as unknown as import("@stellar/stellar-sdk").Account;
@@ -55,18 +67,19 @@ export async function buildInvokeTransaction({ network, sourceAddress, contractI
 
   // Simulate to obtain footprint and adjust
   const sim = await server.simulateTransaction(tx);
-  if (sdk.SorobanRpc.Api.isSimulationError(sim)) {
+  if (rpc.Api.isSimulationError(sim)) {
     throw new Error("Failed to simulate Soroban transaction: " + JSON.stringify(sim, null, 2));
   }
 
-  const prepared = sdk.SorobanRpc.assembleTransaction(tx, sim);
+  const prepared = rpc.assembleTransaction(tx, sim);
   return { tx: prepared, passphrase };
 }
 
 export async function submitSignedXdr(network: SorobanNetwork, signedXdr: string) {
-  const sdk = (await import("@stellar/stellar-sdk")) as SdkWithSorobanRpc;
+  const sdk = (await import("@stellar/stellar-sdk")) as SdkWithRpc;
+  const rpc = getRpcNamespace(sdk);
   const rpcUrl = getRpcUrl(network);
-  const server = new sdk.SorobanRpc.Server(rpcUrl, { allowHttp: false });
+  const server = new rpc.Server(rpcUrl, { allowHttp: false });
   const tx = sdk.TransactionBuilder.fromXDR(signedXdr, getNetworkPassphrase(network)) as import("@stellar/stellar-sdk").Transaction;
   const send = await server.sendTransaction(tx);
   if (send.errorResult) {

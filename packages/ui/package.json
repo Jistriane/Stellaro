@@ -2,6 +2,12 @@
   "name": "@stelato/ui",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "build": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});fs.writeFileSync('dist/build.txt','ui build ok\\n');console.log('ui build: generated dist/build.txt')\"",
+    "dev": "node -e \"console.log('ui dev: no-op')\"",
+    "lint": "node -e \"console.log('ui lint: no-op')\"",
+    "test": "node -e \"console.log('ui test: no-op')\""
+  },
   "main": "index.ts",
   "types": "index.ts",
   "license": "MIT"

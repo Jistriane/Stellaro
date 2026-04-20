@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import * as StellarSdk from '@stellar/stellar-sdk';
-import SorobanClient from 'soroban-client';
 
-const SorobanRpc = SorobanClient.SorobanRpc;
+const getRpcNamespace = () =>
+  (StellarSdk as any).rpc ?? (StellarSdk as any).SorobanRpc;
 
 interface LoansPoolParams {
   interest_bps: number;
@@ -59,13 +59,14 @@ export class SorobanService {
    */
   async invokeContract(contractId: string, method: string, args: StellarSdk.xdr.ScVal[] = []): Promise<any> {
     try {
+      const rpc = getRpcNamespace();
       // Evita acessar SorobanRpc em modo degradado ou quando lib não possui SorobanRpc
-      if (!this.rpcAvailable || !SorobanRpc) {
+      if (!this.rpcAvailable || !rpc || typeof rpc.Server !== 'function') {
         this.logger.warn(`Soroban RPC unavailable; skipping invoke ${method} on ${contractId}`);
         return null;
       }
       const contract = new StellarSdk.Contract(contractId);
-      const server = new SorobanRpc.Server(this.client.defaults.baseURL || '');
+      const server = new rpc.Server(this.client.defaults.baseURL || '');
       
       // Construir operação de invocação
       const operation = contract.call(method, ...args);
@@ -87,7 +88,7 @@ export class SorobanService {
 
       const simulation = await server.simulateTransaction(tx);
       
-      if (SorobanRpc.Api.isSimulationSuccess(simulation)) {
+      if (rpc.Api.isSimulationSuccess(simulation)) {
         return simulation.result?.retval;
       } else {
         this.logger.error(`Contract simulation failed: ${JSON.stringify(simulation)}`);
@@ -183,12 +184,16 @@ export class SorobanService {
    */
   async setMintingEnabled(contractId: string, enabled: boolean, signerSecret: string): Promise<string> {
     try {
+      const rpc = getRpcNamespace();
       if (!this.rpcAvailable) {
         this.logger.warn('Soroban RPC unavailable; cannot toggle minting in dev degraded mode');
         throw new Error('Soroban RPC unavailable');
       }
+      if (!rpc || typeof rpc.Server !== 'function') {
+        throw new Error('Soroban RPC SDK unavailable');
+      }
       const contract = new StellarSdk.Contract(contractId);
-      const server = new SorobanRpc.Server(this.client.defaults.baseURL || '');
+      const server = new rpc.Server(this.client.defaults.baseURL || '');
       const keypair = StellarSdk.Keypair.fromSecret(signerSecret);
       
       // Construir operação de invocação
@@ -209,12 +214,12 @@ export class SorobanService {
       // Simular para obter auth e resource fees
       const simulation = await server.simulateTransaction(tx);
       
-      if (!SorobanRpc.Api.isSimulationSuccess(simulation)) {
+      if (!rpc.Api.isSimulationSuccess(simulation)) {
         throw new Error(`Simulation failed: ${JSON.stringify(simulation)}`);
       }
 
       // Preparar transação com auth
-      const prepared = SorobanRpc.assembleTransaction(tx, simulation).build();
+      const prepared = rpc.assembleTransaction(tx, simulation).build();
       prepared.sign(keypair);
 
       // Submeter
