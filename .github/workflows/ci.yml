@@ -13,7 +13,6 @@ permissions:
 env:
   CARGO_TERM_COLOR: always
   NODE_VERSION: '24'
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   test-contracts:
@@ -23,9 +22,9 @@ jobs:
       run:
         working-directory: ./contracts
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@1.75.0
@@ -70,7 +69,7 @@ jobs:
           stellar contract build --package risklock
 
       - name: Upload Contract Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: contracts
           path: contracts/target/wasm32v1-none/release/*.wasm
@@ -96,9 +95,9 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -127,11 +126,13 @@ jobs:
           DATABASE_URL: postgresql://stellar:test@localhost:5432/stellaro_test
 
       - name: Upload Coverage
+        if: always()
         continue-on-error: true
         uses: codecov/codecov-action@v4
         with:
           files: ./apps/backend/coverage/lcov.info
           flags: backend
+          fail_ci_if_error: false
 
   test-frontend:
     name: Test Next.js Frontend
@@ -140,9 +141,9 @@ jobs:
       run:
         working-directory: ./apps/frontend
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -172,19 +173,21 @@ jobs:
 
       - name: Upload Playwright Report
         if: always()
-        uses: actions/upload-artifact@v5
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: apps/frontend/playwright-report/
+          if-no-files-found: warn
 
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Run Trivy Vulnerability Scanner
         uses: aquasecurity/trivy-action@master
@@ -206,12 +209,12 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Download Contract Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: contracts
           path: ./contracts/build
@@ -236,12 +239,12 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Download Contract Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: contracts
           path: ./contracts/build

@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
   NODE_VERSION: '24'
 
 jobs:
@@ -18,9 +17,9 @@ jobs:
         working-directory: apps/backend
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -42,7 +41,8 @@ jobs:
       - name: Upload coverage artifact
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
           path: apps/backend/coverage
+          if-no-files-found: warn
