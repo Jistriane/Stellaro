@@ -16,6 +16,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  RUST_TOOLCHAIN: '1.75.0'
 
 jobs:
   deploy:
@@ -23,14 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@1.75.0
         with:
-          toolchain: stable
-          override: true
           components: rustfmt, clippy
+          targets: wasm32v1-none
 
       - name: Install Soroban CLI
         run: |
