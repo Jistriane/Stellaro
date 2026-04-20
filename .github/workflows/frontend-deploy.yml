@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -52,7 +54,7 @@ jobs:
             apps/frontend/package-lock.json
 
       - name: Install dependencies (workspace root)
-        run: npm ci
+        run: npm ci --legacy-peer-deps
         working-directory: .
 
       - name: Pull Vercel Preview Environment
@@ -95,6 +97,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -106,8 +110,11 @@ jobs:
             apps/frontend/package-lock.json
 
       - name: Install dependencies (workspace root)
-        run: npm ci
+        run: npm ci --legacy-peer-deps
         working-directory: .
+
+      - name: Install dependencies (frontend)
+        run: npm ci --legacy-peer-deps
 
       - name: Pull Vercel Production Environment
         run: npx vercel pull --yes --environment=production --token=${VERCEL_TOKEN}
