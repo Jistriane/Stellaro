@@ -13,19 +13,15 @@ type Ctx = {
 const SocketCtx = createContext<Ctx>({ status: "disconnected" });
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  // Check if in browser environment before accessing the store
-  const isClient = typeof window !== 'undefined';
-  
-  if (!isClient) {
-    return <>{children}</>;
-  }
-
+  // Hooks must always run in the same order, even during SSR.
   const { loggedIn, publicKey } = useAppStore((s) => s.auth);
   const setBalances = useAppStore((s) => s.setBalances);
   const setRisk = useAppStore((s) => s.setRisk);
   const upsertOrder = useAppStore((s) => s.upsertOrder);
   const pushEvent = useAppStore((s) => s.pushEvent);
   const resetOnDisconnect = useAppStore((s) => s.resetOnDisconnect);
+
+  const isClient = typeof window !== 'undefined';
 
   const [status, setStatus] = useState<SocketStatus>("disconnected");
   const [lastError, setLastError] = useState<string | undefined>(undefined);
@@ -104,6 +100,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   }, [loggedIn, publicKey, wsUrl, setBalances, setRisk, upsertOrder, pushEvent, resetOnDisconnect]);
 
   const value = useMemo(() => ({ status, lastError }), [status, lastError]);
+
+  if (!isClient) {
+    return <>{children}</>;
+  }
+
   return <SocketCtx.Provider value={value}>{children}</SocketCtx.Provider>;
 }
 
