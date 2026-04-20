@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@blend-capital/blend-sdk": "^3.2.1",
-    "@elizaos/api-client": "^1.6.4",
     "@ledgerhq/hw-app-str": "^7.2.5",
     "@ledgerhq/hw-transport-webhid": "^6.30.5",
     "@radix-ui/react-slot": "^1.2.3",
