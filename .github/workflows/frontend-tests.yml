@@ -14,6 +14,9 @@ on:
       - "packages/ui/**"
       - ".github/workflows/frontend-tests.yml"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 concurrency:
   group: frontend-tests-${{ github.ref }}
   cancel-in-progress: true
