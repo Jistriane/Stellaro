@@ -1,5 +1,9 @@
 name: Frontend Deploy (Vercel)
 
+permissions:
+  contents: read
+  pull-requests: write
+
 on:
   push:
     branches: [master, main]
@@ -54,7 +58,18 @@ jobs:
         run: npx vercel build --token=${VERCEL_TOKEN}
 
       - name: Deploy Preview
-        run: npx vercel deploy --prebuilt --token=${VERCEL_TOKEN}
+        id: deploy_preview
+        run: |
+          PREVIEW_URL=$(npx vercel deploy --prebuilt --token=${VERCEL_TOKEN} | tail -n 1)
+          echo "url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment Preview URL on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: frontend-vercel-preview
+          message: |
+            Frontend Preview Deploy:
+            ${{ steps.deploy_preview.outputs.url }}
 
   production:
     if: github.event_name == 'push'
