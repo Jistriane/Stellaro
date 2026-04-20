@@ -7,19 +7,50 @@ const resolvedBasePath =
   (isGitHubPages && repositoryName ? `/${repositoryName}` : '');
 
 const nextConfig = {
+  poweredByHeader: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    // Keep next/image API surface minimal while we stay on Next 14.
+    unoptimized: true,
+    remotePatterns: [],
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "script-src 'none'; frame-src 'none'; sandbox;",
+    contentDispositionType: 'attachment',
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()'
+          },
+        ],
+      },
+    ];
+  },
   ...(isGitHubPages
     ? {
         output: 'export',
         trailingSlash: true,
-        images: {
-          unoptimized: true,
-        },
         basePath: resolvedBasePath,
         assetPrefix: resolvedBasePath,
       }
