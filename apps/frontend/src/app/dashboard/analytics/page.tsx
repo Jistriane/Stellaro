@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, BarChart3, LineChart as LineChartIcon } from "lucide-react";
@@ -275,12 +276,7 @@ export default function DashboardAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">73.5%</div>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-3">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{ width: "73.5%" }}
-                />
-              </div>
+              <Progress value={73.5} className="mt-3" />
             </CardContent>
           </Card>
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import type { PasskeyKit } from '@kalepail/passkey-kit';
 
 /**
  * Hook to manage Session Keys with Passkeys

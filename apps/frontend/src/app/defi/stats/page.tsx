@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useTranslations } from "next-intl";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { TrendingUp, Activity, Zap } from "lucide-react";
@@ -169,12 +170,7 @@ export default function DefiStatsPage() {
                 <p className="text-xs text-slate-500 mt-1">Above 120% threshold ✓</p>
               </div>
               <div className="pt-2">
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                  <div
-                    className="bg-green-600 h-2 rounded-full"
-                    style={{ width: "100%" }}
-                  />
-                </div>
+                <Progress value={100} />
               </div>
             </CardContent>
           </Card>

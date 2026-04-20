@@ -58,6 +58,7 @@ export default function WalletDebug() {
         <button 
           onClick={() => {
             if (typeof window !== 'undefined') {
+              const windowRecord = window as unknown as Record<string, unknown>;
               const allKeys = Object.keys(window).filter(key => 
                 key.toLowerCase().includes('bull') || 
                 key.toLowerCase().includes('stellar') ||
@@ -65,7 +66,7 @@ export default function WalletDebug() {
               );
               console.log('🔍 Wallet-related window properties:', allKeys);
               allKeys.forEach(key => {
-                const value = (window as Record<string, unknown>)[key];
+                const value = windowRecord[key];
                 console.log(`window.${key}:`, typeof value, value);
               });
             }
@@ -77,8 +78,14 @@ export default function WalletDebug() {
         <button 
           onClick={() => {
             if (typeof window !== 'undefined') {
+              const windowRecord = window as unknown as Record<string, unknown> & {
+                xbullWallet?: {
+                  getPublicKey?: () => Promise<string>;
+                  connect?: () => Promise<{ publicKey: string }>;
+                };
+              };
               // Simulate xBull presence for testing
-              (window as Record<string, unknown>).xbullWallet = {
+              windowRecord.xbullWallet = {
                 getPublicKey: async () => 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789',
                 connect: async () => ({ publicKey: 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789' })
               };

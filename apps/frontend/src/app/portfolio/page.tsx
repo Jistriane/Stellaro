@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { getContractIds, viewPortfolio, getWalletBalances } from "@/lib/soroban";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
@@ -129,9 +130,7 @@ export default function PortfolioPage() {
                     <div className="text-slate-200">{a.name}</div>
                     <div className="text-slate-400">{pct.toFixed(1)}%</div>
                   </div>
-                  <div className="w-full bg-slate-800 rounded h-2 mt-1 overflow-hidden">
-                    <div className="bg-primary h-2" style={{ width: `${pct}%` }} />
-                  </div>
+                  <Progress value={pct} className="mt-1" />
                   <div className="text-xs text-slate-500 mt-1">
                     {t("distribution.qty_label", { qty: a.qty.toLocaleString("pt-BR", { maximumFractionDigits: 4 }), brl: a.valueBRL.toLocaleString("pt-BR", { maximumFractionDigits: 2 }), usd: a.valueUSD.toLocaleString("en-US", { maximumFractionDigits: 2 }) })}
                   </div>

@@ -598,9 +598,28 @@ export const XBullConnector: WalletConnector = {
           }
           
           // Try to access chrome.runtime if available
-          if (typeof chrome !== 'undefined' && chrome.runtime) {
+          const chromeApi = (globalThis as Window & {
+            chrome?: {
+              runtime?: {
+                sendMessage: (
+                  extensionId: string,
+                  message: Record<string, unknown>,
+                  callback: (response: unknown) => void
+                ) => void;
+              };
+              tabs?: {
+                query: (
+                  queryInfo: { active?: boolean; currentWindow?: boolean },
+                  callback: (tabs: Array<{ id?: number }>) => void
+                ) => void;
+                sendMessage: (tabId: number, message: Record<string, unknown>) => void;
+              };
+            };
+          }).chrome;
+
+          if (chromeApi?.runtime) {
             try {
-              chrome.runtime.sendMessage('xbull-extension-id', {
+              chromeApi.runtime.sendMessage('xbull-extension-id', {
                 type: 'GET_PUBLIC_KEY'
               }, function(response) {
                 if (response && response.publicKey) {
@@ -652,9 +671,23 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] Step 4: Final attempt - programmatic popup...');
       
       // Try to open the extension programmatically
-      if (typeof chrome !== 'undefined' && chrome.tabs) {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          chrome.tabs.sendMessage(tabs[0].id!, {
+      const chromeApi = (globalThis as Window & {
+        chrome?: {
+          tabs?: {
+            query: (
+              queryInfo: { active?: boolean; currentWindow?: boolean },
+              callback: (tabs: Array<{ id?: number }>) => void
+            ) => void;
+            sendMessage: (tabId: number, message: Record<string, unknown>) => void;
+          };
+        };
+      }).chrome;
+
+      if (chromeApi?.tabs) {
+        chromeApi.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          const tabId = tabs[0]?.id;
+          if (typeof tabId !== 'number') return;
+          chromeApi.tabs.sendMessage(tabId, {
             action: 'ACTIVATE_XBULL'
           });
         });
@@ -763,8 +796,9 @@ export function detectAvailable(): WalletConnectorInfo[] {
     }
   }
 
-  const results = AllConnectors.map((c) => ({ id: c.id, name: c.name, available: c.isAvailable() }))
-    .sort((a, b) => Number(b.available) - Number(a.available));
+  const results: WalletConnectorInfo[] = AllConnectors
+    .map((c): WalletConnectorInfo => ({ id: c.id, name: c.name, available: c.isAvailable() }))
+    .sort((a: WalletConnectorInfo, b: WalletConnectorInfo) => Number(b.available) - Number(a.available));
   
   if (typeof console !== 'undefined') {
     const available = results.filter(r => r.available);

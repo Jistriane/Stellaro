@@ -159,12 +159,7 @@ export default function GovernanceVotePage() {
                           {proposal.votesFor.toLocaleString()} ({forPercent.toFixed(1)}%)
                         </span>
                       </div>
-                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                        <div
-                          className="bg-green-500 h-2 rounded-full"
-                          style={{ width: `${forPercent}%` }}
-                        />
-                      </div>
+                      <Progress value={forPercent} className="mt-1" />
                     </div>
 
                     <div>
@@ -178,12 +173,7 @@ export default function GovernanceVotePage() {
                           {againstPercent.toFixed(1)}%)
                         </span>
                       </div>
-                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                        <div
-                          className="bg-red-500 h-2 rounded-full"
-                          style={{ width: `${againstPercent}%` }}
-                        />
-                      </div>
+                      <Progress value={againstPercent} className="mt-1" />
                     </div>
                   </div>
 
@@ -197,14 +187,7 @@ export default function GovernanceVotePage() {
                         {((proposal.totalVotes / 5000) * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{
-                          width: `${Math.min((proposal.totalVotes / 5000) * 100, 100)}%`,
-                        }}
-                      />
-                    </div>
+                    <Progress value={Math.min((proposal.totalVotes / 5000) * 100, 100)} className="mt-1" />
                   </div>
 
                   {/* Voting Time */}

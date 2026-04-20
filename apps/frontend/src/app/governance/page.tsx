@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { getContractIds, viewGovernance } from "@/lib/soroban";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
@@ -148,9 +149,7 @@ export default function GovernancePage() {
                     </div>
                     <div className="sm:col-span-2">
                       <div className="text-xs text-slate-500">{t("open.partial_results")}</div>
-                      <div className="w-full bg-slate-800 rounded h-2 overflow-hidden">
-                        <div className="bg-emerald-500 h-2" style={{ width: `${p.votes.yes}%` }} />
-                      </div>
+                      <Progress value={p.votes.yes} className="mt-1" />
                       <div className="text-xs text-slate-400 mt-1">{t("open.yes_no", { yes: p.votes.yes, no: p.votes.no })}</div>
                     </div>
                     <div className="flex items-end">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
@@ -134,9 +135,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <div className="text-xs text-slate-500">{t("kyc.progress")}</div>
-              <div className="w-full bg-slate-800 rounded h-2 overflow-hidden mt-1">
-                <div className="bg-primary h-2" style={{ width: `${kyc.progressPct}%` }} />
-              </div>
+              <Progress value={kyc.progressPct} className="mt-1" />
               <div className="text-xs text-slate-500 mt-1">{kyc.progressPct}% • {t("kyc.next_step")}: {kyc.nextStep}</div>
             </div>
             <div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   getContractIds,
   viewLoansPool,
@@ -254,9 +255,7 @@ export default function DashboardPage() {
                   <span className="text-slate-300">{a.asset}</span>
                   <span className="text-slate-400">{(a.pct_bps/100).toFixed(2)}%</span>
                 </div>
-                <div className="h-2 bg-slate-800 rounded">
-                  <div className="h-2 bg-primary rounded" style={{ width: `${a.pct_bps/100}%` }} />
-                </div>
+                <Progress value={a.pct_bps / 100} className="mt-1" />
               </li>
             ))}
           </ul>
