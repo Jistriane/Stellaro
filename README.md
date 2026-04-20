@@ -163,7 +163,8 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
 - **URL**: https://jistriane.github.io/Stellaro/
 - **Platform**: GitHub Pages (automatic deployment on push to master)
 - **Status**: Active
-- **Last Deployment**: December 9, 2025
+- **Last Deployment**: April 20, 2026 (GitHub Actions run #17 - success)
+- **Latest Deploy Run**: https://github.com/Jistriane/Stellaro/actions/runs/24685608906
 
 ### Deployment Workflows
 

@@ -4,7 +4,7 @@ This document describes the automated deployment workflows for the Stellaro proj
 
 ## Overview
 
-Stellaro has three main deployment paths:
+Stellaro has two main deployment paths:
 
 | Target | Workflow | Trigger | Environment |
 |--------|----------|---------|-------------|
@@ -20,6 +20,8 @@ Pages automatically publishes a static version of the frontend on push to master
 - **Branch**: Automatically uses `gh-pages` branch
 - **URL**: `https://jistriane.github.io/Stellaro/`
 - **Trigger paths**: `apps/frontend/**`, `packages/ui/**`
+- **Latest successful run**: `#17` (April 20, 2026)
+- **Latest run link**: `https://github.com/Jistriane/Stellaro/actions/runs/24685608906`
 
 **Setup:**
 1. Go to Repository Settings > Pages
@@ -116,7 +118,7 @@ View workflow runs:
 
 ```bash
 # Latest runs for a workflow
-gh workflow view frontend-deploy.yml --limit 5
+gh run list --workflow=github-pages-deploy.yml -L 5
 
 # Detailed output for a specific run
 gh run view <run-id> --log

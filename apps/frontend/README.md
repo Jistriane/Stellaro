@@ -4,6 +4,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 **Testnet Frontend Live URLs:**
 - Production: https://jistriane.github.io/Stellaro/
+- Latest successful deploy: GitHub Actions run #17 (April 20, 2026)
+- Deploy run: https://github.com/Jistriane/Stellaro/actions/runs/24685608906
 
 ## Getting Started
 
@@ -36,5 +38,3 @@ To learn more about Next.js, take a look at the following resources:
 ## Deploy on GitHub Pages
 
 The frontend is configured for static export and is deployed automatically to GitHub Pages on pushes to `master`.
-
-Preview builds for pull requests continue via the frontend preview workflow.

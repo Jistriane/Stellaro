@@ -1,21 +1,25 @@
 # GitHub Pages Setup Guide
 
-## ⚠️ Current Status
+## ✅ Current Status
 
-GitHub Pages is not yet enabled in your repository settings. The workflow is ready, but Pages needs to be configured.
+GitHub Pages is enabled and deploying via GitHub Actions.
+
+- **Site URL**: https://jistriane.github.io/Stellaro/
+- **Latest successful deploy**: Run #17 (April 20, 2026)
+- **Run link**: https://github.com/Jistriane/Stellaro/actions/runs/24685608906
 
 ## ✅ Quick Setup (3 steps)
 
-### Step 1: Enable GitHub Pages in Repository Settings
+### Step 1: Verify GitHub Pages Settings
 
 1. Go to: https://github.com/Jistriane/Stellaro/settings/pages
 2. Under **Build and deployment** section:
    - **Source**: Select `GitHub Actions` (not "Deploy from a branch")
 3. Click **Save**
 
-### Step 2: Trigger Initial Deployment
+### Step 2: Trigger a New Deployment (Optional)
 
-After enabling, the workflow will auto-run on next push. To deploy immediately:
+The workflow auto-runs on push to `master` when frontend-related files change. To deploy immediately:
 
 ```bash
 # Option A: Push any change to master
@@ -44,7 +48,7 @@ gh workflow run github-pages-deploy.yml
 **Check 1: Is Pages enabled?**
 ```bash
 gh api repos/Jistriane/Stellaro/pages
-# Should return config with "build_type": "workflow"
+# Should return configuration when authenticated
 ```
 
 **Check 2: Did the workflow run successfully?**
@@ -99,9 +103,9 @@ gh api repos/Jistriane/Stellaro/deployments
 
 ---
 
-## 🚀 Once Enabled
+## 🚀 Current Behavior
 
-Your GitHub Pages site will:
+Your GitHub Pages site:
 
 - **Auto-deploy** on every push to master (frontend changes)
 - **Auto-rebuild** static export with `DEPLOY_TARGET=github-pages`

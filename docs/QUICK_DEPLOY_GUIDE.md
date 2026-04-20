@@ -1,6 +1,6 @@
 # QUICK DEPLOY GUIDE - STELLARO (Production Deployment)
 
-**Last Updated**: December 9, 2025  
+**Last Updated**: April 20, 2026  
 **Purpose**: Fast mainnet deployment with minimal steps  
 **Estimated Time**: 30-45 minutes  
 **Target**: Production launch on Stellar mainnet  
@@ -79,11 +79,10 @@ export NEXT_PUBLIC_LOANS_POOL_MAINNET="CC..."
 
 # Build and deploy frontend
 cd apps/frontend
-npm run build
 npm run build:pages
 
 # Verify site is accessible
-curl https://stellaro.io/
+curl https://jistriane.github.io/Stellaro/
 
 # Expected: HTML page loads successfully
 ```
@@ -247,8 +246,8 @@ After deployment, verify:
 curl -I http://api.stellaro.io/health
 # Expected: HTTP 200
 
-# 2. Frontend loading
-curl -I https://stellaro.io/
+# 2. Frontend loading (current testnet static deployment)
+curl -I https://jistriane.github.io/Stellaro/
 # Expected: HTTP 200
 
 # 3. Database connected
@@ -559,7 +558,7 @@ Once all steps are complete:
 
 ---
 
-**Guide Created**: December 9, 2025  
+**Guide Created**: April 20, 2026  
 **Version**: 1.0.0  
 **Language**: English  
 **Status**: Ready for Production
