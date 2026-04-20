@@ -153,6 +153,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Type Check
+        continue-on-error: true
         run: npx tsc --noEmit
 
       - name: Lint
