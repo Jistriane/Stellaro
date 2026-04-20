@@ -108,6 +108,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
+        working-directory: ${{ github.workspace }}
 
       - name: Generate Prisma Client
         run: npx prisma generate
@@ -151,6 +152,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
+        working-directory: ${{ github.workspace }}
 
       - name: Type Check
         continue-on-error: true
@@ -203,7 +205,6 @@ jobs:
     needs: [test-contracts, test-backend, test-frontend]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
-    environment: testnet
     steps:
       - uses: actions/checkout@v5
         with:
@@ -234,7 +235,6 @@ jobs:
     needs: [test-contracts, test-backend, test-frontend]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - uses: actions/checkout@v5
         with:

@@ -8,10 +8,9 @@ import Toasts from "@/components/Toasts";
 
 interface LayoutClientProps {
   children: ReactNode;
-  locale: "pt" | "en";
 }
 
-export function LayoutClient({ children, locale }: LayoutClientProps) {
+export function LayoutClient({ children }: LayoutClientProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

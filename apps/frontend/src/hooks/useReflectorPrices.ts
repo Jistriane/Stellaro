@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { reflectorClient, ReflectorPrice, PortfolioValuation } from '@/services/reflectorClient';
+import { reflectorClient, ReflectorPrice, PortfolioValuation, PriceAnomalyReport } from '@/services/reflectorClient';
 
 /**
  * Hook to get single price with auto-refresh
@@ -137,9 +137,7 @@ export function usePortfolioValuation(portfolio: Map<string, number>) {
  * Hook for price anomaly detection
  */
 export function usePriceAnomaly(assetCode: string, windowMinutes: number = 15) {
-  const [anomaly, setAnomaly] = useState<ReturnType<typeof reflectorClient.detectAnomaly> | null>(
-    null
-  );
+  const [anomaly, setAnomaly] = useState<PriceAnomalyReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 

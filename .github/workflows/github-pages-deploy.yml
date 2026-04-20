@@ -41,14 +41,10 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
-            apps/frontend/package-lock.json
 
       - name: Install dependencies (workspace root)
         run: npm ci --legacy-peer-deps
         working-directory: ${{ github.workspace }}
-
-      - name: Install dependencies (frontend)
-        run: npm ci --legacy-peer-deps
 
       - name: Build with GitHub Pages static export
         env:

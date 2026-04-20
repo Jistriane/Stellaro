@@ -178,7 +178,7 @@ export default function LoginPage() {
     } finally {
       setLoadingPasskeyReg(false);
     }
-  }, [apiUrl, email, pushEvent, setLoggedIn, t]);
+  }, [apiUrl, email, pushEvent, setLoggedIn, t, tLoginErrors]);
 
   const onPasskey = useCallback(async () => {
     setError("");
@@ -261,7 +261,7 @@ export default function LoginPage() {
     } finally {
       setLoadingPasskey(false);
     }
-  }, [apiUrl, email, pushEvent, setLoggedIn, t]);
+  }, [apiUrl, email, pushEvent, setLoggedIn, t, tLoginErrors]);
 
   const onWallet = useCallback(async (kind: "freighter" | "albedo" | "ledger") => {
     setError("");
@@ -369,7 +369,7 @@ export default function LoginPage() {
     } finally {
       setLoadingWallet(null);
     }
-  }, [apiUrl, pushEvent, setBalances, setLoggedIn, t]);
+  }, [apiUrl, pushEvent, setBalances, setLoggedIn, tLoginErrors]);
 
   const onEmailLogin = useCallback(async () => {
     if (!email.trim()) {
@@ -417,7 +417,7 @@ export default function LoginPage() {
     } finally {
       setLoadingEmail(false);
     }
-  }, [apiUrl, email, pushEvent, setLoggedIn, t]);
+  }, [apiUrl, email, pushEvent, setLoggedIn, t, tLoginErrors]);
 
   return (
     <div className="p-6">

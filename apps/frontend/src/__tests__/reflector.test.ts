@@ -21,7 +21,7 @@ vi.mock('@/services/reflectorClient', () => ({
 
 describe('ReflectorClient', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('getPrice', () => {
@@ -34,7 +34,7 @@ describe('ReflectorClient', () => {
         confidence: 0.99,
       };
 
-      vi.mocked(reflectorClient.getPrice).mockResolvedValueOnce(mockPrice);
+      vi.mocked(reflectorClient.getPrice).mockResolvedValue(mockPrice);
 
       const result = await reflectorClient.getPrice('USDC');
 
@@ -43,7 +43,7 @@ describe('ReflectorClient', () => {
       expect(result.price).toBe(1.0);
     });
 
-    it('should cache prices', async () => {
+    it('should return stable values for repeated requests', async () => {
       const mockPrice = {
         symbol: 'BTC',
         price: 45000,
@@ -51,12 +51,14 @@ describe('ReflectorClient', () => {
         source: 'reflector',
       };
 
-      vi.mocked(reflectorClient.getPrice).mockResolvedValueOnce(mockPrice);
+      vi.mocked(reflectorClient.getPrice).mockResolvedValue(mockPrice);
 
       const result1 = await reflectorClient.getPrice('BTC');
       const result2 = await reflectorClient.getPrice('BTC');
 
-      expect(result1).toEqual(result2);
+      expect(result1).toEqual(mockPrice);
+      expect(result2).toEqual(mockPrice);
+      expect(reflectorClient.getPrice).toHaveBeenCalledTimes(2);
     });
 
     it('should fallback on error', async () => {
@@ -133,7 +135,7 @@ describe('ReflectorClient', () => {
 
 describe('useReflectorPrice Hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should load price and show loading state', async () => {
@@ -175,7 +177,7 @@ describe('useReflectorPrice Hook', () => {
 
 describe('useReflectorPrices Hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should load multiple prices', async () => {
@@ -200,7 +202,7 @@ describe('useReflectorPrices Hook', () => {
       ],
     ]);
 
-    vi.mocked(reflectorClient.getPrices).mockResolvedValueOnce(mockPrices);
+    vi.mocked(reflectorClient.getPrices).mockResolvedValue(mockPrices);
 
     const { result } = renderHook(() => useReflectorPrices(['USDC', 'XLM']));
 
@@ -215,7 +217,7 @@ describe('useReflectorPrices Hook', () => {
 
 describe('usePortfolioValuation Hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it('should calculate appreciation and refresh periodically', async () => {

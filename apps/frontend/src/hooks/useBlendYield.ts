@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Asset, Networks } from '@stellar/stellar-sdk';
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Hook to optimize yield using Blend Protocol
@@ -33,7 +32,7 @@ export function useBlendYield(asset: string, network: 'testnet' | 'mainnet' = 't
   const [error, setError] = useState<string | null>(null);
 
   // Fetch available pools from Blend Protocol
-  const fetchPools = async () => {
+  const fetchPools = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -57,17 +56,19 @@ export function useBlendYield(asset: string, network: 'testnet' | 'mainnet' = 't
     } finally {
       setLoading(false);
     }
-  };
+  }, [asset, network]);
 
   // Find optimal pool based on APY and risk
-  const findOptimalPool = (currentPoolId?: string): OptimizationResult | null => {
+  const findOptimalPool = useCallback((currentPoolId?: string): OptimizationResult | null => {
     if (pools.length === 0) return null;
 
     // Calculate composite score (APY / risk)
-    const rankedPools = pools
-      .map(pool => ({
+    type ScoredBlendPool = BlendPool & { score: number };
+
+    const rankedPools: ScoredBlendPool[] = pools
+      .map((pool) => ({
         ...pool,
-        score: pool.supplyAPY / Math.max(pool.riskScore, 1)
+        score: pool.supplyAPY / Math.max(pool.riskScore, 1),
       }))
       .sort((a, b) => b.score - a.score);
 
@@ -86,10 +87,10 @@ export function useBlendYield(asset: string, network: 'testnet' | 'mainnet' = 't
       potentialGainAPY,
       shouldMigrate: potentialGainAPY > 0.02 // 2% threshold
     };
-  };
+  }, [pools]);
 
   // Auto-compound rewards
-  const autoCompound = async (userAddress: string, poolId: string) => {
+  const autoCompound = useCallback(async (userAddress: string, poolId: string) => {
     try {
       const response = await fetch('/api/defi/blend/auto-compound', {
         method: 'POST',
@@ -106,13 +107,13 @@ export function useBlendYield(asset: string, network: 'testnet' | 'mainnet' = 't
       console.error('[useBlendYield] Auto-compound error:', err);
       throw err;
     }
-  };
+  }, [asset]);
 
   useEffect(() => {
     if (asset) {
       fetchPools();
     }
-  }, [asset, network]);
+  }, [asset, fetchPools]);
 
   return {
     pools,

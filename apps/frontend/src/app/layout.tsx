@@ -36,7 +36,7 @@ export default async function RootLayout({
     <html lang={locale} className="dark" suppressHydrationWarning>
       <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <LayoutClient locale={locale}>{children}</LayoutClient>
+          <LayoutClient>{children}</LayoutClient>
         </NextIntlClientProvider>
       </body>
     </html>
