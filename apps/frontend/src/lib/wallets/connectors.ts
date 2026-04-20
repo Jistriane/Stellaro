@@ -598,7 +598,7 @@ export const XBullConnector: WalletConnector = {
           }
           
           // Try to access chrome.runtime if available
-          const chromeApi = (globalThis as Window & {
+          const chromeApi = (globalThis as unknown as {
             chrome?: {
               runtime?: {
                 sendMessage: (
@@ -671,7 +671,7 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] Step 4: Final attempt - programmatic popup...');
       
       // Try to open the extension programmatically
-      const chromeApi = (globalThis as Window & {
+      const chromeApi = (globalThis as unknown as {
         chrome?: {
           tabs?: {
             query: (
@@ -683,11 +683,12 @@ export const XBullConnector: WalletConnector = {
         };
       }).chrome;
 
-      if (chromeApi?.tabs) {
-        chromeApi.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabsApi = chromeApi?.tabs;
+      if (tabsApi) {
+        tabsApi.query({ active: true, currentWindow: true }, (tabs) => {
           const tabId = tabs[0]?.id;
           if (typeof tabId !== 'number') return;
-          chromeApi.tabs.sendMessage(tabId, {
+          tabsApi.sendMessage(tabId, {
             action: 'ACTIVATE_XBULL'
           });
         });

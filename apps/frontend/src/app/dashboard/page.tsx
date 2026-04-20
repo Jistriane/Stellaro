@@ -16,6 +16,10 @@ import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
+  type PortfolioAllocation = {
+    asset: string;
+    pct_bps: number;
+  };
 
   // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
@@ -249,7 +253,7 @@ export default function DashboardPage() {
         <CardContent>
           <div className="text-xs text-slate-500 mb-2">{t("portfolio.contract")}: <span className="text-slate-300">{ids.PORTFOLIO_CONTRACT_ID || "—"}</span></div>
           <ul className="space-y-2">
-            {portfolio.allocation.map((a) => (
+            {(portfolio.allocation as PortfolioAllocation[]).map((a) => (
               <li key={a.asset} className="text-sm">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-slate-300">{a.asset}</span>

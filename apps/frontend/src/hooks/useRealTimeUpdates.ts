@@ -53,7 +53,7 @@ export function useRealTimeUpdates() {
       console.log('[realtime] Wallet disconnected, stopping real-time updates');
       
       // Clear balances when disconnected
-      setBalances({ xlm: 0, stlt: 0 });
+      setBalances({ xlm: '0', stlt: '0' });
     }
 
     // Cleanup

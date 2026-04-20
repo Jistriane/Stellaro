@@ -11,6 +11,10 @@ import { useEffect, useState } from "react";
 export default function PortfolioPage() {
   const t = useTranslations("portfolio");
   const tc = useTranslations("common");
+  type PortfolioAllocation = {
+    asset: string;
+    pct_bps: number;
+  };
   const [portfolio, setPortfolio] = useState<any>(null);
   const [wallet, setWallet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -143,7 +147,7 @@ export default function PortfolioPage() {
           <div className="mt-4">
             <div className="text-xs text-slate-500">{t("distribution.protocol_ref_title")}</div>
             <ul className="text-xs grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
-              {portfolio.allocation.map((a) => (
+              {(portfolio.allocation as PortfolioAllocation[]).map((a) => (
                 <li key={a.asset} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
                   <span className="text-slate-300">{a.asset}</span>
                   <span className="text-slate-200"><b>{(a.pct_bps/100).toFixed(1)}%</b></span>

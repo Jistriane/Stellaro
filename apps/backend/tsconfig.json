@@ -21,5 +21,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "resolvePackageJsonExports": true
-  }
+  },
+  "exclude": ["src/**/*.spec.ts", "test/**/*"]
 }
