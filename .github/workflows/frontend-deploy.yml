@@ -63,6 +63,13 @@ jobs:
           PREVIEW_URL=$(npx vercel deploy --prebuilt --token=${VERCEL_TOKEN} | tail -n 1)
           echo "url=${PREVIEW_URL}" >> "$GITHUB_OUTPUT"
 
+      - name: Validate Preview URL
+        run: |
+          if [ -z "${{ steps.deploy_preview.outputs.url }}" ]; then
+            echo "Preview URL is empty. Failing workflow to avoid false positive deploy."
+            exit 1
+          fi
+
       - name: Comment Preview URL on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
