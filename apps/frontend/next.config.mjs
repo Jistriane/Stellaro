@@ -1,6 +1,5 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const isGitHubPages = process.env.DEPLOY_TARGET === 'github-pages';
 const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1] || '';
 const resolvedBasePath =
@@ -22,9 +21,15 @@ const nextConfig = {
           unoptimized: true,
         },
         basePath: resolvedBasePath,
-        assetPrefix: resolvedBasePath || undefined,
+        assetPrefix: resolvedBasePath,
       }
     : {}),
 };
+
+// Only apply next-intl plugin when NOT building for GitHub Pages
+// (next-intl is incompatible with static export)
+const withNextIntl = isGitHubPages
+  ? (config) => config
+  : createNextIntlPlugin('./src/i18n/request.ts');
 
 export default withNextIntl(nextConfig);
