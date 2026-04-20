@@ -1,0 +1,79 @@
+name: Deploy Contracts to Testnet
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_key:
+        description: 'Soroban deployment key alias'
+        required: false
+        default: 'stellaro-testnet-deploy'
+  push:
+    tags:
+      - 'deploy-testnet-*'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Install Soroban CLI
+        run: |
+          cargo install --locked soroban-cli
+          soroban --version
+
+      - name: Cache Cargo
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Verify build
+        run: cd contracts && cargo build --release
+
+      - name: Setup Soroban Key
+        env:
+          SOROBAN_KEY_NAME: ${{ github.event.inputs.deployment_key || 'stellaro-testnet-deploy' }}
+          SOROBAN_PUBLIC_KEY: ${{ secrets.SOROBAN_PUBLIC_KEY }}
+          SOROBAN_SECRET_KEY: ${{ secrets.SOROBAN_SECRET_KEY }}
+        run: |
+          if [ -z "$SOROBAN_PUBLIC_KEY" ] || [ -z "$SOROBAN_SECRET_KEY" ]; then
+            echo "❌ Error: SOROBAN_PUBLIC_KEY and SOROBAN_SECRET_KEY secrets are required"
+            exit 1
+          fi
+          
+          # Import the key into soroban CLI
+          soroban keys generate "$SOROBAN_KEY_NAME" --public-key "$SOROBAN_PUBLIC_KEY" --secret-key "$SOROBAN_SECRET_KEY" 2>/dev/null || true
+          soroban keys show "$SOROBAN_KEY_NAME"
+
+      - name: Deploy Contracts
+        env:
+          SOROBAN_NETWORK: testnet
+          SOROBAN_RPC: https://soroban-testnet.stellar.org
+          SOROBAN_KEY_NAME: ${{ github.event.inputs.deployment_key || 'stellaro-testnet-deploy' }}
+        run: |
+          bash deploy-testnet.sh
+
+      - name: Post deployment status
+        if: success()
+        run: |
+          echo "✅ Contracts deployed successfully to Stellar Testnet"
+          echo "🔗 View at: https://stellar.expert/explorer/testnet"
+
+      - name: Post deployment failure
+        if: failure()
+        run: |
+          echo "❌ Contract deployment failed"
+          exit 1
