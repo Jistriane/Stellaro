@@ -1,6 +1,3 @@
-[build]
-target = "wasm32-unknown-unknown"
-
 [target.wasm32-unknown-unknown]
 runner = "wasmtime"
 rustflags = ["-C", "link-arg=--no-entry", "-C", "opt-level=z", "-C", "link-arg=-zstack-size=256000"]
