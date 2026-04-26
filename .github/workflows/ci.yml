@@ -67,6 +67,9 @@ jobs:
           stellar contract build --package loans_pool
           stellar contract build --package portfolio
           stellar contract build --package risklock
+          stellar contract build --package zk_verifier
+          stellar contract build --package batch_executor
+          stellar contract build --package mev_guard
 
       - name: Upload Contract Artifacts
         uses: actions/upload-artifact@v4

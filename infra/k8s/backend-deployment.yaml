@@ -71,10 +71,54 @@ spec:
               key: stellar-secret-key
         - name: STELLAR_HORIZON
           value: "https://horizon.stellar.org"
+        - name: SOROBAN_RPC_URL
+          value: "https://soroban-rpc.stellar.org"
         - name: REFLECTOR_URL
           value: "https://api.reflector.network"
         - name: REDIS_URL
           value: "redis://stellaro-redis:6379"
+
+        # Smart Contracts
+        - name: STABLECOIN_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: stablecoin-id } }
+        - name: RISKLOCK_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: risklock-id } }
+        - name: LOANSPOOL_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: loanspool-id } }
+        - name: PORTFOLIO_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: portfolio-id } }
+        - name: GOVERNANCE_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: governance-id } }
+        - name: ZK_VERIFIER_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: zk-verifier-id } }
+        - name: BATCH_EXECUTOR_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: batch-executor-id } }
+        - name: MEV_GUARD_CONTRACT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: mev-guard-id } }
+
+        # PIX Integration
+        - name: PIX_MODE
+          value: "production"
+        - name: PIX_API_URL
+          valueFrom: { configMapKeyRef: { name: stellaro-backend-config, key: pix-api-url } }
+        - name: PIX_API_KEY
+          valueFrom: { secretKeyRef: { name: stellaro-secrets, key: pix-api-key } }
+        - name: PIX_WEBHOOK_SECRET
+          valueFrom: { secretKeyRef: { name: stellaro-secrets, key: pix-webhook-secret } }
+
+        # Card Integration
+        - name: CARD_API_URL
+          valueFrom: { configMapKeyRef: { name: stellaro-backend-config, key: card-api-url } }
+        - name: CARD_API_KEY
+          valueFrom: { secretKeyRef: { name: stellaro-secrets, key: card-api-key } }
+
+        # Compliance (Sumsub)
+        - name: SUMSUB_BASE_URL
+          value: "https://api.sumsub.com"
+        - name: SUMSUB_APP_TOKEN
+          valueFrom: { secretKeyRef: { name: stellaro-secrets, key: sumsub-app-token } }
+        - name: SUMSUB_SECRET_KEY
+          valueFrom: { secretKeyRef: { name: stellaro-secrets, key: sumsub-secret-key } }
         
         # Resource limits (production-grade)
         resources:

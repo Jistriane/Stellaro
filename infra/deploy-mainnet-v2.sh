@@ -62,7 +62,7 @@ echo ""
 # ============= STEP 3: OPTIMIZE WASM =============
 echo "3️⃣ Otimizando WASMs..."
 
-for contract in stablecoin risklock loans_pool portfolio governance zk_verifier; do
+for contract in stablecoin risklock loans_pool portfolio governance zk_verifier batch_executor mev_guard; do
   if [ -f "target/wasm32v1-none/release/${contract}.wasm" ]; then
     soroban contract optimize \
       --wasm "target/wasm32v1-none/release/${contract}.wasm" \
@@ -73,12 +73,12 @@ done
 echo ""
 
 # ============= STEP 4: DEPLOY CONTRACTS =============
-echo "4️⃣ Deployando 6 contratos em mainnet..."
-echo "   (Tempo estimado: 3-5 minutos)"
+echo "4️⃣ Deployando 8 contratos em mainnet..."
+echo "   (Tempo estimado: 5-8 minutos)"
 echo ""
 
 declare -A CONTRACT_IDS
-CONTRACTS=("stablecoin" "risklock" "loans_pool" "portfolio" "governance" "zk_verifier")
+CONTRACTS=("stablecoin" "risklock" "loans_pool" "portfolio" "governance" "zk_verifier" "batch_executor" "mev_guard")
 
 for contract in "${CONTRACTS[@]}"; do
   echo "   📦 ${contract}..."
@@ -151,6 +151,34 @@ if [ ! -z "${CONTRACT_IDS[loans_pool]:-}" ]; then
   echo "      ✅"
 fi
 
+# Init other basic contracts (only admin needed)
+for contract in risklock portfolio governance batch_executor; do
+  if [ ! -z "${CONTRACT_IDS[$contract]:-}" ]; then
+    echo "   → ${contract}..."
+    soroban contract invoke \
+      --id "${CONTRACT_IDS[$contract]}" \
+      --source-account deploy \
+      --network mainnet \
+      -- init \
+      --admin "$ADMIN_PUBLIC" 2>&1 | tail -1
+    echo "      ✅"
+  fi
+done
+
+# Init MEV Guard
+if [ ! -z "${CONTRACT_IDS[mev_guard]:-}" ]; then
+  echo "   → mev_guard..."
+  soroban contract invoke \
+    --id "${CONTRACT_IDS[mev_guard]}" \
+    --source-account deploy \
+    --network mainnet \
+    -- init \
+    --admin "$ADMIN_PUBLIC" \
+    --max_slippage_bps 100 \
+    --min_block_delay 1 2>&1 | tail -1
+  echo "      ✅"
+fi
+
 echo "   ✅ Inicialização completa"
 echo ""
 
@@ -176,6 +204,8 @@ MAINNET_LOANS_POOL_CONTRACT_ID="${CONTRACT_IDS[loans_pool]:-PENDING}"
 MAINNET_PORTFOLIO_CONTRACT_ID="${CONTRACT_IDS[portfolio]:-PENDING}"
 MAINNET_GOVERNANCE_CONTRACT_ID="${CONTRACT_IDS[governance]:-PENDING}"
 MAINNET_ZK_VERIFIER_CONTRACT_ID="${CONTRACT_IDS[zk_verifier]:-PENDING}"
+MAINNET_BATCH_EXECUTOR_CONTRACT_ID="${CONTRACT_IDS[batch_executor]:-PENDING}"
+MAINNET_MEV_GUARD_CONTRACT_ID="${CONTRACT_IDS[mev_guard]:-PENDING}"
 
 # Deployment Parameters
 RISK_BPS=$RISK_BPS
@@ -198,6 +228,24 @@ echo ""
 
 # ============= STEP 7: FINAL VERIFICATION =============
 echo "7️⃣ Verificando resultado..."
+
+DEPLOYED_COUNT=0
+for id in "${CONTRACT_IDS[@]}"; do
+  if [ ! -z "$id" ]; then
+    ((DEPLOYED_COUNT++))
+  fi
+done
+
+if [ $DEPLOYED_COUNT -eq 8 ]; then
+  echo "   🎉 SUCESSO: Todos os 8 contratos foram deployados e configurados!"
+else
+  echo "   ⚠️ AVISO: Apenas $DEPLOYED_COUNT de 8 contratos foram deployados."
+fi
+
+rm -f "$TEMP_KEY"
+echo ""
+echo "Deployment Finished at $(date)"
+echo "Check .env-mainnet for contract addresses."
 
 FINAL_BALANCE=$(soroban account balance deploy --network mainnet 2>/dev/null || echo "0")
 COST=$(echo "$BALANCE - $FINAL_BALANCE" | bc || echo "~12")

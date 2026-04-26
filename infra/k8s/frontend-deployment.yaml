@@ -1,0 +1,89 @@
+# Stellaro Frontend - Kubernetes Deployment
+# Target: AWS EKS (sa-east-1)
+# Optimized for Next.js production hosting
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stellaro-frontend
+  namespace: production
+  labels:
+    app: stellaro-frontend
+    tier: frontend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: stellaro-frontend
+  template:
+    metadata:
+      labels:
+        app: stellaro-frontend
+    spec:
+      containers:
+      - name: web
+        image: stellaro/frontend:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: NEXT_PUBLIC_BACKEND_URL
+          value: "https://api.stellaro.com.br"
+        - name: NEXT_PUBLIC_STELLAR_NETWORK
+          value: "mainnet"
+        
+        # Resource limits
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 15
+        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stellaro-frontend-service
+  namespace: production
+  labels:
+    app: stellaro-frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: stellaro-frontend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 3000
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 3000

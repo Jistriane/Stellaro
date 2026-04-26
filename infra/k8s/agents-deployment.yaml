@@ -1,0 +1,57 @@
+# Stellaro AI Agents - Kubernetes Deployment
+# Orquestração de Agentes Python (Risk, Treasury, Compliance)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stellaro-agents
+  namespace: production
+  labels:
+    app: stellaro-agents
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stellaro-agents
+  template:
+    metadata:
+      labels:
+        app: stellaro-agents
+    spec:
+      containers:
+      - name: agents
+        image: stellaro/agents:latest
+        imagePullPolicy: Always
+        
+        env:
+        - name: BACKEND_URL
+          value: "http://stellaro-backend-service:3001"
+        - name: REDIS_URL
+          value: "redis://stellaro-redis:6379"
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: stellaro-secrets
+              key: github-token
+        - name: MODEL_ENDPOINT
+          value: "https://models.inference.ai.azure.com"
+        
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+        
+        # Como é um processo de longa duração (worker), não precisa necessariamente de ports/probes
+        # mas se api_server.py estiver rodando, podemos adicionar:
+        ports:
+        - name: api
+          containerPort: 8000
+        
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 20
