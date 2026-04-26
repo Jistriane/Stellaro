@@ -11,3 +11,4 @@ soroban-sdk = { version = "23.0.0" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+zk_verifier = { path = "../zk_verifier" }

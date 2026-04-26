@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { getContractIds, viewGovernance } from "@/lib/soroban";
+import { getContractIds, viewGovernance, createProposal, queueProposal, executeProposal } from "@/lib/soroban";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function GovernancePage() {
   const t = useTranslations("governance");
@@ -17,6 +19,11 @@ export default function GovernancePage() {
   // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({ title: "", action: "update_params", target: "", description: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [isAiDrafting, setIsAiDrafting] = useState(false);
+
   useEffect(() => {
     async function loadData() {
       const governanceData = await viewGovernance();
@@ -26,6 +33,35 @@ export default function GovernancePage() {
     
     loadData();
   }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await createProposal(formData.title, formData.action, formData.target, formData.description);
+      alert("Proposta enviada com sucesso!");
+      setShowForm(false);
+    } catch (e) {
+      alert("Erro ao enviar proposta");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAiDraft = async () => {
+    setIsAiDrafting(true);
+    // Simulação de chamada ao ElizaOS para gerar uma proposta inteligente
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setFormData({
+      title: "Otimização de Taxas de Colateralização (LTV)",
+      action: "update_ltv_params",
+      target: ids.LENDING_POOL_CONTRACT_ID || "C...",
+      description: "Baseado na análise de volatilidade do último trimestre, a IA recomenda aumentar o LTV para o par STLT-BRL de 85% para 90% para usuários com Score ZK > 800."
+    });
+    
+    setIsAiDrafting(false);
+  };
 
   if (loading) {
     return (
@@ -75,6 +111,24 @@ export default function GovernancePage() {
     { id: "P-992", title: "Partnership with Oracle Provider", status: "Closed", date: "2025-06-20", voters: 934 },
   ];
 
+  const handleQueue = async (id: string) => {
+    try {
+      await queueProposal(id);
+      alert("Proposta enviada para a fila de execução (Timelock 24h)");
+    } catch (e) {
+      alert("Erro ao enfileirar proposta");
+    }
+  };
+
+  const handleExecute = async (id: string) => {
+    try {
+      await executeProposal(id);
+      alert("Proposta executada com sucesso!");
+    } catch (e) {
+      alert("Erro ao executar proposta");
+    }
+  };
+
   const explorerUrl = ids.GOVERNANCE_CONTRACT_ID
     ? `https://stellar.expert/explorer/public/contract/${encodeURIComponent(ids.GOVERNANCE_CONTRACT_ID)}`
     : undefined;
@@ -84,8 +138,81 @@ export default function GovernancePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
-        <div className="text-xs text-slate-500">{t("header.updated_now")}</div>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="default" 
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? "Cancelar" : "Nova Proposta"}
+          </Button>
+          <div className="text-xs text-slate-500">{t("header.updated_now")}</div>
+        </div>
       </div>
+
+      {showForm && (
+        <Card className="border-emerald-500/30 bg-slate-900/50">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Criar Nova Proposta</CardTitle>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="border-blue-500/50 text-blue-400 hover:bg-blue-900/20"
+              onClick={handleAiDraft}
+              disabled={isAiDrafting}
+            >
+              {isAiDrafting ? "Gerando..." : "Draft with ElizaOS ✨"}
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs text-slate-400">Título</label>
+                  <Input 
+                    value={formData.title} 
+                    onChange={e => setFormData({...formData, title: e.target.value})}
+                    placeholder="Ex: Reduzir taxa de mint"
+                    className="bg-slate-950 border-slate-800"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-slate-400">Ação (Símbolo)</label>
+                  <Input 
+                    value={formData.action} 
+                    onChange={e => setFormData({...formData, action: e.target.value})}
+                    className="bg-slate-950 border-slate-800"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs text-slate-400">Endereço do Alvo (Contrato)</label>
+                <Input 
+                  value={formData.target} 
+                  onChange={e => setFormData({...formData, target: e.target.value})}
+                  placeholder="C..."
+                  className="bg-slate-950 border-slate-800"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs text-slate-400">Descrição Curta</label>
+                <Input 
+                  value={formData.description} 
+                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  className="bg-slate-950 border-slate-800"
+                  required
+                />
+              </div>
+              <Button type="submit" disabled={submitting} className="w-full">
+                {submitting ? "Enviando..." : "Submeter Proposta à DAO"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Summary/Admin */}
       <Card>
@@ -125,9 +252,7 @@ export default function GovernancePage() {
           {openProposals.length === 0 ? (
             <div className="text-sm text-slate-400">{t("open.empty")}</div>
           ) : (
-            <div className="space-y-3">
-              {openProposals.map((p) => (
-                <div key={p.id} className="rounded bg-slate-900 p-3">
+            <div className="sp                <div key={p.id} className="rounded bg-slate-900 p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="text-slate-200 text-sm">{p.title}</div>
@@ -152,11 +277,22 @@ export default function GovernancePage() {
                       <Progress value={p.votes.yes} className="mt-1" />
                       <div className="text-xs text-slate-400 mt-1">{t("open.yes_no", { yes: p.votes.yes, no: p.votes.no })}</div>
                     </div>
-                    <div className="flex items-end">
-                      {userVotes[p.id] ? (
-                        <span className="text-xs text-slate-400">{t("open.you_voted", { vote: userVotes[p.id] ?? "" })}</span>
-                      ) : (
-                        <button disabled className="px-3 py-2 rounded bg-slate-800 text-slate-400 text-xs cursor-not-allowed" title={tc("soon")}>{t("open.vote_now")}</button>
+                    <div className="flex items-center gap-2">
+                      {p.status === "Succeeded" && (
+                        <Button size="sm" className="bg-amber-600 hover:bg-amber-700" onClick={() => handleQueue(p.id)}>
+                          Queue
+                        </Button>
+                      )}
+                      {p.status === "Queued" && (
+                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => handleExecute(p.id)}>
+                          Execute
+                        </Button>
+                      )}
+                      {!userVotes[p.id] && p.status === "Open" && (
+                        <Button size="sm" variant="outline" className="text-xs">Vote Now</Button>
+                      )}
+                      {userVotes[p.id] && (
+                        <span className="text-xs text-slate-400">Voted {userVotes[p.id]}</span>
                       )}
                     </div>
                   </div>
@@ -165,7 +301,7 @@ export default function GovernancePage() {
                     <Link href={`/governance/${p.id}#discussion`} className="px-2 py-1 rounded bg-slate-800">{t("open.discussion")}</Link>
                   </div>
                 </div>
-              ))}
+      ))}
             </div>
           )}
         </CardContent>

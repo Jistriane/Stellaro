@@ -1,22 +1,24 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Vec, symbol_short};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol, symbol_short};
 
 #[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Order {
-    pub id: u64,
+#[derive(Clone, Debug)]
+pub struct Auction {
     pub seller: Address,
-    pub asset: Address,
+    pub asset_token: Address,
     pub amount: i128,
-    pub price_per_unit: i128,
-    pub stablecoin: Address,
+    pub min_bid: i128,
+    pub highest_bidder: Address,
+    pub highest_bid_amount: i128,
+    pub end_time: u64,
+    pub active: bool,
 }
 
 #[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DataKey {
-    Orders,
-    OrderCount,
+    Admin,
+    Auction(u32),
+    AuctionCount,
 }
 
 #[contract]
@@ -24,60 +26,81 @@ pub struct RwaMarketplace;
 
 #[contractimpl]
 impl RwaMarketplace {
-    pub fn place_sell_order(env: Env, seller: Address, asset: Address, amount: i128, price: i128, stablecoin: Address) -> u64 {
+    pub fn initialize(env: Env, admin: Address) {
+        if env.storage().instance().has(&DataKey::Admin) {
+            panic!("already initialized");
+        }
+        env.storage().instance().set(&DataKey::Admin, &admin);
+    }
+
+    pub fn start_auction(env: Env, seller: Address, asset_token: Address, amount: i128, min_bid: i128, duration: u64) -> u32 {
         seller.require_auth();
         
-        let mut count: u64 = env.storage().instance().get(&DataKey::OrderCount).unwrap_or(0);
+        let mut count: u32 = env.storage().instance().get(&DataKey::AuctionCount).unwrap_or(0);
         count += 1;
 
-        let order = Order {
-            id: count,
-            seller: seller.clone(),
-            asset,
+        let auction = Auction {
+            seller,
+            asset_token,
             amount,
-            price_per_unit: price,
-            stablecoin,
+            min_bid,
+            highest_bidder: env.current_contract_address(), // Placeholder
+            highest_bid_amount: 0,
+            end_time: env.ledger().timestamp() + duration,
+            active: true,
         };
 
-        let mut orders: Vec<Order> = env.storage().persistent().get(&DataKey::Orders).unwrap_or(Vec::new(&env));
-        orders.push_back(order);
+        env.storage().instance().set(&DataKey::Auction(count), &auction);
+        env.storage().instance().set(&DataKey::AuctionCount, &count);
         
-        env.storage().persistent().set(&DataKey::Orders, &orders);
-        env.storage().instance().set(&DataKey::OrderCount, &count);
-
         count
     }
 
-    pub fn buy_order(env: Env, buyer: Address, order_id: u64) {
-        buyer.require_auth();
+    pub fn place_bid(env: Env, bidder: Address, auction_id: u32, bid_amount: i128) {
+        bidder.require_auth();
         
-        let mut orders: Vec<Order> = env.storage().persistent().get(&DataKey::Orders).unwrap_or(Vec::new(&env));
-        let mut order_index: Option<u32> = None;
-
-        for i in 0..orders.len() {
-            if orders.get(i).unwrap().id == order_id {
-                order_index = Some(i);
-                break;
-            }
+        let mut auction: Auction = env.storage().instance().get(&DataKey::Auction(auction_id)).expect("not found");
+        
+        if !auction.active || env.ledger().timestamp() > auction.end_time {
+            panic!("auction not active");
         }
 
-        if let Some(index) = order_index {
-            let order = orders.get(index).unwrap();
-            
-            // In a real app, transfer tokens here using SEP-41
-            // 1. Transfer stablecoin from buyer to seller
-            // 2. Transfer RWA token from seller to buyer (or from contract escrow)
-            
-            orders.remove(index);
-            env.storage().persistent().set(&DataKey::Orders, &orders);
-            
-            env.events().publish((symbol_short!("trade"), order_id), (buyer, order.seller));
-        } else {
-            panic!("Order not found");
+        if bid_amount < auction.min_bid || bid_amount <= auction.highest_bid_amount {
+            panic!("bid too low");
         }
+
+        // Em produção: o contrato precisaria segurar os fundos (escrow)
+        // Aqui atualizamos o estado da maior oferta
+        auction.highest_bidder = bidder;
+        auction.highest_bid_amount = bid_amount;
+
+        env.storage().instance().set(&DataKey::Auction(auction_id), &auction);
+        
+        env.events().publish(
+            (symbol_short!("BID"), auction_id, bid_amount),
+            auction.highest_bidder.clone()
+        );
     }
 
-    pub fn get_orders(env: Env) -> Vec<Order> {
-        env.storage().persistent().get(&DataKey::Orders).unwrap_or(Vec::new(&env))
+    pub fn conclude_auction(env: Env, auction_id: u32) {
+        let mut auction: Auction = env.storage().instance().get(&DataKey::Auction(auction_id)).expect("not found");
+        
+        if env.ledger().timestamp() <= auction.end_time {
+            panic!("auction not yet ended");
+        }
+        
+        if !auction.active {
+            panic!("already concluded");
+        }
+
+        // Em produção: Transferir o asset RWA para o vencedor e os fundos para o vendedor
+        // Aqui marcamos como inativo e emitimos evento
+        auction.active = false;
+        env.storage().instance().set(&DataKey::Auction(auction_id), &auction);
+
+        env.events().publish(
+            (symbol_short!("CONCLUDE"), auction_id),
+            auction.highest_bidder
+        );
     }
 }

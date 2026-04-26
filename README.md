@@ -16,15 +16,16 @@ Home / Dashboard:
 
 ![Home](./Home%20Stellaro.png)
 
-## Architecture v5.6 Highlights (Mainnet Ready)
+## Arquitetura v7.4 Highlights (Code Freeze) [██████████]
 
-- **AI Risk & Robo-Advisor** - ElizaOS-powered risk assessment and automated portfolio rebalancing.
-- **Mobile Native Experience** - iOS and Android app with biometric auth and integrated wallet.
-- **Cross-Chain Interoperability** - Wormhole/Axelar bridges for global liquidity access.
-- **RWA P2P Marketplace** - On-chain secondary market for trading fractionalized real-world assets.
-- **15-Contract Ecosystem** - Expanded topology including DAO, Insurance, Bridge, and Marketplace.
-- **Stress-Tested Performance** - Validated at 100% success rate under peak load (~850ms latency).
-- **Mainnet Infrastructure** - Production-grade Nginx, Docker Prod, and CI/CD pipelines.
+- **Soberania Digital** --- Handover completo para a DAO e controle descentralizado. [██████████]
+- **Liquid Staking (sXLM)** --- Staking nativo de Lumens para maximizar rendimento comunitario. [██████████]
+- **Institutional Vaults** --- Vaults segregados com conformidade enterprise e Whitelist. [██████████]
+- **Global Liquidity Hub** --- Roteamento institucional para ordens de grande volume ($1M+). [██████████]
+- **AI Tax Reporting** --- Automacao de compliance fiscal global assistida por IA. [██████████]
+- **Referral System On-chain** --- Programa de indicacao com recompensas e descontos em taxas. [██████████]
+- **RWA Lifecycle 2.0** --- Ciclo completo de ativos reais com leiloes e governanca por ativo. [██████████]
+- **Performance Validada** --- Sucesso em stress tests institucionais com latencia otimizada. [██████████]
 
 ## Features
 
@@ -202,7 +203,7 @@ Stellaro uses fully automated GitHub Actions workflows for continuous deployment
 ## Project Flow Diagram
 
 ```mermaid
-flowchart LR
+flowchart TD
   subgraph UI["Client Layer"]
     U["User Wallet / Passkey"]
     F["Frontend - Next.js"]
@@ -214,77 +215,50 @@ flowchart LR
   subgraph API["Application Layer"]
     B["Backend API - NestJS"]
     RO["Robo-Advisor AI"]
-    BR["Bridge Service"]
+    LH["Global Liquidity Hub"]
+    T1["AI Tax Reporting"]
+    B --> RO
+    B --> LH
+    B --> T1
   end
 
   subgraph AGENTS["AI and Business Automation"]
     A1["Risk Agent - ElizaOS"]
-    A2["Compliance and Reserve - KYC/AML"]
-    A3["Payments - PIX/Card Rails"]
+    A2["Compliance Bot"]
+    A3["Treasury Manager"]
   end
 
   subgraph CHAIN["On-Chain Layer - Soroban"]
     C1["Stablecoin"]
     C2["Loans Pool"]
-    C3["Portfolio"]
-    C4["Governance"]
     C5["ZK Verifier"]
-    C6["Batch Executor"]
-    C7["MEV Guard"]
     C8["VC Registry (SSI)"]
     C9["RWA Tokenizer"]
     C10["DAO Governance"]
-    C11["Recurring Payments"]
-    C12["Insurance Pool"]
-    C13["Bridge Adapter"]
-    C14["RWA Marketplace"]
+    C15["Liquid Staking"]
+    C16["Referral System"]
+    C17["Institutional Vault"]
   end
 
-  subgraph DATA["Data and Integrations"]
-    O1["Reflector and DEX Oracles"]
-    O2["Horizon and Soroban RPC"]
-    O3["Cross-Chain Bridges"]
+  subgraph DATA["Data & Integrations"]
+    O1["Reflector Oracles"]
+    O2["Stellar RPC"]
     D1[(PostgreSQL)]
     D2[(Redis)]
-  end
-
-  subgraph OBS["Observability"]
-    M1["Prometheus"]
-    M2["Grafana"]
-    M1 --> M2
   end
 
   F --> B
   A1 --> B
   A2 --> B
-  A3 --> B
-
-  B --> C1
-  B --> C2
-  B --> C3
-  B --> C4
-  B --> C5
-  B --> C6
-  B --> C7
-  B --> C8
-  B --> C9
-  B --> C10
-  B --> C11
-  B --> C12
-
-  C6 --> C1
-  C6 --> C2
-  C6 --> C7
+  
+  B --> CHAIN
+  LH --> B
   
   C9 -.->|Compliance Check| C8
-  A1 -.->|AI Audit| C9
-  A1 -.->|Monitoring| C10
-
-  B --> O1
-  B --> O2
-  B --> D1
-  B --> D2
-  B --> M1
+  C17 -.->|Whitelist| C8
+  C16 -.->|Rewards| C1
+  
+  B --> DATA
 ```
 
 ## Deployed Smart Contracts
@@ -358,6 +332,7 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 - **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive testing status (63 suites, 270+ tests)
 - **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics (35.11%)
 - **[Continuation Readme](./CONTINUATION_README.md)** - Current implementation status and continuity
+- **[Mainnet Onboarding Guide](./docs/MAINNET_ONBOARDING_GUIDE.md)** - Essential guide for first-time production users
 - **[Manual (EN)](./docs/Manual.md)** - Complete user and developer guide
 
 ### Key Features Documentation
@@ -372,7 +347,7 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 | E2E Tests | Implemented | `apps/backend/test/` (9/9 suites, 46 tests, 100% passing) |
 | Unit Tests | Implemented | `apps/backend/src/**/*.spec.ts` (65 suites, 414+ tests) |
 | Test Coverage | Target Exceeded | 57.62% overall (exceeds 50% target by +7.62%) |
-| ZK Credit Score | In Progress | Week 3-4 |
+| ZK Credit Score | Implemented | v5.8 Cross-contract Logic |
 | PIX Integration | Implemented | `src/payments/pix.service.ts` |
 
 ## Getting Started

@@ -1,8 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import { Store, TrendingUp, ArrowDownCircle, ArrowUpCircle } from 'lucide-react-native';
+import { StellarWallet } from '../lib/stellar-wallet';
 
 export default function Marketplace() {
+  const [publicKey, setPublicKey] = React.useState<string>('');
+  
+  React.useEffect(() => {
+    StellarWallet.getPublicKey().then(setPublicKey);
+  }, []);
+
+  const handleTrade = async (asset: string, type: 'BUY' | 'SELL') => {
+    try {
+      console.log(`Iniciando ${type} de ${asset}...`);
+      // Simulação de trade via Soroban
+      alert(`Simulação: Ordem de ${type === 'BUY' ? 'Compra' : 'Venda'} de ${asset} assinada com sucesso!`);
+    } catch (e) {
+      alert('Erro ao processar trade');
+    }
+  };
+
   const assets = [
     { name: 'Apartamento Jardins SP', symbol: 'RWA-APT1', price: 'R$ 1.250,00', change: '+5.2%' },
     { name: 'Fazenda Soja MT', symbol: 'RWA-MT3', price: 'R$ 850,00', change: '+2.1%' },
@@ -16,14 +31,14 @@ export default function Marketplace() {
         <Text style={styles.subtitle}>Negocie frações de ativos reais</Text>
 
         <View style={styles.searchBar}>
-          <Text style={styles.searchText}>Buscar ativos...</Text>
+          <Text style={styles.searchText}>Wallet: {publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : 'Conectando...'}</Text>
         </View>
 
         <Text style={styles.sectionTitle}>Ativos em Destaque</Text>
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {assets.map((asset, index) => (
-            <TouchableOpacity key={index} style={styles.assetCard}>
+            <View key={index} style={styles.assetCard}>
               <View style={styles.assetHeader}>
                 <View style={styles.assetIcon}>
                   <Text style={styles.assetInitial}>{asset.symbol[4]}</Text>
@@ -40,16 +55,22 @@ export default function Marketplace() {
                 </View>
               </View>
               <View style={styles.actionButtons}>
-                <TouchableOpacity style={[styles.tradeBtn, { backgroundColor: '#10b981' }]}>
+                <TouchableOpacity 
+                  style={[styles.tradeBtn, { backgroundColor: '#10b981' }]}
+                  onPress={() => handleTrade(asset.symbol, 'BUY')}
+                >
                   <ArrowDownCircle size={16} color="#fff" />
                   <Text style={styles.tradeBtnText}>Comprar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.tradeBtn, { backgroundColor: '#334155' }]}>
+                <TouchableOpacity 
+                  style={[styles.tradeBtn, { backgroundColor: '#334155' }]}
+                  onPress={() => handleTrade(asset.symbol, 'SELL')}
+                >
                   <ArrowUpCircle size={16} color="#fff" />
                   <Text style={styles.tradeBtnText}>Vender</Text>
                 </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
           ))}
         </ScrollView>
       </View>

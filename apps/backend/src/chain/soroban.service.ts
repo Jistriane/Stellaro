@@ -17,9 +17,11 @@ export class SorobanService {
   private readonly logger = new Logger(SorobanService.name);
   private readonly client: AxiosInstance;
   private readonly rpcAvailable: boolean;
+  private readonly horizonUrl: string;
 
   constructor() {
     const baseURL = process.env.SOROBAN_RPC_URL;
+    this.horizonUrl = process.env.HORIZON_URL || 'https://horizon-testnet.stellar.org';
     if (!baseURL) {
       this.logger.warn('SOROBAN_RPC_URL not set; Soroban running in degraded mode');
       this.rpcAvailable = false;
@@ -374,5 +376,52 @@ export class SorobanService {
     ];
 
     return this.executeContractCall(contractId, 'deposit', args, userSecret);
+  }
+
+  /**
+   * DeFi: Encontra o melhor caminho de troca (Pathfinding) usando Horizon.
+   */
+  async findBestPath(fromAsset: string, toAsset: string, amount: string): Promise<any> {
+    try {
+      // Simplificado: Em um cenário real, converteríamos os nomes dos ativos para Asset objects
+      // Para fins de demonstração, buscamos caminhos estritos de envio
+      const url = `${this.horizonUrl}/paths/strict-send?source_asset_type=native&destination_asset_type=credit_alphanum4&destination_asset_code=${toAsset}&destination_asset_issuer=${process.env.MASTER_PUBLIC_KEY}&source_amount=${amount}`;
+      
+      const { data } = await axios.get(url);
+      if (data._embedded && data._embedded.records.length > 0) {
+        return data._embedded.records[0]; // Retorna o caminho com maior retorno
+      }
+      return null;
+    } catch (error) {
+      this.logger.error(`Pathfinding failed: ${error.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * DeFi: Executa um swap de tokens (usado pelo Robo-Advisor).
+   */
+  async executeSwap(userId: string, fromAsset: string, toAsset: string, amount: bigint): Promise<string> {
+    const contractId = process.env.BATCH_EXECUTOR_ID || process.env.MEV_GUARD_ID;
+    const adminSecret = process.env.MASTER_SECRET_KEY;
+    if (!contractId || !adminSecret) throw new Error('Swap infrastructure missing');
+
+    const amountStr = (Number(amount) / 10000000).toString();
+    const bestPath = await this.findBestPath(fromAsset, toAsset, amountStr);
+
+    this.logger.log(`Executing AI Swap with Pathfinding: ${fromAsset} -> ${toAsset} (Best Path: ${bestPath ? bestPath.path.map((p: any) => p.asset_code).join('->') : 'Direct'})`);
+
+    const args = [
+      StellarSdk.Address.fromString(userId).toScVal(),
+      StellarSdk.xdr.ScVal.scvSymbol(fromAsset),
+      StellarSdk.xdr.ScVal.scvSymbol(toAsset),
+      StellarSdk.nativeToScVal(amount, { type: 'i128' }),
+      // Passamos o path real como argumento se o contrato suportar
+      StellarSdk.xdr.ScVal.scvVec(
+        bestPath ? bestPath.path.map((p: any) => StellarSdk.xdr.ScVal.scvSymbol(p.asset_code || 'XLM')) : []
+      )
+    ];
+
+    return this.executeContractCall(contractId, 'execute_swap_with_path', args, adminSecret);
   }
 }

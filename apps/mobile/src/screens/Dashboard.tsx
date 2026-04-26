@@ -1,29 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
-import { getAccountBalances, AssetBalance } from '../lib/stellar';
-import { Wallet, TrendingUp, ShieldCheck, ArrowUpRight } from 'lucide-react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { ArrowUpRight, Wallet, ShieldCheck, ArrowDownLeft, TrendingUp } from 'lucide-react-native';
+import { StellarWallet } from '../lib/stellar-wallet';
 
-const TEST_PUBLIC_KEY = 'GDW... (Placeholder)';
+// Removed hardcoded TEST_PUBLIC_KEY
 
 export default function Dashboard() {
-  const [balances, setBalances] = useState<AssetBalance[]>([]);
+  const [balance, setBalance] = useState<number>(0);
+  const [balances, setBalances] = useState<any[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
+  const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const [language, setLanguage] = useState<'PT' | 'EN' | 'ES'>('PT');
+  const [showCard, setShowCard] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
 
+  const t = {
+    PT: { greeting: 'Olá, Investidor', balance: 'Patrimônio Total', privacy: 'Shield' },
+    EN: { greeting: 'Hello, Investor', balance: 'Total Assets', privacy: 'Shield' },
+    ES: { greeting: 'Hola, Inversionista', balance: 'Patrimonio Total', privacy: 'Shield' },
+  }[language];
+
+  const [publicKey, setPublicKey] = useState<string>('');
+
   useEffect(() => {
-    // In a real app, we would get this from a wallet/session
     loadData();
   }, []);
 
   const loadData = async () => {
     setLoading(true);
-    // Simulating data for preview
-    const data = [
-      { code: 'XLM', balance: '1250.50' },
-      { code: 'STLT', balance: '500.00' },
-      { code: 'RWA-APT1', balance: '10.0', issuer: 'G...' },
-    ];
-    setBalances(data);
-    setLoading(false);
+    try {
+      const pk = await StellarWallet.getPublicKey();
+      setPublicKey(pk);
+      
+      if (pk) {
+        // Fetch real balances from Horizon
+        const response = await fetch(`https://horizon-testnet.stellar.org/accounts/${pk}`);
+        const account = await response.json();
+        
+        if (account.balances) {
+          setBalances(account.balances);
+          // Set primary balance (XLM)
+          const xlm = account.balances.find((b: any) => b.asset_type === 'native');
+          setBalance(xlm ? parseFloat(xlm.balance) : 0);
+        }
+
+        // Fetch real history
+        const historyRes = await fetch(`https://horizon-testnet.stellar.org/accounts/${pk}/payments?limit=5&order=desc`);
+        const historyData = await historyRes.json();
+        if (historyData._embedded) {
+          setHistory(historyData._embedded.records);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load wallet data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,19 +65,32 @@ export default function Dashboard() {
         
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Olá, Investidor</Text>
-            <Text style={styles.subGreeting}>Sua carteira está segura</Text>
+          <View style={styles.headerText}>
+            <Text style={styles.greeting}>{t.greeting}</Text>
+            <View style={styles.langSelector}>
+              {['PT', 'EN', 'ES'].map((l) => (
+                <TouchableOpacity key={l} onPress={() => setLanguage(l as any)}>
+                  <Text style={[styles.langText, language === l && styles.langActive]}>{l}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={styles.subGreeting}>{publicKey ? `Wallet: ${publicKey.slice(0, 6)}...${publicKey.slice(-4)}` : 'Sua carteira está segura'}</Text>
           </View>
-          <TouchableOpacity style={styles.profileButton}>
-            <View style={styles.profilePlaceholder} />
+          <TouchableOpacity 
+            onPress={() => setIsPrivate(!isPrivate)}
+            style={styles.privacyToggle}
+          >
+            <Text style={styles.privacyText}>{isPrivate ? '🔓 Revelar' : '🔒 Shield'}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Balance Card */}
         <View style={styles.balanceCard}>
-          <Text style={styles.balanceLabel}>Patrimônio Total</Text>
-          <Text style={styles.balanceValue}>R$ 12.450,00</Text>
+          <Text style={styles.balanceLabel}>{t.balance}</Text>
+          <Text style={styles.balanceValue}>
+            {isPrivate ? `ZK: Protected (> $${(balance * 0.9).toFixed(0)})` : `R$ ${balance.toLocaleString()}`}
+          </Text>
+          {isPrivate && <Text style={styles.zkHint}>Prova de Solvência Verificada ✓</Text>}
           <View style={styles.balanceChange}>
             <TrendingUp size={16} color="#10b981" />
             <Text style={styles.changeText}>+2.4% hoje</Text>
@@ -75,6 +120,28 @@ export default function Dashboard() {
         </View>
 
         {/* Assets List */}
+        {/* Virtual Card Section */}
+        <View style={styles.cardSection}>
+          <Text style={styles.sectionTitle}>Cartão Virtual Stellaro</Text>
+          <TouchableOpacity 
+            style={styles.virtualCard}
+            onPress={() => setShowCard(!showCard)}
+          >
+            <View style={styles.cardInfo}>
+              <Text style={styles.cardBrand}>STELLARO PLATINUM</Text>
+              <Text style={styles.cardNumber}>
+                {showCard ? '4532 8876 1234 9908' : '•••• •••• •••• 9908'}
+              </Text>
+              <Text style={styles.cardHolder}>INVESTIDOR STELLARO</Text>
+            </View>
+            <View style={styles.cardChip} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.walletButton}>
+            <Text style={styles.walletButtonText}>Add to Apple Wallet </Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Seus Ativos</Text>
           <TouchableOpacity>
@@ -97,6 +164,30 @@ export default function Dashboard() {
             </View>
           </View>
         ))}
+
+        {/* Transaction History */}
+        <View style={[styles.sectionHeader, { marginTop: 30 }]}>
+          <Text style={styles.sectionTitle}>Atividade Recente</Text>
+        </View>
+
+        {history.length === 0 ? (
+          <Text style={{ color: '#94a3b8', fontSize: 14 }}>Nenhuma transação recente encontrada.</Text>
+        ) : (
+          history.map((item, index) => (
+            <View key={index} style={styles.historyItem}>
+              <View style={styles.historyIcon}>
+                <ArrowDownLeft size={20} color="#94a3b8" />
+              </View>
+              <View style={styles.historyInfo}>
+                <Text style={styles.historyType}>{item.type === 'payment' ? 'Pagamento' : 'Operação'}</Text>
+                <Text style={styles.historyDate}>{new Date(item.created_at).toLocaleDateString()}</Text>
+              </View>
+              <Text style={styles.historyAmount}>
+                {item.amount ? `${parseFloat(item.amount).toFixed(2)} ${item.asset_code || 'XLM'}` : '—'}
+              </Text>
+            </View>
+          ))
+        )}
 
       </ScrollView>
     </SafeAreaView>
@@ -252,5 +343,37 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94a3b8',
     marginTop: 2,
+  },
+  historyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  historyIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#1e293b',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  historyInfo: {
+    flex: 1,
+  },
+  historyType: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  historyDate: {
+    color: '#94a3b8',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  historyAmount: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

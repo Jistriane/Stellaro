@@ -100,3 +100,38 @@ export async function getWalletBalances(pubkey?: string) {
     return { publicKey: pubkey, xlm: "0", stlt: "0" };
   }
 }
+
+/**
+ * Cria uma nova proposta na DAO.
+ */
+export async function createProposal(
+  title: string,
+  action: string,
+  target: string,
+  description: string
+) {
+  const ids = getContractIds();
+  if (!ids.GOVERNANCE_CONTRACT_ID) throw new Error("Governance contract not configured");
+
+  console.log("Creating proposal:", { title, action, target, description });
+  
+  // In a real implementation, this would use Freighter/Albedo to sign
+  // for now we simulate the intent
+  return { success: true, txHash: "simulated_hash_" + Date.now() };
+}
+
+/**
+ * Enfileira uma proposta aprovada para execução (Timelock).
+ */
+export async function queueProposal(proposalId: string) {
+  console.log("Queuing proposal for execution:", proposalId);
+  return { success: true, txHash: "simulated_queue_" + Date.now() };
+}
+
+/**
+ * Executa uma proposta que já passou pelo período de Timelock.
+ */
+export async function executeProposal(proposalId: string) {
+  console.log("Executing proposal:", proposalId);
+  return { success: true, txHash: "simulated_execute_" + Date.now() };
+}

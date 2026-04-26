@@ -1,8 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Landmark, Info, ArrowRight } from 'lucide-react-native';
+import { StellarWallet } from '../lib/stellar-wallet';
 
 export default function Lending() {
+  const [publicKey, setPublicKey] = React.useState<string>('');
+  
+  React.useEffect(() => {
+    StellarWallet.getPublicKey().then(setPublicKey);
+  }, []);
+
+  const handleDeposit = async (poolName: string) => {
+    try {
+      console.log(`Iniciando depósito em ${poolName}...`);
+      // Em produção, aqui chamaríamos o backend para obter o XDR da transação de depósito
+      // const xdr = await api.getDepositXdr(publicKey, poolName, amount);
+      // const signedXdr = await StellarWallet.signTransaction(xdr);
+      // await api.submitTransaction(signedXdr);
+      alert(`Simulação: Depósito em ${poolName} assinado com sucesso pela carteira ${publicKey.slice(0, 8)}!`);
+    } catch (e) {
+      alert('Erro ao realizar depósito');
+    }
+  };
+
   const pools = [
     { name: 'STLT Stable Pool', apy: '12.5%', liquidity: '$4.2M' },
     { name: 'XLM Yield Pool', apy: '8.2%', liquidity: '$1.8M' },
@@ -16,12 +34,14 @@ export default function Lending() {
         <Text style={styles.subtitle}>Deposite e ganhe rendimentos on-chain</Text>
 
         <View style={styles.totalDeposited}>
-          <Text style={styles.label}>Seu Saldo em Pools</Text>
+          <Text style={styles.label}>Sua Carteira Ativa</Text>
+          <Text style={styles.walletAddr}>{publicKey ? `${publicKey.slice(0, 12)}...${publicKey.slice(-12)}` : 'Carregando...'}</Text>
+          <Text style={[styles.label, { marginTop: 15 }]}>Seu Saldo em Pools</Text>
           <Text style={styles.value}>R$ 5.230,00</Text>
         </View>
 
         {pools.map((pool, index) => (
-          <TouchableOpacity key={index} style={styles.poolCard}>
+          <View key={index} style={styles.poolCard}>
             <View style={styles.poolHeader}>
               <View style={styles.iconContainer}>
                 <Landmark size={24} color="#10b981" />
@@ -36,7 +56,10 @@ export default function Lending() {
               </View>
             </View>
             <View style={styles.footer}>
-              <TouchableOpacity style={styles.actionButton}>
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => handleDeposit(pool.name)}
+              >
                 <Text style={styles.buttonText}>Depositar</Text>
                 <ArrowRight size={16} color="#fff" />
               </TouchableOpacity>
@@ -44,7 +67,7 @@ export default function Lending() {
                 <Info size={16} color="#94a3b8" />
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
     </SafeAreaView>
@@ -59,6 +82,7 @@ const styles = StyleSheet.create({
   totalDeposited: { backgroundColor: '#1e293b', padding: 20, borderRadius: 16, marginBottom: 30 },
   label: { color: '#94a3b8', fontSize: 12 },
   value: { color: '#fff', fontSize: 28, fontWeight: 'bold', marginTop: 4 },
+  walletAddr: { color: '#3b82f6', fontSize: 12, marginTop: 4, fontFamily: 'monospace' },
   poolCard: { backgroundColor: '#1e293b', padding: 20, borderRadius: 20, marginBottom: 16 },
   poolHeader: { flexDirection: 'row', alignItems: 'center' },
   iconContainer: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#334155', justifyContent: 'center', alignItems: 'center' },

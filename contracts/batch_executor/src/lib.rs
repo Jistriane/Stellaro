@@ -255,6 +255,37 @@ impl BatchExecutor {
         Ok((return_value, gas_used))
     }
 
+    /// DeFi: Executa um swap de tokens com um caminho específico (usado pelo Robo-Advisor)
+    pub fn execute_swap_with_path(
+        env: Env,
+        user: Address,
+        from_asset: Symbol,
+        to_asset: Symbol,
+        amount: i128,
+        path: Vec<Symbol>,
+    ) -> Result<i128, Error> {
+        user.require_auth();
+        
+        if amount <= 0 {
+            return Err(Error::AmountMustBePositive);
+        }
+
+        // Simulação de execução com path
+        // Em produção, iteraríamos sobre o path chamando os roteadores da DEX
+        let mut current_amount = amount;
+        for _ in path.iter() {
+            // Cada hop na DEX cobra uma taxa (ex: 0.3%)
+            current_amount = current_amount.saturating_mul(997) / 1000;
+        }
+
+        // Se o path for vazio, assume swap direto (1 hop)
+        if path.is_empty() {
+            current_amount = current_amount.saturating_mul(997) / 1000;
+        }
+
+        Ok(current_amount)
+    }
+
     fn amount_to_u128(amount: i128) -> Result<u128, Error> {
         if amount <= 0 {
             return Err(Error::AmountMustBePositive);

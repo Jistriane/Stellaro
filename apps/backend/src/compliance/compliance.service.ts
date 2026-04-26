@@ -11,7 +11,10 @@ export interface KycResult {
 export class ComplianceService {
   private readonly logger = new Logger(ComplianceService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sorobanService: any // Injected in actual app
+  ) {}
 
   kycCheck(document: string, name: string): Promise<KycResult> {
     this.logger.log(`Starting KYC check for: ${name}`);
@@ -46,6 +49,38 @@ export class ComplianceService {
     }
 
     return Promise.resolve({ ok: true, level: 'basic' });
+  }
+
+  /**
+   * Emite uma credencial on-chain após aprovação de KYC
+   */
+  async issueOnChainVC(userId: string, userAddress: string) {
+    this.logger.log(`Issuing On-Chain VC for user ${userId} at ${userAddress}`);
+    
+    try {
+      // In production, we'd use the master secret key to sign the VC issuance
+      const adminSecret = process.env.MASTER_SECRET_KEY;
+      const registryContractId = process.env.VC_REGISTRY_CONTRACT_ID;
+
+      if (!registryContractId) {
+        throw new Error('VC Registry contract ID not configured');
+      }
+
+      // Call VcRegistry.issue_vc(user_address, vc_type_hash)
+      // The vc_type_hash could be a hash of 'KYC-PASSPORT'
+      await this.sorobanService.executeContractCall(
+        registryContractId,
+        'issue_vc',
+        [userAddress, 'KYC-PASSPORT'],
+        adminSecret
+      );
+
+      this.logger.log(`Successfully issued VC for ${userAddress}`);
+      return { success: true };
+    } catch (e) {
+      this.logger.error(`Failed to issue on-chain VC: ${e.message}`);
+      return { success: false, error: e.message };
+    }
   }
 
   async amlScreening(

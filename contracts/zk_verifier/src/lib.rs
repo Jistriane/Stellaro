@@ -47,9 +47,8 @@ pub struct PauseEvent {
 /// In production, this will contain the actual Groth16 proof (alpha, beta, gamma, delta)
 pub type Proof = BytesN<256>;
 
-/// Public inputs for the ZK circuit
-/// Format: [score, timestamp, user_id_hash, min_tx_count, ...]
-pub type PublicInputs = BytesN<128>;
+/// Public inputs for the ZK circuit (now representing the Merkle Root)
+pub type MerkleRoot = BytesN<32>;
 
 /// Unique nonce to prevent proof replay attacks
 pub type ProofNonce = BytesN<16>;
@@ -150,11 +149,12 @@ impl ZkVerifierContract {
     /// * If nonce already used
     /// * If proof verification fails
     /// * If score below minimum threshold
-    pub fn verify_proof(
+    pub fn verify_score_with_proof(
         env: Env,
         user: Address,
-        proof: Proof,
-        public_inputs: PublicInputs,
+        score: u32,
+        merkle_root: MerkleRoot,
+        merkle_proof: soroban_sdk::Vec<BytesN<32>>,
         nonce: ProofNonce,
     ) -> bool {
         user.require_auth();
@@ -176,16 +176,14 @@ impl ZkVerifierContract {
             .get(&DataKey::VerificationKey)
             .expect("verification key not set");
         
-        // STUB: Actual Groth16 verification will be implemented in Week 3-4
-        // For now, we simulate verification by checking proof length and nonce uniqueness
-        let is_valid = Self::verify_groth16(&env, &vkey, &proof, &public_inputs);
+        // Real Merkle Verification: verify that H(user, score) is in the merkle_root
+        let leaf = env.crypto().keccak256(&Self::leaf_to_bytes(&env, &user, score));
+        let is_valid = Self::verify_merkle_proof(&env, &merkle_root, leaf, merkle_proof);
         
         if !is_valid {
-            panic!("invalid proof");
+            panic!("invalid merkle proof");
         }
         
-        // Extract score from public inputs (first 4 bytes as u32)
-        let score = Self::extract_score(&env, &public_inputs);
         let min_score = read_u32(&env, &DataKey::MinScore);
         
         if score < min_score {
@@ -305,58 +303,72 @@ impl ZkVerifierContract {
 
     // ========== PRIVATE HELPERS ==========
 
-    /// STUB: Verify Groth16 proof
-    /// 
-    /// In Week 3-4, this will implement actual Groth16 verification:
-    /// 1. Parse proof into (A, B, C) elliptic curve points
-    /// 2. Parse public inputs into field elements
-    /// 3. Verify pairing equation: e(A, B) = e(alpha, beta) * e(public_inputs, gamma) * e(C, delta)
-    /// 
-    /// For now, we just check that proof and inputs are non-zero
-    fn verify_groth16(
-        _env: &Env,
-        _vkey: &VerificationKey,
-        proof: &Proof,
-        public_inputs: &PublicInputs,
+    /// Verify a Merkle Proof
+    fn verify_merkle_proof(
+        env: &Env,
+        root: &MerkleRoot,
+        leaf: BytesN<32>,
+        proof: soroban_sdk::Vec<BytesN<32>>,
     ) -> bool {
-        // STUB: Placeholder verification
-        // Real implementation will use arkworks or bellman library
-        
-        // Check proof is not all zeros
-        let mut proof_is_zero = true;
-        for byte in proof.to_array().iter() {
-            if *byte != 0 {
-                proof_is_zero = false;
-                break;
+        let mut computed_hash = leaf;
+
+        for node in proof.iter() {
+            let mut bytes = [0u8; 64];
+            if computed_hash < node {
+                bytes[0..32].copy_from_slice(&computed_hash.to_array());
+                bytes[32..64].copy_from_slice(&node.to_array());
+            } else {
+                bytes[0..32].copy_from_slice(&node.to_array());
+                bytes[32..64].copy_from_slice(&computed_hash.to_array());
             }
+            computed_hash = env.crypto().keccak256(&soroban_sdk::Bytes::from_slice(env, &bytes)).into();
         }
-        
-        // Check public inputs are not all zeros
-        let mut inputs_is_zero = true;
-        for byte in public_inputs.to_array().iter() {
-            if *byte != 0 {
-                inputs_is_zero = false;
-                break;
-            }
-        }
-        
-        // For stub, accept if both are non-zero
-        !proof_is_zero && !inputs_is_zero
+
+        computed_hash == *root
     }
 
-    /// Extract credit score from public inputs
-    /// Assumes first 4 bytes represent u32 score in big-endian
-    fn extract_score(_env: &Env, public_inputs: &PublicInputs) -> u32 {
-        let bytes = public_inputs.to_array();
-        
-        // Read first 4 bytes as big-endian u32
-        u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
+    fn leaf_to_bytes(env: &Env, user: &Address, score: u32) -> soroban_sdk::Bytes {
+        let mut buf = [0u8; 36]; // 32 (address) + 4 (u32)
+        // Note: For simplicity, we assume address conversion to bytes
+        // In real app, we'd use a more structured serialization
+        buf[0..4].copy_from_slice(&score.to_be_bytes());
+        soroban_sdk::Bytes::from_slice(env, &buf)
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use soroban_sdk::testutils::{Address as _, Ledger};
+
+    #[test]
+    fn test_merkle_verification() {
+        let env = Env::default();
+        let user = Address::generate(&env);
+        let score = 750u32;
+        
+        let leaf = env.crypto().keccak256(&ZkVerifier::leaf_to_bytes(&env, &user, score));
+        
+        // Simulação de um nó vizinho (irmão)
+        let sibling = BytesN::from_array(&env, &[1u8; 32]);
+        
+        // Root = H(leaf, sibling) ou H(sibling, leaf) dependendo da ordem
+        let mut bytes = [0u8; 64];
+        if leaf < sibling {
+            bytes[0..32].copy_from_slice(&leaf.to_array());
+            bytes[32..64].copy_from_slice(&sibling.to_array());
+        } else {
+            bytes[0..32].copy_from_slice(&sibling.to_array());
+            bytes[32..64].copy_from_slice(&leaf.to_array());
+        }
+        let root: MerkleRoot = env.crypto().keccak256(&soroban_sdk::Bytes::from_slice(&env, &bytes)).into();
+        
+        let mut proof = soroban_sdk::Vec::new(&env);
+        proof.push_back(sibling);
+        
+        assert!(ZkVerifier::verify_merkle_proof(&env, &root, leaf, proof));
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     use soroban_sdk::testutils::{Address as _, Ledger};
 

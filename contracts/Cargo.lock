@@ -197,6 +197,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "bridge_adapter"
+version = "0.1.0"
+dependencies = [
+ "soroban-sdk",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -781,6 +788,7 @@ name = "loans_pool"
 version = "0.1.0"
 dependencies = [
  "soroban-sdk",
+ "zk_verifier",
 ]
 
 [[package]]
@@ -1039,6 +1047,13 @@ name = "rustversion"
 version = "1.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
+
+[[package]]
+name = "rwa_marketplace"
+version = "0.1.0"
+dependencies = [
+ "soroban-sdk",
+]
 
 [[package]]
 name = "rwa_tokenizer"
