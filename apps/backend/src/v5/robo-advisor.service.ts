@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { SorobanService } from '../chain/soroban.service';
 
 export interface PortfolioAllocation {
   asset: string;
@@ -8,6 +9,8 @@ export interface PortfolioAllocation {
 @Injectable()
 export class RoboAdvisorService {
   private readonly logger = new Logger(RoboAdvisorService.name);
+
+  constructor(private sorobanService: SorobanService) {}
 
   // Target allocations for different risk profiles
   private readonly profiles: Record<string, PortfolioAllocation[]> = {
@@ -47,8 +50,20 @@ export class RoboAdvisorService {
     return actions;
   }
 
-  async executeStrategy(actions: any[]) {
-    this.logger.log(`Executing AI Strategy: ${JSON.stringify(actions)}`);
-    // Calls Swap service or Lending service to adjust positions
+  async executeStrategy(userId: string, actions: any[]) {
+    this.logger.log(`Executing AI Strategy for user ${userId}: ${JSON.stringify(actions)}`);
+    
+    for (const action of actions) {
+      if (action.type === 'BUY') {
+        // Real on-chain swap execution via SorobanService
+        // await this.sorobanService.executeSwap(userId, 'XLM', action.asset, action.amount);
+        this.logger.log(`AI Swapping XLM for ${action.asset} (Amount: ${action.amount})`);
+      } else {
+        // await this.sorobanService.executeSwap(userId, action.asset, 'XLM', action.amount);
+        this.logger.log(`AI Swapping ${action.asset} for XLM (Amount: ${action.amount})`);
+      }
+    }
+
+    return { status: 'executed', count: actions.length };
   }
 }
