@@ -7,11 +7,12 @@ This document provides a comprehensive guide to the Stellaro monorepo, covering 
 Stellaro is a Turborepo monorepo designed for financial services, integrating traditional and blockchain technologies.
 
 - **`apps/frontend`**: A Next.js 15 application using the App Router, i18n (PT-BR default, EN), shadcn/ui, Zustand, and React Query.
+- **`apps/mobile`**: A React Native (Expo) application for iOS/Android, featuring biometric auth and integrated Stellar wallet.
 - **`apps/backend`**: A NestJS (Node 20) application with Prisma (Postgres), Redis/BullMQ for caching and queues, OpenAPI for API documentation, and OpenTelemetry/Sentry for observability.
-- **`contracts/`**: A Rust workspace for Soroban smart contracts, including `stablecoin`, `risklock`, `loans_pool`, `portfolio`, and `governance`.
+- **`contracts/`**: A Rust workspace for Soroban smart contracts (15+ contracts in v5.6).
 - **`packages/ui`**: Shared React components for a consistent UI (`Stellaro` theme).
 - **`packages/config`**: Shared configurations for ESLint, TypeScript, and Prettier.
-- **`infra/`**: Infrastructure as Code, including Docker Compose for local development, deployment scripts, and CI/CD manifests.
+- **`infra/`**: Infrastructure as Code, including Docker Compose for local development, deployment scripts, and CI/CD manifests (including Mainnet config in `infra/mainnet`).
 
 ### Environments and DNS
 
@@ -271,3 +272,40 @@ curl "http://localhost:3001/oracles/price?asset=USDC&issuer=GD..."
 curl "http://localhost:3001/defi/blend/positions/GD..."
 curl "http://localhost:3001/memory/history/GD...?cursor=now"
 ```
+
+## 7. Mobile App Development
+
+The Stellaro mobile app is built with **React Native (Expo)** and is located in `apps/mobile`.
+
+### 7.1. Setup
+```bash
+cd apps/mobile
+npm install
+npx expo start
+```
+
+### 7.2. Key Features
+- **Stellar Wallet**: Integrated `stellar-sdk` for account management.
+- **Biometric Auth**: Native support for FaceID/TouchID via WebAuthn/Passkey integration.
+- **Modern UI**: Dark-themed premium dashboard for RWA and DeFi tracking.
+
+## 8. Mainnet Deployment (Production)
+
+Stellaro is prepared for Mainnet deployment using the configurations in `infra/mainnet/`.
+
+### 8.1. Prerequisites
+- Real Stellar accounts (Admin, Issuer, Bridge, etc.).
+- External Managed Database (PostgreSQL) and Redis.
+- SSL Certificates (Let's Encrypt / AWS ACM).
+
+### 8.2. Deployment
+1. Update `apps/backend/.env.mainnet` with real Contract IDs and Secrets.
+2. Deploy the infrastructure:
+   ```bash
+   cd infra/mainnet
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+3. Monitor performance using the `tools/stress_test_production.ts` script.
+
+---
+*Manual updated for v5.6 — Mainnet Ready (April 2026).*

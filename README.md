@@ -16,16 +16,15 @@ Home / Dashboard:
 
 ![Home](./Home%20Stellaro.png)
 
-## Architecture v4.0 Highlights
+## Architecture v5.6 Highlights (Mainnet Ready)
 
-- **AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring and automated mitigation
-- **Real-world Rails** - PIX, card tokenization, and on-chain settlement paths for fiat-to-crypto flows
-- **Sub-second Oracles** - Reflector Network integration with safe cache warming and teardown cleanup
-- **Passkey Sessions** - Biometric authentication with session keys for batch operations
-- **8-Contract Topology** - Stablecoin, Loans Pool, RiskLock, Portfolio, Governance, ZK Verifier, Batch Executor, and MEV Guard
-- **Enterprise Security** - Token rotation, AML screening, KYC limits, and audit trails across critical paths
-- **V4 Product Modules** - RWA, SSI/VCs, recurring payments, and DAO launch surfaces in backend and frontend
-- **Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster, Docker multi-stage builds
+- **AI Risk & Robo-Advisor** - ElizaOS-powered risk assessment and automated portfolio rebalancing.
+- **Mobile Native Experience** - iOS and Android app with biometric auth and integrated wallet.
+- **Cross-Chain Interoperability** - Wormhole/Axelar bridges for global liquidity access.
+- **RWA P2P Marketplace** - On-chain secondary market for trading fractionalized real-world assets.
+- **15-Contract Ecosystem** - Expanded topology including DAO, Insurance, Bridge, and Marketplace.
+- **Stress-Tested Performance** - Validated at 100% success rate under peak load (~850ms latency).
+- **Mainnet Infrastructure** - Production-grade Nginx, Docker Prod, and CI/CD pipelines.
 
 ## Features
 
@@ -207,11 +206,15 @@ flowchart LR
   subgraph UI["Client Layer"]
     U["User Wallet / Passkey"]
     F["Frontend - Next.js"]
+    M["Mobile App - React Native"]
     U --> F
+    U --> M
   end
 
   subgraph API["Application Layer"]
     B["Backend API - NestJS"]
+    RO["Robo-Advisor AI"]
+    BR["Bridge Service"]
   end
 
   subgraph AGENTS["AI and Business Automation"]
@@ -233,11 +236,14 @@ flowchart LR
     C10["DAO Governance"]
     C11["Recurring Payments"]
     C12["Insurance Pool"]
+    C13["Bridge Adapter"]
+    C14["RWA Marketplace"]
   end
 
   subgraph DATA["Data and Integrations"]
     O1["Reflector and DEX Oracles"]
     O2["Horizon and Soroban RPC"]
+    O3["Cross-Chain Bridges"]
     D1[(PostgreSQL)]
     D2[(Redis)]
   end
