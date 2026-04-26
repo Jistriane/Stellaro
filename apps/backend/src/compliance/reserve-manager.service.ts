@@ -54,13 +54,14 @@ export class ReserveManagerService implements OnModuleInit {
     private notificationService: NotificationService,
   ) {
     const horizonUrl =
-      this.configService.get('STELLAR_HORIZON') ||
+      this.configService.get<string>('STELLAR_HORIZON') ||
       'https://horizon-testnet.stellar.org';
     this.server = new StellarSdk.Horizon.Server(horizonUrl);
 
     this.reserveAccount =
-      this.configService.get('RESERVE_ACCOUNT') ||
-      'GB...'; // TODO: Configurar
+      this.configService.get<string>('RESERVE_ACCOUNT') ||
+      this.configService.get<string>('RESERVE_WALLET_PUBLIC') ||
+      'GB...';
   }
 
   async onModuleInit() {
@@ -404,9 +405,15 @@ export class ReserveManagerService implements OnModuleInit {
         sourceKeypair.publicKey(),
       );
 
+      const network = this.configService.get<string>('STELLAR_NETWORK', 'testnet');
+      const networkPassphrase =
+        network === 'testnet'
+          ? StellarSdk.Networks.TESTNET
+          : StellarSdk.Networks.PUBLIC;
+
       const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
         fee: StellarSdk.BASE_FEE,
-        networkPassphrase: StellarSdk.Networks.TESTNET, // TODO: Configurar
+        networkPassphrase,
       })
         .addOperation(
           StellarSdk.Operation.manageData({

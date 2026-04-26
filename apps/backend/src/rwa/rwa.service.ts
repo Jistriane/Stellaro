@@ -1,0 +1,195 @@
+import { Injectable, Optional } from '@nestjs/common';
+import { Prisma, RwaAsset } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+
+type RwaListQuery = {
+  page?: string | number;
+  pageSize?: string | number;
+  status?: string;
+  assetClass?: string;
+  search?: string;
+};
+
+type RwaAssetView = {
+  id: string;
+  name: string;
+  assetClass: string;
+  status: string;
+  whitelistRequired: boolean;
+  annualYieldBps: number;
+};
+
+type RwaListResult = {
+  items: RwaAssetView[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+@Injectable()
+export class RwaService {
+  constructor(@Optional() private readonly prisma?: PrismaService) {}
+
+  private items = [
+    {
+      id: 'rwa-001',
+      name: 'Stellaro Real Estate Note',
+      assetClass: 'real-estate',
+      status: 'scaffold',
+      whitelistRequired: true,
+      annualYieldBps: 820,
+    },
+    {
+      id: 'rwa-002',
+      name: 'Receivables Basket',
+      assetClass: 'receivables',
+      status: 'scaffold',
+      whitelistRequired: true,
+      annualYieldBps: 940,
+    },
+  ];
+
+  private parsePagination(query: RwaListQuery) {
+    const page = Math.max(1, Number(query.page ?? 1) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize ?? 20) || 20));
+    return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };
+  }
+
+  private toView(asset: RwaAsset): RwaAssetView {
+    return {
+      id: asset.publicId,
+      name: asset.name,
+      assetClass: asset.assetClass,
+      status: asset.status,
+      whitelistRequired: asset.whitelistRequired,
+      annualYieldBps: asset.annualYieldBps,
+    };
+  }
+
+  private async ensureSeeded() {
+    if (!this.prisma) {
+      return;
+    }
+
+    const total = await this.prisma.rwaAsset.count();
+    if (total > 0) {
+      return;
+    }
+
+    await this.prisma.rwaAsset.createMany({
+      data: this.items.map((item) => ({
+        publicId: item.id,
+        name: item.name,
+        assetClass: item.assetClass,
+        status: item.status,
+        whitelistRequired: item.whitelistRequired,
+        annualYieldBps: item.annualYieldBps,
+      })),
+    });
+  }
+
+  async createAsset(input: { name: string; assetClass: string; annualYieldBps: number }) {
+    if (this.prisma) {
+      try {
+        await this.ensureSeeded();
+        const total = await this.prisma.rwaAsset.count();
+        const created = await this.prisma.rwaAsset.create({
+          data: {
+            publicId: `rwa-${String(total + 1).padStart(3, '0')}`,
+            name: input.name,
+            assetClass: input.assetClass,
+            status: 'draft',
+            whitelistRequired: true,
+            annualYieldBps: input.annualYieldBps,
+          },
+        });
+        return this.toView(created);
+      } catch {
+        // Continue to in-memory fallback when DB is unavailable.
+      }
+    }
+
+    const asset: RwaAssetView = {
+      id: `rwa-${String(this.items.length + 1).padStart(3, '0')}`,
+      name: input.name,
+      assetClass: input.assetClass,
+      status: 'draft',
+      whitelistRequired: true,
+      annualYieldBps: input.annualYieldBps,
+    };
+
+    this.items = [...this.items, asset];
+    return asset;
+  }
+
+  async listAssets(query: RwaListQuery = {}): Promise<RwaListResult> {
+    const { page, pageSize, skip, take } = this.parsePagination(query);
+
+    if (this.prisma) {
+      try {
+        await this.ensureSeeded();
+        const where: Prisma.RwaAssetWhereInput = {
+          ...(query.status ? { status: query.status } : {}),
+          ...(query.assetClass ? { assetClass: query.assetClass } : {}),
+          ...(query.search
+            ? {
+                OR: [
+                  { name: { contains: query.search, mode: 'insensitive' } },
+                  { publicId: { contains: query.search, mode: 'insensitive' } },
+                ],
+              }
+            : {}),
+        };
+
+        const [total, rows] = await Promise.all([
+          this.prisma.rwaAsset.count({ where }),
+          this.prisma.rwaAsset.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+            skip,
+            take,
+          }),
+        ]);
+
+        return { items: rows.map((row) => this.toView(row)), total, page, pageSize };
+      } catch {
+        // Continue to in-memory fallback when DB is unavailable.
+      }
+    }
+
+    const search = query.search?.toLowerCase().trim();
+    const filtered = this.items.filter((item) => {
+      if (query.status && item.status !== query.status) return false;
+      if (query.assetClass && item.assetClass !== query.assetClass) return false;
+      if (search) {
+        const haystack = `${item.id} ${item.name}`.toLowerCase();
+        if (!haystack.includes(search)) return false;
+      }
+      return true;
+    });
+
+    const total = filtered.length;
+    const items = filtered.slice(skip, skip + take);
+
+    return { items, total, page, pageSize };
+  }
+
+  async getOverview(query: RwaListQuery = {}) {
+    const paged = await this.listAssets(query);
+
+    return {
+      module: 'rwa',
+      status: 'frontend-and-api-scaffold',
+      readiness: 0.35,
+      items: paged.items,
+      total: paged.total,
+      page: paged.page,
+      pageSize: paged.pageSize,
+      nextSteps: [
+        'Connecta com RWA Tokenizer contract',
+        'Persist metadata e documentos legais',
+        'Adicionar whitelist e auditoria',
+      ],
+    };
+  }
+}

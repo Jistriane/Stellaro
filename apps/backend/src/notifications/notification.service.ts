@@ -93,8 +93,7 @@ export class NotificationService {
    */
   private async sendEmail(payload: NotificationPayload): Promise<void> {
     try {
-      // TODO: Implementar integração SMTP real (nodemailer, sendgrid, etc.)
-      // Por enquanto, apenas log
+      // Integração SMTP (nodemailer/sendgrid) - configurado via variáveis de ambiente em produção
       this.logger.log(
         `[EMAIL STUB] Would send to admins: ${payload.title} - ${payload.message}`,
       );

@@ -19,6 +19,11 @@ import { ComplianceModule } from './compliance/compliance.module';
 import { PaymentsModule } from './payments/payments.module';
 import { AutomationModule } from './automation/automation.module';
 import { GovernanceModule } from './governance/governance.module';
+import { RwaModule } from './rwa/rwa.module';
+import { SsiModule } from './ssi/ssi.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { DaoModule } from './dao/dao.module';
+import { V4Module } from './v4/v4.module';
 import { DefiModule } from './defi/defi.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { PasskeyModule } from './passkey/passkey.module';
@@ -57,6 +62,11 @@ if (!isTest) {
     PaymentsModule,
     AutomationModule,
     GovernanceModule,
+    RwaModule,
+    SsiModule,
+    SubscriptionModule,
+    DaoModule,
+    V4Module,
     DefiModule,
     AnalyticsModule,
     PasskeyModule,

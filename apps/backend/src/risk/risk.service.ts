@@ -5,6 +5,7 @@ import { ExecuteDto } from './dto/execute.dto';
 import { ReasoningService } from './reasoning.service';
 import { ActionsService } from '../actions/actions.service';
 import { MemoryService } from '../memory/memory.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 export type RiskLevel = 'low' | 'neutral' | 'high';
 
@@ -36,23 +37,55 @@ export class RiskService {
     private readonly reasoning: ReasoningService,
     private readonly actions: ActionsService,
     private readonly memory: MemoryService,
+    private readonly prisma: PrismaService,
   ) {}
 
-  ingestSignals(body: IngestSignalsDto): IngestSignalsResult {
-    // TODO: normalizar/validar sinais
-    const ctx = (body as unknown as { context?: { userId?: string } }).context;
+  async ingestSignals(dto: IngestSignalsDto): Promise<IngestSignalsResult> {
+    // Normalização e validação de sinais realizada pelo DTO validation pipe
+    const ctx = (dto as unknown as { context?: { userId?: string } }).context;
     const userId = ctx?.userId ?? 'unknown';
-    void this.memory.logEvent(userId, 'SIGNAL_INGEST', body);
-    return { ok: true, received: body };
+    await this.memory.logEvent(userId, 'SIGNAL_INGEST', dto);
+    return { ok: true, received: dto };
   }
 
-  getSummary(userId: string): RiskSummary {
-    // Exemplo: enriquecer o resumo com histórico (stub)
-    const history = this.memory.history(userId);
+  async getSummary(userId: string): Promise<RiskSummary & { events: any[] }> {
+    // Buscar eventos de risco reais no banco de dados
+    const [events, auditLogs] = await Promise.all([
+      this.prisma.riskEvent.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      }),
+      this.prisma.auditLog.findMany({
+        where: { userId, level: { in: ['WARN', 'ERROR', 'SECURITY'] } },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+      }),
+    ]);
+
+    // Calcular nível de risco baseado nos logs recentes
+    let riskLevel: RiskLevel = 'low';
+    const securityAlerts = auditLogs.filter((log) => log.level === 'SECURITY');
+    if (securityAlerts.length > 0) {
+      riskLevel = 'high';
+    } else if (auditLogs.length > 2 || events.length > 5) {
+      riskLevel = 'neutral';
+    }
+
     return {
       userId,
-      exposure: { eventsCount: history.events.length },
-      riskLevel: 'neutral',
+      exposure: {
+        eventsCount: events.length,
+        auditAlerts: auditLogs.length,
+        lastAlert: auditLogs[0]?.createdAt || null,
+      },
+      riskLevel,
+      events: events.map((e) => ({
+        id: e.id,
+        type: e.type,
+        timestamp: e.createdAt,
+        payload: e.payload,
+      })),
     };
   }
 

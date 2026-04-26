@@ -33,13 +33,18 @@ export class RiskController {
   ingestSignals(@Body() body: IngestSignalsDto): {
     ok: boolean;
     received: IngestSignalsDto;
-  } {
+  } | Promise<{
+    ok: boolean;
+    received: IngestSignalsDto;
+  }> {
     return this.riskService.ingestSignals(body);
   }
 
   @Get('summary')
   @ApiOkResponse({ type: RiskSummaryResponseDto })
-  getSummary(@Query('userId') userId: string): RiskSummary {
+  getSummary(
+    @Query('userId') userId: string,
+  ): RiskSummary | Promise<RiskSummary & { events: any[] }> {
     return this.riskService.getSummary(userId);
   }
 

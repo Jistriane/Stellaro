@@ -1,15 +1,25 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ComplianceService } from './compliance.service';
 
 @Controller('compliance')
 export class ComplianceController {
   constructor(private readonly compliance: ComplianceService) {}
+
+  @Get('limits')
+  async getLimits(@Query('userId') userId: string) {
+    if (!userId) {
+      throw new HttpException('userId é obrigatório', HttpStatus.BAD_REQUEST);
+    }
+    return this.compliance.getLimits(userId);
+  }
 
   @Post('kyc')
   async kyc(@Body() body: { document: string; name: string }) {

@@ -25,18 +25,22 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Swagger only in non-production
-  if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .setTitle('Stellaro API')
-      .setDescription('Stellaro backend API')
-      .setVersion('0.1.0')
-      .addBearerAuth()
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document);
-  }
+  // Swagger for documentation (available in development)
+  const config = new DocumentBuilder()
+    .setTitle('Stellaro DeFi API')
+    .setDescription(
+      'Enterprise-grade API for the Stellaro DeFi platform on Stellar/Soroban.',
+    )
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .addTag('actions', 'DeFi Transaction Orchestration')
+    .addTag('payments', 'PIX and Card Payment Integrations')
+    .addTag('compliance', 'AML and KYC Services')
+    .addTag('risk', 'AI-powered Risk Management')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 void bootstrap();

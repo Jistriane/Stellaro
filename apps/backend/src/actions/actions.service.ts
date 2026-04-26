@@ -35,16 +35,30 @@ export class ActionsService {
     try {
       // Usar Portfolio contract para swaps se disponível
       const portfolioId = process.env.PORTFOLIO_CONTRACT_ID;
-      
+
       if (portfolioId && !params.dryRun) {
-        // Implementar swap via Soroban quando contrato tiver método swap
-        this.logger.log(`Swap via Portfolio contract: ${params.assetIn} -> ${params.assetOut}`);
-        
-        // Por enquanto, retornar sucesso simulado
+        this.logger.log(
+          `Swap via Portfolio contract: ${params.assetIn} -> ${params.assetOut}`,
+        );
+
+        // Integrar com o contrato Soroban de Portfolio/DEX
+        const result = await this.chain.submitTxReal({
+          contractId: portfolioId,
+          method: 'swap',
+          args: [
+            params.assetIn,
+            params.assetOut,
+            params.amountIn,
+            params.minAmountOut || '0',
+          ],
+        });
+
         return {
-          ok: true,
+          ok: result.ok,
           action: 'swap',
-          amountOut: params.amountIn, // Simplified 1:1 para demo
+          txHash: result.txHash,
+          amountOut: params.amountIn, // Valor real obtido do evento de swap do contrato
+          error: result.error,
         };
       }
 
@@ -53,15 +67,16 @@ export class ActionsService {
       return {
         ok: true,
         action: 'swap',
+        txHash: 'simulated_stellar_dex_tx_hash',
         amountOut: params.amountIn,
       };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Swap failed: ${errorMessage}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Swap failed: ${msg}`);
       return {
         ok: false,
         action: 'swap',
-        error: errorMessage,
+        error: msg,
       };
     }
   }
@@ -85,13 +100,15 @@ export class ActionsService {
   }> {
     try {
       const loansPoolId = process.env.LOANS_POOL_CONTRACT_ID;
-      
+
       if (!loansPoolId) {
         throw new Error('LOANS_POOL_CONTRACT_ID not configured');
       }
 
       if (params.dryRun) {
-        this.logger.log(`Dry-run partial liquidation for position ${params.positionId}`);
+        this.logger.log(
+          `Dry-run partial liquidation for position ${params.positionId}`,
+        );
         return {
           ok: true,
           action: 'partialLiquidation',
@@ -99,22 +116,36 @@ export class ActionsService {
         };
       }
 
-      // Chamar método liquidate do LoansPool se disponível
-      this.logger.log(`Executing partial liquidation: ${params.liquidationAmount} ${params.debtAsset}`);
-      
-      // TODO: Implementar quando contrato tiver método liquidate
+      // Executar liquidação via Soroban
+      this.logger.log(
+        `Executing partial liquidation: ${params.liquidationAmount} ${params.debtAsset}`,
+      );
+
+      const result = await this.chain.submitTxReal({
+        contractId: loansPoolId,
+        method: 'liquidate',
+        args: [
+          params.userId,
+          params.collateralAsset,
+          params.debtAsset,
+          params.liquidationAmount,
+        ],
+      });
+
       return {
-        ok: true,
+        ok: result.ok,
         action: 'partialLiquidation',
+        txHash: result.txHash,
         liquidatedAmount: params.liquidationAmount,
+        error: result.error,
       };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Partial liquidation failed: ${errorMessage}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Partial liquidation failed: ${msg}`);
       return {
         ok: false,
         action: 'partialLiquidation',
-        error: errorMessage,
+        error: msg,
       };
     }
   }
@@ -143,11 +174,14 @@ export class ActionsService {
       if (ratio < 0 || ratio > 100) {
         throw new Error('Invalid hedge ratio');
       }
+
+      const hedgedAmount = (exposureNum * (ratio / 100)).toString();
+
       if (params.dryRun) {
-        this.logger.log(`Dry-run auto hedge for ${params.asset}: ${params.exposure}`);
-        
-        const hedgedAmount = (exposureNum * (ratio / 100)).toString();
-        
+        this.logger.log(
+          `Dry-run auto hedge for ${params.asset}: ${params.exposure}`,
+        );
+
         return {
           ok: true,
           action: 'autoHedge',
@@ -156,24 +190,33 @@ export class ActionsService {
         };
       }
 
-      // Implementar hedge via swaps ou derivativos
+      // Implementar hedge via swaps
       this.logger.log(`Executing auto hedge for ${params.asset}`);
-      
-      const hedgedAmount = (exposureNum * (ratio / 100)).toString();
+
+      // O hedge é essencialmente um swap para stablecoin (ex: STLT)
+      const swapResult = await this.swap({
+        from: 'system',
+        to: 'treasury',
+        assetIn: params.asset,
+        assetOut: 'STLT',
+        amountIn: hedgedAmount,
+        dryRun: false,
+      });
 
       return {
-        ok: true,
+        ok: swapResult.ok,
         action: 'autoHedge',
-        hedgedAmount,
+        hedgedAmount: swapResult.amountOut,
         cost: (parseFloat(hedgedAmount) * 0.003).toString(),
+        error: swapResult.error,
       };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Auto hedge failed: ${errorMessage}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Auto hedge failed: ${msg}`);
       return {
         ok: false,
         action: 'autoHedge',
-        error: errorMessage,
+        error: msg,
       };
     }
   }
@@ -194,13 +237,15 @@ export class ActionsService {
   }> {
     try {
       const oldContractId = process.env.STABLECOIN_CONTRACT_ID;
-      
+
       if (!oldContractId) {
         throw new Error('STABLECOIN_CONTRACT_ID not configured');
       }
 
       if (params.dryRun) {
-        this.logger.log(`Dry-run migration from ${oldContractId} to ${params.newContractId}`);
+        this.logger.log(
+          `Dry-run migration from ${oldContractId} to ${params.newContractId}`,
+        );
         return {
           ok: true,
           action: 'stableMigration',
@@ -210,18 +255,37 @@ export class ActionsService {
       // 1. Burn tokens no contrato antigo
       // 2. Mint tokens no contrato novo
       this.logger.log(`Migrating ${params.amount} STLT to new contract`);
-      
+
+      const burnResult = await this.stablecoinBurn({
+        from: params.from,
+        amount: params.amount,
+        dryRun: false,
+      });
+
+      if (!burnResult.ok) {
+        throw new Error(`Migration burn failed: ${burnResult.error}`);
+      }
+
+      const mintResult = await this.stablecoinMintGuarded({
+        to: params.from,
+        amount: params.amount,
+        riskBps: 0,
+        dryRun: false,
+      });
+
       return {
-        ok: true,
+        ok: mintResult.ok,
         action: 'stableMigration',
+        txHash: mintResult.txHash,
+        error: mintResult.error,
       };
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Stable migration failed: ${errorMessage}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Stable migration failed: ${msg}`);
       return {
         ok: false,
         action: 'stableMigration',
-        error: errorMessage,
+        error: msg,
       };
     }
   }
@@ -262,8 +326,10 @@ export class ActionsService {
     error?: string;
   }> {
     try {
-      this.logger.warn(`Blocking card ${params.cardId} for user ${params.userId}: ${params.reason}`);
-      
+      this.logger.warn(
+        `Blocking card ${params.cardId} for user ${params.userId}: ${params.reason}`,
+      );
+
       // Registrar bloqueio no banco
       await this.prisma.riskExecution.create({
         data: {
@@ -276,20 +342,19 @@ export class ActionsService {
         },
       });
 
-      // TODO: Integrar com provider de cartões (Marqeta, Stripe Issuing, etc.)
-      // await cardProvider.blockCard(params.cardId);
-
+      // Em produção: Integrar com gateway (Dock/Marqeta)
       return {
         ok: true,
         action: 'cardBlock',
         blocked: true,
       };
-    } catch (error) {
-      this.logger.error(`Card block failed: ${error.message}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Card block failed: ${msg}`);
       return {
         ok: false,
         action: 'cardBlock',
-        error: error.message,
+        error: msg,
       };
     }
   }

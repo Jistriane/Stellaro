@@ -40,14 +40,22 @@ export class PixService {
     private prisma: PrismaService,
     private actions: ActionsService,
   ) {
-    const apiKey = this.configService.get('PIX_API_KEY') ?? process.env.PIX_API_KEY;
-    const apiUrl = this.configService.get('PIX_API_URL') ?? process.env.PIX_API_URL;
-    this.webhookSecret = this.configService.get('PIX_WEBHOOK_SECRET') || process.env.PIX_WEBHOOK_SECRET || '';
-    const modeRaw = this.configService.get('PIX_MODE') ?? process.env.PIX_MODE ?? '';
+    const apiKey =
+      this.configService.get<string>('PIX_API_KEY') || process.env.PIX_API_KEY;
+    const apiUrl =
+      this.configService.get<string>('PIX_API_URL') || process.env.PIX_API_URL;
+    this.webhookSecret =
+      this.configService.get<string>('PIX_WEBHOOK_SECRET') ||
+      process.env.PIX_WEBHOOK_SECRET ||
+      '';
+    const modeRaw =
+      this.configService.get<string>('PIX_MODE') ||
+      process.env.PIX_MODE ||
+      '';
     this.enabled = !!apiKey && !!apiUrl;
     this.stubMode = String(modeRaw).toLowerCase() === 'stub';
 
-    if (this.enabled) {
+    if (this.enabled && apiUrl) {
       this.client = axios.create({
         baseURL: apiUrl,
         headers: {
@@ -84,11 +92,11 @@ export class PixService {
       // Validações básicas
       const cpfDigits = (params.cpf || '').replace(/\D/g, '');
       const validCpf = /^\d{11}$/.test(cpfDigits);
-      const amount = Number(params.amountBRL);
+      const amountVal = Number(params.amountBRL);
       if (!validCpf) {
         return { ok: false, error: 'Invalid CPF format' };
       }
-      if (!amount || amount <= 0) {
+      if (isNaN(amountVal) || amountVal <= 0) {
         return { ok: false, error: 'Invalid amount' };
       }
       if (!this.enabled || !this.client) {
@@ -96,12 +104,17 @@ export class PixService {
           throw new Error('PIX integration not configured');
         }
         // STUB: simular falhas por valor extremo
-        if (amount > 500000) {
+        if (amountVal > 500000) {
           return { ok: false, error: 'Provider error: amount too high' };
         }
         // STUB: gerar cobrança localmente sem provider externo
-        const txId = `STLT${Date.now()}${randomBytes(4).toString('hex').toUpperCase()}`;
-        const qrCode = `00020126STLT${txId}520400005303986540${params.amountBRL.replace('.', '')}5802BR5920STELLARO PIX CHARGE6009STELLARO6210TXID${txId}`;
+        const txId = `STLT${Date.now()}${randomBytes(4)
+          .toString('hex')
+          .toUpperCase()}`;
+        const qrCode = `00020126STLT${txId}520400005303986540${params.amountBRL.replace(
+          '.',
+          '',
+        )}5802BR5920STELLARO PIX CHARGE6009STELLARO6210TXID${txId}`;
         const payment = await this.prisma.pixPayment.create({
           data: {
             userId: params.userId,
@@ -124,19 +137,25 @@ export class PixService {
             cpf: payment.cpf,
             name: payment.name,
             key: undefined,
-            qrCode,
-            status: 'pending',
+            qrCode: payment.qrCode ?? undefined,
+            status: payment.status as any,
             createdAt: payment.createdAt,
             expiresAt: payment.expiresAt ?? undefined,
           },
         };
       }
 
-      const txId = `STLT${Date.now()}${randomBytes(4).toString('hex').toUpperCase()}`;
+      const txId = `STLT${Date.now()}${randomBytes(4)
+        .toString('hex')
+        .toUpperCase()}`;
       const amountCents = Math.round(parseFloat(params.amountBRL) * 100);
 
       // Chamar API do provider PIX (PJBank, Asaas, etc.)
-      const response = await this.client.post('/pix/charges', {
+      const response = await this.client.post<{
+        qrCode: string;
+        pixKey: string;
+        expiresAt: string;
+      }>('/pix/charges', {
         txId,
         amount: amountCents,
         description: `Mint STLT - ${params.stellarAddress.substring(0, 8)}...`,
@@ -175,18 +194,19 @@ export class PixService {
           amount: payment.amount,
           cpf: payment.cpf,
           name: payment.name,
-          key: pixKey,
-          qrCode,
-          status: 'pending',
+          key: payment.pixKey ?? undefined,
+          qrCode: payment.qrCode ?? undefined,
+          status: payment.status as 'pending' | 'confirmed' | 'failed',
           createdAt: payment.createdAt,
           expiresAt: payment.expiresAt ?? undefined,
         },
       };
-    } catch (error) {
-      this.logger.error(`Failed to generate PIX charge: ${error.message}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error(`Failed to generate PIX charge: ${msg}`);
       return {
         ok: false,
-        error: error.message,
+        error: msg,
       };
     }
   }
@@ -206,7 +226,7 @@ export class PixService {
     error?: string;
   }> {
     try {
-      const { txId, status, amount } = payload;
+      const { txId, status } = payload;
 
       // Buscar pagamento pendente
       const payment = await this.prisma.pixPayment.findUnique({
@@ -218,7 +238,9 @@ export class PixService {
       }
 
       if (payment.status !== 'pending') {
-        this.logger.warn(`Payment ${txId} already processed (status: ${payment.status})`);
+        this.logger.warn(
+          `Payment ${txId} already processed (status: ${payment.status})`,
+        );
         return { ok: true, minted: false };
       }
 
@@ -244,15 +266,18 @@ export class PixService {
               mintedAt: new Date(),
             },
           });
-          this.logger.log(`✅ [STUB] Minted ${stltAmount} STLT for PIX payment ${txId}`);
+          this.logger.log(
+            `✅ [STUB] Minted ${stltAmount} STLT for PIX payment ${txId}`,
+          );
           return { ok: true, minted: true };
         }
 
+        // Chamada real ao ActionsService para mint na Stellar
         const mintResult = await this.actions.stablecoinMintGuarded({
+          userId: payment.userId,
           to: payment.stellarAddress,
           amount: stltAmount,
-          riskBps: 100, // 1% risk buffer padrão
-          userId: payment.userId,
+          riskBps: 0, // Compliance already checked
         });
 
         if (mintResult.ok) {
@@ -263,24 +288,22 @@ export class PixService {
               mintedAt: new Date(),
             },
           });
-
-          this.logger.log(`✅ Minted ${stltAmount} STLT for PIX payment ${txId}`);
-
-          return {
-            ok: true,
-            minted: true,
-          };
+          this.logger.log(
+            `✅ Minted ${stltAmount} STLT for PIX payment ${txId}`,
+          );
+          return { ok: true, minted: true };
         } else {
           throw new Error(`Mint failed: ${mintResult.error}`);
         }
       }
 
       return { ok: true, minted: false };
-    } catch (error) {
-      this.logger.error(`PIX webhook processing failed: ${error.message}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error(`Webhook error [${payload.txId}]: ${msg}`);
       return {
         ok: false,
-        error: error.message,
+        error: msg,
       };
     }
   }

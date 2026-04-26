@@ -271,3 +271,65 @@ model PixWithdrawal {
   @@index([status])
   @@index([createdAt])
 }
+
+// =========================
+// V4 domain entities
+// =========================
+
+model RwaAsset {
+  id                String   @id @default(uuid())
+  publicId          String   @unique
+  name              String
+  assetClass        String
+  status            String
+  whitelistRequired Boolean  @default(true)
+  annualYieldBps    Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([status, assetClass])
+  @@index([createdAt])
+}
+
+model SsiCredential {
+  id         String   @id @default(uuid())
+  publicId   String   @unique
+  type       String
+  issuer     String
+  status     String
+  disclosure String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status, type])
+  @@index([createdAt])
+}
+
+model SubscriptionPlan {
+  id        String   @id @default(uuid())
+  publicId  String   @unique
+  name      String
+  cadence   String
+  amount    String
+  currency  String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, cadence])
+  @@index([createdAt])
+}
+
+model DaoProposal {
+  id            String   @id @default(uuid())
+  publicId      String   @unique
+  title         String
+  status        String
+  quorumBps     Int
+  timelockHours Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}

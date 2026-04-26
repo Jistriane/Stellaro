@@ -1,117 +1,66 @@
-import { HttpException } from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
 
 describe('PaymentsController', () => {
   let controller: PaymentsController;
-  let actionsService: { stablecoinTransfer: jest.Mock };
+  let pixService: { generatePixCharge: jest.Mock };
+  let cardService: { tokenizeCard: jest.Mock; chargeCard: jest.Mock };
 
   beforeEach(() => {
-    actionsService = {
-      stablecoinTransfer: jest.fn(),
+    pixService = {
+      generatePixCharge: jest.fn(),
     };
-    controller = new PaymentsController(actionsService as any);
+    cardService = {
+      tokenizeCard: jest.fn(),
+      chargeCard: jest.fn(),
+    };
+    controller = new PaymentsController(pixService as any, cardService as any);
   });
 
-  it('should keep PIX send stub behavior', async () => {
+  it('should call PixService for mintWithPix', async () => {
     const body = {
       userId: 'user-1',
-      to: 'pix-key@example.com',
-      amount: 120,
-      memo: 'pagamento',
+      amountBRL: '120.00',
+      stellarAddress: 'GABC',
+      cpf: '12345678901',
+      name: 'User One',
     };
+    pixService.generatePixCharge.mockResolvedValue({ ok: true, payment: { txId: 'TX1' } });
 
-    const result = await controller.sendPix(body);
+    const result = await controller.mintWithPix(body);
 
-    expect(result).toEqual({ ok: true, provider: 'pix-stub', ...body });
+    expect(result).toEqual({ ok: true, payment: { txId: 'TX1' } });
+    expect(pixService.generatePixCharge).toHaveBeenCalledWith(body);
   });
 
-  it('should keep card charge stub behavior', async () => {
+  it('should call CardService for tokenizeCard', async () => {
     const body = {
       userId: 'user-1',
-      pan_last4: '1234',
+      number: '4111111111111111',
+      holderName: 'User One',
+      expiryMonth: '12',
+      expiryYear: '2030',
+      cvv: '123',
+    };
+    cardService.tokenizeCard.mockResolvedValue({ ok: true, token: { id: 'card_tok_1' } });
+
+    const result = await controller.tokenizeCard(body);
+
+    expect(result).toEqual({ ok: true, token: { id: 'card_tok_1' } });
+    expect(cardService.tokenizeCard).toHaveBeenCalledWith(body);
+  });
+
+  it('should call CardService for chargeCard', async () => {
+    const body = {
+      userId: 'user-1',
+      tokenId: 'card_tok_1',
       amount: 200,
       currency: 'BRL',
-      descriptor: 'STELLARO',
     };
+    cardService.chargeCard.mockResolvedValue({ ok: true, txHash: 'tx-123' });
 
     const result = await controller.chargeCard(body);
 
-    expect(result).toEqual({ ok: true, provider: 'card-stub', ...body });
-  });
-
-  it('should call stablecoinTransfer for settlement', async () => {
-    actionsService.stablecoinTransfer.mockResolvedValueOnce({
-      ok: true,
-      method: 'transfer',
-      txHash: 'tx-123',
-    });
-
-    const result = await controller.settleStablecoin({
-      from: 'GFROM123',
-      to: 'GTO123',
-      amount: '50',
-      dryRun: true,
-      userId: 'user-1',
-      proposalId: 'proposal-1',
-    });
-
-    expect(actionsService.stablecoinTransfer).toHaveBeenCalledWith({
-      from: 'GFROM123',
-      to: 'GTO123',
-      amount: '50',
-      dryRun: true,
-      userId: 'user-1',
-      proposalId: 'proposal-1',
-    });
-    expect(result).toEqual({
-      ok: true,
-      method: 'transfer',
-      txHash: 'tx-123',
-    });
-  });
-
-  it('should default dryRun to false in settlement', async () => {
-    actionsService.stablecoinTransfer.mockResolvedValueOnce({ ok: true });
-
-    await controller.settleStablecoin({
-      from: 'GFROM123',
-      to: 'GTO123',
-      amount: 10,
-    });
-
-    expect(actionsService.stablecoinTransfer).toHaveBeenCalledWith({
-      from: 'GFROM123',
-      to: 'GTO123',
-      amount: 10,
-      dryRun: false,
-      userId: undefined,
-      proposalId: undefined,
-    });
-  });
-
-  it('should reject invalid settlement body', async () => {
-    await expect(
-      controller.settleStablecoin({
-        from: '',
-        to: 'GTO123',
-        amount: '10',
-      } as any),
-    ).rejects.toBeInstanceOf(HttpException);
-
-    await expect(
-      controller.settleStablecoin({
-        from: 'GFROM123',
-        to: '',
-        amount: '10',
-      } as any),
-    ).rejects.toBeInstanceOf(HttpException);
-
-    await expect(
-      controller.settleStablecoin({
-        from: 'GFROM123',
-        to: 'GTO123',
-        amount: undefined,
-      } as any),
-    ).rejects.toBeInstanceOf(HttpException);
+    expect(result).toEqual({ ok: true, txHash: 'tx-123' });
+    expect(cardService.chargeCard).toHaveBeenCalledWith(body);
   });
 });

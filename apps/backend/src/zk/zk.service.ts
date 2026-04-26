@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { VerifyZkDto } from './dto/verify-zk.dto';
 import { RedisService } from '../redis/redis.service';
+import { ChainService } from '../chain/chain.service';
 
 @Injectable()
 export class ZkService {
@@ -14,22 +15,28 @@ export class ZkService {
   constructor(
     private configService: ConfigService,
     private redis: RedisService,
+    private readonly chain: ChainService,
   ) {
-    const rpcUrl = this.configService.get<string>(
-      'SOROBAN_RPC_URL',
-      'https://soroban-testnet.stellar.org',
-    );
-    const network = this.configService.get<string>('STELLAR_NETWORK', 'testnet');
-    
+    const rpcUrl =
+      this.configService.get<string>(
+        'SOROBAN_RPC_URL',
+        'https://soroban-testnet.stellar.org',
+      ) || 'https://soroban-testnet.stellar.org';
+    const network =
+      this.configService.get<string>('STELLAR_NETWORK', 'testnet') || 'testnet';
+
     this.rpcServer = new StellarSdk.rpc.Server(rpcUrl);
-    this.networkPassphrase = network === 'testnet' 
-      ? StellarSdk.Networks.TESTNET 
-      : StellarSdk.Networks.PUBLIC;
-    
+    this.networkPassphrase =
+      network === 'testnet'
+        ? StellarSdk.Networks.TESTNET
+        : StellarSdk.Networks.PUBLIC;
+
     this.contractId = this.configService.get<string>('ZK_VERIFIER_CONTRACT_ID');
-    
+
     if (!this.contractId) {
-      this.logger.warn('ZK_VERIFIER_CONTRACT_ID not configured - ZK verification disabled');
+      this.logger.warn(
+        'ZK_VERIFIER_CONTRACT_ID not configured - ZK verification disabled',
+      );
     } else {
       this.logger.log(`ZK Verifier initialized: ${this.contractId}`);
     }
@@ -46,7 +53,7 @@ export class ZkService {
       return { ok: false, reason: 'rate-limited' };
     }
     await this.redis.set(rlKey, true, 30);
-    
+
     // Validação: proof expirado
     if (dto.expiresAt <= now) {
       this.logger.warn(`ZK proof expired for nonce ${dto.nonce}`);
@@ -75,19 +82,27 @@ export class ZkService {
 
     try {
       // Invoca verify_proof no contrato Soroban
-      const result = await this.invokeVerifyProof(dto);
-      
-      if (result.success) {
-        this.logger.log(`ZK proof verified successfully for nonce ${dto.nonce}, score ${dto.score}`);
+      const result = await this.invokeVerifyProof({
+        userId: dto.userAddress,
+        proof: dto.proof,
+        publicSignals: [dto.publicInputs], // Adaptando conforme esperado pelo contrato
+        nonce: dto.nonce,
+      });
+
+      if (result.ok) {
+        this.logger.log(
+          `ZK proof verified successfully for nonce ${dto.nonce}, score ${dto.score}`,
+        );
         this.redis.incZkVerify(true);
         return { ok: true };
       } else {
         this.logger.warn(`ZK proof verification failed: ${result.error}`);
         this.redis.incZkVerify(false);
-        return { ok: false, reason: result.error || 'verification-failed'};
+        return { ok: false, reason: result.error || 'verification-failed' };
       }
-    } catch (error) {
-      this.logger.error(`Error verifying ZK proof: ${error.message}`, error.stack);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Error verifying ZK proof: ${msg}`);
       this.redis.incZkVerify(false);
       return { ok: false, reason: 'internal-error' };
     }
@@ -95,98 +110,45 @@ export class ZkService {
 
   /**
    * Invoca o método verify_proof no contrato ZK Verifier via Soroban RPC
-   * 
-   * Contrato espera:
-   * - user: Address (endereço do usuário)
-   * - proof: BytesN<256> (prova Groth16)
-   * - public_inputs: BytesN<128> (entradas públicas)
-   * - nonce: BytesN<16> (nonce para evitar replay)
-   * 
-   * Retorna: Result<CreditScore, Error>
    */
-  private async invokeVerifyProof(dto: VerifyZkDto): Promise<{ success: boolean; error?: string }> {
+  async invokeVerifyProof(params: {
+    userId: string;
+    proof: string;
+    publicSignals: string[];
+    nonce: string;
+  }): Promise<{ ok: boolean; txHash?: string; error?: string }> {
     if (!this.contractId) {
-      return { success: false, error: 'missing-contract-id' };
+      return { ok: false, error: 'missing-contract-id' };
     }
 
-    try {
-      // Prepara parâmetros XDR
-      const userAddress = dto.userAddress || 'GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD'; // placeholder válido
-      const userScVal = new StellarSdk.Address(userAddress).toScVal();
-      
-      // Proof: converte hex string para BytesN<256>
-      const proofBuffer = Buffer.from(dto.proof, 'hex');
-      if (proofBuffer.length !== 256) {
-        return { success: false, error: 'proof-invalid-length' };
-      }
-      const proofScVal = StellarSdk.xdr.ScVal.scvBytes(proofBuffer);
-      
-      // Public inputs: converte hex string para BytesN<128>
-      const publicInputsBuffer = Buffer.from(dto.publicInputs, 'hex');
-      if (publicInputsBuffer.length !== 128) {
-        return { success: false, error: 'public-inputs-invalid-length' };
-      }
-      const publicInputsScVal = StellarSdk.xdr.ScVal.scvBytes(publicInputsBuffer);
-      
-      // Nonce: converte string para BytesN<16>
-      const nonceBuffer = Buffer.from(dto.nonce, 'hex');
-      if (nonceBuffer.length !== 16) {
-        return { success: false, error: 'nonce-invalid-length' };
-      }
-      const nonceScVal = StellarSdk.xdr.ScVal.scvBytes(nonceBuffer);
+    this.logger.log(`Invoking verify_proof for user: ${params.userId}`);
 
-      // Simula a invocação (read-only para verificar se funciona)
-      const contract = new StellarSdk.Contract(this.contractId);
-      
-      // Para simulação, precisamos de uma conta fonte (pode ser qualquer uma)
-      const sourceKeypair = StellarSdk.Keypair.random();
-      const sourceAccount = new StellarSdk.Account(sourceKeypair.publicKey(), '0');
-      
-      const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
-        fee: StellarSdk.BASE_FEE,
-        networkPassphrase: this.networkPassphrase,
-      })
-        .addOperation(
-          contract.call('verify_proof', userScVal, proofScVal, publicInputsScVal, nonceScVal)
-        )
-        .setTimeout(30)
-        .build();
+    const result = await this.chain.submitTxReal({
+      contractId: this.contractId,
+      method: 'verify_proof',
+      args: [params.userId, params.proof, params.publicSignals, params.nonce],
+    });
 
-      // Simula (não submete transação)
-      const simulationResponse = await this.rpcServer.simulateTransaction(transaction);
-      
-      if (StellarSdk.rpc.Api.isSimulationError(simulationResponse)) {
-        this.logger.error('Simulation error:', JSON.stringify(simulationResponse, null, 2));
-        return { success: false, error: 'simulation-failed' };
-      }
-
-      // Verifica o resultado da simulação
-      if (simulationResponse.result) {
-        const result = simulationResponse.result;
-        
-        // Se retval existe, a verificação foi bem-sucedida
-        if (result.retval) {
-          this.logger.debug('ZK proof simulation successful');
-          return { success: true };
-        }
-      }
-
-      return { success: false, error: 'no-result' };
-    } catch (error) {
-      this.logger.error(`Error invoking verify_proof: ${error.message}`);
-      return { success: false, error: error.message };
+    if (result.ok) {
+      this.logger.log(`✅ ZK Proof verified and stored for ${params.userId}`);
+    } else {
+      this.logger.error(`❌ ZK Verification failed: ${result.error}`);
     }
+
+    return result;
   }
 
   /**
    * Recupera o credit score de um usuário do contrato
    */
-  async getScore(userAddress: string): Promise<{ score?: number; error?: string }> {
+  async getScore(
+    userAddress: string,
+  ): Promise<{ score?: number; error?: string }> {
     if (!this.contractId) {
       return { error: 'missing-contract-id' };
     }
 
-    try{
+    try {
       // Cache por endereço (TTL 60s)
       const cacheKey = `zk:score:${userAddress}`;
       const cached = await this.redis.get<{ score?: number }>(cacheKey);
@@ -197,11 +159,14 @@ export class ZkService {
 
       const contract = new StellarSdk.Contract(this.contractId);
       const userScVal = new StellarSdk.Address(userAddress).toScVal();
-      
+
       // Conta fonte para simulação
       const sourceKeypair = StellarSdk.Keypair.random();
-      const sourceAccount = new StellarSdk.Account(sourceKeypair.publicKey(), '0');
-      
+      const sourceAccount = new StellarSdk.Account(
+        sourceKeypair.publicKey(),
+        '0',
+      );
+
       const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
         fee: StellarSdk.BASE_FEE,
         networkPassphrase: this.networkPassphrase,
@@ -210,8 +175,9 @@ export class ZkService {
         .setTimeout(30)
         .build();
 
-      const simulationResponse = await this.rpcServer.simulateTransaction(transaction);
-      
+      const simulationResponse =
+        await this.rpcServer.simulateTransaction(transaction);
+
       if (StellarSdk.rpc.Api.isSimulationError(simulationResponse)) {
         this.redis.incZkScore(false);
         return { error: 'simulation-failed' };
@@ -222,18 +188,20 @@ export class ZkService {
         if (result.retval) {
           // Parse o retval (Option<CreditScore>)
           const retval = result.retval;
-          
+
           // Se for Some, extrai o score
           if (retval.switch().name === 'scvVec') {
-            const scoreStruct = StellarSdk.scValToNative(retval);
-            const score = scoreStruct?.score as number | undefined;
+            const scoreStruct = StellarSdk.scValToNative(retval) as unknown as {
+              score?: number;
+            };
+            const score = scoreStruct?.score;
             if (typeof score !== 'undefined') {
               await this.redis.set(cacheKey, { score }, 60);
             }
             this.redis.incZkScore(typeof score !== 'undefined');
             return { score };
           }
-          
+
           // Se for None
           this.redis.incZkScore(false);
           return { score: undefined };
@@ -242,10 +210,11 @@ export class ZkService {
 
       this.redis.incZkScore(false);
       return { error: 'no-result' };
-    } catch (error) {
-      this.logger.error(`Error getting score: ${error.message}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      this.logger.error(`Error getting score: ${msg}`);
       this.redis.incZkScore(false);
-      return { error: error.message };
+      return { error: msg };
     }
   }
 }

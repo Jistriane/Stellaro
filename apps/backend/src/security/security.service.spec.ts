@@ -81,9 +81,9 @@ describe('SecurityService', () => {
     expect(prismaStub.auditLog.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         userId: 'user-4',
-        channel: 'OFFCHAIN',
+        channel: 'BOTH',
         level: 'WARN',
-        message: 'rotate_tokens',
+        action: 'TOKEN_ROTATION_EXECUTED',
       }),
     });
   });
