@@ -49,72 +49,43 @@ export default function RiskPage() {
   useRealTimeUpdates();
 
   useEffect(() => {
-    // Mock data
-    const mockEvents: RiskEvent[] = [
-      {
-        id: 1,
-        type: "login",
-        timestamp: "2025-12-09T14:32:00Z",
-        description: "Login from a new device",
-        severity: "high",
-        status: "new",
-      },
-      {
-        id: 2,
-        type: "unusual",
-        timestamp: "2025-12-09T12:15:00Z",
-        description: "Unusual transaction pattern detected",
-        severity: "medium",
-        status: "reviewed",
-      },
-      {
-        id: 3,
-        type: "pix",
-        timestamp: "2025-12-09T10:45:00Z",
-        description: "High-value PIX transfer processed",
-        severity: "medium",
-        status: "resolved",
-      },
-      {
-        id: 4,
-        type: "trade",
-        timestamp: "2025-12-08T16:20:00Z",
-        description: "Large trading order executed",
-        severity: "low",
-        status: "resolved",
-      },
-    ];
+    const fetchRiskData = async () => {
+      try {
+        const [riskRes, limitsRes] = await Promise.all([
+          fetch("/api/risk/summary?userId=current"),
+          fetch("/api/compliance/limits?userId=current"),
+        ]);
 
-    const mockLimits: RiskLimit[] = [
-      {
-        id: "pix_daily",
-        name: t("limits.pix_daily"),
-        current: 2500,
-        limit: 5000,
-        unit: "BRL",
-        category: "pix",
-      },
-      {
-        id: "withdraw_daily",
-        name: t("limits.withdraw_daily"),
-        current: 1200,
-        limit: 10000,
-        unit: "BRL",
-        category: "withdraw",
-      },
-      {
-        id: "trade_daily",
-        name: t("limits.trade_daily"),
-        current: 8500,
-        limit: 50000,
-        unit: "BRL",
-        category: "trade",
-      },
-    ];
+        if (riskRes.ok) {
+          const data = await riskRes.json();
+          setRiskScore(data.riskLevel === "high" ? 85 : data.riskLevel === "neutral" ? 55 : 35);
+          
+          if (data.events) {
+            setEvents(data.events.map((e: any) => ({
+              id: e.id,
+              type: e.type,
+              timestamp: e.timestamp,
+              description: e.payload?.description || e.type,
+              severity: data.riskLevel,
+              status: "new"
+            })));
+          }
+        }
 
-    setEvents(mockEvents);
-    setLimits(mockLimits);
-    setLoading(false);
+        if (limitsRes.ok) {
+          const data = await limitsRes.json();
+          if (data.limits) {
+            setLimits(data.limits);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch risk data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRiskData();
   }, [t]);
 
   const getRiskLevel = () => {
