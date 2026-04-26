@@ -177,32 +177,26 @@ export class SorobanService {
   }
 
   /**
-   * Congela/descongela minting no contrato Stablecoin.
-   * @param contractId - ID do contrato Stablecoin
-   * @param enabled - true para habilitar minting, false para congelar
-   * @param signerSecret - Secret key do admin autorizado
+   * Executa uma transação de escrita (invoke) em um contrato Soroban.
    */
-  async setMintingEnabled(contractId: string, enabled: boolean, signerSecret: string): Promise<string> {
+  async executeContractCall(
+    contractId: string,
+    method: string,
+    args: StellarSdk.xdr.ScVal[],
+    signerSecret: string,
+  ): Promise<string> {
     try {
       const rpc = getRpcNamespace();
-      if (!this.rpcAvailable) {
-        this.logger.warn('Soroban RPC unavailable; cannot toggle minting in dev degraded mode');
+      if (!this.rpcAvailable || !rpc || typeof rpc.Server !== 'function') {
         throw new Error('Soroban RPC unavailable');
       }
-      if (!rpc || typeof rpc.Server !== 'function') {
-        throw new Error('Soroban RPC SDK unavailable');
-      }
-      const contract = new StellarSdk.Contract(contractId);
+
       const server = new rpc.Server(this.client.defaults.baseURL || '');
       const keypair = StellarSdk.Keypair.fromSecret(signerSecret);
-      
-      // Construir operação de invocação
-      const enabledVal = StellarSdk.nativeToScVal(enabled, { type: 'bool' });
-      const operation = contract.call('set_mint_enabled', enabledVal);
-      
-      // Carregar account do signer
+      const contract = new StellarSdk.Contract(contractId);
+      const operation = contract.call(method, ...args);
+
       const account = await server.getAccount(keypair.publicKey());
-      
       const tx = new StellarSdk.TransactionBuilder(account, {
         fee: StellarSdk.BASE_FEE,
         networkPassphrase: StellarSdk.Networks.TESTNET,
@@ -211,38 +205,174 @@ export class SorobanService {
         .setTimeout(30)
         .build();
 
-      // Simular para obter auth e resource fees
       const simulation = await server.simulateTransaction(tx);
-      
       if (!rpc.Api.isSimulationSuccess(simulation)) {
-        throw new Error(`Simulation failed: ${JSON.stringify(simulation)}`);
+        throw new Error(`Simulation failed for ${method}: ${JSON.stringify(simulation)}`);
       }
 
-      // Preparar transação com auth
       const prepared = rpc.assembleTransaction(tx, simulation).build();
       prepared.sign(keypair);
 
-      // Submeter
       const response = await server.sendTransaction(prepared);
-      
-      if (response.status === 'PENDING') {
-        // Aguardar confirmação
-        let getResponse = await server.getTransaction(response.hash);
-        while (getResponse.status === 'NOT_FOUND') {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          getResponse = await server.getTransaction(response.hash);
-        }
-        
-        if (getResponse.status === 'SUCCESS') {
-          this.logger.log(`Minting ${enabled ? 'enabled' : 'disabled'} on contract ${contractId}`);
-          return response.hash;
-        }
+      if (response.status === 'ERROR') {
+        throw new Error(`Transaction submission error: ${JSON.stringify(response.errorResultXdr)}`);
       }
 
-      throw new Error(`Transaction failed: ${response.status}`);
+      // Aguardar confirmação
+      let getResponse = await server.getTransaction(response.hash);
+      let retries = 0;
+      while ((getResponse.status === 'NOT_FOUND' || getResponse.status === 'PENDING') && retries < 10) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        getResponse = await server.getTransaction(response.hash);
+        retries++;
+      }
+
+      if (getResponse.status === 'SUCCESS') {
+        return response.hash;
+      }
+
+      throw new Error(`Transaction confirmation failed: ${getResponse.status}`);
     } catch (error) {
-      this.logger.error(`Failed to set minting enabled=${enabled}: ${error.message}`);
+      this.logger.error(`Failed to execute ${method} on ${contractId}: ${error.message}`);
       throw error;
     }
+  }
+
+  /**
+   * RWA: Mints tokens para um usuário.
+   */
+  async mintRwa(to: string, amount: string): Promise<string> {
+    const contractId = process.env.RWA_TOKENIZER_ID;
+    const adminSecret = process.env.MASTER_SECRET_KEY;
+    if (!contractId || !adminSecret) throw new Error('RWA configuration missing');
+
+    const args = [
+      StellarSdk.Address.fromString(to).toScVal(),
+      StellarSdk.nativeToScVal(amount, { type: 'i128' }),
+    ];
+
+    return this.executeContractCall(contractId, 'mint', args, adminSecret);
+  }
+
+  /**
+   * VC Registry: Registra uma credencial para um usuário.
+   */
+  async registerUserVc(user: string, vcHash: string): Promise<string> {
+    const contractId = process.env.VC_REGISTRY_ID;
+    const issuerSecret = process.env.MASTER_SECRET_KEY;
+    if (!contractId || !issuerSecret) throw new Error('VC Registry configuration missing');
+
+    const args = [
+      StellarSdk.Address.fromString(StellarSdk.Keypair.fromSecret(issuerSecret).publicKey()).toScVal(),
+      StellarSdk.Address.fromString(user).toScVal(),
+      StellarSdk.xdr.ScVal.scvBytes(Buffer.from(vcHash, 'hex')),
+    ];
+
+    return this.executeContractCall(contractId, 'register_user_vc', args, issuerSecret);
+  }
+
+  /**
+   * VC Registry: Verifica se o usuário tem VC válida.
+   */
+  async hasValidVc(user: string): Promise<boolean> {
+    const contractId = process.env.VC_REGISTRY_ID;
+    if (!contractId) return false;
+
+    try {
+      const args = [StellarSdk.Address.fromString(user).toScVal()];
+      const result = await this.invokeContract(contractId, 'has_valid_vc', args);
+      return result && result.switch().name === 'scvBool' ? result.b() : false;
+    } catch (error) {
+      this.logger.error(`VC check failed for ${user}: ${error.message}`);
+      return false;
+    }
+  }
+
+  /**
+   * DAO: Cria uma nova proposta.
+   */
+  async createProposal(target: string, action: string, description: string, creatorSecret: string): Promise<string> {
+    const contractId = process.env.DAO_GOVERNANCE_ID;
+    if (!contractId) throw new Error('DAO Governance ID missing');
+
+    const keypair = StellarSdk.Keypair.fromSecret(creatorSecret);
+    const args = [
+      StellarSdk.Address.fromString(keypair.publicKey()).toScVal(),
+      StellarSdk.Address.fromString(target).toScVal(),
+      StellarSdk.xdr.ScVal.scvSymbol(action),
+      StellarSdk.xdr.ScVal.scvSymbol(description),
+    ];
+
+    return this.executeContractCall(contractId, 'propose', args, creatorSecret);
+  }
+
+  /**
+   * DAO: Vota em uma proposta.
+   */
+  async voteOnProposal(proposalId: number, support: boolean, voterSecret: string): Promise<string> {
+    const contractId = process.env.DAO_GOVERNANCE_ID;
+    if (!contractId) throw new Error('DAO Governance ID missing');
+
+    const keypair = StellarSdk.Keypair.fromSecret(voterSecret);
+    const args = [
+      StellarSdk.Address.fromString(keypair.publicKey()).toScVal(),
+      StellarSdk.nativeToScVal(proposalId, { type: 'u32' }),
+      StellarSdk.nativeToScVal(support, { type: 'bool' }),
+    ];
+
+    return this.executeContractCall(contractId, 'vote', args, voterSecret);
+  }
+
+  /**
+   * DAO: Executa uma proposta aprovada.
+   */
+  async executeProposal(proposalId: number, signerSecret: string): Promise<string> {
+    const contractId = process.env.DAO_GOVERNANCE_ID;
+    if (!contractId) throw new Error('DAO Governance ID missing');
+
+    const args = [StellarSdk.nativeToScVal(proposalId, { type: 'u32' })];
+
+    return this.executeContractCall(contractId, 'execute', args, signerSecret);
+  }
+
+  /**
+   * Subscriptions: Autoriza um pagamento recorrente.
+   */
+  async authorizeSubscription(
+    userSecret: string,
+    merchant: string,
+    token: string,
+    amount: string,
+    frequencyLedgers: number,
+  ): Promise<string> {
+    const contractId = process.env.RECURRING_PAYMENTS_ID;
+    if (!contractId) throw new Error('Recurring Payments ID missing');
+
+    const keypair = StellarSdk.Keypair.fromSecret(userSecret);
+    const args = [
+      StellarSdk.Address.fromString(keypair.publicKey()).toScVal(),
+      StellarSdk.Address.fromString(merchant).toScVal(),
+      StellarSdk.Address.fromString(token).toScVal(),
+      StellarSdk.nativeToScVal(amount, { type: 'i128' }),
+      StellarSdk.nativeToScVal(frequencyLedgers, { type: 'u32' }),
+    ];
+
+    return this.executeContractCall(contractId, 'authorize', args, userSecret);
+  }
+
+  /**
+   * Insurance: Realiza depósito no pool de seguros.
+   */
+  async depositInsurance(userSecret: string, amount: string): Promise<string> {
+    const contractId = process.env.INSURANCE_POOL_ID;
+    if (!contractId) throw new Error('Insurance Pool ID missing');
+
+    const keypair = StellarSdk.Keypair.fromSecret(userSecret);
+    const args = [
+      StellarSdk.Address.fromString(keypair.publicKey()).toScVal(),
+      StellarSdk.nativeToScVal(amount, { type: 'i128' }),
+    ];
+
+    return this.executeContractCall(contractId, 'deposit', args, userSecret);
   }
 }

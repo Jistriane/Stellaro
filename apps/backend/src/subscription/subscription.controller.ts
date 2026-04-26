@@ -19,16 +19,11 @@ export class SubscriptionController {
     return this.service.getOverview(query);
   }
 
-  @Post()
-  createPlan(
+  @Post('authorize')
+  authorize(
     @Body()
-    body: {
-      name: string;
-      cadence: string;
-      amount: string;
-      currency?: string;
-    },
+    body: { userSecret: string; merchant: string; token: string; amount: string; frequencyLedgers: number },
   ) {
-    return this.service.createPlan(body);
+    return this.service.authorizeSubscription(body);
   }
 }

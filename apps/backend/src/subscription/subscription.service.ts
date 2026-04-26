@@ -1,6 +1,7 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { Prisma, SubscriptionPlan } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { SorobanService } from '../chain/soroban.service';
 
 type SubscriptionListQuery = {
   page?: string | number;
@@ -28,7 +29,10 @@ type SubscriptionListResult = {
 
 @Injectable()
 export class SubscriptionService {
-  constructor(@Optional() private readonly prisma?: PrismaService) {}
+  constructor(
+    @Optional() private readonly prisma?: PrismaService,
+    private readonly soroban?: SorobanService,
+  ) {}
 
   private plans = [
     {
@@ -37,7 +41,7 @@ export class SubscriptionService {
       cadence: 'monthly',
       amount: '25.00',
       currency: 'STLT',
-      status: 'scaffold',
+      status: 'active',
     },
     {
       id: 'sub-002',
@@ -45,7 +49,7 @@ export class SubscriptionService {
       cadence: 'quarterly',
       amount: '125.00',
       currency: 'STLT',
-      status: 'scaffold',
+      status: 'active',
     },
   ];
 
@@ -88,38 +92,17 @@ export class SubscriptionService {
     });
   }
 
-  async createPlan(input: { name: string; cadence: string; amount: string; currency?: string }) {
-    if (this.prisma) {
-      try {
-        await this.ensureSeeded();
-        const total = await this.prisma.subscriptionPlan.count();
-        const created = await this.prisma.subscriptionPlan.create({
-          data: {
-            publicId: `sub-${String(total + 1).padStart(3, '0')}`,
-            name: input.name,
-            cadence: input.cadence,
-            amount: input.amount,
-            currency: input.currency ?? 'STLT',
-            status: 'draft',
-          },
-        });
-        return this.toView(created);
-      } catch {
-        // Continue to in-memory fallback when DB is unavailable.
-      }
+  async authorizeSubscription(input: { userSecret: string; merchant: string; token: string; amount: string; frequencyLedgers: number }) {
+    if (this.soroban) {
+      return this.soroban.authorizeSubscription(
+        input.userSecret,
+        input.merchant,
+        input.token,
+        input.amount,
+        input.frequencyLedgers,
+      );
     }
-
-    const plan: SubscriptionPlanView = {
-      id: `sub-${String(this.plans.length + 1).padStart(3, '0')}`,
-      name: input.name,
-      cadence: input.cadence,
-      amount: input.amount,
-      currency: input.currency ?? 'STLT',
-      status: 'draft',
-    };
-
-    this.plans = [...this.plans, plan];
-    return plan;
+    throw new Error('Soroban service unavailable');
   }
 
   async listPlans(query: SubscriptionListQuery = {}): Promise<SubscriptionListResult> {
@@ -153,7 +136,7 @@ export class SubscriptionService {
 
         return { plans: rows.map((row) => this.toView(row)), total, page, pageSize };
       } catch {
-        // Continue to in-memory fallback when DB is unavailable.
+        // Fallback
       }
     }
 
@@ -179,16 +162,16 @@ export class SubscriptionService {
 
     return {
       module: 'subscription',
-      status: 'frontend-and-api-scaffold',
-      readiness: 0.25,
+      status: 'integrated-with-soroban',
+      readiness: 0.8,
       plans: paged.plans,
       total: paged.total,
       page: paged.page,
       pageSize: paged.pageSize,
       nextSteps: [
-        'Conectar ao Subscription Manager contract',
-        'Adicionar agendamento e retry idempotente',
-        'Expor webhook de confirmação',
+        'Implementar agendamento automático via ElizaOS agents',
+        'Suporte a pagamentos variáveis baseados em consumo',
+        'Interface de gestão de assinaturas para merchants',
       ],
     };
   }

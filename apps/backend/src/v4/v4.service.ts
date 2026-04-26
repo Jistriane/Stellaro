@@ -3,6 +3,7 @@ import { RwaService } from '../rwa/rwa.service';
 import { SsiService } from '../ssi/ssi.service';
 import { SubscriptionService } from '../subscription/subscription.service';
 import { DaoService } from '../dao/dao.service';
+import { InsuranceService } from '../insurance/insurance.service';
 
 @Injectable()
 export class V4Service {
@@ -11,14 +12,16 @@ export class V4Service {
     private readonly ssi: SsiService,
     private readonly subscription: SubscriptionService,
     private readonly dao: DaoService,
+    private readonly insurance: InsuranceService,
   ) {}
 
   async getOverview() {
-    const [rwa, ssi, subscription, dao] = await Promise.all([
+    const [rwa, ssi, subscription, dao, insurance] = await Promise.all([
       Promise.resolve(this.rwa.getOverview()),
       Promise.resolve(this.ssi.getOverview()),
       Promise.resolve(this.subscription.getOverview()),
       Promise.resolve(this.dao.getOverview()),
+      Promise.resolve(this.insurance.getOverview()),
     ]);
 
     const modules = [
@@ -54,13 +57,21 @@ export class V4Service {
         readiness: dao.readiness,
         items: dao.proposals.length,
       },
+      {
+        id: 'insurance',
+        title: 'Pool de Seguros',
+        href: '/insurance',
+        status: insurance.status,
+        readiness: insurance.readiness,
+        items: 0,
+      },
     ];
 
     const readiness = modules.reduce((sum, module) => sum + module.readiness, 0) / modules.length;
 
     return {
       module: 'v4',
-      status: 'frontend-and-api-scaffold',
+      status: 'integrated-with-soroban',
       readiness,
       modules,
       nextSteps: [
@@ -68,6 +79,7 @@ export class V4Service {
         ...ssi.nextSteps,
         ...subscription.nextSteps,
         ...dao.nextSteps,
+        ...insurance.nextSteps,
       ],
     };
   }

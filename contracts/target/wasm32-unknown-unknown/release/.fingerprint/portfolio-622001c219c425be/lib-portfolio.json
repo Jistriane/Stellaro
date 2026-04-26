@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ea9833ba774c7609daf30f9791b3e03263d08a278648969aaf59e81329b039d0
-size 495
+{"rustc":7458672600737419911,"features":"[]","declared_features":"[]","target":4883252616947000366,"profile":12711961069063050335,"path":17057242991263517122,"deps":[[13856155674467162088,"soroban_sdk",false,17053738164737865262]],"local":[{"CheckDepInfo":{"dep_info":"wasm32-unknown-unknown/release/.fingerprint/portfolio-622001c219c425be/dep-lib-portfolio","checksum":false}}],"rustflags":["-C","link-arg=--no-entry","-C","opt-level=z","-C","link-arg=-zstack-size=256000"],"config":8247474407144887393,"compile_kind":14682669768258224367}

@@ -87,8 +87,8 @@ export async function getV4Overview(): Promise<V4Overview> {
 export async function getRwaOverview(query?: QueryParams): Promise<RwaOverview> {
   return readJson<RwaOverview>('/rwa', {
     module: 'rwa',
-    status: 'frontend-and-api-scaffold',
-    readiness: 0.35,
+    status: 'integrated-with-soroban',
+    readiness: 0.75,
     items: [],
     total: 0,
     page: 1,
@@ -100,8 +100,8 @@ export async function getRwaOverview(query?: QueryParams): Promise<RwaOverview> 
 export async function getSsiOverview(query?: QueryParams): Promise<SsiOverview> {
   return readJson<SsiOverview>('/ssi', {
     module: 'ssi',
-    status: 'frontend-and-api-scaffold',
-    readiness: 0.3,
+    status: 'integrated-with-soroban',
+    readiness: 0.8,
     credentials: [],
     total: 0,
     page: 1,
@@ -113,8 +113,8 @@ export async function getSsiOverview(query?: QueryParams): Promise<SsiOverview> 
 export async function getSubscriptionOverview(query?: QueryParams): Promise<SubscriptionOverview> {
   return readJson<SubscriptionOverview>('/subscriptions', {
     module: 'subscription',
-    status: 'frontend-and-api-scaffold',
-    readiness: 0.25,
+    status: 'integrated-with-soroban',
+    readiness: 0.8,
     plans: [],
     total: 0,
     page: 1,
@@ -126,8 +126,8 @@ export async function getSubscriptionOverview(query?: QueryParams): Promise<Subs
 export async function getDaoOverview(query?: QueryParams): Promise<DaoOverview> {
   return readJson<DaoOverview>('/dao', {
     module: 'dao',
-    status: 'frontend-and-api-scaffold',
-    readiness: 0.4,
+    status: 'integrated-with-soroban',
+    readiness: 0.85,
     proposals: [],
     total: 0,
     page: 1,

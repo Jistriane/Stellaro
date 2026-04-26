@@ -16,16 +16,16 @@ Home / Dashboard:
 
 ![Home](./Home%20Stellaro.png)
 
-## Architecture v3.0 Highlights
+## Architecture v4.0 Highlights
 
-- **AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring
-- **Real-world Rails** - Native PIX and Credit Card integrations for instant fiat-to-crypto flows
-- **Sub-second Oracles** - Reflector Network integration (<500ms latency)
+- **AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring and automated mitigation
+- **Real-world Rails** - PIX, card tokenization, and on-chain settlement paths for fiat-to-crypto flows
+- **Sub-second Oracles** - Reflector Network integration with safe cache warming and teardown cleanup
 - **Passkey Sessions** - Biometric authentication with session keys for batch operations
-- **120% Collateralization** - Automated reserve monitoring with emergency freeze
-- **Enterprise Security** - Automated token rotation, AML screening, and ZK-proof persistence on-chain
+- **8-Contract Topology** - Stablecoin, Loans Pool, RiskLock, Portfolio, Governance, ZK Verifier, Batch Executor, and MEV Guard
+- **Enterprise Security** - Token rotation, AML screening, KYC limits, and audit trails across critical paths
+- **V4 Product Modules** - RWA, SSI/VCs, recurring payments, and DAO launch surfaces in backend and frontend
 - **Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster, Docker multi-stage builds
-- **Progressive Decentralization** - Multisig 3/5 -> DAO governance roadmap
 
 ## Features
 
@@ -36,10 +36,11 @@ Home / Dashboard:
 - **Governance System** - Progressive decentralization (Multisig → DAO)
 - **Wallet Integration** - Freighter, Ledger, Albedo support
 - **PIX Integration** - Instant BRL mint/burn via Stellar Anchors
-- **KYC/AML Compliance** - Multi-tier (0/1/2) via Onfido + Chainalysis
+- **KYC/AML Compliance** - Multi-tier limits, audit trail, and real-time compliance gating
 - **Security Features** - Passkey authentication, session keys, reserve monitoring
 - **AI Risk Agent** - ElizaOS Stellaro (risk) with ZK credit scoring (Groth16)
 - **Sub-500ms Oracles** - Reflector Network + Stellar DEX fallback
+- **V4 Launch Surfaces** - RWA, SSI, recurring payments, and DAO pages in the frontend
 
 ### Observability & Operations
 
@@ -147,17 +148,17 @@ curl -X POST "http://localhost:3001/payments/pix/charge" \
   -d '{"amountBRL":"100.00","stellarAddress":"GD...","cpf":"12345678900","name":"User Test"}'
 ```
 
-### Tech Stack v3.0
+### Tech Stack v4.0
 
 - **Frontend**: Next.js 14, React 19, TypeScript, Tailwind CSS, Zustand, next-intl
-- **Backend**: NestJS 11, Prisma (PostgreSQL), Redis Cluster, Swagger/OpenAPI
+- **Backend**: NestJS 11, Prisma (PostgreSQL), Redis, Swagger/OpenAPI
 - **Blockchain**: Stellar, Soroban Smart Contracts (Rust)
-- **AI/ML**: ElizaOS (Anthropic Claude), ZK-Proofs (Groth16)
+- **AI/ML**: ElizaOS, ZK-Proofs (Groth16), orquestração de risco e tesouraria
 - **Infrastructure**: AWS EKS (sa-east-1), PostgreSQL Multi-AZ, Redis cluster
 - **CI/CD**: GitHub Actions, Turborepo, Docker, Kubernetes
 - **Monitoring**: Grafana, Prometheus, Loki, CloudWatch
-- **Security**: Passkey Kit, Onfido, Chainalysis, Wazuh SIEM
-- **Testing**: Jest (65 test suites, 414+ tests, 57.62% coverage, 100% E2E passing)
+- **Security**: Passkey Kit, AML/KYC gates, token rotation, audit logging
+- **Testing**: Jest + Vitest, full monorepo CI, open-handle detection on backend
 
 ## Live Deployments
 
@@ -175,11 +176,11 @@ Stellaro uses fully automated GitHub Actions workflows for continuous deployment
 
 | Platform | Trigger | Status | Details |
 |----------|---------|--------|---------|
-| **GitHub Pages** | Push to master | ✅ Active | Static export at https://jistriane.github.io/Stellaro/ |
-| **Smart Contracts** | Manual + Tags | ✅ Ready | Manual workflow for Stellar Testnet deploys |
-| **Frontend Tests** | Push/PR | ✅ Active | Lint + build validation gating |
-| **Backend Tests** | Push/PR | ✅ Active | Unit tests + coverage |
-| **Contract Tests** | Push/PR | ✅ Active | Cargo test + clippy + audit |
+| **GitHub Pages** | Push to master | [OK] Active | Static export at https://jistriane.github.io/Stellaro/ |
+| **Smart Contracts** | Manual + Tags | [OK] Ready | Manual workflow for Stellar Testnet deploys |
+| **Frontend Tests** | Push/PR | [OK] Active | Lint + build validation gating |
+| **Backend Tests** | Push/PR | [OK] Active | Unit tests + coverage |
+| **Contract Tests** | Push/PR | [OK] Active | Cargo test + clippy + audit |
 
 **→ See [Deployment Guide](./.github/DEPLOYMENT.md) for detailed setup and manual deploy instructions**
 
@@ -187,10 +188,17 @@ Stellaro uses fully automated GitHub Actions workflows for continuous deployment
 
 - **`apps/frontend`**: Next.js 14 application with modern UI components and wallet integration.
 - **`apps/backend`**: NestJS application with Prisma, Redis, and comprehensive API services.
-  - Relevant endpoints: `/oracles/price`, `/defi/blend/positions/:address`, `/memory/history/:address`, `/chain/health`
+  - Relevant endpoints: `/oracles/price`, `/defi/blend/positions/:address`, `/memory/history/:address`, `/payments/pix/*`, `/rwa`, `/ssi`, `/subscriptions`, `/dao`, `/v4`
 - **`contracts/`**: Soroban smart contracts written in Rust for DeFi operations.
 - **`packages/`**: Shared UI components and configurations across the monorepo.
 - **`infra/`**: Docker files, deployment scripts, and CI/CD configurations.
+
+## Current Product Surface
+
+- **Core DeFi**: stablecoin, lending, portfolio, governance, ZK scoring, batch execution, MEV protection
+- **Payments**: PIX charge/webhook, card tokenize/charge, settlement and mint flows
+- **V4 modules**: RWA, SSI/VCs, recurring payments, DAO, and a `v4` launchpad page
+- **Operations**: deployment scripts, Kubernetes manifests, monitoring, evidence reports, and post-launch runbooks
 
 ## Project Flow Diagram
 
@@ -220,6 +228,11 @@ flowchart LR
     C5["ZK Verifier"]
     C6["Batch Executor"]
     C7["MEV Guard"]
+    C8["VC Registry (SSI)"]
+    C9["RWA Tokenizer"]
+    C10["DAO Governance"]
+    C11["Recurring Payments"]
+    C12["Insurance Pool"]
   end
 
   subgraph DATA["Data and Integrations"]
@@ -247,10 +260,19 @@ flowchart LR
   B --> C5
   B --> C6
   B --> C7
+  B --> C8
+  B --> C9
+  B --> C10
+  B --> C11
+  B --> C12
 
   C6 --> C1
   C6 --> C2
   C6 --> C7
+  
+  C9 -.->|Compliance Check| C8
+  A1 -.->|AI Audit| C9
+  A1 -.->|Monitoring| C10
 
   B --> O1
   B --> O2
@@ -261,7 +283,7 @@ flowchart LR
 
 ## Deployed Smart Contracts
 
-The Stellaro platform includes 8 smart contracts deployed on Stellar Testnet:
+The Stellaro platform includes 13 smart contracts deployed on Stellar Testnet:
 
 | Contract | Contract ID | Purpose |
 |-------------------|-------------|-------------------|
@@ -273,6 +295,11 @@ The Stellaro platform includes 8 smart contracts deployed on Stellar Testnet:
 | **ZK Verifier** | `CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY` | ZK-proof verification and credit scoring |
 | **Batch Executor** | `CAHWOMBTMVUWGMRWSJY2TPCBMPO3A3LODCBE6MFXMA6XR4ALZZCGTN7I` | Atomic batch execution for DeFi operations |
 | **MEV Guard** | `CDHQZQ5YMNVAPKXJ6LVBDSJC4QVZL4UD2TIKSTDYGATMBTWEV7ZSOG3M` | Protected swaps and anti-MEV controls |
+| **SSI (VC Registry)** | `CAX4C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG` | Decentralized Identity and KYC Compliance |
+| **RWA Tokenizer** | `CBX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG` | Real World Asset fractionalization and compliance |
+| **DAO Governance** | `CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG` | On-chain weighted voting and protocol management |
+| **Recurring Pymts** | `CDX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG` | Subscription and scheduled stablecoin transfers |
+| **Insurance Pool** | `CEX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG` | Parametric insurance and coverage pool |
 
 ### Network Configuration
 

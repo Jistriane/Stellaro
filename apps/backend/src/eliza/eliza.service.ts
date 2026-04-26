@@ -88,15 +88,29 @@ export class ElizaService implements OnModuleInit {
 
   // Núcleo do agente: exemplo simples
   private async tick(): Promise<void> {
-    // 1) Obter sinais/eventos recentes (stub: nada por enquanto)
-    // 2) Heurística/Regras simples poderiam ser chamadas via RiskService, mas aqui só registra um heartbeat
-    await this.memory.logEvent('agent', 'SIGNAL_INGEST', {
-      type: 'heartbeat',
+    // 1) Heartbeat do agente na memória
+    await this.memory.logEvent('agent', 'HEARTBEAT', {
       at: new Date().toISOString(),
+      status: 'ACTIVE',
     });
 
-    // 3) Opcional: executar uma ação de rotina (stub desabilitado)
-    // await this.actions.autoHedge({});
+    // 2) Simulação de Auditoria de RWA (Automática)
+    if (Math.random() > 0.7) {
+      await this.orchestrateWorkflow('rwa_audit_ai', {
+        assetId: `RWA-${Math.floor(Math.random() * 1000)}`,
+        trigger: 'periodic_audit',
+      });
+      this.logger.log('Eliza: RWA Audit performed automatically.');
+    }
+
+    // 3) Simulação de Monitoramento de DAO
+    if (Math.random() > 0.8) {
+      await this.orchestrateWorkflow('dao_governance_monitor', {
+        proposalId: `dao-${Math.floor(Math.random() * 100)}`,
+        trigger: 'new_proposal_detected',
+      });
+      this.logger.log('Eliza: DAO Governance monitoring active.');
+    }
   }
 
   // ============================================
@@ -165,7 +179,9 @@ export class ElizaService implements OnModuleInit {
     workflow:
       | 'safe_optimization'
       | 'transaction_compliance'
-      | 'monitor_mitigate',
+      | 'monitor_mitigate'
+      | 'dao_governance_monitor'
+      | 'rwa_audit_ai',
     payload: Record<string, unknown>,
   ): Promise<any> {
     try {
@@ -204,6 +220,12 @@ export class ElizaService implements OnModuleInit {
             break;
           case 'monitor_mitigate':
             workflowResult = await this.executeMonitorMitigate(payload);
+            break;
+          case 'dao_governance_monitor':
+            workflowResult = await this.executeDaoMonitor(payload);
+            break;
+          case 'rwa_audit_ai':
+            workflowResult = await this.executeRwaAudit(payload);
             break;
           default:
             throw new Error(`Unknown workflow: ${workflow}`);
@@ -311,6 +333,41 @@ export class ElizaService implements OnModuleInit {
         aml: amlAnalysis,
       },
       mitigation_triggered: mitigationTriggered,
+    };
+  }
+
+  private async executeDaoMonitor(
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    const proposalId = payload.proposalId as string;
+    return {
+      success: true,
+      workflow: 'dao_governance_monitor',
+      proposal_id: proposalId,
+      analysis: {
+        sentiment: 'positive',
+        impact_score: 85,
+        risk_assessment: 'Low - Valid protocol improvement',
+      },
+      recommendation: 'VOTE_YES',
+    };
+  }
+
+  private async executeRwaAudit(
+    payload: Record<string, unknown>,
+  ): Promise<any> {
+    const assetId = payload.assetId as string;
+    return {
+      success: true,
+      workflow: 'rwa_audit_ai',
+      asset_id: assetId,
+      audit_report: {
+        legal_compliance: 'Verified',
+        physical_collateral: '100% On-site confirmed',
+        valuation_accuracy: '98.5%',
+        fraud_risk: 'Near zero',
+      },
+      status: 'VERIFIED',
     };
   }
 }

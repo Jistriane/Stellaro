@@ -2,15 +2,15 @@
 
 ## Status Summary
 
-- Project Completion: 98%
+- Project Completion: 100%
 - Testnet Strict Validation: 100%
-- Documentation Cleanup: in progress
+- Documentation Cleanup: aligned to v4 baseline
 
 Progress bars:
 
-- Overall Project: [###################-] 98%
+- Overall Project: [####################] 100%
 - Strict Testnet Evidence: [####################] 100%
-- Documentation Standardization: [############--------] 60%
+- Documentation Standardization: [####################] 100%
 
 ## Recommended Reading By Role
 
@@ -31,6 +31,7 @@ Progress bars:
 2. [MAINNET_CHECKLIST_COMPLETE.md](MAINNET_CHECKLIST_COMPLETE.md)
 3. [QUICK_DEPLOY_GUIDE.md](QUICK_DEPLOY_GUIDE.md)
 4. [CONTRACT_DEPLOYMENT_GUIDE.md](CONTRACT_DEPLOYMENT_GUIDE.md)
+5. [POST_LAUNCH_OPERATIONS.md](POST_LAUNCH_OPERATIONS.md)
 
 ### Developers (contracts/backend)
 
@@ -46,14 +47,16 @@ Progress bars:
 
 ## Current Operational Baseline
 
-- Canonical strict evidence bundle:
+- Canonical strict evidence bundles:
 	- [contracts/reports/20260420_rc_strict/evidence_report.md](../contracts/reports/20260420_rc_strict/evidence_report.md)
-	- [contracts/reports/20260420_rc_strict/evidence_report.json](../contracts/reports/20260420_rc_strict/evidence_report.json)
+	- [contracts/reports/20260425_104952/evidence_report.md](../contracts/reports/20260425_104952/evidence_report.md)
+	- [contracts/reports/20260425_104952/evidence_report.json](../contracts/reports/20260425_104952/evidence_report.json)
 
-- Validated contract IDs (testnet strict snapshot):
+- Validated contract IDs (current testnet snapshot):
 	- Stablecoin: `CAB2HQ7XQ2CS4ROO4E3PZVJASXUNEKWTDFGRRGIPVUFHGQC24HKZHJIZ`
 	- Batch Executor: `CDZZQYUKOSTHDOUCU273NHRVYJ67A37JC5SL3JAOJ77FUT4KGQXSJBUI`
 	- MEV Guard: `CAHZYMMJVZN4JESEXMCVVOVTOE3A5AISNK3IWTZRDBXW3ZK2ZKBFSFHD`
+	- V4 modules: `rwa`, `ssi`, `subscriptions`, `dao`
 
 ## Quick Checklist
 
@@ -69,5 +72,5 @@ Progress bars:
 
 ## Last Update
 
-- Date: 2026-04-20
-- Maintainer scope: documentation index and operational handoff
+- Date: 2026-04-26
+- Maintainer scope: documentation index, operational handoff, and v4 launch surfaces

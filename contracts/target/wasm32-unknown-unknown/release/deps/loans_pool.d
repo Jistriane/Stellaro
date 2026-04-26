@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c845863f0ca6bea52a88bd4b07e9ed97311eeebea2dbcae5edc1dbefffe9e8e7
-size 410
+/home/jistriane/Stellaro/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/loans_pool.d: loans_pool/src/lib.rs
+
+/home/jistriane/Stellaro/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/loans_pool.wasm: loans_pool/src/lib.rs
+
+/home/jistriane/Stellaro/Stellaro/contracts/target/wasm32-unknown-unknown/release/deps/libloans_pool.rlib: loans_pool/src/lib.rs
+
+loans_pool/src/lib.rs:

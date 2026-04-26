@@ -7,7 +7,7 @@ members = [
     "governance",
     "zk_verifier",
     "batch_executor",
-    "mev_guard",
+    "mev_guard", "vc_registry", "rwa_tokenizer", "dao_governance", "recurring_payments", "insurance_pool",
 ]
 resolver = "2"
 

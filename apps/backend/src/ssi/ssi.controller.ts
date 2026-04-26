@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Param } from '@nestjs/common';
 import { SsiService } from './ssi.service';
 
 @Controller('ssi')
@@ -22,8 +22,13 @@ export class SsiController {
   @Post()
   issueCredential(
     @Body()
-    body: { type: string; issuer: string },
+    body: { userAddress: string; type: string; issuer: string; vcHash: string },
   ) {
     return this.service.issueCredential(body);
+  }
+
+  @Get('verify/:address')
+  verifyOnChain(@Param('address') address: string) {
+    return this.service.verifyOnChain(address);
   }
 }

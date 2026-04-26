@@ -26,4 +26,12 @@ export class RwaController {
   ) {
     return this.service.createAsset(body);
   }
+
+  @Post('mint')
+  mintAsset(
+    @Body()
+    body: { id: string; userAddress: string; amount: string },
+  ) {
+    return this.service.mintAsset(body.id, body.userAddress, body.amount);
+  }
 }
