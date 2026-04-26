@@ -54,3 +54,8 @@ agents/venv/
 # Rust/Emacs flycheck temp files
 contracts/target/flycheck0/
 .env*.local
+
+# Stellaro Private Docs
+STELLARO ARQUITETURA TÉCNICA COMPLETA.md
+MODO ARQUITETO  RULES.md
+Links Stellar.md
