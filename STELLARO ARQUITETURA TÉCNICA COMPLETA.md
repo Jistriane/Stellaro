@@ -780,15 +780,20 @@ LENDING_CONTRACT_ID=CXXX\...
 
 ZK_CREDIT_CONTRACT_ID=CXXX\...
 
-\*\*RWA_TOKENIZER_ID=CXXX\...\*\*
+**RWA_TOKENIZER_ID=CBX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG**
+**[Explorer](https://stellar.expert/explorer/testnet/contract/CBX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG)**
 
-\*\*VC_REGISTRY_ID=CXXX\...\*\*
+**VC_REGISTRY_ID=CAX4C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG**
+**[Explorer](https://stellar.expert/explorer/testnet/contract/CAX4C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG)**
 
-\*\*SUBSCRIPTION_ID=CXXX\...\*\*
+**SUBSCRIPTION_ID=CDX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG**
+**[Explorer](https://stellar.expert/explorer/testnet/contract/CDX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG)**
 
-\*\*DAO_ID=CXXX\...\*\*
+**DAO_ID=CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG**
+**[Explorer](https://stellar.expert/explorer/testnet/contract/CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG)**
 
-\*\*DEFI_INSURANCE_ID=CXXX\...\*\*
+**DEFI_INSURANCE_ID=CEX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG**
+**[Explorer](https://stellar.expert/explorer/testnet/contract/CEX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG)**
 
 \# Payments
 
@@ -840,95 +845,58 @@ SESSION_ENCRYPTION_KEY=256_bits_random
 
 **Sprint 1 --- Semanas 1-2: Fundação Stellar & RWA**
 
-✅ Horizon + Soroban RPC configurados
-
-✅ Passkey Kit integrado com session keys
-
-✅ Stablecoins BRL/USD via OpenZeppelin Wizard
-
-✅ Reflector Network oráculos configurados
-
-✅ Blend Protocol SDK integrado
-
-✅ Pipeline CI/CD base configurado
-
-✅ Ambiente testnet funcionando
-
-\*\*✅ RWA Tokenizer Smart Contract deployado\*\*
-
-\*\*✅ RWA Frontend Module (criação/visualização)\*\*
-
-\*\*✅ ElizaOS RWA Valuation (MVP)\*\*
+[██████████] Horizon + Soroban RPC configurados
+[██████████] Passkey Kit integrado com session keys
+[██████████] Stablecoins BRL/USD via OpenZeppelin Wizard
+[██████████] Reflector Network oráculos configurados
+[██████████] Blend Protocol SDK integrado
+[██████████] Pipeline CI/CD base configurado
+[██████████] Ambiente testnet funcionando
+[██████████] RWA Tokenizer Smart Contract deployado
+[██████████] RWA Frontend Module (criação/visualização)
+[██████████] ElizaOS RWA Valuation (MVP)
 
 **Sprint 2 --- Semanas 3-4: IA, DeFi Avançado & SSI**
 
-✅ ElizaOS RiskGuardian com multi-agent
-
-✅ Groth16 ZK-Proofs para credit score
-
-✅ Dynamic lending pool com taxa ajustável
-
-✅ MEV protection layer
-
-✅ Blend auto-compound ativado
-
-\*\*✅ VC Registry Smart Contract deployado\*\*
-
-\*\*✅ SSI Frontend Module (wallet de VCs)\*\*
-
-\*\*✅ ElizaOS VC Management (MVP)\*\*
-
-\*\*✅ DeFi Insurance Smart Contract deployado\*\*
-
-\*\*✅ Yield Farming Otimizado (ElizaOS)\*\*
+[██████████] ElizaOS RiskGuardian com multi-agent
+[██████████] Groth16 ZK-Proofs para credit score
+[██████████] Dynamic lending pool com taxa ajustável
+[██████████] MEV protection layer
+[██████████] Blend auto-compound ativado
+[██████████] VC Registry Smart Contract deployado
+[██████████] SSI Frontend Module (wallet de VCs)
+[██████████] ElizaOS VC Management (MVP)
+[██████████] DeFi Insurance Smart Contract deployado
+[██████████] Yield Farming Otimizado (ElizaOS)
 
 **Sprint 3 --- Semanas 5-6: Pagamentos, Governança & Lançamento**
 
-✅ PIX via Stellar Anchors + compliance
+[██████████] PIX via Stellar Anchors + compliance
+[██████████] Cartões virtuais tokenizados
+[██████████] Multi-sig vault para operações críticas
+[██████████] Firewall inteligente com ElizaOS
+[██████████] Dashboard analytics real-time
+[██████████] Subscription Manager Smart Contract deployado
+[██████████] Pagamentos Recorrentes Frontend Module
+[██████████] DAO Governance Smart Contract deployado
+[██████████] DAO Frontend Module (propostas/votos)
 
-✅ Cartões virtuais tokenizados
-
-✅ Multi-sig vault para operações críticas
-
-✅ Firewall inteligente com ElizaOS
-
-✅ Dashboard analytics real-time
-
-\*\*✅ Subscription Manager Smart Contract deployado\*\*
-
-\*\*✅ Pagamentos Recorrentes Frontend Module\*\*
-
-\*\*✅ DAO Governance Smart Contract deployado\*\*
-
-\*\*✅ DAO Frontend Module (propostas/votos)\*\*
-
-\*\*✅ Developer API Service deployado\*\*
-
-✅ E2E tests todos os fluxos críticos
-
-✅ Auditoria de segurança automatizada
-
-✅ Rolling deploy configurado
+[██████████] Developer API Service deployado
+[██████████] E2E tests todos os fluxos críticos
+[██████████] Auditoria de segurança automatizada
+[██████████] Rolling deploy configurado
 
 **Pós-Launch --- Semanas 7-8: Otimização & Expansão**
 
-✅ Load testing 10k+ usuários simultâneos
-
-✅ Auditoria externa (CertiK/Trail of Bits)
-
-✅ Otimização gas fees \< \$0.01/tx
-
-✅ Preparação hackathons e grants
-
-✅ x402 agentic payments integrado
-
-✅ Multi-region failover testado
-
-\*\*✅ Cross-Chain Bridges (MVP)\*\*
-
-\*\*✅ Robo-Advisor DeFi (ElizaOS)\*\*
-
-\*\*✅ Remessas Internacionais Otimizadas\*\*
+[██████████] Load testing 10k+ usuários simultâneos
+[██████████] Auditoria externa (CertiK/Trail of Bits)
+[██████████] Otimização gas fees < $0.01/tx
+[██████████] Preparação hackathons e grants
+[██████████] x402 agentic payments integrado
+[██████████] Multi-region failover testado
+[██████████] Cross-Chain Bridges (MVP)
+[██████████] Robo-Advisor DeFi (ElizaOS)
+[██████████] Remessas Internacionais Otimizadas
 
 **DIFERENCIAIS COMPETITIVOS**
 
