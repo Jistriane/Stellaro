@@ -19,10 +19,12 @@ Home / Dashboard:
 ## Architecture v3.0 Highlights
 
 - **AI Risk Guardian** - ElizaOS-powered risk assessment with ZK-proof credit scoring
+- **Real-world Rails** - Native PIX and Credit Card integrations for instant fiat-to-crypto flows
 - **Sub-second Oracles** - Reflector Network integration (<500ms latency)
 - **Passkey Sessions** - Biometric authentication with session keys for batch operations
 - **120% Collateralization** - Automated reserve monitoring with emergency freeze
-- **Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster
+- **Enterprise Security** - Automated token rotation, AML screening, and ZK-proof persistence on-chain
+- **Production-Ready Infrastructure** - AWS EKS, PostgreSQL Multi-AZ, Redis cluster, Docker multi-stage builds
 - **Progressive Decentralization** - Multisig 3/5 -> DAO governance roadmap
 
 ## Features
@@ -98,15 +100,16 @@ Provisioned dashboards:
 - Production-ready PasskeyService integration (Redis-backed)
 - MFA and transaction signing support
 
-### PIX Payments
+### PIX & Card Payments
 
 - `POST /payments/pix/charge`: Generate PIX charge for STLT mint (1 BRL = 1 STLT)
 - `POST /payments/pix/webhook`: Payment confirmation webhook (HMAC-signed)
-- `POST /payments/pix/withdrawal`: Initiate PIX withdrawal after STLT burn
-- `GET /payments/pix/status/:txId`: Query payment status
-- Provider integration (PJBank, Asaas, etc.) via webhook
-- Automatic mint/burn via ActionsService after PIX confirmation
-- Idempotent system to prevent double-mint
+- `POST /payments/card/tokenize`: Secure PCI-compliant card tokenization
+- `POST /payments/card/charge`: Execute credit card charge for asset purchase
+- `GET /payments/status/:txId`: Query real-time payment status
+- Production-ready provider integration (Dock, Celcoin, Stripe) with secure fallback
+- Automatic mint/burn via ActionsService after confirmation
+- Idempotent system to prevent double-mint and fraudulent charges
 
 ### ElizaOS Agents (AI)
 
@@ -248,7 +251,6 @@ flowchart LR
   C6 --> C1
   C6 --> C2
   C6 --> C7
-  C7 --> C6
 
   B --> O1
   B --> O2
