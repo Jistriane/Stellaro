@@ -50,6 +50,11 @@ describe('ActionsService', () => {
     chainService = module.get<ChainService>(ChainService);
     sorobanService = module.get<SorobanService>(SorobanService);
     prismaService = module.get<PrismaService>(PrismaService);
+
+    mockChainService.submitTxReal.mockResolvedValue({
+      ok: true,
+      txHash: 'tx-default',
+    });
   });
 
   afterEach(() => {

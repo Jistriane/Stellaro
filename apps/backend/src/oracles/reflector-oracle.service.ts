@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as StellarSdk from '@stellar/stellar-sdk';
 
@@ -25,11 +25,12 @@ export interface OracleConfig {
 }
 
 @Injectable()
-export class ReflectorOracleService implements OnModuleInit {
+export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ReflectorOracleService.name);
   private readonly config: OracleConfig;
   private readonly priceCache: Map<string, PriceData> = new Map();
   private readonly server: StellarSdk.Horizon.Server;
+  private cacheWarmerTimer: NodeJS.Timeout | null = null;
 
   constructor(private configService: ConfigService) {
     const useStub = this.configService.get('ORACLE_MODE') === 'stub';
@@ -57,6 +58,13 @@ export class ReflectorOracleService implements OnModuleInit {
     this.logger.log('Initializing Reflector Oracle Service...');
     await this.healthCheck();
     this.startCacheWarmer();
+  }
+
+  onModuleDestroy() {
+    if (this.cacheWarmerTimer) {
+      clearInterval(this.cacheWarmerTimer);
+      this.cacheWarmerTimer = null;
+    }
   }
 
   /**
@@ -330,7 +338,11 @@ export class ReflectorOracleService implements OnModuleInit {
   private startCacheWarmer() {
     const popularAssets = ['XLM', 'USDC', 'BTC', 'ETH'];
 
-    setInterval(
+    if (this.cacheWarmerTimer) {
+      clearInterval(this.cacheWarmerTimer);
+    }
+
+    this.cacheWarmerTimer = setInterval(
       async () => {
         for (const asset of popularAssets) {
           try {
@@ -344,6 +356,9 @@ export class ReflectorOracleService implements OnModuleInit {
       },
       this.config.cacheTimeout / 2,
     ); // Refresh a cada 2.5s
+
+    // Evita bloquear o encerramento do processo de testes.
+    this.cacheWarmerTimer.unref();
   }
 
   /**

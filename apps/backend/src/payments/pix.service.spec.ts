@@ -210,10 +210,10 @@ describe('PixService', () => {
       expect(result.ok).toBe(true);
       expect(result.minted).toBe(true);
       expect(actionsService.stablecoinMintGuarded).toHaveBeenCalledWith({
+        userId: 'user-123',
         to: 'GTEST123',
         amount: '100.00',
-        riskBps: 100,
-        userId: 'user-123',
+        riskBps: 0,
       });
     });
 

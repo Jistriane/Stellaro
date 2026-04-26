@@ -5,10 +5,11 @@ import { ConfigService } from '@nestjs/config';
 // Testes básicos para cobrir construção, stub mode e fallbacks
 describe('ReflectorOracleService', () => {
   let service: ReflectorOracleService;
+  let moduleRef: TestingModule;
 
   describe('stub mode', () => {
     beforeAll(async () => {
-      const module: TestingModule = await Test.createTestingModule({
+      moduleRef = await Test.createTestingModule({
         providers: [
           ReflectorOracleService,
           {
@@ -25,8 +26,14 @@ describe('ReflectorOracleService', () => {
         ],
       }).compile();
 
-      service = module.get<ReflectorOracleService>(ReflectorOracleService);
+      service = moduleRef.get<ReflectorOracleService>(ReflectorOracleService);
       await service.onModuleInit();
+    });
+
+    afterAll(async () => {
+      if (moduleRef) {
+        await moduleRef.close();
+      }
     });
 
     it('should be defined', () => {
@@ -61,7 +68,7 @@ describe('ReflectorOracleService', () => {
 
   describe('production mode (no stub)', () => {
     beforeAll(async () => {
-      const module: TestingModule = await Test.createTestingModule({
+      moduleRef = await Test.createTestingModule({
         providers: [
           ReflectorOracleService,
           {
@@ -80,8 +87,14 @@ describe('ReflectorOracleService', () => {
         ],
       }).compile();
 
-      service = module.get<ReflectorOracleService>(ReflectorOracleService);
+      service = moduleRef.get<ReflectorOracleService>(ReflectorOracleService);
       await service.onModuleInit();
+    });
+
+    afterAll(async () => {
+      if (moduleRef) {
+        await moduleRef.close();
+      }
     });
 
     it('should initialize without crashing', () => {

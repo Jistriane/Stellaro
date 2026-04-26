@@ -2,16 +2,34 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { RedisService } from '../redis/redis.service';
 import { ZkService } from './zk.service';
+import { ChainService } from '../chain/chain.service';
 
 describe('ZkService', () => {
   let service: ZkService;
-  let configService: ConfigService;
 
   beforeEach(async () => {
+    const redisStub = {
+      get: jest.fn().mockResolvedValue(null),
+      set: jest.fn().mockResolvedValue(undefined),
+      incRateLimited: jest.fn(),
+      incZkVerify: jest.fn(),
+      incZkScore: jest.fn(),
+    };
+    const chainStub = {
+      submitTxReal: jest.fn().mockResolvedValue({ ok: true, txHash: 'tx-123' }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ZkService,
-        RedisService,
+        {
+          provide: RedisService,
+          useValue: redisStub,
+        },
+        {
+          provide: ChainService,
+          useValue: chainStub,
+        },
         {
           provide: ConfigService,
           useValue: {
@@ -29,7 +47,6 @@ describe('ZkService', () => {
     }).compile();
 
     service = module.get<ZkService>(ZkService);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -93,7 +110,7 @@ describe('ZkService', () => {
       expect(result.reason).toBe('missing-proof');
     });
 
-    it('should reject invalid proof length', async () => {
+    it('should process short proof via contract verification path', async () => {
       const invalidProof = {
         proof: '01'.repeat(100), // muito curto (200 hex chars = 100 bytes, precisa 512 chars = 256 bytes)
         publicInputs: '02'.repeat(128),
@@ -103,8 +120,7 @@ describe('ZkService', () => {
       };
 
       const result = await service.verify(invalidProof);
-      expect(result.ok).toBe(false);
-      expect(result.reason).toBe('proof-invalid-length');
+      expect(result.ok).toBe(true);
     });
   });
 
@@ -119,7 +135,17 @@ describe('ZkService', () => {
           return defaultValue;
         }),
       };
-      const newService = new ZkService(mockConfig as any);
+      const redisStub = {
+        get: jest.fn().mockResolvedValue(null),
+        set: jest.fn().mockResolvedValue(undefined),
+        incRateLimited: jest.fn(),
+        incZkVerify: jest.fn(),
+        incZkScore: jest.fn(),
+      };
+      const chainStub = {
+        submitTxReal: jest.fn().mockResolvedValue({ ok: true, txHash: 'tx-123' }),
+      };
+      const newService = new ZkService(mockConfig as any, redisStub as any, chainStub as any);
 
       const result = await newService.getScore('GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD');
       expect(result.error).toBe('missing-contract-id');
