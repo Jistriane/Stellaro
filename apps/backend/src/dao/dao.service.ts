@@ -36,7 +36,7 @@ export class DaoService {
     {
       id: 'dao-001',
       title: 'Activate RWA token launch controls',
-      status: 'active',
+      status: 'draft',
       quorumBps: 2500,
       timelockHours: 24,
     },
@@ -100,7 +100,7 @@ export class DaoService {
           data: {
             publicId: `dao-${String(total + 1).padStart(3, '0')}`,
             title: input.title,
-            status: 'active',
+            status: 'draft',
             quorumBps: 2500, // Default
             timelockHours: 24, // Default
           },
@@ -114,7 +114,7 @@ export class DaoService {
     const proposal: DaoProposalView = {
       id: `dao-${String(this.proposals.length + 1).padStart(3, '0')}`,
       title: input.title,
-      status: 'active',
+      status: 'draft',
       quorumBps: 2500,
       timelockHours: 24,
     };

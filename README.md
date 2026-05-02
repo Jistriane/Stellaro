@@ -465,46 +465,56 @@ To deploy or update the smart contracts on testnet, use the automated deployment
 
 Stellaro has comprehensive test coverage across all layers:
 
-- **65 test suites** with **414+ tests**
-- **57.62% overall code coverage** (exceeds 50% target)
-- **100% E2E passing** (9 suites, 46 tests)
+- **86 test suites** with **573+ tests** (updated May 1, 2026)
+- **60.07% overall code coverage** (statements, +24.96% since Dec 2025)
+- **573/574 tests passing** (1 skipped for integration env)
 - **Zero open handles** (memory leak free)
+- **Recent expansions**: Eliza service (-42.9% uncovered), Ingestor exited top-10 ✅
 
 ### Running Tests
 
 ```bash
 # Run all unit tests
-npm run test
+cd apps/backend
+npm test
 
-# Run unit tests with coverage
-npm run test:cov
+# Run with coverage report
+npm run test -- --coverage
 
-# Run E2E tests
-npm run test:e2e
+# Run specific service test
+npm test -- src/chain/soroban.service.spec.ts
 
-# Run E2E with open handle detection
-npm run test:e2e:detect
+# Run in watch mode
+npm test -- --watch
 
-# Run E2E with coverage
-npm run test:e2e:cov
-
-# Run all tests (unit + E2E)
-npm run test:all
+# Run with verbose output
+npm test -- --verbose
 ```
 
 ### Test Documentation
 
-- **[E2E Testing Infrastructure](./docs/E2E_TESTING.md)** - Complete E2E test guide, infrastructure details
-- **[Testing Summary](./docs/TESTING_SUMMARY.md)** - Executive summary of testing status
-- **[Test Coverage Report](./docs/TEST_COVERAGE_REPORT.md)** - Detailed coverage metrics and analysis
+- **[TESTING_QUICK_START.md](./docs/TESTING_QUICK_START.md)** ⭐ - Quick commands, templates, debugging tips
+- **[COVERAGE_ROADMAP_Q2_2026.md](./docs/COVERAGE_ROADMAP_Q2_2026.md)** - Detailed roadmap with priorities and timeline
+- **[TESTING_SUMMARY.md](./docs/TESTING_SUMMARY.md)** - Historical evolution and top-10 uncovered files
+- **[E2E_TESTING.md](./docs/E2E_TESTING.md)** - Infrastructure isolation, mocks, and setup details
+- **[TESTING.md](./docs/TESTING.md)** - Reference guide for running tests
 
 ### Test Features
 
 - **Isolated test environment** with in-memory Prisma, Redis stubs
-- **Mocked external dependencies** (Soroban RPC, ZK proofs, PIX providers)
-- **Global teardown** for clean resource cleanup
-- **Serial execution** for E2E tests to prevent race conditions
-- **Comprehensive guards/services/controllers** test structure
+- **Mocked external dependencies** (Soroban RPC, ZK proofs, PIX providers, Ingestor polling)
+- **Global setup/teardown** (`test/setup-e2e.ts`, `test/test-utils.ts`)
+- **Central mock utilities** for Prisma, Redis, Reserve Manager, Soroban SDK
+- **Comprehensive coverage** of services, controllers, and guards
+- **Fast execution**: 18.15s for full suite with coverage
+
+### Coverage Goals
+
+| Timeline | Statements | Branches | Lines | Tests |
+|----------|-----------|----------|-------|-------|
+| **Current** (May 1) | 60.07% | ~55% | ~60% | 573 |
+| **Target Q2** (May 30) | 70% | 60% | 70% | 750+ |
+| **Target Q3** (Aug 31) | 80% | 75% | 80% | 900+ |
 
 We welcome contributions to the Stellaro project! Please see our contributing guidelines and code of conduct.
 

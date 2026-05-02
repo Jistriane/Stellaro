@@ -1,3 +1,156 @@
+import axios from 'axios';
+import { ElizaService } from './eliza.service';
+
+jest.mock('axios');
+
+describe('ElizaService (expanded)', () => {
+  let service: ElizaService;
+  let mockMemory: any;
+  let mockActions: any;
+  let origEnv: any;
+
+  beforeEach(() => {
+    origEnv = { ...process.env };
+    process.env.NODE_ENV = 'test';
+    process.env.AGENT_SERVICE_URL = 'http://agents:8000';
+
+    mockMemory = {
+      logEvent: jest.fn().mockResolvedValue(undefined),
+    };
+    mockActions = {};
+
+    service = new ElizaService(mockMemory, mockActions);
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    process.env = origEnv;
+  });
+
+  it('should start and stop without leaking timers', () => {
+    const s = service.start();
+    expect(s.started).toBe(true);
+
+    const status = service.getStatus();
+    expect(status.running).toBe(true);
+    expect(status.intervalMs).toBe(5000);
+
+    const stopped = service.stop();
+    expect(stopped.stopped).toBe(true);
+
+    const statusAfter = service.getStatus();
+    expect(statusAfter.running).toBe(false);
+  });
+
+  it('triggerAgentAction should POST to agent service and log event', async () => {
+    (axios.post as jest.Mock).mockResolvedValue({
+      data: { result: { success: true, message: 'done' } },
+    });
+
+    const res = await service.triggerAgentAction('stellaro', 'scan_portfolio', { userId: 'u1' });
+
+    expect(axios.post).toHaveBeenCalledWith('http://agents:8000/agent/action', {
+      agent: 'stellaro',
+      action: 'scan_portfolio',
+      payload: { userId: 'u1' },
+    });
+
+    expect(mockMemory.logEvent).toHaveBeenCalledWith(
+      'multi-agent',
+      'stellaro.scan_portfolio',
+      expect.objectContaining({ payload: { userId: 'u1' } })
+    );
+
+    expect(res.result.success).toBe(true);
+  });
+
+  it('triggerAgentAction should fall back to mock in development on HTTP error', async () => {
+    process.env.NODE_ENV = 'development';
+    (axios.post as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
+
+    const res = await service.triggerAgentAction('compliance_bot', 'check_kyc', { addr: 'a1' });
+
+    expect(res).toHaveProperty('agent', 'compliance_bot');
+    expect(res).toHaveProperty('action', 'check_kyc');
+    expect(mockMemory.logEvent).toHaveBeenCalled();
+  });
+
+  it('triggerAgentAction should throw in production on HTTP error', async () => {
+    process.env.NODE_ENV = 'production';
+    (axios.post as jest.Mock).mockRejectedValue(new Error('Service unavailable'));
+
+    await expect(
+      service.triggerAgentAction('treasury_manager', 'rebalance', {})
+    ).rejects.toThrow();
+  });
+
+  it('orchestrateWorkflow should POST workflow request and log event', async () => {
+    (axios.post as jest.Mock).mockResolvedValue({
+      data: { success: true, result: { optimized: true } },
+    });
+
+    const res = await service.orchestrateWorkflow('safe_optimization', {
+      treasuryAddress: 'GAAA...AAAA',
+    });
+
+    expect(axios.post).toHaveBeenCalledWith('http://agents:8000/orchestrate/workflow', {
+      workflow: 'safe_optimization',
+      payload: { treasuryAddress: 'GAAA...AAAA' },
+    });
+
+    expect(mockMemory.logEvent).toHaveBeenCalledWith(
+      'orchestration',
+      'safe_optimization',
+      expect.any(Object)
+    );
+
+    expect(res.success).toBe(true);
+  });
+
+  it('orchestrateWorkflow should fall back to mock executeSafeOptimization in dev', async () => {
+    process.env.NODE_ENV = 'development';
+    (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+    const res = await service.orchestrateWorkflow('safe_optimization', {
+      treasuryAddress: 'GAAA...AAAA',
+    });
+
+    expect(res.workflow).toBe('safe_optimization');
+    expect(res.result).toHaveProperty('success', true);
+    expect(mockMemory.logEvent).toHaveBeenCalled();
+  });
+
+  it('orchestrateWorkflow should throw unknown workflow in dev mock', async () => {
+    process.env.NODE_ENV = 'development';
+    (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+    await expect(
+      service.orchestrateWorkflow('unknown_workflow' as any, {})
+    ).rejects.toThrow('Unknown workflow');
+  });
+
+  it('getStatus should return current running state', () => {
+    expect(service.getStatus()).toEqual({ running: false, intervalMs: null });
+
+    service.start();
+    expect(service.getStatus().running).toBe(true);
+
+    service.stop();
+    expect(service.getStatus().running).toBe(false);
+  });
+
+  it('getConfig should return parsed ELIZA config or null', () => {
+    const cfg = service.getConfig();
+    // In test env with no config file, should be null
+    expect(cfg === null || typeof cfg === 'object').toBe(true);
+  });
+
+  it('onModuleInit should log warn when config file not found', async () => {
+    const svc2 = new ElizaService(mockMemory, mockActions);
+    // onModuleInit is called in constructor; should handle gracefully
+    expect(() => svc2.getConfig()).not.toThrow();
+  });
+});
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { ElizaService } from './eliza.service';

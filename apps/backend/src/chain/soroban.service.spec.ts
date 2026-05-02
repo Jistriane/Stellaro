@@ -1,3 +1,91 @@
+import axios from 'axios';
+import { SorobanService } from './soroban.service';
+
+jest.mock('axios');
+
+describe('SorobanService (expanded)', () => {
+  let origEnv: any;
+  beforeEach(() => {
+    origEnv = { ...process.env };
+    jest.clearAllMocks();
+  });
+  afterEach(() => {
+    process.env = origEnv;
+  });
+
+  it('getEvents posts to RPC and returns result', async () => {
+    process.env.SOROBAN_RPC_URL = 'http://rpc.test';
+    const service = new SorobanService();
+    const mockResult = { events: [] };
+    (service as any).client = { post: jest.fn().mockResolvedValue({ data: { result: mockResult } }) };
+
+    const res = await service.getEvents('C1', 10, 20, 'tok');
+    expect((service as any).client.post).toHaveBeenCalled();
+    expect(res).toEqual(mockResult);
+  });
+
+  it('invokeContract returns null when RPC unavailable', async () => {
+    delete process.env.SOROBAN_RPC_URL;
+    const service = new SorobanService();
+    const res = await service.invokeContract('C1', 'm');
+    expect(res).toBeNull();
+  });
+
+  it('getLoansPoolParams falls back to env values on failure', async () => {
+    delete process.env.SOROBAN_RPC_URL;
+    process.env.LOANSPOOL_INTEREST_BPS = '150';
+    process.env.LOANSPOOL_LTV_BPS = '6000';
+    process.env.LOANSPOOL_MAX_LOAN = '500000';
+    const service = new SorobanService();
+
+    const params = await service.getLoansPoolParams('any');
+    expect(params.interest_bps).toBe(150);
+    expect(params.ltv_bps).toBe(6000);
+    expect(params.max_loan_amount).toBe('500000');
+  });
+
+  it('findBestPath returns first embedded record on success', async () => {
+    const service = new SorobanService();
+    (axios.get as jest.Mock).mockResolvedValue({ data: { _embedded: { records: [{ path: [{ asset_code: 'USDC' }] }] } } });
+    const res = await service.findBestPath('XLM', 'USDC', '1.0');
+    expect(res).toBeDefined();
+    expect(res.path[0].asset_code).toBe('USDC');
+  });
+
+  it('getStablecoinSupply decodes scvI128 result to numeric supply', async () => {
+    const service = new SorobanService();
+    // mock invokeContract to return scvI128-like object
+    const fakeScVal = {
+      switch: () => ({ name: 'scvI128' }),
+      i128: () => ({ toString: () => '70000000' }),
+    };
+    jest.spyOn(service as any, 'invokeContract').mockResolvedValue(fakeScVal);
+    const supply = await service.getStablecoinSupply('stable1');
+    expect(supply).toBe(7); // 70000000 / 1e7
+  });
+
+  it('setMintingEnabled throws when RPC unavailable and forwards to executeContractCall when available', async () => {
+    // unavailable
+    delete process.env.SOROBAN_RPC_URL;
+    const svc1 = new SorobanService();
+    await expect(svc1.setMintingEnabled('c', true, 's')).rejects.toThrow('Soroban RPC unavailable');
+
+    // available
+    process.env.SOROBAN_RPC_URL = 'http://rpc';
+    const svc2 = new SorobanService();
+    jest.spyOn(svc2 as any, 'executeContractCall').mockResolvedValue('txhash123');
+    const r = await svc2.setMintingEnabled('c', true, 's');
+    expect(r).toBe('txhash123');
+    expect((svc2 as any).executeContractCall).toHaveBeenCalledWith('c', 'enable_mint', [], 's');
+  });
+
+  it('executeBatchAction requires rpcAvailable and returns batch-executed', async () => {
+    process.env.SOROBAN_RPC_URL = 'http://rpc';
+    const svc = new SorobanService();
+    const res = await svc.executeBatchAction({});
+    expect(res).toBe('batch-executed');
+  });
+});
 import { Test, TestingModule } from '@nestjs/testing';
 import { SorobanService } from './soroban.service';
 import * as StellarSdk from '@stellar/stellar-sdk';

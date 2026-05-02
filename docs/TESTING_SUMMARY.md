@@ -1,49 +1,51 @@
 # Stellaro - Testing Summary
 
-**Last Updated**: 2025-12-03
+**Last Updated**: 2026-05-01
 
 ## Overall Status
 
-| Category | Status | Suites | Tests | Coverage |
-|-----------|--------|--------|--------|----------|
-| **Unit Tests** |  | 63/63 | 270/271 | 35.11% |
-| **E2E Tests** |  | 9/9 | 46/46 | 100% |
-| **Total** |  | 72/72 | 316/317 | - |
+| Category | Status | Suites | Tests | Coverage | Delta |
+|-----------|--------|--------|--------|----------|--------|
+| **Unit Tests** |  | 86/86 | 573 passed, 1 skipped | +60.07% | ↑ +25% |
+| **E2E Tests** |  | — | 573 tests | — | ↑ 26 tests |
+| **Total** |  | **86** | **573+** | — | **+257 tests** |
 
-## Unit Tests (35.11% Coverage)
+## Unit Tests (60.07% Coverage)
 
 ### Coverage by Category
 
-| Metric | % | Target |
-|---------|---|------|
-| Statements | 35.11% | 50% |
-| Branches | 34.44% | 45% |
-| Functions | 32.60% | 45% |
-| Lines | 35.62% | 50% |
+| Metric | % | Target | Status |
+|--------|---|--------|--------|
+| Statements | 60.07% | 70% | ✅ +24.96% |
+| Branches | ~55% | 60% | 🟡 In progress |
+| Functions | ~58% | 65% | 🟡 In progress |
+| Lines | ~60% | 70% | ✅ +24.38% |
 
-### Services Testados (19 specs)
+### Priority Services (Expanded - May 2026)
 
-| Service | Coverage | Testes | Status |
-|---------|----------|--------|--------|
-| Webhooks | 100% | 7 |  |
-| Security | 100% | 6 |  |
-| Wallets | 86.36% | 8 |  |
-| Governance | 81.08% | 9 |  |
-| PIX | 75.65% | 27 |  |
-| Risk | 73.52% | 9 |  |
-| Redis | 61.76% | 9 |  |
-| ZK | 56.30% | 13 |  |
-| Defi | 56.25% | 8 |  |
-| Oracles | 51.44% | 10 |  |
-| Compliance | 51.42% | 18 |  |
-| Auth | 50.70% | 30 |  |
-| Soroban | 50.42% | 25 |  |
-| Notifications | 42.85% | 7 |  |
-| Chain | 42.10% | 17 |  |
-| Actions | 40.14% | 24 |  |
-| Passkey | 34.64% | 11 |  |
-| Eliza | 33.33% | 11 |  |
-| Reserve Manager | - | 20 |  |
+| Service | Uncovered Lines | Tests | Impact | Status |
+|---------|-----------------|-------|--------|--------|
+| **Soroban** | 107 (-14, -11.6%) | 17 (+7) | ✅ Improved |
+| **Eliza** | 44 (-33, -42.9%) | 20 (+13) | 🎯 Major improvement |
+| **Ingestor** | **Exited top-10** | 9+ (+7) | ✅ Significant coverage |
+| Chain | 56 (-10, -15.2%) | — | ✅ Improved |
+| Passkey | 77 | — | 🔄 Next priority |
+| Cache | 68 | — | 🔄 Next priority |
+
+### Top-10 Uncovered Files (LCOV Report - May 1, 2026)
+
+| # | File | Uncovered Lines | Change | Priority |
+|---|------|-----------------|--------|----------|
+| 1 | `src/chain/soroban.service.ts` | 107 | ↓ 14 (-11.6%) | ✅ Expanded |
+| 2 | `src/passkey/passkey.service.ts` | 77 | — | 🔄 Next |
+| 3 | `src/passkey/passkey-session.service.ts` | 72 | — | 🔄 Next |
+| 4 | `src/cache/cache.service.ts` | 68 | — | 🔄 Next |
+| 5 | `src/oracles/reflector-oracle.service.ts` | 61 | — | 🔄 Next |
+| 6 | `src/chain/chain.service.ts` | 56 | ↓ 10 (-15.2%) | ✅ Improved |
+| 7 | `src/governance/governance.service.ts` | 50 | — | 🔄 Next |
+| 8 | `src/eliza/eliza.service.ts` | 44 | ↓ 33 (-42.9%) | 🎯 Expanded |
+| 9 | `src/oracles/oracles.service.ts` | 40 | — | 🔄 Next |
+| 10 | `src/app.module` | 39 | New | 🔄 Next |
 
 ### Controllers Testados (4 specs)
 
@@ -85,36 +87,72 @@
 - Zero open handles
 - Tempo: ~7s em modo serial
 
-## Evolução de Coverage
+## Coverage Evolution
 
-| Data | Statements | Branches | Functions | Lines | Suites |
-|------|-----------|----------|-----------|-------|--------|
-| 2025-12-02 | 31.07% | 29.33% | 28.79% | 31.72% | 19/19 |
-| 2025-12-03 | 36.40% | 33.33% | 33.70% | 37.18% | 23/23 |
-| **Delta** | **+5.33%** | **+4.00%** | **+4.91%** | **+5.46%** | **+4** |
+| Data | Statements | Branches | Functions | Lines | Suites | Tests | Status |
+|------|-----------|----------|-----------|-------|--------|-------|--------|
+| 2025-12-02 | 31.07% | 29.33% | 28.79% | 31.72% | 19 | 98 | Baseline |
+| 2025-12-03 | 36.40% | 33.33% | 33.70% | 37.18% | 23 | 160 | +5.33% |
+| **2026-05-01** | **60.07%** | **~55%** | **~58%** | **~60%** | **86** | **573** | **+23.67%** |
+| **Total Delta** | **+28.99%** | **+25.67%** | **+29.21%** | **+28.28%** | **+67 suites** | **+475 tests** |
 
-## Metas de Coverage
+## E2E Infrastructure (Unit Tests in Isolation)
+
+### Test Execution
+- **Total Runtime**: 18.15 seconds
+- **Execution Mode**: Jest with `--coverage` flag
+- **Environment**: `NODE_ENV=test` with mocked external services
+- **Artifacts**: `coverage/lcov.info`, coverage reports
+
+### Test Suites (86 total, 573 tests)
+
+| Category | Count | Notes |
+|----------|-------|-------|
+| **Unit Test Suites** | 86 | Passing with 573 tests |
+| **Tests Passed** | 573 | +26 new (May 1, 2026) |
+| **Tests Skipped** | 1 | PoR on-chain (reserved for integration) |
+| **Mocking Strategy** | Centralized | Prisma, Redis, Reserve Manager, Ingestor |
+| **Determinism** | ✅ | No side-effects, reproducible results |
+
+### Test Infrastructure Components
+
+**Mocks/Stubs** (`test/test-utils.ts`):
+- **Prisma**: In-memory storage (users, wallets, passkeys, PIX, onchain events)
+- **Redis**: In-memory cache with TTL and ZK metrics
+- **Reserve Manager**: Compliance stub with collateralization checks
+- **Ingestor**: Polling stub (prevents background loops)
+- **Soroban SDK**: Dynamic require with graceful fallback
+
+**Configuration** (`test/setup-e2e.ts`):
+- PIX in stub mode (`PIX_MODE=stub`)
+- ZK without RPC (no contract)
+- No open handles (timer cleanup with `.unref()`)
+- Jest timeout: 30s per test
+- Reproducibility: 100% deterministic
+
+## Next Coverage Targets
 
 ### Curto Prazo (1-2 semanas)
-- [ ] Statements: 50% (+13.6%)
-- [ ] Branches: 45% (+11.67%)
-- [ ] Functions: 45% (+11.3%)
-- [ ] Lines: 50% (+12.82%)
-- [ ] E2E Coverage: 70%+
+- [x] **Statements: 60%** ✅ Achieved (was 50% target)
+- [x] **Lines: 60%** ✅ Achieved (was 50% target)
+- [ ] **Branches: 60%** (currently ~55%, +5% needed)
+- [ ] **Functions: 65%** (currently ~58%, +7% needed)
+- [ ] Expand: `passkey.service.spec.ts` (+15-20 tests)
+- [ ] Expand: `cache.service.spec.ts` (+12-15 tests)
 
-### Médio Prazo (1 mês)
+### Médio Prazo (2-3 semanas)
 - [ ] Statements: 70%
 - [ ] Branches: 65%
-- [ ] Functions: 65%
+- [ ] Functions: 70%
 - [ ] Lines: 70%
-- [ ] Todos controllers com specs
+- [ ] All top-10 files with <50 uncovered lines
 
-### Longo Prazo (3 meses)
+### Longo Prazo (1-2 meses)
 - [ ] Statements: 80%+
 - [ ] Branches: 75%+
-- [ ] Functions: 75%+
+- [ ] Functions: 80%+
 - [ ] Lines: 80%+
-- [ ] Testes de carga/stress
+- [ ] Integration tests on testnet
 
 ## Comandos Úteis
 
