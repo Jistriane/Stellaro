@@ -1,43 +1,48 @@
+import Image from "next/image";
 import ModuleLaunchPage from "@/components/ModuleLaunchPage";
 import QuickCreateForm from "@/components/QuickCreateForm";
 
 export default async function InsurancePage() {
   return (
-    <>
-      <ModuleLaunchPage
-        eyebrow="Módulo 4 / v4.0"
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <ModuleLaunchPage
+        eyebrow="Module 4 / v4.0"
         title="Insurance Pool"
-        summary="Pool de seguros descentralizado para proteção contra riscos sistêmicos e sinistros em RWAs."
+        summary="Decentralized insurance pool for protection against systemic risks and claims in RWAs."
         status="integrated-with-soroban"
         accent="from-rose-400/20 via-slate-900 to-slate-950"
         stats={[
-          { label: "Função", value: "Cobertura de Risco", hint: "Liquidação automática de sinistros via governança." },
-          { label: "Ativo", value: "Stellar Asset (STLT)", hint: "Depósitos colateralizados no pool." },
+          { label: "Function", value: "Risk Coverage", hint: "Automatic claims settlement via governance." },
+          { label: "Asset", value: "Stellar Asset (STLT)", hint: "Collateralized deposits in the pool." },
           { label: "Readiness", value: "80%", hint: "Contrato inteligente e backend integrados." },
         ]}
         sections={[
           {
-            title: "Capacidades do Pool",
-            items: ["Depósito de liquidez (LP)", "Saque proporcional à share", "Liquidação por DAO", "Auditoria on-chain"],
+            title: "Pool Capabilities",
+            items: ["Liquidity deposit (LP)", "Proportional share withdrawal", "DAO settlement", "On-chain auditing"],
           },
         ]}
         links={[
-          { href: "/v4", label: "Voltar ao launchpad" },
-          { href: "/docs", label: "Ver modelo atuarial" },
+          { href: "/v4", label: "Back to launchpad" },
+          { href: "/docs", label: "View actuarial model" },
         ]}
       />
-      <div className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
         <QuickCreateForm
-          title="Depositar no Pool de Seguros"
-          description="Aumente a colateralização do protocolo Stellaro e receba shares de cobertura."
+          title="Deposit into the Insurance Pool"
+          description="Increase Stellaro protocol collateralization and receive coverage shares."
           endpoint="/insurance/deposit"
           fields={[
-            { name: "amount", label: "Quantidade (STLT)", placeholder: "100.00" },
-            { name: "userSecret", label: "Sua Secret Key (Teste)", placeholder: "S..." },
+            { name: "amount", label: "Amount (STLT)", placeholder: "100.00" },
+            { name: "userSecret", label: "Your Secret Key (Test)", placeholder: "S..." },
           ]}
-          submitLabel="Depositar"
+          submitLabel="Deposit"
         />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

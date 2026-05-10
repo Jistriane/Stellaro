@@ -17,6 +17,7 @@ pub struct Auction {
 #[contracttype]
 pub enum DataKey {
     Admin,
+    VcRegistry,
     Auction(u32),
     AuctionCount,
 }
@@ -26,15 +27,29 @@ pub struct RwaMarketplace;
 
 #[contractimpl]
 impl RwaMarketplace {
-    pub fn initialize(env: Env, admin: Address) {
+    pub fn initialize(env: Env, admin: Address, vc_registry: Address) {
         if env.storage().instance().has(&DataKey::Admin) {
             panic!("already initialized");
         }
         env.storage().instance().set(&DataKey::Admin, &admin);
+        env.storage().instance().set(&DataKey::VcRegistry, &vc_registry);
+    }
+
+    fn check_compliance(env: &Env, user: Address) {
+        let registry_addr: Address = env.storage().instance().get(&DataKey::VcRegistry).expect("vc registry not set");
+        let is_valid: bool = env.invoke_contract(
+            &registry_addr,
+            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            soroban_sdk::vec![env, user.clone().into_val(env)]
+        );
+        if !is_valid {
+            panic!("compliance failed: user needs KYC VC");
+        }
     }
 
     pub fn start_auction(env: Env, seller: Address, asset_token: Address, amount: i128, min_bid: i128, duration: u64) -> u32 {
         seller.require_auth();
+        Self::check_compliance(&env, seller.clone());
         
         let mut count: u32 = env.storage().instance().get(&DataKey::AuctionCount).unwrap_or(0);
         count += 1;
@@ -58,6 +73,7 @@ impl RwaMarketplace {
 
     pub fn place_bid(env: Env, bidder: Address, auction_id: u32, bid_amount: i128) {
         bidder.require_auth();
+        Self::check_compliance(&env, bidder.clone());
         
         let mut auction: Auction = env.storage().instance().get(&DataKey::Auction(auction_id)).expect("not found");
         

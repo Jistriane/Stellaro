@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContractIds, viewLoansPool, getWalletBalances } from "@/lib/soroban";
 import LoanSimulator from "./LoanSimulator";
@@ -50,7 +51,7 @@ export default function LoansPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Erro ao carregar dados</div>
+          <div className="text-slate-400">Error loading data</div>
         </div>
       </div>
     );
@@ -94,7 +95,10 @@ export default function LoansPage() {
   const interestPct = ((pool.interest_bps ?? 0) / 100).toFixed(2);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
       {/* Title and timestamp */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
@@ -180,7 +184,7 @@ export default function LoansPage() {
                       </div>
                     </div>
                   </div>
-                  {/* Detalhes resumidos */}
+                  {/* Summary details */}
                   <div className="mt-2 text-xs text-slate-500">{t("active.summary_mock")}</div>
                 </div>
               ))}
@@ -362,6 +366,7 @@ export default function LoansPage() {
         <button className="px-4 py-2 rounded bg-slate-800 text-slate-200 text-sm">{t("quick.track")}</button>
         <button className="px-4 py-2 rounded bg-slate-800 text-slate-200 text-sm">{t("quick.prepay")}</button>
         <button className="px-4 py-2 rounded bg-slate-800 text-slate-200 text-sm">{t("quick.support")}</button>
+      </div>
       </div>
     </div>
   );

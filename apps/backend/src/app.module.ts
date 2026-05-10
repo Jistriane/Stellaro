@@ -24,6 +24,7 @@ import { SsiModule } from './ssi/ssi.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { DaoModule } from './dao/dao.module';
 import { V4Module } from './v4/v4.module';
+import { V5Module } from './v5/v5.module';
 import { DefiModule } from './defi/defi.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { PasskeyModule } from './passkey/passkey.module';
@@ -68,6 +69,7 @@ if (!isTest) {
     SubscriptionModule,
     DaoModule,
     V4Module,
+    V5Module,
     DefiModule,
     AnalyticsModule,
     PasskeyModule,

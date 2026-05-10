@@ -49,7 +49,7 @@ export type AppState = {
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
-  auth: { loggedIn: false, locale: "pt" },
+  auth: { loggedIn: false, locale: "en" },
   balances: {},
   risk: {},
   openOrders: [],

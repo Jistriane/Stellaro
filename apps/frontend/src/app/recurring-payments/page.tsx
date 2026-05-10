@@ -1,63 +1,35 @@
-import ModuleLaunchPage from "@/components/ModuleLaunchPage";
-import ModulePagination from "@/components/ModulePagination";
-import QuickCreateForm from "@/components/QuickCreateForm";
+import Image from "next/image";
 import { getSubscriptionOverview } from "@/lib/v4";
+import RecurringPaymentsDashboard from "./RecurringPaymentsDashboard";
 
 type SearchParams = {
   page?: string;
   pageSize?: string;
 };
 
-export default async function RecurringPaymentsPage({ searchParams }: { searchParams?: SearchParams }) {
-  const page = Math.max(1, Number(searchParams?.page ?? 1) || 1);
-  const pageSize = Math.min(50, Math.max(1, Number(searchParams?.pageSize ?? 5) || 5));
+export default async function RecurringPaymentsPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
+  const resolvedSearchParams = await searchParams;
+  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1) || 1);
+  const pageSize = Math.min(50, Math.max(1, Number(resolvedSearchParams?.pageSize ?? 5) || 5));
   const overview = await getSubscriptionOverview({ page, pageSize });
 
+  const subscriptions = overview.plans.map((p: any) => ({
+    id: p.id,
+    name: p.name,
+    amount: p.amount || 25,
+    currency: p.currency || 'STLT',
+    cadence: p.cadence || 'monthly',
+    status: p.status || 'active',
+    nextBilling: new Date(Date.now() + 86400000 * 15).toISOString()
+  }));
+
   return (
-    <>
-      <ModuleLaunchPage
-      eyebrow="Módulo 3 / v4.0"
-      title="Pagamentos recorrentes em stablecoin"
-      summary="Tela inicial para assinaturas, cobranças agendadas e histórico de recorrência com trilha clara de autorização e cancelamento."
-      status={overview.status}
-      accent="from-cyan-400/20 via-slate-900 to-slate-950"
-      stats={[
-        { label: "Uso principal", value: `${overview.total} planos`, hint: `${overview.plans.length} visíveis nesta página.` },
-        { label: "Risco controlado", value: "Idempotência", hint: `Módulo: ${overview.module}` },
-        { label: "Execução", value: `${Math.round(overview.readiness * 100)}%`, hint: "Os contratos e jobs ficam para a próxima camada da implementação." },
-      ]}
-      sections={[
-        {
-          title: "O que esta tela deve resolver",
-          items: ["Criar uma assinatura com periodicidade e limite", "Exibir próxima data de cobrança e status", "Cancelar ou pausar recorrência", "Mostrar comprovantes e eventos de auditoria"],
-        },
-        {
-          title: "Dependências de produto",
-          items: overview.nextSteps.length > 0 ? overview.nextSteps : ["Subscription Manager contract", "Backend de agendamento e retry", "Webhook de confirmação de pagamento", "Histórico e notificações em tempo real"],
-        },
-      ]}
-      links={[
-        { href: "/v4", label: "Voltar ao launchpad" },
-        { href: "/pix", label: "Abrir PIX" },
-        { href: "/wallet", label: "Abrir wallet" },
-        { href: "/docs", label: "Ler a visão geral" },
-      ]}
-      />
-      <div className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
-        <ModulePagination basePath="/recurring-payments" page={overview.page} pageSize={overview.pageSize} total={overview.total} />
-        <QuickCreateForm
-          title="Criar assinatura"
-          description="Cria uma assinatura em memória para validar o fluxo de recorrência com um passo real de UI."
-          endpoint="/subscriptions"
-          fields={[
-            { name: "name", label: "Nome do plano", placeholder: "Monthly Membership" },
-            { name: "cadence", label: "Cadência", placeholder: "monthly" },
-            { name: "amount", label: "Valor", placeholder: "25.00" },
-            { name: "currency", label: "Moeda", placeholder: "STLT" },
-          ]}
-          submitLabel="Criar plano"
-        />
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <RecurringPaymentsDashboard initialSubscriptions={subscriptions} />
       </div>
-    </>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class PaymentsV5Service {
-  private readonly logger = new Logger(PaymentsV5Service.ts);
+  private readonly logger = new Logger(PaymentsV5Service.name);
 
   async setupAutomaticPix(userId: string, amount: number, frequency: string) {
     this.logger.log(`Setting up Recurring PIX for ${userId}: ${amount} BRL ${frequency}`);

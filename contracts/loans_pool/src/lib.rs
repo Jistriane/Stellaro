@@ -33,6 +33,7 @@ enum DataKey {
     LenderPosition(Address), // saldo de liquidez por provedor
     ReentrancyLock, // Global reentrancy protection
     ZkVerifier, // Address of the ZK Verifier contract
+    VcRegistry, // Address of the VC Registry for KYC
 }
 
 fn read_u128(env: &Env, key: &DataKey) -> u128 {
@@ -84,7 +85,7 @@ pub struct LoansPoolContract;
 
 #[contractimpl]
 impl LoansPoolContract {
-    pub fn init(env: Env, admin: Address, ltv_bps: u32, interest_bps: u32, zk_verifier: Address) {
+    pub fn init(env: Env, admin: Address, ltv_bps: u32, interest_bps: u32, zk_verifier: Address, vc_registry: Address) {
         if env.storage().persistent().has(&DataKey::Admin) {
             panic!("already initialized");
         }
@@ -95,7 +96,21 @@ impl LoansPoolContract {
         write_u32(&env, &DataKey::InterestBps, interest_bps);
         write_u128(&env, &DataKey::TotalLiquidity, 0);
         env.storage().persistent().set(&DataKey::ZkVerifier, &zk_verifier);
+        env.storage().persistent().set(&DataKey::VcRegistry, &vc_registry);
     }
+
+    fn check_compliance(env: &Env, user: Address) {
+        let registry_addr: Address = env.storage().persistent().get(&DataKey::VcRegistry).expect("vc registry not set");
+        let is_valid: bool = env.invoke_contract(
+            &registry_addr,
+            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            soroban_sdk::vec![env, user.clone().into_val(env)]
+        );
+        if !is_valid {
+            panic!("compliance failed: user needs KYC VC for lending");
+        }
+    }
+
 
     pub fn deposit(env: Env, from: Address, amount: u128) {
         // Reentrancy guard
@@ -103,6 +118,7 @@ impl LoansPoolContract {
         
         // Exige autorização do depositante; integração com token deve ser feita externamente
         from.require_auth();
+        Self::check_compliance(&env, from.clone());
         assert!(amount > 0, "amount");
         let liq = read_u128(&env, &DataKey::TotalLiquidity);
         write_u128(&env, &DataKey::TotalLiquidity, liq.saturating_add(amount));
@@ -122,6 +138,7 @@ impl LoansPoolContract {
         acquire_lock(&env);
         
         borrower.require_auth();
+        Self::check_compliance(&env, borrower.clone());
         assert!(amount > 0, "amount");
         
         let mut ltv = read_u32(&env, &DataKey::LtvBps) as u128;

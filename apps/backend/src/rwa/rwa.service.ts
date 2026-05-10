@@ -2,6 +2,9 @@ import { Injectable, Optional } from '@nestjs/common';
 import { Prisma, RwaAsset } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SorobanService } from '../chain/soroban.service';
+import { SsiService } from '../ssi/ssi.service';
+import { IpfsService } from './ipfs.service';
+import { ForbiddenException, Logger } from '@nestjs/common';
 
 type RwaListQuery = {
   page?: string | number;
@@ -18,6 +21,7 @@ type RwaAssetView = {
   status: string;
   whitelistRequired: boolean;
   annualYieldBps: number;
+  documentHash?: string;
 };
 
 type RwaListResult = {
@@ -29,9 +33,13 @@ type RwaListResult = {
 
 @Injectable()
 export class RwaService {
+  private readonly logger = new Logger(RwaService.name);
+
   constructor(
     @Optional() private readonly prisma?: PrismaService,
     private readonly soroban?: SorobanService,
+    private readonly ssiService?: SsiService,
+    private readonly ipfsService?: IpfsService,
   ) {}
 
   private items = [
@@ -92,7 +100,14 @@ export class RwaService {
     });
   }
 
-  async createAsset(input: { name: string; assetClass: string; annualYieldBps: number }) {
+  async createAsset(input: { name: string; assetClass: string; annualYieldBps: number; documentPayload?: Record<string, any> }) {
+    let documentHash = undefined;
+
+    // 1. Ancora o documento legal off-chain no IPFS
+    if (this.ipfsService && input.documentPayload) {
+      documentHash = await this.ipfsService.uploadLegalDocument(input.documentPayload);
+    }
+
     if (this.prisma) {
       try {
         await this.ensureSeeded();
@@ -120,6 +135,7 @@ export class RwaService {
       status: 'draft',
       whitelistRequired: true,
       annualYieldBps: input.annualYieldBps,
+      documentHash,
     };
 
     this.items = [...this.items, asset];
@@ -198,8 +214,34 @@ export class RwaService {
   }
 
   async mintAsset(id: string, userAddress: string, amount: string) {
+    this.logger.log(`Attempting to mint RWA ${id} for ${userAddress}`);
+
+    // PLD/FT COMPLIANCE GATE: Check KYC Verifiable Credential via Veramo
+    if (this.ssiService) {
+      const hasKyc = await this.ssiService.verifyOnChain(userAddress);
+      if (!hasKyc) {
+        this.logger.warn(`Compliance Gate blocked RWA minting for ${userAddress}: Missing KYCVerified VC`);
+        throw new ForbiddenException('Usuário não possui a Credencial Verificável de KYC requerida para interagir com Real World Assets.');
+      }
+      this.logger.log(`Compliance Gate passed for ${userAddress}. Executing mint.`);
+    }
+
     if (this.soroban) {
       return this.soroban.mintRwa(userAddress, amount);
+    }
+    throw new Error('Soroban service not available');
+  }
+
+  async startAuction(sellerSecret: string, assetToken: string, amount: string, minBid: string, duration: number) {
+    if (this.soroban) {
+      return this.soroban.startAuction(sellerSecret, assetToken, amount, minBid, duration);
+    }
+    throw new Error('Soroban service not available');
+  }
+
+  async placeBid(bidderSecret: string, auctionId: number, bidAmount: string) {
+    if (this.soroban) {
+      return this.soroban.placeBid(bidderSecret, auctionId, bidAmount);
     }
     throw new Error('Soroban service not available');
   }

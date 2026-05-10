@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, token};
+use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, token, IntoVal};
 
 #[contracttype]
 #[derive(Clone, Debug)]
@@ -16,6 +16,7 @@ pub struct Policy {
 pub enum DataKey {
     Admin,
     Token,
+    VcRegistry,
     TotalShares,
     UserShares(Address),
     Policy(u32),
@@ -27,18 +28,32 @@ pub struct InsurancePool;
 
 #[contractimpl]
 impl InsurancePool {
-    pub fn initialize(env: Env, admin: Address, token: Address) {
+    pub fn initialize(env: Env, admin: Address, token: Address, vc_registry: Address) {
         if env.storage().instance().has(&DataKey::Admin) {
             panic!("already initialized");
         }
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::Token, &token);
+        env.storage().instance().set(&DataKey::VcRegistry, &vc_registry);
         env.storage().instance().set(&DataKey::TotalShares, &0i128);
         env.storage().instance().set(&DataKey::PoliciesCount, &0u32);
     }
 
+    fn check_compliance(env: &Env, user: Address) {
+        let registry_addr: Address = env.storage().instance().get(&DataKey::VcRegistry).expect("vc registry not set");
+        let is_valid: bool = env.invoke_contract(
+            &registry_addr,
+            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            soroban_sdk::vec![env, user.clone().into_val(env)]
+        );
+        if !is_valid {
+            panic!("compliance failed: insurance services require KYC VC");
+        }
+    }
+
     pub fn deposit(env: Env, user: Address, amount: i128) {
         user.require_auth();
+        Self::check_compliance(&env, user.clone());
         
         let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
         let client = token::Client::new(&env, &token_addr);
@@ -56,6 +71,7 @@ impl InsurancePool {
 
     pub fn register_policy(env: Env, holder: Address, premium: i128, coverage: i128, duration_ledgers: u32) -> u32 {
         holder.require_auth();
+        Self::check_compliance(&env, holder.clone());
 
         let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
         let client = token::Client::new(&env, &token_addr);

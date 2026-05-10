@@ -3,6 +3,7 @@
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +16,7 @@ export default function SettingsPage() {
   useRealTimeUpdates();
   const locale = useLocale();
   const router = useRouter();
-  // Perfil real do backend
+  // Real backend profile
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL, []);
   const [account, setAccount] = useState({
     name: "",
@@ -85,7 +86,7 @@ export default function SettingsPage() {
   const [permissions, setPermissions] = useState({ marketing: false, analytics: true });
 
   // Language and theme
-  const [lang, setLang] = useState<"pt" | "en">((locale === "en" ? "en" : "pt"));
+  const [lang, setLang] = useState<"pt" | "en">("en");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   // Integrations
@@ -191,11 +192,14 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <div className="text-xs text-slate-500">{t("subtitle")}</div>
-      </div>
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-semibold">{t("title")}</h1>
+          <div className="text-xs text-slate-500">{t("subtitle")}</div>
+        </div>
 
       {/* 1. Account Data */}
       <Card>
@@ -441,7 +445,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 10. Encerramento de Conta */}
+      {/* 10. Account Closure */}
       <Card>
         <CardHeader>
           <CardTitle>{t("close.title")}</CardTitle>
@@ -463,5 +467,6 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
     </div>
+      </div>
   );
 }

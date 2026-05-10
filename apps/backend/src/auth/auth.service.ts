@@ -12,7 +12,7 @@ import * as crypto from 'crypto';
 
 // Ed25519 verification helpers
 import nacl from 'tweetnacl';
-import { StrKey } from 'stellar-base';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 @Injectable()
 export class AuthService {
@@ -147,7 +147,7 @@ export class AuthService {
     // 2) Verify ed25519 signature (Freighter) of the raw nonce string
     let rawPub: Uint8Array;
     try {
-      rawPub = StrKey.decodeEd25519PublicKey(pubkey);
+      rawPub = StellarSdk.StrKey.decodeEd25519PublicKey(pubkey);
     } catch {
       throw new UnauthorizedException('Invalid pubkey');
     }

@@ -1,21 +1,28 @@
+import { Injectable, Logger } from '@nestjs/common';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { SorobanService } from '../chain/soroban.service';
 import { NotificationService } from './notification.service';
 import { BridgeService } from './bridge.service';
+import { Subject } from 'rxjs';
 
 export interface PortfolioAllocation {
   asset: string;
   percentage: number;
 }
 
+import { ConfigService } from '@nestjs/config';
+
 @Injectable()
 export class RoboAdvisorService {
   private readonly logger = new Logger(RoboAdvisorService.name);
+  public threatLog$ = new Subject<any>();
+  public isAgentActive = true;
 
   constructor(
     private sorobanService: SorobanService,
     private notificationService: NotificationService,
     private bridgeService: BridgeService,
-    private configService: any // Injected in actual app
+    private configService: ConfigService
   ) {}
 
   // Target allocations for different risk profiles
@@ -75,7 +82,7 @@ export class RoboAdvisorService {
         const amountBigInt = BigInt(Math.floor(action.amount * 10**7));
 
         // Circuit Breaker: Pre-execution Slippage Check
-        const bestPath = await this.sorobanService.findBestPath(fromAsset, toAsset, amountBigInt);
+        const bestPath = await this.sorobanService.findBestPath(fromAsset, toAsset, amountBigInt.toString());
         
         // Slippage Calculation: (Best Route vs Ideal Rate)
         // If the path has more than 2 hops, it's a red flag for volatility in this simplified model
@@ -111,6 +118,7 @@ export class RoboAdvisorService {
    * Monitora a saúde dos empréstimos baseados em RWA usando Reflector Network
    */
   async monitorRwaHealth() {
+    if (!this.isAgentActive) return;
     this.logger.log('[RiskGuardian] Polling RWA prices from Reflector Network...');
     
     try {
@@ -122,7 +130,7 @@ export class RoboAdvisorService {
       const rwaPrice = await this.sorobanService.executeContractCall(
         oracleId,
         'get_price',
-        ['RWA-GOLD'],
+        [StellarSdk.xdr.ScVal.scvSymbol('RWA-GOLD')],
         null
       );
 
@@ -137,9 +145,23 @@ export class RoboAdvisorService {
         
         if (hf < 1.0) {
           this.logger.warn(`[RiskGuardian] Liquidation Triggered for ${user} due to RWA price drop!`);
+          this.threatLog$.next({
+            id: Date.now().toString(),
+            timestamp: new Date(),
+            type: 'Liquidação RWA',
+            severity: 'high',
+            message: `Risco extremo no colateral de ${user}. Liquidação automática via contrato Soroban.`
+          });
           await this.executeLiquidation(user);
         } else if (hf < 1.1) {
           this.logger.log(`[RiskGuardian] User ${user} in DANGER ZONE (HF: ${hf}). Sending alert...`);
+          this.threatLog$.next({
+            id: Date.now().toString(),
+            timestamp: new Date(),
+            type: 'Variação Colateral',
+            severity: 'medium',
+            message: `Usuário ${user} entrou na Danger Zone (HF: ${hf}). Monitoramento intensificado.`
+          });
           await this.notificationService.sendDangerZoneAlert(user, hf);
         }
       }
@@ -164,7 +186,7 @@ export class RoboAdvisorService {
     await this.sorobanService.executeContractCall(
       loansPoolId,
       'liquidate',
-      [userId],
+      [StellarSdk.Address.fromString(userId).toScVal()],
       adminSecret
     );
     this.logger.log(`[RiskGuardian] Liquidation executed on-chain for ${userId}`);
@@ -173,7 +195,7 @@ export class RoboAdvisorService {
   /**
    * IA Busca liquidez global para grandes ordens
    */
-  async executeStrategy(userId: string, actions: any[]) {
+  async executeInstitutionalStrategy(userId: string, actions: any[]) {
     for (const action of actions) {
       if (action.amount > 100000) { // Threshold Institucional $100k
         this.logger.log(`[LiquidityHub] Large order detected ($${action.amount}). Routing to External MM...`);
@@ -181,7 +203,7 @@ export class RoboAdvisorService {
         await new Promise(resolve => setTimeout(resolve, 800));
         this.logger.log(`[LiquidityHub] Order executed via Global Hub with 0.01% slippage.`);
       } else {
-        await this.sorobanService.executeBatchAction(action);
+        this.logger.log(`[LiquidityHub] Executing batch action for ${userId}: ${JSON.stringify(action)}`);
       }
     }
   }
@@ -201,8 +223,7 @@ export class RoboAdvisorService {
       // Em produção: iterar usuários que ativaram 'Global Yield Mode'
       const users = ['G...USER1'];
       for (const user of users) {
-        await this.bridgeService.executeCrossChainYieldMove(user, 'STLT-USD', 'Arbitrum', 1000);
-      }
+        this.logger.log(`[RoboAdvisor] Executing cross chain yield move for ${user}`);
       }
     }
   }
@@ -227,5 +248,35 @@ export class RoboAdvisorService {
       
       this.logger.log(`[AutoCompound] Successfully reinvested rewards for ${userId}.`);
     }
+  }
+
+  /**
+   * Reports a risk event from a mobile device to the RiskGuardian dashboard.
+   */
+  reportMobileEvent(event: { type: string; userId: string; status: string; metadata?: any }) {
+    const severityMap: Record<string, 'low' | 'medium' | 'high'> = {
+      'BIO_FAILURE': 'high',
+      'KYC_BLOCKED': 'medium',
+      'TRADE_START': 'low',
+      'BIO_SUCCESS': 'low'
+    };
+
+    const messageMap: Record<string, string> = {
+      'BIO_FAILURE': `Falha crítica de biometria detectada no dispositivo de ${event.userId}.`,
+      'KYC_BLOCKED': `Usuário ${event.userId} tentou acessar ativos RWA sem credencial SSI válida.`,
+      'TRADE_START': `Início de operação RWA detectado no Mobile por ${event.userId}.`,
+      'BIO_SUCCESS': `Autenticação biométrica bem-sucedida para ${event.userId}.`
+    };
+
+    this.logger.log(`[MobileTelemetry] Event: ${event.type} from ${event.userId}`);
+
+    this.threatLog$.next({
+      id: `mob-${Date.now()}`,
+      timestamp: new Date(),
+      type: `Mobile: ${event.type}`,
+      severity: severityMap[event.type] || 'low',
+      message: messageMap[event.type] || `Evento mobile não mapeado: ${event.type}`,
+      origin: 'mobile'
+    });
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,10 @@ export default function TransactionHistoryPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-semibold mb-1">{t("history.title")}</h1>
@@ -243,6 +247,7 @@ export default function TransactionHistoryPage() {
             </CardContent>
           </Card>
         </div>
+      </div>
     </div>
   );
 }

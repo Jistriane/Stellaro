@@ -19,12 +19,17 @@ export class WebhookService {
     this.logger.log(`[WebhookHub] New endpoint registered: ${url}`);
   }
 
+  async notifyComplianceIssue(userAddress: string, issueType: string, details: any) {
+    this.logger.error(`[ComplianceAlert] Issue detected for ${userAddress}: ${issueType}`);
+    await this.trigger('SECURITY_ALERT' as any, { userAddress, issueType, details });
+  }
+
   /**
-   * Dispara um evento para todos os parceiros do ecossistema
+   * Triggers an event for all ecosystem partners
    */
-  async trigger(event: WebhookPayload['event'], data: any) {
+  async trigger(event: WebhookPayload['event'] | 'SECURITY_ALERT', data: any) {
     const payload: WebhookPayload = {
-      event,
+      event: event as any,
       timestamp: Date.now(),
       data,
     };

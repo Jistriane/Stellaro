@@ -73,3 +73,5 @@ impl VcRegistry {
         false
     }
 }
+
+mod test;

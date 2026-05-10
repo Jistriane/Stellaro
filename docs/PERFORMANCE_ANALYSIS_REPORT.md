@@ -101,15 +101,15 @@ Based on NestJS best practices and architecture:
 **Achievement**: **193% of target** (29 vs 15 pages)
 
 ### Technology Stack
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **React**: v19
 - **Styling**: Tailwind CSS
 - **Charts**: Recharts
-- **i18n**: next-intl (EN/PT-BR)
+- **i18n**: next-intl (English runtime locale)
 - **Wallet**: Freighter, Ledger, Albedo
 
 ### Expected Performance (Lighthouse)
-Based on Next.js 15 optimizations:
+Based on Next.js 16 optimizations:
 - **Performance Score**: >90 (expected)
 - **FCP**: <1.8s (First Contentful Paint)
 - **LCP**: <2.5s (Largest Contentful Paint)

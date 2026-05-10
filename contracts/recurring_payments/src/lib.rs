@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, token};
+use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, token, IntoVal};
 
 #[contracttype]
 #[derive(Clone, Debug)]
@@ -16,6 +16,7 @@ pub struct Subscription {
 #[contracttype]
 pub enum DataKey {
     Admin,
+    VcRegistry,
     Sub(Address, Address), // (user, merchant)
 }
 
@@ -24,11 +25,24 @@ pub struct RecurringPayments;
 
 #[contractimpl]
 impl RecurringPayments {
-    pub fn initialize(env: Env, admin: Address) {
+    pub fn initialize(env: Env, admin: Address, vc_registry: Address) {
         if env.storage().instance().has(&DataKey::Admin) {
             panic!("already initialized");
         }
         env.storage().instance().set(&DataKey::Admin, &admin);
+        env.storage().instance().set(&DataKey::VcRegistry, &vc_registry);
+    }
+
+    fn check_compliance(env: &Env, user: Address) {
+        let registry_addr: Address = env.storage().instance().get(&DataKey::VcRegistry).expect("vc registry not set");
+        let is_valid: bool = env.invoke_contract(
+            &registry_addr,
+            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            soroban_sdk::vec![env, user.clone().into_val(env)]
+        );
+        if !is_valid {
+            panic!("compliance failed: subscription user needs KYC VC");
+        }
     }
 
     pub fn authorize(
@@ -40,6 +54,7 @@ impl RecurringPayments {
         frequency_ledgers: u32,
     ) {
         user.require_auth();
+        Self::check_compliance(&env, user.clone());
 
         let sub = Subscription {
             user: user.clone(),
@@ -56,6 +71,9 @@ impl RecurringPayments {
 
     pub fn withdraw(env: Env, user: Address, merchant: Address) {
         merchant.require_auth();
+        // Merchant validado pelo admin no onboarding off-chain, 
+        // mas o pagador deve manter KYC ativo para a cobrança ocorrer.
+        Self::check_compliance(&env, user.clone());
 
         let mut sub: Subscription = env.storage().persistent().get(&DataKey::Sub(user.clone(), merchant.clone())).expect("no subscription found");
         
@@ -91,3 +109,6 @@ impl RecurringPayments {
         env.storage().persistent().get(&DataKey::Sub(user, merchant)).expect("not found")
     }
 }
+
+#[cfg(test)]
+mod test;

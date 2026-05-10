@@ -20,8 +20,14 @@ export class NotificationService {
     this.logger.log(`[NotificationHub] Alert delivered to user ${userId}.`);
   }
 
+  async sendUndercollateralizationAlert(current: number, threshold: number, details: any) {
+    const message = `STELLARO RISK ALERT: Protocol undercollateralization detected! Current: ${current}%, Threshold: ${threshold}%. Emergency protocols active.`;
+    this.logger.warn(`[RiskAlert] ${message}`);
+    // detail logging or additional logic
+  }
+
   async sendDangerZoneAlert(userId: string, healthFactor: number) {
-    const message = `⚠️ ALERTA STELLARO: Seu Health Factor caiu para ${healthFactor.toFixed(2)}. Suas posições RWA estão em risco de liquidação. Por favor, adicione colateral ou reduza sua dívida.`;
+    const message = `STELLARO ALERT: Your Health Factor dropped to ${healthFactor.toFixed(2)}. Your RWA positions are at risk of liquidation. Please add collateral or reduce debt.`;
     await this.sendAlert(userId, message, 'all');
   }
 }

@@ -6,17 +6,26 @@ export class StellarWallet {
 
   /**
    * Inicializa ou recupera a carteira do armazenamento seguro.
+   * RWA Compliance: Garante que a chave nunca saia do enclave seguro sem necessidade.
    */
   static async getOrCreateWallet(): Promise<StellarSdk.Keypair> {
-    let seed = await SecureStore.getItemAsync(this.SEED_KEY);
-    
-    if (!seed) {
-      const keypair = StellarSdk.Keypair.random();
-      seed = keypair.secret();
-      await SecureStore.setItemAsync(this.SEED_KEY, seed);
+    try {
+      let seed = await SecureStore.getItemAsync(this.SEED_KEY);
+      
+      if (!seed) {
+        const keypair = StellarSdk.Keypair.random();
+        seed = keypair.secret();
+        await SecureStore.setItemAsync(this.SEED_KEY, seed, {
+          keychainService: 'stellaro_vault',
+          copyToClipboard: false,
+        });
+      }
+      
+      return StellarSdk.Keypair.fromSecret(seed);
+    } catch (error) {
+      console.error('SecureStore Error:', error);
+      throw new Error('Falha ao acessar o armazenamento seguro da carteira.');
     }
-    
-    return StellarSdk.Keypair.fromSecret(seed);
   }
 
   /**
@@ -28,6 +37,7 @@ export class StellarWallet {
       ? StellarSdk.Networks.PUBLIC 
       : StellarSdk.Networks.TESTNET;
       
+    // @ts-ignore - Stellar SDK types sometimes mismatch on XDR parsing
     const tx = StellarSdk.TransactionBuilder.fromXDR(xdr, passphrase);
     tx.sign(keypair);
     

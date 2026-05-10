@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { SorobanService } from '../chain/soroban.service';
+import { PrismaService } from '../prisma/prisma.service';
+
 @Injectable()
 export class BridgeService {
   private readonly logger = new Logger(BridgeService.name);
@@ -9,7 +12,7 @@ export class BridgeService {
 
   constructor(
     private configService: ConfigService,
-    private sorobanService: any // Injected in actual app
+    private sorobanService: SorobanService
   ) {}
 
   async monitorBridgeEvents() {

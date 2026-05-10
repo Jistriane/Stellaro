@@ -11,16 +11,19 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2020",
     "sourceMap": true,
+    "rootDir": "./src",
     "outDir": "./dist",
     "incremental": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
+    "useUnknownInCatchVariables": false,
     "strictNullChecks": false,
-    "forceConsistentCasingInFileNames": false,
+    "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "resolvePackageJsonExports": true
   },
-  "exclude": ["src/**/*.spec.ts", "test/**/*"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist/**/*", "src/**/*.spec.ts", "test/**/*"]
 }

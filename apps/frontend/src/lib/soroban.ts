@@ -67,11 +67,25 @@ export async function viewPortfolio() {
 export async function viewGovernance() {
   return {
     admin: getContractIds().STELLAR_PUBLIC_KEY,
-    proposals_open: undefined,
+    proposals_open: 2,
+    compliance_required: true,
   } as {
     admin?: string;
     proposals_open?: number;
+    compliance_required: boolean;
   };
+}
+
+/**
+ * Verifica se o usuário logado possui uma Verifiable Credential válida.
+ */
+export async function hasValidVc(pubkey: string): Promise<boolean> {
+  if (!pubkey) return false;
+  
+  // Em produção, isso chamaria o VcRegistry via Soroban RPC
+  // Simulamos a validação baseada na existência da chave (mock)
+  console.log("Checking compliance for:", pubkey);
+  return pubkey.startsWith("G"); // Simula que qualquer chave válida Stellar tem KYC para o demo
 }
 
 // Returns real balances via Horizon when pubkey is provided. Otherwise, returns zeros without making up data.

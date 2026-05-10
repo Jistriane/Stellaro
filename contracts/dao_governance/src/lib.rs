@@ -31,6 +31,7 @@ pub struct Proposal {
 pub enum DataKey {
     Admin,
     GovernanceToken,
+    VcRegistry,
     Proposal(u32),
     ProposalsCount,
     UserVoted(u32, Address),
@@ -45,19 +46,33 @@ pub struct DaoGovernance;
 
 #[contractimpl]
 impl DaoGovernance {
-    pub fn initialize(env: Env, admin: Address, token: Address, min_quorum: i128, voting_period: u32) {
+    pub fn initialize(env: Env, admin: Address, token: Address, vc_registry: Address, min_quorum: i128, voting_period: u32) {
         if env.storage().instance().has(&DataKey::Admin) {
             panic!("already initialized");
         }
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::GovernanceToken, &token);
+        env.storage().instance().set(&DataKey::VcRegistry, &vc_registry);
         env.storage().instance().set(&DataKey::MinQuorum, &min_quorum);
         env.storage().instance().set(&DataKey::VotingPeriod, &voting_period);
         env.storage().instance().set(&DataKey::ProposalsCount, &0u32);
     }
 
+    fn check_compliance(env: &Env, user: Address) {
+        let registry_addr: Address = env.storage().instance().get(&DataKey::VcRegistry).expect("vc registry not set");
+        let is_valid: bool = env.invoke_contract(
+            &registry_addr,
+            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            soroban_sdk::vec![env, user.clone().into_val(env)]
+        );
+        if !is_valid {
+            panic!("compliance failed: governance participation requires KYC VC");
+        }
+    }
+
     pub fn propose(env: Env, creator: Address, target: Address, action: Symbol, description: Symbol) -> u32 {
         creator.require_auth();
+        Self::check_compliance(&env, creator.clone());
         
         let mut count: u32 = env.storage().instance().get(&DataKey::ProposalsCount).unwrap_or(0);
         count += 1;
@@ -86,6 +101,7 @@ impl DaoGovernance {
 
     pub fn vote(env: Env, voter: Address, proposal_id: u32, support: bool) {
         voter.require_auth();
+        Self::check_compliance(&env, voter.clone());
         
         if env.storage().instance().has(&DataKey::UserVoted(proposal_id, voter.clone())) {
             panic!("already voted");

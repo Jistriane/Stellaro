@@ -57,6 +57,10 @@
     "settings": "Settings",
     "advanced": "Advanced",
     "trading": "Trading",
-    "login": "Login"
+    "login": "Login",
+    "dao": "DAO",
+    "rwa": "RWA",
+    "ssi": "SSI",
+    "recurringPayments": "Pagamentos Recorrentes"
   }
 }

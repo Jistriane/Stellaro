@@ -1,8 +1,6 @@
-import ModuleLaunchPage from "@/components/ModuleLaunchPage";
-import ModuleFilters from "@/components/ModuleFilters";
-import ModulePagination from "@/components/ModulePagination";
-import QuickCreateForm from "@/components/QuickCreateForm";
+import Image from "next/image";
 import { getRwaOverview } from "@/lib/v4";
+import RwaMarketplace from "./RwaMarketplace";
 
 type SearchParams = {
   page?: string;
@@ -12,89 +10,33 @@ type SearchParams = {
   search?: string;
 };
 
-export default async function RwaPage({ searchParams }: { searchParams?: SearchParams }) {
-  const page = Math.max(1, Number(searchParams?.page ?? 1) || 1);
-  const pageSize = Math.min(50, Math.max(1, Number(searchParams?.pageSize ?? 5) || 5));
-  const status = searchParams?.status?.trim() || undefined;
-  const assetClass = searchParams?.assetClass?.trim() || undefined;
-  const search = searchParams?.search?.trim() || undefined;
+export default async function RwaPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
+  const resolvedSearchParams = await searchParams;
+  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1) || 1);
+  const pageSize = Math.min(50, Math.max(1, Number(resolvedSearchParams?.pageSize ?? 5) || 5));
+  const status = resolvedSearchParams?.status?.trim() || undefined;
+  const assetClass = resolvedSearchParams?.assetClass?.trim() || undefined;
+  const search = resolvedSearchParams?.search?.trim() || undefined;
 
   const overview = await getRwaOverview({ page, pageSize, status, assetClass, search });
 
+  // Map the backend items to the view required by RwaMarketplace
+  const assets = overview.items.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    assetClass: item.assetClass,
+    status: item.status,
+    whitelistRequired: item.whitelistRequired,
+    annualYieldBps: item.annualYieldBps
+  }));
+
   return (
-    <>
-      <ModuleLaunchPage
-      eyebrow="Módulo 1 / v4.0"
-      title="Tokenização de Real World Assets"
-      summary="Base visual para lançar ativos do mundo real com foco em documentos legais, listas de permissão e distribuição de rendimentos sem acoplar a lógica regulatória no frontend de consumo."
-      status={overview.status}
-      accent="from-amber-400/20 via-slate-900 to-slate-950"
-      stats={[
-        { label: "Fluxo principal", value: `${Math.round(overview.readiness * 100)}%`, hint: "A tela prepara onboarding, vitrine e estados regulatórios." },
-        { label: "Entrega on-chain", value: "Selo + whitelist", hint: `Módulo: ${overview.module}` },
-        { label: "Impacto do usuário", value: `${overview.total} ativos`, hint: `${overview.items.length} visíveis nesta página.` },
-      ]}
-      sections={[
-        {
-          title: "O que esta tela precisa suportar depois",
-          items: ["Upload e resumo de documentos jurídicos", "Lista de emissores e ativos permitidos", "Timeline de rendimentos e eventos corporativos", "Integração com compliance-service e auditoria"],
-        },
-        {
-          title: "Sinais de produto já presentes nos documentos",
-          items: overview.nextSteps.length > 0 ? overview.nextSteps : ["Mercado de RWA com negociação P2P", "Registro de hash de documentos legais", "Distribuição de dividendos para holders", "Whitelist para ativos regulados"],
-        },
-      ]}
-      links={[
-        { href: "/v4", label: "Voltar ao launchpad" },
-        { href: "/governance", label: "Abrir governança DAO" },
-        { href: "/docs", label: "Ler os documentos" },
-        { href: "https://developers.stellar.org/docs", label: "Stellar docs", external: true },
-      ]}
-      />
-      <div className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
-        <ModuleFilters
-          basePath="/rwa"
-          pageSize={overview.pageSize}
-          values={{ status, assetClass, search }}
-          fields={[
-            {
-              name: "status",
-              label: "Status",
-              options: [
-                { value: "scaffold", label: "Scaffold" },
-                { value: "draft", label: "Draft" },
-              ],
-            },
-            {
-              name: "assetClass",
-              label: "Classe do ativo",
-              options: [
-                { value: "real-estate", label: "Real estate" },
-                { value: "receivables", label: "Receivables" },
-              ],
-            },
-            { name: "search", label: "Busca", placeholder: "ID ou nome do ativo" },
-          ]}
-        />
-        <ModulePagination
-          basePath="/rwa"
-          page={overview.page}
-          pageSize={overview.pageSize}
-          total={overview.total}
-          query={{ status, assetClass, search }}
-        />
-        <QuickCreateForm
-          title="Criar ativo RWA"
-          description="Registra um novo ativo em memória para validar o fluxo do launchpad até o backend."
-          endpoint="/rwa"
-          fields={[
-            { name: "name", label: "Nome do ativo", placeholder: "Receivables Basket 2026" },
-            { name: "assetClass", label: "Classe do ativo", placeholder: "receivables" },
-            { name: "annualYieldBps", label: "Yield anual (bps)", type: "number", placeholder: "920" },
-          ]}
-          submitLabel="Criar RWA"
-        />
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <RwaMarketplace initialAssets={assets} />
       </div>
-    </>
+    </div>
   );
 }

@@ -1,5 +1,8 @@
 # DETAILED EXECUTION PLAN - STELLARO 100%
 
+> Legacy note (Dec/2025): this plan references an older localized route structure (`[locale]`).
+> Current frontend runtime uses a single English locale without the `[locale]` segment.
+
 **Date**: December 7, 2025  
 **Objective**: Reach 100% in 7-8 hours  
 **Current Status**: 90%  

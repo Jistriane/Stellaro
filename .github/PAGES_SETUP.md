@@ -116,7 +116,7 @@ Your GitHub Pages site:
 
 ## 📚 Related Documentation
 
-- [GitHub Pages Setup](.github/DEPLOYMENT.md) - Full deployment guide
-- [Workflow Config](.github/workflows/github-pages-deploy.yml) - Deployment workflow
-- [Next.js Config](apps/frontend/next.config.mjs) - Static export settings
-- [Frontend Build Script](apps/frontend/package.json) - `build:pages` command
+- [GitHub Pages Setup](DEPLOYMENT.md) - Full deployment guide
+- [Workflow Config](workflows/github-pages-deploy.yml) - Deployment workflow
+- [Next.js Config](../apps/frontend/next.config.mjs) - Static export settings
+- [Frontend Build Script](../apps/frontend/package.json) - `build:pages` command

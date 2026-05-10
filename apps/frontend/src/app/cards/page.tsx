@@ -168,7 +168,7 @@ export default function CardsPage() {
                         <div className="text-slate-400 text-xs">{t("card.cvv")}</div>
                         <div className="flex items-center gap-2">
                           <span>***</span>
-                          <button onClick={() => alert(`${t("card.cvv")}: ${c.cvv} (mock)`) } className="px-2 py-1 rounded bg-slate-800 text-xs">{t("card.show")}</button>
+                          <button onClick={() => alert(`${t("card.cvv")}: ${c.cvv} (mock)`)} className="px-2 py-1 rounded bg-slate-800 text-xs">{t("card.show")}</button>
                         </div>
                       </div>
                       <div className="text-xs text-slate-500">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getContractIds, viewPortfolio, getWalletBalances } from "@/lib/soroban";
@@ -86,7 +87,10 @@ export default function PortfolioPage() {
   const ids = getContractIds();
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
@@ -198,6 +202,7 @@ export default function PortfolioPage() {
           </ul>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

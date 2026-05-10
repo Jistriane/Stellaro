@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -79,8 +80,11 @@ export default function SettingsAdvancedPage() {
   const walletAddress = "stellar1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s";
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-4xl font-bold mb-2">{t("title")}</h1>
@@ -477,6 +481,7 @@ export default function SettingsAdvancedPage() {
           <Button variant="outline">Discard</Button>
           <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
         </div>
+      </div>
       </div>
     </div>
   );

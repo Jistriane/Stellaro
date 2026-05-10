@@ -19,6 +19,11 @@ import enMessages from "../../messages/en.json";
 export const metadata: Metadata = {
   title: "Stellaro",
   description: "Stellaro frontend application",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default async function RootLayout({

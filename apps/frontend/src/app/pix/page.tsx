@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,147 +57,186 @@ export default function PixPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
-        <div className="text-xs text-slate-500">{t("header.subtitle")}</div>
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image
+        src="/capa.png"
+        alt="Stellaro background"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center opacity-30"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/90 to-slate-900/75" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(96,165,250,0.15),transparent_28%),radial-gradient(circle_at_82%_82%,rgba(16,185,129,0.10),transparent_24%)]" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8">
+        <header className="grid gap-6 rounded-[2rem] border border-slate-800/70 bg-slate-950/55 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-md lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-950/60 px-4 py-2 backdrop-blur-sm">
+              <Image src="/logo.png" alt="Stellaro logo" width={48} height={48} className="h-10 w-10 rounded-md object-contain" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">PIX</p>
+                <p className="text-sm text-slate-200">Deposits and withdrawals with a branded fintech shell</p>
+              </div>
+            </div>
+
+            <div className="max-w-3xl space-y-3">
+              <h1 className="text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl">{t("header.title")}</h1>
+              <p className="max-w-2xl text-base leading-7 text-slate-200/85 sm:text-lg">{t("header.subtitle")}</p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Deposit</p>
+                <p className="mt-3 text-sm leading-6 text-slate-200">Copy your temporary key or generate a QR payload.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Withdraw</p>
+                <p className="mt-3 text-sm leading-6 text-slate-200">Request transfers to PIX keys with transparent limits.</p>
+              </div>
+              <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Status</p>
+                <p className="mt-3 text-sm leading-6 text-slate-200">Operational status and recent history at a glance.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/60 p-6 backdrop-blur-md">
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Service</p>
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+              <span className={`rounded-full px-3 py-1 text-xs ${service.status === "Available" ? "bg-emerald-900/40 text-emerald-300" : service.status === "Maintenance" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+                {service.status === "Available" ? t("service.available") : service.status === "Maintenance" ? t("service.maintenance") : t("service.unavailable")}
+              </span>
+              <span className="text-slate-400">{t("service.note_ok")}</span>
+            </div>
+            <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-200">
+              <div className="text-xs uppercase tracking-[0.3em] text-slate-500">Wallet</div>
+              <div className="mt-2">R$ {wallet.balanceBRL.toLocaleString("en-US")} available</div>
+              <div className="mt-1 text-xs text-slate-500">Daily limit: R$ {wallet.dailyLimitBRL.toLocaleString("en-US")}</div>
+            </div>
+          </div>
+        </header>
+
+        {/* Deposit/Withdraw tabs */}
+        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <CardHeader>
+            <CardTitle>{t("ops.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2 text-sm mb-4 flex-wrap">
+              <button onClick={() => setTab("deposit")} className={`px-3 py-2 rounded-full border ${tab === "deposit" ? "border-sky-500/30 bg-sky-500/10 text-sky-100" : "border-slate-700 bg-slate-900/80 text-slate-300"}`}>{t("ops.deposit")}</button>
+              <button onClick={() => setTab("withdraw")} className={`px-3 py-2 rounded-full border ${tab === "withdraw" ? "border-sky-500/30 bg-sky-500/10 text-sky-100" : "border-slate-700 bg-slate-900/80 text-slate-300"}`}>{t("ops.withdraw")}</button>
+            </div>
+
+            {tab === "deposit" ? (
+              <div className="space-y-4">
+                <div className="text-sm">{t("deposit.how_much")}</div>
+                <input
+                  value={amountDep}
+                  onChange={(e) => setAmountDep(e.target.value)}
+                  placeholder={t("deposit.placeholder_amount")}
+                  className="w-full max-w-xs rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
+                  inputMode="decimal"
+                />
+
+                <div className="text-xs text-slate-500">{t("deposit.auto_credit")}</div>
+
+                <div className="space-y-2">
+                  <div className="text-sm text-slate-400">{t("deposit.temp_key")}</div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="rounded-xl bg-slate-900/90 px-3 py-2 text-sm select-all border border-slate-800">{pixKey}</div>
+                    <button onClick={onCopy} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs">{copied ? t("deposit.copied") : t("deposit.copy")}</button>
+                    <button onClick={onGenerateQR} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs">{t("deposit.qr")}</button>
+                  </div>
+                  <div className="mt-1 h-28 w-28 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-500">QR CODE (mock)</div>
+                </div>
+
+                <div className="text-xs text-slate-500">
+                  {t("deposit.instructions_title")}
+                  <ol className="list-decimal pl-5 space-y-1 mt-1">
+                    <li>{t("deposit.i1")}</li>
+                    <li>{t("deposit.i2")}</li>
+                  </ol>
+                  <div className="mt-1">{t("deposit.avg_time")}</div>
+                  <div className="mt-1">{t("deposit.limits", { daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="text-sm">{t("withdraw.how_much")}</div>
+                <input
+                  value={amountWdr}
+                  onChange={(e) => setAmountWdr(e.target.value)}
+                  placeholder={t("withdraw.placeholder_amount")}
+                  className="w-full max-w-xs rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
+                  inputMode="decimal"
+                />
+                <div className="text-sm">{t("withdraw.to_which_key")}</div>
+                <input
+                  value={destKey}
+                  onChange={(e) => setDestKey(e.target.value)}
+                  placeholder={t("withdraw.placeholder_key")}
+                  className="w-full max-w-lg rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
+                />
+                <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US"), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
+                <div className="flex gap-2 flex-wrap">
+                  <button onClick={onRequestWithdraw} className="px-3 py-2 rounded-full bg-primary text-black text-sm">{t("withdraw.request")}</button>
+                  <button onClick={() => confirm("OK?") && onRequestWithdraw()} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">{t("withdraw.confirm")}</button>
+                </div>
+                <div className="text-xs text-slate-500">{t("withdraw.status_pending")}</div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Pix transaction history */}
+        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <CardHeader>
+            <CardTitle>{t("history.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {history.length === 0 ? (
+              <div className="text-sm text-slate-400">{t("history.empty")}</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                {history.map((tItem, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-xl border border-slate-800/80 bg-slate-900/70 px-3 py-2">
+                    <div className="text-slate-300">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • R$ {tItem.value.toLocaleString("en-US")}</div>
+                    <div className="text-xs text-slate-500">{tItem.date} • {tItem.status === "Completed" ? t("history.status_done") : t("history.status_pending")} • {tItem.key}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Alerts and important messages */}
+        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <CardHeader>
+            <CardTitle>{t("alerts.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 text-sm space-y-1 text-amber-300">
+              <li>{t("alerts.a1")}</li>
+              <li>{t("alerts.a2")}</li>
+              <li>{t("alerts.a3")}</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Help and support */}
+        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <CardHeader>
+            <CardTitle>{t("help.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80">{t("help.faq_pix")}</Link>
+              <Link href="/help" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80">{t("help.support")}</Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Service status */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("service.status_title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className={`px-2 py-1 rounded text-xs ${service.status === "Available" ? "bg-emerald-900/40 text-emerald-300" : service.status === "Maintenance" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
-              {service.status === "Available" ? t("service.available") : service.status === "Maintenance" ? t("service.maintenance") : t("service.unavailable")}
-            </span>
-            <span className="text-slate-400">{t("service.note_ok")}</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Deposit/Withdraw tabs */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("ops.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2 text-sm mb-4">
-            <button onClick={() => setTab("deposit")} className={`px-3 py-2 rounded ${tab === "deposit" ? "bg-primary text-black" : "bg-slate-800 text-slate-300"}`}>{t("ops.deposit")}</button>
-            <button onClick={() => setTab("withdraw")} className={`px-3 py-2 rounded ${tab === "withdraw" ? "bg-primary text-black" : "bg-slate-800 text-slate-300"}`}>{t("ops.withdraw")}</button>
-          </div>
-
-          {tab === "deposit" ? (
-            <div className="space-y-4">
-              <div className="text-sm">{t("deposit.how_much")}</div>
-              <input
-                value={amountDep}
-                onChange={(e) => setAmountDep(e.target.value)}
-                placeholder={t("deposit.placeholder_amount")}
-                className="w-full max-w-xs rounded bg-slate-900 px-3 py-2 text-sm outline-none border border-slate-800"
-                inputMode="decimal"
-              />
-
-              <div className="text-xs text-slate-500">{t("deposit.auto_credit")}</div>
-
-              <div className="space-y-2">
-                <div className="text-sm text-slate-400">{t("deposit.temp_key")}</div>
-                <div className="flex items-center gap-2">
-                  <div className="rounded bg-slate-900 px-3 py-2 text-sm select-all">{pixKey}</div>
-                  <button onClick={onCopy} className="px-3 py-2 rounded bg-slate-800 text-slate-200 text-xs">{copied ? t("deposit.copied") : t("deposit.copy")}</button>
-                  <button onClick={onGenerateQR} className="px-3 py-2 rounded bg-slate-800 text-slate-200 text-xs">{t("deposit.qr")}</button>
-                </div>
-                <div className="mt-1 h-28 w-28 rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-500">QR CODE (mock)</div>
-              </div>
-
-              <div className="text-xs text-slate-500">
-                {t("deposit.instructions_title")}
-                <ol className="list-decimal pl-5 space-y-1 mt-1">
-                  <li>{t("deposit.i1")}</li>
-                  <li>{t("deposit.i2")}</li>
-                </ol>
-                <div className="mt-1">{t("deposit.avg_time")}</div>
-                <div className="mt-1">{t("deposit.limits", { daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="text-sm">{t("withdraw.how_much")}</div>
-              <input
-                value={amountWdr}
-                onChange={(e) => setAmountWdr(e.target.value)}
-                placeholder={t("withdraw.placeholder_amount")}
-                className="w-full max-w-xs rounded bg-slate-900 px-3 py-2 text-sm outline-none border border-slate-800"
-                inputMode="decimal"
-              />
-              <div className="text-sm">{t("withdraw.to_which_key")}</div>
-              <input
-                value={destKey}
-                onChange={(e) => setDestKey(e.target.value)}
-                placeholder={t("withdraw.placeholder_key")}
-                className="w-full max-w-lg rounded bg-slate-900 px-3 py-2 text-sm outline-none border border-slate-800"
-              />
-              <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US"), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
-              <div className="flex gap-2">
-                <button onClick={onRequestWithdraw} className="px-3 py-2 rounded bg-primary text-black text-sm">{t("withdraw.request")}</button>
-                <button onClick={() => confirm("OK?") && onRequestWithdraw()} className="px-3 py-2 rounded bg-slate-800 text-slate-200 text-sm">{t("withdraw.confirm")}</button>
-              </div>
-              <div className="text-xs text-slate-500">{t("withdraw.status_pending")}</div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Pix transaction history */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("history.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {history.length === 0 ? (
-            <div className="text-sm text-slate-400">{t("history.empty")}</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-              {history.map((tItem, i) => (
-                <div key={i} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
-                  <div className="text-slate-300">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • R$ {tItem.value.toLocaleString("en-US")}</div>
-                  <div className="text-xs text-slate-500">{tItem.date} • {tItem.status === "Completed" ? t("history.status_done") : t("history.status_pending")} • {tItem.key}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Alerts and important messages */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("alerts.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="list-disc pl-5 text-sm space-y-1 text-amber-300">
-            <li>{t("alerts.a1")}</li>
-            <li>{t("alerts.a2")}</li>
-            <li>{t("alerts.a3")}</li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Help and support */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("help.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2 text-sm">
-            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("help.faq_pix")}</Link>
-            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.support")}</Link>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -53,10 +53,10 @@ impl RwaTokenizer {
     fn check_compliance(env: &Env, user: Address) {
         let registry_addr = Self::get_vc_registry(env);
         
-        // Real logic: Call VcRegistry to check if user has a valid 'KYC-PASSPORT' credential
+        // Alinhado com VcRegistry: chamando has_valid_vc
         let is_valid: bool = env.invoke_contract(
             &registry_addr,
-            &symbol_short!("has_vc"),
+            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
             soroban_sdk::vec![env, user.clone().into_val(env)]
         );
         
@@ -208,3 +208,6 @@ impl RwaTokenizer {
         env.storage().instance().set(&DataKey::Proposal(proposal_id), &proposal);
     }
 }
+
+#[cfg(test)]
+mod test;

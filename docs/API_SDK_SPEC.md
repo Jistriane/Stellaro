@@ -1,48 +1,46 @@
-# 🛠️ Stellaro Developer SDK & API Spec
+# API and SDK Specification
 
-O Stellaro é construído para ser uma plataforma aberta. Desenvolvedores externos podem integrar seus aplicativos e serviços utilizando nossa infraestrutura de APIs e Webhooks.
+## Overview
 
-## 📡 Webhooks
+This document summarizes Stellaro's API and SDK expectations for internal and partner integrations.
 
-Fique por dentro de tudo o que acontece no protocolo em tempo real.
+## API Principles
 
-### Eventos Disponíveis:
-- `LIQUIDATION`: Disparado quando um empréstimo é liquidado.
-- `SWAP_COMPLETE`: Disparado após um rebalanceamento de portfólio.
-- `PROPOSAL_CREATED`: Nova proposta na DAO.
-- `VC_ISSUED`: Emissão de nova Verifiable Credential.
+- Versioned endpoints
+- Stable response contracts
+- Structured error payloads
+- Authentication and authorization enforcement
 
-### Exemplo de Payload:
-```json
-{
-  "event": "LIQUIDATION",
-  "timestamp": 1714115400000,
-  "data": {
-    "userId": "G...",
-    "asset": "RWA-GOLD",
-    "amount": 50.5
-  }
-}
-```
+## SDK Goals
 
-## 🏗️ SDK Integration (Frontend)
+- Typed request/response models
+- Deterministic signing flows
+- Clear network/profile configuration
+- Safe retry and timeout defaults
 
-Para integrar a carteira Stellaro em seu dApp:
+## Required Endpoint Groups
 
-```typescript
-import { StellaroWallet } from '@stellaro/sdk';
+- Authentication
+- Wallet and account management
+- Risk and compliance
+- Payments and subscriptions
+- Governance and proposal actions
+- Analytics and telemetry
 
-const wallet = new StellaroWallet();
-await wallet.connect();
+## Error Model
 
-// Assinar transação via Passkey (iOS/Android)
-const tx = await wallet.signTransaction(xdr);
-```
+Responses should include:
+- machine-readable code
+- user-readable message
+- optional details/context
+- request correlation id
 
-## 🔐 Auth & Security
+## Security Requirements
 
-Todas as chamadas à API exigem um `X-Stellaro-Key` ou uma assinatura válida da carteira do usuário. 
-Consulte nosso [Security Guide](./SECURITY_BEST_PRACTICES.md) para detalhes sobre o modelo de permissões.
+- No secret material in client logs
+- Signed calls for privileged actions
+- Strict validation on all public inputs
 
----
-*Construa o futuro das finanças com o Stellaro.*
+## Compatibility Policy
+
+Breaking API changes require version bump and migration notes.

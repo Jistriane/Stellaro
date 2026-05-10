@@ -363,6 +363,26 @@ export class SorobanService {
   }
 
   /**
+   * Subscriptions: Executa a cobrança de um pagamento recorrente (Withdraw).
+   * Requer autorização do Merchant.
+   */
+  async executeSubscriptionWithdraw(
+    merchantSecret: string,
+    user: string,
+  ): Promise<string> {
+    const contractId = process.env.RECURRING_PAYMENTS_ID;
+    if (!contractId) throw new Error('Recurring Payments ID missing');
+
+    const merchantKeypair = StellarSdk.Keypair.fromSecret(merchantSecret);
+    const args = [
+      StellarSdk.Address.fromString(user).toScVal(),
+      StellarSdk.Address.fromString(merchantKeypair.publicKey()).toScVal(),
+    ];
+
+    return this.executeContractCall(contractId, 'withdraw', args, merchantSecret);
+  }
+
+  /**
    * Insurance: Realiza depósito no pool de seguros.
    */
   async depositInsurance(userSecret: string, amount: string): Promise<string> {
@@ -423,5 +443,61 @@ export class SorobanService {
     ];
 
     return this.executeContractCall(contractId, 'execute_swap_with_path', args, adminSecret);
+  }
+
+  /**
+   * Congela ou descongela minting da stablecoin
+   */
+  async setMintingEnabled(contractId: string, enabled: boolean, signerSecret: string): Promise<string> {
+    const args = [
+      StellarSdk.nativeToScVal(enabled, { type: 'bool' })
+    ];
+    return this.executeContractCall(contractId, 'set_minting_enabled', args, signerSecret);
+  }
+
+  /**
+   * Pausa ou despausa um contrato qualquer (Admin).
+   */
+  async setContractPaused(contractId: string, paused: boolean, adminSecret: string): Promise<string> {
+    const args = [
+      StellarSdk.nativeToScVal(paused, { type: 'bool' })
+    ];
+    return this.executeContractCall(contractId, 'set_paused', args, adminSecret);
+  }
+
+  /**
+   * RWA Marketplace: Inicia um novo leilão
+   */
+  async startAuction(sellerSecret: string, assetToken: string, amount: string, minBid: string, duration: number): Promise<string> {
+    const contractId = process.env.RWA_MARKETPLACE_ID;
+    if (!contractId) throw new Error('RWA Marketplace ID missing');
+
+    const keypair = StellarSdk.Keypair.fromSecret(sellerSecret);
+    const args = [
+      StellarSdk.Address.fromString(keypair.publicKey()).toScVal(),
+      StellarSdk.Address.fromString(assetToken).toScVal(),
+      StellarSdk.nativeToScVal(amount, { type: 'i128' }),
+      StellarSdk.nativeToScVal(minBid, { type: 'i128' }),
+      StellarSdk.nativeToScVal(duration, { type: 'u64' })
+    ];
+
+    return this.executeContractCall(contractId, 'start_auction', args, sellerSecret);
+  }
+
+  /**
+   * RWA Marketplace: Coloca um lance em um leilão
+   */
+  async placeBid(bidderSecret: string, auctionId: number, bidAmount: string): Promise<string> {
+    const contractId = process.env.RWA_MARKETPLACE_ID;
+    if (!contractId) throw new Error('RWA Marketplace ID missing');
+
+    const keypair = StellarSdk.Keypair.fromSecret(bidderSecret);
+    const args = [
+      StellarSdk.Address.fromString(keypair.publicKey()).toScVal(),
+      StellarSdk.nativeToScVal(auctionId, { type: 'u32' }),
+      StellarSdk.nativeToScVal(bidAmount, { type: 'i128' })
+    ];
+
+    return this.executeContractCall(contractId, 'place_bid', args, bidderSecret);
   }
 }

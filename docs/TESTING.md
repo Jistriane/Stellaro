@@ -1,47 +1,29 @@
-# Testing and Environment — Stellaro Backend
+# Testing Guide
 
-This guide explains how to run tests (unit and with coverage) and how to prepare a minimal environment for controlled integration tests.
+## Scope
 
-## Quick Commands
+Stellaro testing includes application, contract, and integration reliability checks.
 
-```bash
-cd apps/backend
-# Run tests
-npm test
-# Run with coverage
-npm run test:cov
-```
+## Test Levels
 
-## Current Coverage (2025-12-03)
-- Suites: 63 passed, 0 failed
-- Tests: 270 passed, 1 skipped, 271 total
-- Coverage: Statements 35.11% • Branches 34.44% • Functions 32.60% • Lines 35.62%
+- Unit tests: service and contract logic
+- Integration tests: module boundaries and persistence
+- E2E tests: user-critical workflows
+- Smoke tests: environment and deployment verification
 
-## Skipped Test (PoR on-chain)
-- One Proof of Reserves on-chain test remains skipped to avoid fragility in unit tests, as it depends on `TransactionBuilder` and valid account/key on network.
-- Recommendation: re-enable this test only in integration environment (testnet) with real environment variables configured.
+## Minimum Quality Gates
 
-## Integration Environment (optional)
-1. Copie o arquivo de exemplo:
-   ```bash
-   cd apps/backend
-   cp .env.test.example .env.test
-   ```
-2. Preencha variáveis obrigatórias no `.env.test`:
-   - `STELLAR_NETWORK`, `SOROBAN_RPC_URL`, `STELLAR_HORIZON`
-   - `STABLECOIN_CONTRACT_ID`, `LOANS_POOL_CONTRACT_ID`, `ZK_VERIFIER_CONTRACT_ID`
-   - `RESERVE_ACCOUNT`, `STELLAR_SECRET_KEY` (NÃO COMMITAR CHAVES REAIS)
-3. Execute os testes apontando para o ambiente de integração (se aplicável ao seu runner):
-   ```bash
-   npm test -- --runInBand
-   ```
+- All critical flows pass in CI
+- No unresolved high-severity failures
+- Regression checks for auth, payments, and governance
 
-## Tips
-- Use testnet accounts and contracts to avoid costs and risks.
-- Keep the on-chain PoR test skipped in CI. Execute it only in dedicated integration pipelines/environments.
-- If using real PIX provider, define `PIX_PROVIDER_BASE_URL`, `PIX_PROVIDER_TOKEN` and `PIX_WEBHOOK_SECRET`. Without provider, maintain stub mode or test paths that don't make external calls.
+## Recommended Commands
 
-## Common Issues
-- "Invalid contract ID": verify `*_CONTRACT_ID` and selected network.
-- "Invalid pubkey" / "invalid encoded string": check key format and environment variables.
-- Network failures: confirm URLs, firewall and service availability (Horizon/Soroban/DB/Redis).
+- `npm test`
+- `npm run test:e2e`
+- `npm run test:smoke`
+- Contract-specific test commands in `contracts/`
+
+## Evidence
+
+All release candidates must generate test evidence artifacts for audit trails.

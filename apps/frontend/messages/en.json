@@ -92,7 +92,12 @@
     "docs": "Docs",
     "notifications": "Notifications",
     "learn": "Learn",
-    "examples": "Examples"
+    "examples": "Examples",
+    "dao": "DAO",
+    "rwa": "RWA",
+    "ssi": "SSI",
+    "recurringPayments": "Recurring Payments",
+    "recurring-payments": "Recurring Payments"
   },
   "common": {
     "soon": "Coming Soon"

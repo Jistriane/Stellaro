@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/store/app";
@@ -251,7 +252,7 @@ export default function LoginPage() {
       });
       if (!verifyRes.ok) throw new Error(tLoginErrors("passkey_verify_fail"));
 
-      // 3) Atualiza estado local (sem pubkey de carteira neste fluxo)
+      // 3) Update local state (no wallet pubkey in this flow)
       setLoggedIn(true, undefined);
       pushEvent("LOGGED_IN");
     } catch (e: unknown) {
@@ -420,144 +421,188 @@ export default function LoginPage() {
   }, [apiUrl, email, pushEvent, setLoggedIn, t, tLoginErrors]);
 
   return (
-    <div className="p-6">
-      <div className="max-w-xl mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-semibold">{t("title")}</h1>
-          <p className="text-sm text-slate-400">{t("subtitle")}</p>
-        </div>
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image
+        src="/capa.png"
+        alt="Stellaro background"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center opacity-35"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/88 to-slate-900/70" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.16),transparent_28%),radial-gradient(circle_at_80%_75%,rgba(16,185,129,0.10),transparent_26%)]" />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("auth")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    onClick={onPasskey}
-                    className="w-full px-4 py-2 rounded bg-blue-500 text-slate-900 text-sm font-medium disabled:opacity-60"
-                    disabled={loadingPasskey}
-                  >
-                    {loadingPasskey ? t("passkey_login_loading") : t("passkey_login")}
-                  </button>
-                  <button
-                    onClick={onRegisterPasskey}
-                    className="w-full px-4 py-2 rounded bg-emerald-500 text-slate-900 text-sm font-medium disabled:opacity-60"
-                    disabled={loadingPasskeyReg}
-                  >
-                    {loadingPasskeyReg ? t("passkey_register_loading") : t("passkey_register")}
-                  </button>
-                </div>
-                <p className="text-xs text-slate-500">{t("passkey_hint")}</p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="text-sm text-slate-400">{t("wallets_title")}</div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <button
-                    onClick={() => onWallet("freighter")}
-                    className="px-4 py-2 rounded bg-slate-800 text-sm hover:bg-slate-700 disabled:opacity-60"
-                    disabled={loadingWallet !== null || !freighterAvailable}
-                    title={freighterAvailable ? t("freighter_desc") : tLoginErrors("freighter_not_found")}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
-                        <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.2" />
-                        <path d="M5 8h6M8 5v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                      <span>{loadingWallet === "freighter" ? t("connecting") : (freighterAvailable ? t("freighter_button") : t("freighter_install"))}</span>
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => onWallet("albedo")}
-                    className="px-4 py-2 rounded bg-slate-800 text-sm hover:bg-slate-700 disabled:opacity-60"
-                    disabled={loadingWallet !== null || !albedoAvailable}
-                    title={albedoAvailable ? t("albedo_desc") : tLoginErrors("albedo_not_found")}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
-                        <rect x="2" y="2" width="12" height="12" rx="3" fill="currentColor" opacity="0.2" />
-                        <path d="M4.5 8h7M8 4.5v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                      <span>{loadingWallet === "albedo" ? t("connecting") : (albedoAvailable ? t("albedo_button") : t("albedo_install"))}</span>
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => onWallet("ledger")}
-                    className="px-4 py-2 rounded bg-slate-800 text-sm hover:bg-slate-700 disabled:opacity-60"
-                    disabled={loadingWallet !== null}
-                    title={t("ledger_desc")}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
-                        <path d="M3 5.5h10v5H3z" fill="currentColor" opacity="0.2" />
-                        <rect x="3" y="5.5" width="10" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                        <circle cx="5" cy="8" r="0.9" fill="currentColor" />
-                      </svg>
-                      <span>{loadingWallet === "ledger" ? t("waiting") : t("ledger_button")}</span>
-                    </span>
-                  </button>
-                </div>
-                <div className="text-xs text-slate-500">{t("wallets_hint")}</div>
-              </div>
-
-              <div className="flex items-center gap-3 text-xs text-slate-500">
-                <div className="flex-1 h-px bg-slate-800" />
-                <span>{t("divider_or")}</span>
-                <div className="flex-1 h-px bg-slate-800" />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <input
-                    className="flex-1 rounded bg-slate-800 px-3 py-2 text-sm outline-none border border-slate-700"
-                    placeholder={t("email_placeholder")}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <button
-                    onClick={onEmailLogin}
-                    className="px-4 py-2 rounded bg-slate-700 text-sm hover:bg-slate-600 disabled:opacity-60"
-                    disabled={loadingEmail}
-                  >
-                    {loadingEmail ? t("email_loading") : t("email_button")}
-                  </button>
-                </div>
-                <p className="text-xs text-slate-500">{t("email_helper")}</p>
-              </div>
-
-              {displayError && <div className="text-xs text-red-400">{displayError}</div>}
-
-              <div className="text-xs text-slate-400">
-                {t("help_onboarding")} <Link className="text-slate-200 underline" href="/help">{t("help_link")}</Link>
-              </div>
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:min-h-[calc(100vh-7rem)]">
+        <div className="space-y-8 text-left">
+          <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-950/60 px-4 py-2 backdrop-blur-sm">
+            <Image src="/logo.png" alt="Stellaro logo" width={48} height={48} className="h-10 w-10 rounded-md object-contain" />
+            <div className="text-left">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Stellaro</p>
+              <p className="text-sm text-slate-200">Identity, DeFi and compliance on Soroban</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <div className="mt-4 p-3 rounded border border-slate-800 bg-slate-900 text-sm">
-          {(() => {
-            const bannerText = t("kyc_banner");
-            const firstWord = bannerText.split(" ")[0];
-            const restOfText = bannerText.split(" ").slice(1).join(" ");
-            return (
-              <>
-                <b>{firstWord}</b> {restOfText}
-              </>
-            );
-          })()}
+          <div className="max-w-2xl space-y-4">
+            <h1 className="text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl">
+              {t("title")}
+            </h1>
+            <p className="max-w-xl text-base leading-7 text-slate-200/85 sm:text-lg">
+              {t("subtitle")}
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 max-w-3xl">
+            <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4 backdrop-blur-sm">
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Passkeys</p>
+              <p className="mt-3 text-sm leading-6 text-slate-200">Passwordless authentication with WebAuthn flow and email recovery.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4 backdrop-blur-sm">
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Wallets</p>
+              <p className="mt-3 text-sm leading-6 text-slate-200">Freighter, Albedo, and Ledger with verification and signing in the frontend.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4 backdrop-blur-sm">
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">KYC</p>
+              <p className="mt-3 text-sm leading-6 text-slate-200">Verified identity to access regulated features and RWA modules.</p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-slate-950/50 p-6 text-sm leading-6 text-slate-300 backdrop-blur-md max-w-2xl">
+            {(() => {
+              const bannerText = t("kyc_banner");
+              const firstWord = bannerText.split(" ")[0];
+              const restOfText = bannerText.split(" ").slice(1).join(" ");
+              return (
+                <>
+                  <b className="text-slate-50">{firstWord}</b> {restOfText}
+                </>
+              );
+            })()}
+          </div>
         </div>
 
-        <div className="mt-6 flex justify-start">
-          <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center text-primary font-extrabold text-2xl">{"S"}</div>
-        </div>
+        <div className="relative">
+          <div className="absolute -inset-4 rounded-[2rem] bg-emerald-500/10 blur-3xl" />
+          <Card className="relative overflow-hidden border border-slate-800/70 bg-slate-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+            <CardHeader className="border-b border-slate-800/80 bg-slate-950/60">
+              <CardTitle className="flex items-center gap-3 text-slate-50">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/80">
+                  <Image src="/logo.png" alt="Stellaro" width={24} height={24} className="h-6 w-6 object-contain" />
+                </span>
+                {t("auth")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 sm:p-8">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      onClick={onPasskey}
+                      className="w-full rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-100 transition-colors hover:bg-sky-500/15 disabled:opacity-60"
+                      disabled={loadingPasskey}
+                    >
+                      {loadingPasskey ? t("passkey_login_loading") : t("passkey_login")}
+                    </button>
+                    <button
+                      onClick={onRegisterPasskey}
+                      className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-100 transition-colors hover:bg-emerald-500/15 disabled:opacity-60"
+                      disabled={loadingPasskeyReg}
+                    >
+                      {loadingPasskeyReg ? t("passkey_register_loading") : t("passkey_register")}
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-500">{t("passkey_hint")}</p>
+                </div>
 
-        <div className="mt-6 text-xs text-slate-500 flex items-center justify-center gap-4">
-          <Link href="/help" className="hover:text-slate-300">{t("footer_help")}</Link>
-          <Link href="#" className="hover:text-slate-300">{t("footer_terms")}</Link>
-          <Link href="#" className="hover:text-slate-300">{t("footer_privacy")}</Link>
+                <div className="space-y-2">
+                  <div className="text-sm text-slate-400">{t("wallets_title")}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button
+                      onClick={() => onWallet("freighter")}
+                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+                      disabled={loadingWallet !== null || !freighterAvailable}
+                      title={freighterAvailable ? t("freighter_desc") : tLoginErrors("freighter_not_found")}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
+                          <circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.2" />
+                          <path d="M5 8h6M8 5v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <span>{loadingWallet === "freighter" ? t("connecting") : (freighterAvailable ? t("freighter_button") : t("freighter_install"))}</span>
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => onWallet("albedo")}
+                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+                      disabled={loadingWallet !== null || !albedoAvailable}
+                      title={albedoAvailable ? t("albedo_desc") : tLoginErrors("albedo_not_found")}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
+                          <rect x="2" y="2" width="12" height="12" rx="3" fill="currentColor" opacity="0.2" />
+                          <path d="M4.5 8h7M8 4.5v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <span>{loadingWallet === "albedo" ? t("connecting") : (albedoAvailable ? t("albedo_button") : t("albedo_install"))}</span>
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => onWallet("ledger")}
+                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+                      disabled={loadingWallet !== null}
+                      title={t("ledger_desc")}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
+                          <path d="M3 5.5h10v5H3z" fill="currentColor" opacity="0.2" />
+                          <rect x="3" y="5.5" width="10" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                          <circle cx="5" cy="8" r="0.9" fill="currentColor" />
+                        </svg>
+                        <span>{loadingWallet === "ledger" ? t("waiting") : t("ledger_button")}</span>
+                      </span>
+                    </button>
+                  </div>
+                  <div className="text-xs text-slate-500">{t("wallets_hint")}</div>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs text-slate-500">
+                  <div className="flex-1 h-px bg-slate-800" />
+                  <span>{t("divider_or")}</span>
+                  <div className="flex-1 h-px bg-slate-800" />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      className="flex-1 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-3 text-sm outline-none transition-colors placeholder:text-slate-600 focus:border-emerald-500/60"
+                      placeholder={t("email_placeholder")}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <button
+                      onClick={onEmailLogin}
+                      className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 transition-colors hover:bg-slate-700 disabled:opacity-60"
+                      disabled={loadingEmail}
+                    >
+                      {loadingEmail ? t("email_loading") : t("email_button")}
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-500">{t("email_helper")}</p>
+                </div>
+
+                {displayError && <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">{displayError}</div>}
+
+                <div className="text-xs text-slate-400">
+                  {t("help_onboarding")} <Link className="text-slate-100 underline decoration-slate-500 underline-offset-4" href="/help">{t("help_link")}</Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 flex items-center justify-between text-xs text-slate-500">
+            <Link href="/help" className="hover:text-slate-300">{t("footer_help")}</Link>
+            <Link href="#" className="hover:text-slate-300">{t("footer_terms")}</Link>
+            <Link href="#" className="hover:text-slate-300">{t("footer_privacy")}</Link>
+          </div>
         </div>
       </div>
     </div>

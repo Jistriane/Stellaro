@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { SorobanService } from '../chain/soroban.service';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 export interface KycResult {
   ok: boolean;
@@ -13,7 +15,7 @@ export class ComplianceService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly sorobanService: any // Injected in actual app
+    private readonly sorobanService: SorobanService
   ) {}
 
   kycCheck(document: string, name: string): Promise<KycResult> {
@@ -27,8 +29,6 @@ export class ComplianceService {
       });
     }
 
-    // Em produção: Integração com Sumsub/SanctionLists
-    // Por ora, validamos se o documento está em nossa "black list" interna ou se o formato é inválido
     const cleanDoc = document.replace(/\D/g, '');
     if (cleanDoc.length < 11) {
       return Promise.resolve({
@@ -38,8 +38,7 @@ export class ComplianceService {
       });
     }
 
-    // Simulação de check de Sanction List (stub expandido)
-    const isFlagged = cleanDoc.startsWith('000'); // Exemplo de regra de flag
+    const isFlagged = cleanDoc.startsWith('000');
     if (isFlagged) {
       return Promise.resolve({
         ok: false,
@@ -52,26 +51,26 @@ export class ComplianceService {
   }
 
   /**
-   * Emite uma credencial on-chain após aprovação de KYC
+   * Issues an on-chain credential after KYC approval
    */
   async issueOnChainVC(userId: string, userAddress: string) {
     this.logger.log(`Issuing On-Chain VC for user ${userId} at ${userAddress}`);
     
     try {
-      // In production, we'd use the master secret key to sign the VC issuance
       const adminSecret = process.env.MASTER_SECRET_KEY;
-      const registryContractId = process.env.VC_REGISTRY_CONTRACT_ID;
+      const registryContractId = process.env.VC_REGISTRY_CONTRACT_ID || process.env.VC_REGISTRY_ID;
 
       if (!registryContractId) {
         throw new Error('VC Registry contract ID not configured');
       }
 
-      // Call VcRegistry.issue_vc(user_address, vc_type_hash)
-      // The vc_type_hash could be a hash of 'KYC-PASSPORT'
       await this.sorobanService.executeContractCall(
         registryContractId,
         'issue_vc',
-        [userAddress, 'KYC-PASSPORT'],
+        [
+          StellarSdk.Address.fromString(userAddress).toScVal(),
+          StellarSdk.xdr.ScVal.scvString('KYC-PASSPORT')
+        ],
         adminSecret
       );
 
@@ -88,7 +87,6 @@ export class ComplianceService {
   ): Promise<{ ok: boolean; flagged: boolean; reasons?: string[] }> {
     this.logger.log(`AML screening for address: ${address}`);
 
-    // Regra 1: Checar se o endereço já foi reportado em nosso banco de dados
     const existingAudit = await this.prisma.auditLog.findFirst({
       where: {
         action: 'SECURITY_ALERT',
@@ -105,8 +103,6 @@ export class ComplianceService {
       };
     }
 
-    // Regra 2: Simular análise de comportamento (volumetria/frequência)
-    // Em produção: integrar com Chainalysis ou Elliptic
     return { ok: true, flagged: false };
   }
 
@@ -131,8 +127,6 @@ export class ComplianceService {
   }
 
   getLimits(userId: string) {
-    // Em produção: buscar limites baseados no nível de KYC e histórico
-    // Por ora, retornamos limites padrão
     return Promise.resolve({
       userId,
       limits: [

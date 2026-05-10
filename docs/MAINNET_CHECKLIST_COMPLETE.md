@@ -297,8 +297,8 @@ npm run perf:audit
 
 #### Internationalization
 - [ ] English (EN) UI complete
-- [ ] Portuguese-BR (PT-BR) UI complete
-- [ ] Language switching working
+- [ ] Runtime single-locale policy (EN) validated
+- [ ] Optional PT-BR content strategy documented (if re-enabled in future)
 - [ ] All strings localized
 - [ ] Date/number formatting correct
 
