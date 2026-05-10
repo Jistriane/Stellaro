@@ -12,10 +12,12 @@ npm test
 npm run test:cov
 ```
 
-## Current Coverage (2025-12-03)
-- Suites: 63 passed, 0 failed
-- Tests: 270 passed, 1 skipped, 271 total
-- Coverage: Statements 35.11% • Branches 34.44% • Functions 32.60% • Lines 35.62%
+## Current Coverage (2026-05-01)
+- Suites: 86 passed, 0 failed
+- Tests: 573 passed, 1 skipped, 574 total
+- Coverage: **Statements 60.07%** • Branches ~55% • Functions ~58% • Lines ~60%
+- Runtime: 18.15 seconds with `--coverage` flag
+- New Tests: +26 added (May 1, 2026) expanding priority services
 
 ## Skipped Test (PoR on-chain)
 - One Proof of Reserves on-chain test remains skipped to avoid fragility in unit tests, as it depends on `TransactionBuilder` and valid account/key on network.

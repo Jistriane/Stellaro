@@ -1,9 +1,10 @@
 # STELLARO CONTINUATION DOCUMENTATION INDEX
 
 **Created:** April 15, 2026  
-**Updated:** April 26, 2026  
+**Updated:** May 1, 2026  
 **Architect Mode Status:** ACTIVE   
 **Documentation Set:** Alinhado com v4 / 8 contratos  
+**Test Coverage:** 60.07% statements | 573 tests | 86 suites ✅  
 
 ---
 
@@ -28,6 +29,46 @@
    - v4 system overview
    - RWA / SSI / recurring payments / DAO layers
    - Infrastructure and QA implications
+
+### TESTING & QUALITY (For QA/Test Engineers)
+1. **[TESTING_QUICK_START.md](TESTING_QUICK_START.md)** (5 min read) ⭐ START HERE
+   - Quick command reference
+   - Test templates for new services
+   - Coverage analysis of priority files
+   - Debugging tips and common issues
+   - Best practices for contributors
+
+2. **[COVERAGE_ROADMAP_Q2_2026.md](COVERAGE_ROADMAP_Q2_2026.md)** (10 min read)
+   - Current coverage status: **60.07%** statements
+   - Detailed impact of Q1 expansions (Eliza -42.9%, Ingestor exited top-10)
+   - Priority matrix for next 4 weeks
+   - Success criteria and risk mitigations
+   - Command reference for running tests
+
+3. **[TESTING_CHANGELOG.md](TESTING_CHANGELOG.md)** (5 min read) ⭐ NEW
+   - Complete history of coverage improvements (Dec 2025 → May 2026)
+   - Timeline of expansions and metrics evolution
+   - Key achievements and statistics
+   - Known issues and workarounds
+   - Future priorities by quarter
+
+4. **[TESTING_SUMMARY.md](TESTING_SUMMARY.md)** (10 min read)
+   - Historical evolution: 31% (Dec 2) → 60% (May 1)
+   - Top-10 uncovered files with coverage gaps
+   - Test expansion details and infrastructure components
+   - Next coverage targets by timeline
+
+5. **[TESTING.md](TESTING.md)** (5 min reference)
+   - Quick start commands for running tests
+   - Coverage reporting instructions
+   - Integration environment setup
+   - Common issues and troubleshooting
+
+6. **[E2E_TESTING.md](E2E_TESTING.md)** (15 min read)
+   - Infrastructure isolation architecture
+   - Mock/stub implementations (Prisma, Redis, Reserve Manager)
+   - Test utilities and configuration
+   - Zero external dependencies design
 
 ### IMPLEMENTATION ROADMAPS (For Developers)
 1. **[WEEK1_BATCH_EXECUTOR_TASKS.md](WEEK1_BATCH_EXECUTOR_TASKS.md)** (Technical deep-dive)

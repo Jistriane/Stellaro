@@ -41,7 +41,7 @@ export class SubscriptionService {
       cadence: 'monthly',
       amount: '25.00',
       currency: 'STLT',
-      status: 'active',
+      status: 'scaffold',
     },
     {
       id: 'sub-002',
@@ -174,5 +174,20 @@ export class SubscriptionService {
         'Interface de gestão de assinaturas para merchants',
       ],
     };
+  }
+
+  async createPlan(input: { name: string; cadence: string; amount: string; currency: string }) {
+    const id = `sub-${String(this.plans.length + 1).padStart(3, '0')}`;
+    const plan = {
+      id,
+      name: input.name,
+      cadence: input.cadence,
+      amount: input.amount,
+      currency: input.currency,
+      status: 'draft',
+    };
+
+    this.plans = [...this.plans, plan];
+    return plan;
   }
 }

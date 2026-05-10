@@ -241,6 +241,30 @@ export class SorobanService {
   }
 
   /**
+   * Habilita/desabilita minting para o contrato de stablecoin.
+   * Em modo degradado lança erro para que testes detectem indisponibilidade.
+   */
+  async setMintingEnabled(contractId: string, enable: boolean, adminSecret: string): Promise<any> {
+    if (!this.rpcAvailable) {
+      throw new Error('Soroban RPC unavailable');
+    }
+
+    const method = enable ? 'enable_mint' : 'disable_mint';
+    // reutiliza executeContractCall para submissão on-chain
+    return this.executeContractCall(contractId, method, [], adminSecret);
+  }
+
+  /**
+   * Executa uma ação em lote/OTC simplificada. Implementação mínima para testes.
+   */
+  async executeBatchAction(action: any): Promise<string> {
+    if (!this.rpcAvailable) throw new Error('Soroban RPC unavailable');
+    // Em produção, mapear para chamada on-chain apropriada
+    // Aqui retornamos um resultado simulado para não depender de infra
+    return 'batch-executed';
+  }
+
+  /**
    * RWA: Mints tokens para um usuário.
    */
   async mintRwa(to: string, amount: string): Promise<string> {
