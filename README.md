@@ -1,6 +1,6 @@
 # Stellaro DeFi Credit Infrastructure on Stellar
 
-![Stellaro Logo](Stellaro%20Logo.png)
+![Stellaro Logo](stellaro-logo.png)
 
 ## DeFi Credit Infrastructure on Stellar
 
