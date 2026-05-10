@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Shield, BrainCircuit, Activity, AlertTriangle, ShieldCheck, Cpu, Radar, Zap, Lock, Smartphone } from "lucide-react";
-import { RadarChart, Radar as RechartsRadar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
+import { RadarChart, Radar as RechartsRadar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 
 type ThreatLog = {
   id: string;
@@ -18,6 +18,8 @@ export default function RiskGuardianDashboard() {
   const [riskScore, setRiskScore] = useState(92);
   const [threatLogs, setThreatLogs] = useState<ThreatLog[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const chartContainerRef = useRef<HTMLDivElement | null>(null);
+  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const liveUpdatesEnabled = process.env.NEXT_PUBLIC_ENABLE_RISK_LIVE_UPDATES === "true";
 
@@ -41,7 +43,9 @@ export default function RiskGuardianDashboard() {
   };
 
   useEffect(() => {
-    setIsMounted(true);
+    const mountRaf = requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
 
     if (!liveUpdatesEnabled) {
       setThreatLogs([
@@ -54,7 +58,9 @@ export default function RiskGuardianDashboard() {
           origin: "system",
         },
       ]);
-      return;
+      return () => {
+        cancelAnimationFrame(mountRaf);
+      };
     }
 
     let isMounted = true;
@@ -108,8 +114,36 @@ export default function RiskGuardianDashboard() {
     };
 
     return () => {
+      cancelAnimationFrame(mountRaf);
       isMounted = false;
       eventSource.close();
+    };
+  }, [apiBaseUrl, liveUpdatesEnabled]);
+
+  useEffect(() => {
+    const el = chartContainerRef.current;
+    if (!el) return;
+
+    const updateSize = () => {
+      const nextWidth = Math.max(280, Math.floor(el.clientWidth));
+      const nextHeight = Math.max(320, Math.floor(el.clientHeight));
+      setChartSize((prev) => (
+        prev.width === nextWidth && prev.height === nextHeight
+          ? prev
+          : { width: nextWidth, height: nextHeight }
+      ));
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
+    });
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
@@ -244,10 +278,9 @@ export default function RiskGuardianDashboard() {
               Risk Matrix
             </h2>
 
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-6 h-[400px] min-w-0 flex items-center justify-center">
-              {isMounted ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={riskFactors}>
+            <div ref={chartContainerRef} className="bg-slate-900/40 border border-slate-800 rounded-3xl p-6 h-[400px] min-w-0 flex items-center justify-center">
+              {isMounted && chartSize.width > 0 && chartSize.height > 0 ? (
+                <RadarChart width={chartSize.width} height={chartSize.height} cx="50%" cy="50%" outerRadius="70%" data={riskFactors}>
                   <PolarGrid stroke="#334155" />
                   <PolarAngleAxis dataKey="name" stroke="#94a3b8" tick={{ fill: '#94a3b8', fontSize: 12 }} />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} stroke="#334155" />
@@ -260,7 +293,6 @@ export default function RiskGuardianDashboard() {
                     fillOpacity={0.3}
                   />
                   </RadarChart>
-                </ResponsiveContainer>
               ) : (
                 <div className="h-full w-full rounded-lg border border-dashed border-slate-700/60" />
               )}
