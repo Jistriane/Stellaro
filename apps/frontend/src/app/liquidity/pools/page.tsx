@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,11 @@ export default function LiquidityPoolsPage() {
   const [pools, setPools] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPool, setSelectedPool] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+
     const mockPools = [
       {
         id: "pool-1",
@@ -93,7 +97,10 @@ export default function LiquidityPoolsPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-semibold mb-1">{t("pools.title")}</h1>
@@ -258,8 +265,9 @@ export default function LiquidityPoolsPage() {
                 <CardTitle>7-Day Performance</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={chartData}>
+                {isMounted ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="tvlGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
@@ -279,8 +287,11 @@ export default function LiquidityPoolsPage() {
                       fillOpacity={1}
                       fill="url(#tvlGradient)"
                     />
-                  </AreaChart>
-                </ResponsiveContainer>
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] rounded-lg border border-dashed border-slate-700/60" />
+                )}
               </CardContent>
             </Card>
 
@@ -293,8 +304,9 @@ export default function LiquidityPoolsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={impermanentLossData}>
+                {isMounted ? (
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={impermanentLossData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                     <XAxis dataKey="day" stroke="#94a3b8" />
                     <YAxis stroke="#94a3b8" />
@@ -307,8 +319,11 @@ export default function LiquidityPoolsPage() {
                       name="IL Risk %"
                       radius={[8, 8, 0, 0]}
                     />
-                  </BarChart>
-                </ResponsiveContainer>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[250px] rounded-lg border border-dashed border-slate-700/60" />
+                )}
               </CardContent>
             </Card>
 
@@ -333,5 +348,6 @@ export default function LiquidityPoolsPage() {
           </>
         )}
     </div>
+      </div>
   );
 }

@@ -34,8 +34,11 @@ function generateRealisticData(): Point[] {
 export default function BalanceChart() {
   const [data, setData] = useState<Point[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+
     // Initial load
     setData(generateRealisticData());
     setLoading(false);
@@ -65,32 +68,38 @@ export default function BalanceChart() {
           <div className="mb-3 text-sm text-slate-300">Latest price: ${latest.toFixed(4)} USD</div>
         )}
         <div className="w-full min-h-[320px]">
-          <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-              <XAxis dataKey="t" stroke="currentColor" fontSize={11} minTickGap={24} hide={data.length > 40} />
-              <YAxis stroke="currentColor" fontSize={12} domain={["dataMin", "dataMax"]} tickFormatter={(v) => `$${v.toFixed(3)}`} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(0, 0, 0, 0.85)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  borderRadius: "6px",
-                  fontSize: "13px",
-                }}
-                labelStyle={{ color: "#cbd5e1", marginBottom: "4px" }}
-                itemStyle={{ color: "#38bdf8" }}
-                formatter={(value: number) => [`$${value.toFixed(4)}`, "Price"]}
-              />
-              <Line
-                type="monotone"
-                dataKey="v"
-                stroke="#38bdf8"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 5, fill: "#38bdf8" }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {isMounted ? (
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+                <XAxis dataKey="t" stroke="currentColor" fontSize={11} minTickGap={24} hide={data.length > 40} />
+                <YAxis stroke="currentColor" fontSize={12} domain={["dataMin", "dataMax"]} tickFormatter={(v) => `$${v.toFixed(3)}`} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(0, 0, 0, 0.85)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    borderRadius: "6px",
+                    fontSize: "13px",
+                  }}
+                  labelStyle={{ color: "#cbd5e1", marginBottom: "4px" }}
+                  itemStyle={{ color: "#38bdf8" }}
+                  formatter={(value: number) => [`$${value.toFixed(4)}`, "Price"]}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="v"
+                  stroke="#38bdf8"
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 5, fill: "#38bdf8" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-slate-700/60 text-sm text-slate-500">
+              Chart loading...
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

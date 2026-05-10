@@ -26,6 +26,12 @@ interface DashboardMetric {
 }
 
 export function ReflectorDashboard() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Monitored assets
   const trackedAssets = ['USDC', 'USDT', 'BTC', 'ETH', 'XLM'];
   const { prices, loading: pricesLoading, error: pricesError } = useReflectorPrices(trackedAssets);
@@ -205,8 +211,9 @@ export function ReflectorDashboard() {
           <CardDescription>Yield rate over the last months</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={apyChartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+          {isMounted ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={apyChartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
@@ -220,8 +227,11 @@ export function ReflectorDashboard() {
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}
               />
-            </LineChart>
-          </ResponsiveContainer>
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] rounded-lg border border-dashed border-gray-200" />
+          )}
         </CardContent>
       </Card>
 

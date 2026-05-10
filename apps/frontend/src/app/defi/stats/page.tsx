@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,8 +12,11 @@ export default function DefiStatsPage() {
   const t = useTranslations("defi");
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+
     const mockStats = {
       tvl: 275000,
       loans: 42,
@@ -44,8 +48,11 @@ export default function DefiStatsPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <div>
         <h1 className="text-2xl font-semibold mb-1">{t("stats.title")}</h1>
         <p className="text-xs text-slate-500">{t("stats.subtitle")}</p>
       </div>
@@ -143,15 +150,19 @@ export default function DefiStatsPage() {
               <CardTitle>Loan Types Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={stats.loanTypes}>
+              {isMounted ? (
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={stats.loanTypes}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
                   <XAxis dataKey="type" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }} />
                   <Bar dataKey="value" fill="#0088FE" />
-                </BarChart>
-              </ResponsiveContainer>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[250px] rounded-lg border border-dashed border-slate-700/60" />
+              )}
             </CardContent>
           </Card>
 
@@ -206,6 +217,7 @@ export default function DefiStatsPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
     </div>
   );
 }

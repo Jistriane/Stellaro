@@ -1,4 +1,9 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const frontendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
+const workspaceRoot = path.resolve(frontendRoot, '../../..');
 
 const isGitHubPages = process.env.DEPLOY_TARGET === 'github-pages';
 const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1] || '';
@@ -27,6 +32,9 @@ const securityHeaders = [
 
 const nextConfig = {
   poweredByHeader: false,
+  turbopack: {
+    root: workspaceRoot,
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

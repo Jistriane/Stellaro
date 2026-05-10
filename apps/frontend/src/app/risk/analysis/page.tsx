@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
@@ -13,6 +14,8 @@ export default function RiskAnalysisPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setIsMounted(true);
+
     const mockAnalysis = {
       creditScore: 720,
       scoreRange: "Good",
@@ -50,8 +53,11 @@ export default function RiskAnalysisPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
+        <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-50 mb-2">{t("analysis.title")}</h1>
           <p className="text-slate-400 text-sm">{t("analysis.subtitle")}</p>
@@ -133,8 +139,9 @@ export default function RiskAnalysisPage() {
               <CardTitle className="text-slate-50">Risk Factors Assessment</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <RadarChart data={analysis.factors}>
+              {isMounted ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <RadarChart data={analysis.factors}>
                   <PolarGrid stroke="#475569" />
                   <PolarAngleAxis dataKey="name" stroke="#94a3b8" />
                   <PolarRadiusAxis stroke="#94a3b8" />
@@ -151,8 +158,11 @@ export default function RiskAnalysisPage() {
                       border: "1px solid #475569",
                     }}
                   />
-                </RadarChart>
-              </ResponsiveContainer>
+                  </RadarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] rounded-lg border border-dashed border-slate-700/60" />
+              )}
             </CardContent>
           </Card>
 
@@ -232,8 +242,9 @@ export default function RiskAnalysisPage() {
             <CardTitle className="text-slate-50">Risk Score History</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart
+            {isMounted ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart
                 data={[
                   { date: "1 Dec", score: 680 },
                   { date: "8 Dec", score: 700 },
@@ -252,10 +263,14 @@ export default function RiskAnalysisPage() {
                   }}
                 />
                 <Bar dataKey="score" fill="#10b981" />
-              </BarChart>
-            </ResponsiveContainer>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[250px] rounded-lg border border-dashed border-slate-700/60" />
+            )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
