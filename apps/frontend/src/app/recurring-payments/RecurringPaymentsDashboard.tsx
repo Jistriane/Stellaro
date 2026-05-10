@@ -25,8 +25,30 @@ type Subscription = {
   nextBilling: string;
 };
 
-export default function RecurringPaymentsDashboard({ initialSubscriptions }: { initialSubscriptions: Subscription[] }) {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(initialSubscriptions);
+type IncomingSubscription = Omit<Subscription, "amount"> & {
+  amount: number | string | null;
+};
+
+function normalizeAmount(value: number | string | null): number {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value.replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  return 0;
+}
+
+export default function RecurringPaymentsDashboard({ initialSubscriptions }: { initialSubscriptions: IncomingSubscription[] }) {
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(() =>
+    initialSubscriptions.map((sub) => ({
+      ...sub,
+      amount: normalizeAmount(sub.amount),
+    })),
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCompliant, setIsCompliant] = useState(true); // Demo mock
 
