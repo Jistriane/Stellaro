@@ -1,3 +1,4 @@
+import { Injectable, Logger } from '@nestjs/common';
 import { SorobanService } from '../chain/soroban.service';
 import { NotificationService } from './notification.service';
 import { BridgeService } from './bridge.service';
@@ -173,7 +174,7 @@ export class RoboAdvisorService {
   /**
    * IA Busca liquidez global para grandes ordens
    */
-  async executeStrategy(userId: string, actions: any[]) {
+  async executeLiquidityStrategy(userId: string, actions: any[]) {
     for (const action of actions) {
       if (action.amount > 100000) { // Threshold Institucional $100k
         this.logger.log(`[LiquidityHub] Large order detected ($${action.amount}). Routing to External MM...`);
@@ -202,7 +203,6 @@ export class RoboAdvisorService {
       const users = ['G...USER1'];
       for (const user of users) {
         await this.bridgeService.executeCrossChainYieldMove(user, 'STLT-USD', 'Arbitrum', 1000);
-      }
       }
     }
   }

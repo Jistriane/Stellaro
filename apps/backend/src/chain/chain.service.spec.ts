@@ -1,3 +1,31 @@
+import { ChainService } from './chain.service';
+
+describe('ChainService (unit)', () => {
+  let service: ChainService;
+
+  beforeEach(() => {
+    service = new ChainService();
+  });
+
+  it('getConfig should return default config values', () => {
+    const cfg = service.getConfig();
+    expect(cfg).toHaveProperty('sorobanRpcUrl');
+    expect(cfg).toHaveProperty('horizonUrl');
+    expect(cfg.network).toBeDefined();
+  });
+
+  it('simulateContractCall should return ok true (stub)', async () => {
+    const res = await service.simulateContractCall({ contractId: 'c', method: 'm', args: [] });
+    expect(res.ok).toBe(true);
+    expect(res.estimatedFee).toBeGreaterThan(0);
+  });
+
+  it('simulateContractCallReal should gracefully fallback when SDK missing', async () => {
+    const res = await service.simulateContractCallReal({ contractId: 'c', method: 'm', args: [] });
+    // In environments without SDK this should return ok:false or ok:true depending on availability; ensure it doesn't throw
+    expect(typeof res.ok).toBe('boolean');
+  });
+});
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChainService } from './chain.service';
 

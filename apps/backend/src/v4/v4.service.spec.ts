@@ -45,11 +45,21 @@ describe('V4Service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    const insuranceStub = {
+      getOverview: jest.fn().mockReturnValue({
+        module: 'insurance',
+        status: 'scaffold',
+        readiness: 0.2,
+        nextSteps: ['insurance-step'],
+      }),
+    };
+
     service = new V4Service(
       rwaStub as any,
       ssiStub as any,
       subscriptionStub as any,
       daoStub as any,
+      insuranceStub as any,
     );
   });
 
@@ -57,17 +67,18 @@ describe('V4Service', () => {
     const result = await service.getOverview();
 
     expect(result.module).toBe('v4');
-    expect(result.modules).toHaveLength(4);
+    expect(result.modules).toHaveLength(5);
     expect(result.modules.find((m) => m.id === 'rwa')?.items).toBe(1);
     expect(result.modules.find((m) => m.id === 'ssi')?.items).toBe(2);
     expect(result.modules.find((m) => m.id === 'subscription')?.items).toBe(1);
     expect(result.modules.find((m) => m.id === 'dao')?.items).toBe(3);
-    expect(result.readiness).toBeCloseTo((0.4 + 0.3 + 0.2 + 0.5) / 4, 6);
+    expect(result.readiness).toBeCloseTo((0.4 + 0.3 + 0.2 + 0.5 + 0.2) / 5, 6);
     expect(result.nextSteps).toEqual([
       'rwa-step',
       'ssi-step',
       'subscription-step',
       'dao-step',
+      'insurance-step',
     ]);
   });
 });
