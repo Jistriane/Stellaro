@@ -26,4 +26,12 @@ export class SubscriptionController {
   ) {
     return this.service.authorizeSubscription(body);
   }
+
+  @Post()
+  createPlan(
+    @Body()
+    body: { name: string; cadence: string; amount: string; currency: string },
+  ) {
+    return this.service.createPlan(body);
+  }
 }

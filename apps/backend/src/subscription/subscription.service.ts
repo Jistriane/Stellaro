@@ -41,7 +41,7 @@ export class SubscriptionService {
       cadence: 'monthly',
       amount: '25.00',
       currency: 'STLT',
-      status: 'active',
+      status: 'scaffold',
     },
     {
       id: 'sub-002',
@@ -49,9 +49,43 @@ export class SubscriptionService {
       cadence: 'quarterly',
       amount: '125.00',
       currency: 'STLT',
-      status: 'active',
+      status: 'scaffold',
     },
   ];
+
+  async createPlan(input: { name: string; cadence: string; amount: string; currency: string }) {
+    if (this.prisma) {
+      try {
+        await this.ensureSeeded();
+        const total = await this.prisma.subscriptionPlan.count();
+        const created = await this.prisma.subscriptionPlan.create({
+          data: {
+            publicId: `sub-${String(total + 1).padStart(3, '0')}`,
+            name: input.name,
+            cadence: input.cadence,
+            amount: input.amount,
+            currency: input.currency,
+            status: 'draft',
+          },
+        });
+        return this.toView(created as any);
+      } catch {
+        // fallback
+      }
+    }
+
+    const plan = {
+      id: `sub-${String(this.plans.length + 1).padStart(3, '0')}`,
+      name: input.name,
+      cadence: input.cadence,
+      amount: input.amount,
+      currency: input.currency,
+      status: 'draft',
+    };
+
+    this.plans = [...this.plans, plan];
+    return plan;
+  }
 
   private parsePagination(query: SubscriptionListQuery) {
     const page = Math.max(1, Number(query.page ?? 1) || 1);
@@ -169,10 +203,25 @@ export class SubscriptionService {
       page: paged.page,
       pageSize: paged.pageSize,
       nextSteps: [
-        'Implementar agendamento automático via ElizaOS agents',
+        'Dashboard de monitoramento RiskGuardian para falhas em massa',
         'Suporte a pagamentos variáveis baseados em consumo',
         'Interface de gestão de assinaturas para merchants',
       ],
     };
+  }
+
+  async processDuePayments(merchantSecret: string, userAddresses: string[]) {
+    if (!this.soroban) throw new Error('Soroban service unavailable');
+
+    const results = [];
+    for (const user of userAddresses) {
+      try {
+        const txHash = await this.soroban.executeSubscriptionWithdraw(merchantSecret, user);
+        results.push({ user, success: true, txHash });
+      } catch (error) {
+        results.push({ user, success: false, error: error.message });
+      }
+    }
+    return { processedAt: new Date().toISOString(), results };
   }
 }
