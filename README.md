@@ -12,6 +12,13 @@ Welcome to the Stellaro project. This monorepo contains the complete architectur
 - `next-intl` is configured with a single `en` locale in the current app shell.
 - UI copy in the main routes is kept in English to match the runtime configuration.
 
+### TradingView in Development
+
+- By default, local development uses a safe fallback card instead of loading the external TradingView widget.
+- This avoids noisy third-party preload/script warnings in dev consoles and automated browser checks.
+- To force-enable the real TradingView widget in development, set `NEXT_PUBLIC_ENABLE_TRADINGVIEW_DEV=true` in your local env.
+- The variable is documented in [.env.example](.env.example).
+
 ## Architecture Highlights
 
 - **Digital Sovereignty** --- Full handover to the DAO and decentralized control. [██████████] 100%

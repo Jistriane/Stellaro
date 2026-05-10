@@ -69,7 +69,7 @@ export default function BalanceChart() {
         )}
         <div className="w-full min-h-[320px]">
           {isMounted ? (
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={320} minWidth={280} minHeight={320}>
               <LineChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
                 <XAxis dataKey="t" stroke="currentColor" fontSize={11} minTickGap={24} hide={data.length > 40} />

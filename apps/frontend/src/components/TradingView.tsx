@@ -17,10 +17,14 @@ export default function TradingView({
 }: TradingViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const isDev = process.env.NODE_ENV !== "production";
+  const enableTradingViewInDev = process.env.NEXT_PUBLIC_ENABLE_TRADINGVIEW_DEV === "true";
+  const useDevFallback = isDev && !enableTradingViewInDev;
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
+    if (useDevFallback) return;
     if (!mounted || !containerRef.current) return;
 
     // Estrutura recomendada: container -> widget
@@ -34,6 +38,7 @@ export default function TradingView({
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
     script.type = "text/javascript";
     script.async = true;
+    script.crossOrigin = "anonymous";
     const tvLocale = locale === "pt" ? "br" : "en";
     script.textContent = JSON.stringify({
       symbols,
@@ -44,7 +49,7 @@ export default function TradingView({
       colorTheme: theme,
       autosize: true,
       showVolume: true,
-      showMA: true,
+      showMA: false,
       hideDateRanges: false,
       hideMarketStatus: false,
       hideSymbolLogo: false,
@@ -62,7 +67,18 @@ export default function TradingView({
     return () => {
       root.innerHTML = "";
     };
-  }, [mounted, symbols, height, theme, locale]);
+  }, [useDevFallback, mounted, symbols, height, theme, locale]);
+
+  if (useDevFallback) {
+    return (
+      <div className="w-full rounded-xl border border-slate-700/60 bg-slate-900/60 p-4 text-sm text-slate-300">
+        <p className="font-medium text-slate-100">Real-time Market (dev fallback)</p>
+        <p className="mt-2 text-slate-400">
+          Widget externo do TradingView desativado em ambiente de desenvolvimento para evitar warnings de preload e erros de script de terceiros. Defina NEXT_PUBLIC_ENABLE_TRADINGVIEW_DEV=true para habilitar.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

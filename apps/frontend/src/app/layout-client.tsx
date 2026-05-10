@@ -27,7 +27,7 @@ export function LayoutClient({ children }: LayoutClientProps) {
       <Suspense fallback={null}>
         <Sidebar />
       </Suspense>
-      <div className="min-h-screen pl-60 flex-1">
+      <div className="ml-60 min-h-screen w-[calc(100%-15rem)] overflow-x-hidden">
         {/* Top bar */}
         <div className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur border-b border-slate-800">
           <div className="flex items-center justify-between px-4 py-2">
