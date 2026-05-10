@@ -6,6 +6,10 @@
 	<img src="Stellaro%20Capa.png" alt="Stellaro Hero Banner" style="width:100%; max-width:1200px; height:auto;" />
 </p>
 
+<p align="center">
+	<img src="Dashboard%20Stellaro.png" alt="Stellaro Dashboard Preview" style="width:100%; max-width:1200px; height:auto;" />
+</p>
+
 ## DeFi Credit Infrastructure on Stellar
 
 Welcome to the Stellaro project. This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 16 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
