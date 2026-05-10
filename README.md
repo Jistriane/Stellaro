@@ -35,6 +35,92 @@ Welcome to the Stellaro project. This monorepo contains the complete architectur
 - **AI Risk Agent:** ElizaOS RiskGuardian with ZK credit scoring (Groth16).
 - **Sub-500ms Oracles:** Reflector Network + Stellar DEX fallback.
 
+## Project Flow Diagram
+
+```mermaid
+flowchart LR
+	U[User]
+
+	subgraph Experience[Experience Layer]
+		WEB[Web App\nNext.js 16]
+		MOB[Mobile App\nExpo/React Native]
+	end
+
+	subgraph Services[Service Layer]
+		API[API Gateway\nNestJS]
+		AUTH[Auth and Passkeys]
+		PAY[Payments and PIX]
+		GOV[Governance Services]
+		SSI[SSI and VC Services]
+		RWA[RWA Services]
+	end
+
+	subgraph Intelligence[Intelligence Layer]
+		AI[ElizaOS RiskGuardian]
+		ZK[ZK Credit Scoring]
+		ORACLE[Reflector and DEX Oracle Adapter]
+	end
+
+	subgraph Blockchain[Blockchain Layer - Stellar/Soroban]
+		C_STABLE[Stablecoin]
+		C_LOANS[LoansPool]
+		C_DAO[DAO Governance]
+		C_REC[Recurring Payments]
+		C_RWA[RWA Tokenizer and Marketplace]
+		C_VC[VC Registry]
+		C_MEV[MEV Guard and Batch Executor]
+	end
+
+	subgraph DataOps[Data and Operations]
+		DB[(PostgreSQL)]
+		REDIS[(Redis)]
+		OBS[Logs, Metrics, Traces]
+		COMP[Compliance and Audit Evidence]
+	end
+
+	U --> WEB
+	U --> MOB
+
+	WEB --> API
+	MOB --> API
+
+	API --> AUTH
+	API --> PAY
+	API --> GOV
+	API --> SSI
+	API --> RWA
+	API --> AI
+	API --> ORACLE
+
+	AI --> ZK
+	AUTH --> DB
+	PAY --> DB
+	GOV --> DB
+	SSI --> DB
+	RWA --> DB
+	API --> REDIS
+
+	PAY --> C_STABLE
+	PAY --> C_REC
+	GOV --> C_DAO
+	RWA --> C_RWA
+	SSI --> C_VC
+	AI --> C_MEV
+	ORACLE --> C_LOANS
+	ORACLE --> C_STABLE
+
+	C_STABLE --> OBS
+	C_LOANS --> OBS
+	C_DAO --> OBS
+	C_REC --> OBS
+	C_RWA --> OBS
+	C_VC --> OBS
+	C_MEV --> OBS
+	DB --> OBS
+	REDIS --> OBS
+	OBS --> COMP
+```
+
 ## Deployment Registry and Explorer Links
 
 ### Testnet V5 Manifest
