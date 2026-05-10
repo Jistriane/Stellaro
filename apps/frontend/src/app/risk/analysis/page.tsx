@@ -12,6 +12,7 @@ export default function RiskAnalysisPage() {
   const t = useTranslations("risk");
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
