@@ -27,6 +27,79 @@ Welcome to the Stellaro project. This monorepo contains the complete architectur
 - To force-enable the real TradingView widget in development, set `NEXT_PUBLIC_ENABLE_TRADINGVIEW_DEV=true` in your local env.
 - The variable is documented in [.env.example](.env.example).
 
+## x402 Live Activation (Backend + Frontend)
+
+The base x402 integration is available in the payments module and exposed in the Pix screen.
+
+### 1. Required backend environment variables
+
+Set the following variables in `apps/backend/.env`:
+
+```env
+# x402 mode: disabled | stub | live
+X402_MODE=live
+
+# Facilitator endpoint
+X402_FACILITATOR_URL=https://your-facilitator.example.com
+
+# Contract/provider used by the facilitator for settlement
+FACILITATOR_PROVIDER_CONTRACT_ID=CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# API key expected by the facilitator
+FACILITATOR_API_KEY=replace-with-real-key
+
+# Optional tuning
+X402_NETWORK=stellar:testnet
+X402_ACCEPTED_ASSET=STLT
+X402_RESOURCE=/payments/x402/settle
+X402_RECIPIENT=GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX
+X402_FEE_BPS=25
+X402_TTL_SECONDS=900
+```
+
+### 2. Frontend API URL
+
+Set in `apps/frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
+
+### 3. Run local services
+
+```bash
+docker compose up -d postgres redis
+```
+
+Then start backend and frontend in separate terminals:
+
+```bash
+cd apps/backend && npm run dev
+cd apps/frontend && npm run dev
+```
+
+### 4. Verify integration
+
+Status endpoint:
+
+```bash
+curl -s http://localhost:3001/payments/x402/status
+```
+
+Sample quote:
+
+```bash
+curl -s -X POST http://localhost:3001/payments/x402/quote \
+	-H 'Content-Type: application/json' \
+	-d '{"amount":"25.00","asset":"STLT","intent":"deposit","memo":"stellaro:deposit"}'
+```
+
+Expected behavior:
+
+- `mode=stub` when live credentials are incomplete.
+- `mode=live` when all facilitator credentials are configured.
+- Pix page shows **x402 Settlement Rail** and can generate quote payloads for facilitator handoff.
+
 ## Architecture Highlights
 
 - **Digital Sovereignty** --- Full handover to the DAO and decentralized control. [██████████] 100%
