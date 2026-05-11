@@ -52,6 +52,13 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
         run: npm run build:pages
 
+      - name: Validate exported asset paths
+        run: |
+          if grep -R -n '"/logo.png"\|"/capa.png"\|"/favicon.ico"\|'"'"'/logo.png'"'"'\|'"'"'/capa.png'"'"'\|'"'"'/favicon.ico'"'"'' out; then
+            echo "Found unprefixed public asset paths in exported files."
+            exit 1
+          fi
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
