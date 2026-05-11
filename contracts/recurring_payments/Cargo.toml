@@ -9,6 +9,10 @@ crate-type = ["cdylib"]
 [dependencies]
 soroban-sdk = "23.0.0"
 
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+vc_registry = { path = "../vc_registry" }
+
 [profile.release]
 opt-level = "z"
 overflow-checks = true

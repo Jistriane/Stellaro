@@ -205,33 +205,34 @@ impl DaoGovernance {
 #[cfg(test)]
 mod test {
     use super::*;
-    use soroban_sdk::testutils::{Address as _, Ledger};
+    use soroban_sdk::testutils::Address as _;
 
     #[test]
-    fn test_governance_timelock_flow() {
+    fn test_initialize_and_propose_with_compliance() {
         let env = Env::default();
         env.mock_all_auths();
-        
+
         let admin = Address::generate(&env);
         let token = Address::generate(&env);
+        let vc_hash = soroban_sdk::BytesN::from_array(&env, &[9u8; 32]);
         let target = Address::generate(&env);
-        
+
+        let vc_registry_id = env.register(vc_registry::VcRegistry, ());
+        let vc_client = vc_registry::VcRegistryClient::new(&env, &vc_registry_id);
+        vc_client.initialize(&admin);
+        vc_client.add_issuer(&admin);
+        vc_client.register_user_vc(&admin, &admin, &vc_hash);
+
         let contract_id = env.register(DaoGovernance, ());
         let client = DaoGovernanceClient::new(&env, &contract_id);
-        
-        client.initialize(&admin, &token, &100, &100);
-        
-        // 1. Propose
+
+        client.initialize(&admin, &token, &vc_registry_id, &100, &100);
+
         let proposal_id = client.propose(&admin, &target, &Symbol::new(&env, "action"), &Symbol::new(&env, "desc"));
-        
-        // 2. Vote (Simulate quorum)
-        // In real test, we'd need to mock the token balance. 
-        // For this logic test, let's assume we can bypass or it works.
-        // Actually, without a real token contract it might fail.
-        
-        // To keep it simple and test the Timelock logic specifically:
-        let mut proposal = client.get_proposal(&proposal_id);
-        proposal.votes_for = 150; // Manual set for testing if storage was accessible, but it's not directly.
-        // We'll trust the logic if it compiles, or implement a full mock token if needed.
+
+        let proposal = client.get_proposal(&proposal_id);
+        assert_eq!(proposal.id, proposal_id);
+        assert_eq!(proposal.creator, admin);
+        assert_eq!(proposal.target, target);
     }
 }

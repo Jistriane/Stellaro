@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, Symbol, symbol_short};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, symbol_short};
 
 #[contracttype]
 pub enum DataKey {
@@ -13,7 +13,7 @@ pub struct ReferralSystem;
 
 #[contractimpl]
 impl ReferralSystem {
-    pub fn initialize(env: Env) {
+    pub fn initialize(_env: Env) {
         // Initialization logic if needed
     }
 
@@ -32,7 +32,7 @@ impl ReferralSystem {
         
         let mut count: u32 = env.storage().persistent().get(&DataKey::ReferralCount(referrer.clone())).unwrap_or(0);
         count += 1;
-        env.storage().persistent().set(&DataKey::ReferralCount(referrer), &count);
+        env.storage().persistent().set(&DataKey::ReferralCount(referrer.clone()), &count);
 
         env.events().publish((symbol_short!("REF_REG"), referee), referrer);
     }

@@ -226,26 +226,36 @@ mod test {
     #[cfg(not(target_arch = "wasm32"))]
     use soroban_sdk::testutils::Address as _;
 
-    fn setup(env: &Env) -> (LoansPoolContractClient, Address, Address, Address) {
+    fn grant_vc(env: &Env, admin: &Address, vc_registry_id: &Address, user: &Address) {
+        let vc_client = vc_registry::VcRegistryClient::new(env, vc_registry_id);
+        vc_client.add_issuer(admin);
+        let vc_hash = soroban_sdk::BytesN::from_array(env, &[7u8; 32]);
+        vc_client.register_user_vc(admin, user, &vc_hash);
+    }
+
+    fn setup(env: &Env) -> (LoansPoolContractClient, Address, Address, Address, Address) {
         env.mock_all_auths();
         let admin = Address::generate(env);
         let verifier_id = env.register(zk_verifier::ZkVerifierContract, ());
+        let vc_registry_id = env.register(vc_registry::VcRegistry, ());
         let pool_id = env.register(LoansPoolContract, ());
         let pool_client = LoansPoolContractClient::new(env, &pool_id);
         
         let vkey = soroban_sdk::BytesN::from_array(env, &[1u8; 32]);
         let verifier_client = zk_verifier::ZkVerifierContractClient::new(env, &verifier_id);
         verifier_client.init(&admin, &vkey, &700);
+        let vc_client = vc_registry::VcRegistryClient::new(env, &vc_registry_id);
+        vc_client.initialize(&admin);
 
-        (pool_client, admin, verifier_id, Address::generate(env))
+        (pool_client, admin, verifier_id, vc_registry_id, Address::generate(env))
     }
 
     #[test]
     fn init_and_basic_params() {
         let env = Env::default();
-        let (client, admin, verifier_id, _) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, _) = setup(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id); 
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         let (ltv, interest) = client.params();
         assert_eq!(ltv, 6000u32);
         assert_eq!(interest, 1200u32);
@@ -255,9 +265,10 @@ mod test {
     #[test]
     fn deposit_increases_liquidity() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &1000000000u128);
         assert_eq!(client.total_liquidity(), 1000000000u128);
     }
@@ -265,10 +276,12 @@ mod test {
     #[test]
     fn borrow_respects_ltv() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
         let borrower = Address::generate(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        grant_vc(&env, &admin, &vc_registry_id, &borrower);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &10000000000u128);
 
         client.borrow(&borrower, &600000000u128, &1000000000u128);
@@ -279,10 +292,12 @@ mod test {
     #[should_panic(expected = "exceeds ltv")]
     fn borrow_exceeds_ltv_panics() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
         let borrower = Address::generate(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        grant_vc(&env, &admin, &vc_registry_id, &borrower);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &10000000000u128);
 
         client.borrow(&borrower, &700000000u128, &1000000000u128);
@@ -291,22 +306,24 @@ mod test {
     #[test]
     fn borrow_with_zk_bonus() {
         let env = Env::default();
-        let (pool_client, admin, verifier_id, depositor) = setup(&env);
+        let (pool_client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
         let borrower = Address::generate(&env);
         let verifier_client = zk_verifier::ZkVerifierContractClient::new(&env, &verifier_id);
 
-        // Give borrower a high score
-        let mut proof_bytes = [0u8; 256]; proof_bytes[0] = 1;
-        let proof = soroban_sdk::BytesN::from_array(&env, &proof_bytes);
-        let mut input_bytes = [0u8; 128];
-        let score: u32 = 850; 
-        input_bytes[0..4].copy_from_slice(&score.to_be_bytes());
-        input_bytes[4] = 1;
-        let public_inputs = soroban_sdk::BytesN::from_array(&env, &input_bytes);
-        let nonce = soroban_sdk::BytesN::from_array(&env, &[2u8; 16]);
-        verifier_client.verify_proof(&borrower, &proof, &public_inputs, &nonce);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        grant_vc(&env, &admin, &vc_registry_id, &borrower);
 
-        pool_client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        // Give borrower a high score using a valid single-leaf merkle proof
+        let score: u32 = 850;
+        let mut leaf_bytes = [0u8; 36];
+        leaf_bytes[0..4].copy_from_slice(&score.to_be_bytes());
+        let leaf = env.crypto().keccak256(&soroban_sdk::Bytes::from_slice(&env, &leaf_bytes));
+        let merkle_root = soroban_sdk::BytesN::from_array(&env, &leaf.to_array());
+        let merkle_proof = soroban_sdk::Vec::<soroban_sdk::BytesN<32>>::new(&env);
+        let nonce = soroban_sdk::BytesN::from_array(&env, &[2u8; 16]);
+        verifier_client.verify_score_with_proof(&borrower, &score, &merkle_root, &merkle_proof, &nonce);
+
+        pool_client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         pool_client.deposit(&depositor, &10000000000u128);
 
         // LTV 60% + 10% bonus = 70%
@@ -318,10 +335,12 @@ mod test {
     #[should_panic(expected = "insufficient liquidity")]
     fn borrow_exceeds_pool_liquidity_panics() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
         let borrower = Address::generate(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        grant_vc(&env, &admin, &vc_registry_id, &borrower);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &100000000u128);
 
         client.borrow(&borrower, &500000000u128, &1000000000u128);
@@ -330,10 +349,12 @@ mod test {
     #[test]
     fn repay_reduces_position_and_restores_liquidity() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
         let borrower = Address::generate(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        grant_vc(&env, &admin, &vc_registry_id, &borrower);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &10000000000u128);
 
         client.borrow(&borrower, &600000000u128, &1000000000u128);
@@ -345,10 +366,12 @@ mod test {
     #[should_panic(expected = "overpay")]
     fn repay_more_than_borrowed_panics() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
         let borrower = Address::generate(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        grant_vc(&env, &admin, &vc_registry_id, &borrower);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &10000000000u128);
         client.borrow(&borrower, &500000000u128, &1000000000u128);
         client.repay(&borrower, &600000000u128);
@@ -357,9 +380,10 @@ mod test {
     #[test]
     fn withdraw_reduces_lender_position() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &1000000000u128);
         client.withdraw(&depositor, &400000000u128);
         assert_eq!(client.lender_position(&depositor), 600000000u128);
@@ -369,9 +393,10 @@ mod test {
     #[should_panic(expected = "insufficient lender balance")]
     fn withdraw_more_than_lender_balance_panics() {
         let env = Env::default();
-        let (client, admin, verifier_id, depositor) = setup(&env);
+        let (client, admin, verifier_id, vc_registry_id, depositor) = setup(&env);
 
-        client.init(&admin, &6000u32, &1200u32, &verifier_id);
+        grant_vc(&env, &admin, &vc_registry_id, &depositor);
+        client.init(&admin, &6000u32, &1200u32, &verifier_id, &vc_registry_id);
         client.deposit(&depositor, &100000000u128);
         client.withdraw(&depositor, &200000000u128);
     }

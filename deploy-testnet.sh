@@ -67,6 +67,7 @@ LOANS_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/loans_pool.wasm"
 PORTFOLIO_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/portfolio.wasm"
 GOV_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/governance.wasm"
 ZK_VERIFIER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/zk_verifier.wasm"
+VC_REGISTRY_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/vc_registry.wasm"
 BATCH_EXECUTOR_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/batch_executor.wasm"
 MEV_GUARD_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/mev_guard.wasm"
 
@@ -91,6 +92,7 @@ ensure_wasm_exists "$LOANS_WASM" "Loans Pool"
 ensure_wasm_exists "$PORTFOLIO_WASM" "Portfolio"
 ensure_wasm_exists "$GOV_WASM" "Governance"
 ensure_wasm_exists "$ZK_VERIFIER_WASM" "ZK Verifier"
+ensure_wasm_exists "$VC_REGISTRY_WASM" "VC Registry"
 ensure_wasm_exists "$BATCH_EXECUTOR_WASM" "Batch Executor"
 ensure_wasm_exists "$MEV_GUARD_WASM" "MEV Guard"
 
@@ -178,11 +180,15 @@ sleep 2
 ZK_VERIFIER_ID=$(deploy_contract "$ZK_VERIFIER_WASM" "ZK Verifier")
 sleep 2
 
-# 7. Batch Executor
+# 7. VC Registry
+VC_REGISTRY_ID=$(deploy_contract "$VC_REGISTRY_WASM" "VC Registry")
+sleep 2
+
+# 8. Batch Executor
 BATCH_EXECUTOR_ID=$(deploy_contract "$BATCH_EXECUTOR_WASM" "Batch Executor")
 sleep 2
 
-# 8. MEV Guard
+# 9. MEV Guard
 MEV_GUARD_ID=$(deploy_contract "$MEV_GUARD_WASM" "MEV Guard")
 sleep 2
 
@@ -216,7 +222,7 @@ if is_initialized "$LOANSPOOL_ID" "params"; then
   echo "⚠️  Loans Pool já inicializado"
 else
   init_contract "$LOANSPOOL_ID" "Loans Pool" \
-    init --admin "$ADMIN" --ltv-bps "$LTV_BPS" --interest-bps "$INTEREST_BPS"
+    init --admin "$ADMIN" --ltv-bps "$LTV_BPS" --interest-bps "$INTEREST_BPS" --zk-verifier "$ZK_VERIFIER_ID" --vc-registry "$VC_REGISTRY_ID"
 fi
 sleep 1
 
@@ -237,6 +243,11 @@ sleep 1
 # 6. ZK Verifier
 echo "⚠️  ZK Verifier requer inicialização manual com verification key"
 echo "   Use: tools/zk/export_vk.sh"
+
+# 6.5 VC Registry
+init_contract "$VC_REGISTRY_ID" "VC Registry" \
+  initialize --admin "$ADMIN"
+sleep 1
 
 # 7. Batch Executor
 if is_initialized "$BATCH_EXECUTOR_ID" "get_admin"; then
@@ -290,6 +301,8 @@ upsert_env_var "$ROOT_ENV" "LOANSPOOL_CONTRACT_ID" "$LOANSPOOL_ID"
 upsert_env_var "$ROOT_ENV" "PORTFOLIO_CONTRACT_ID" "$PORTFOLIO_ID"
 upsert_env_var "$ROOT_ENV" "GOVERNANCE_CONTRACT_ID" "$GOVERNANCE_ID"
 upsert_env_var "$ROOT_ENV" "ZK_VERIFIER_CONTRACT_ID" "$ZK_VERIFIER_ID"
+upsert_env_var "$ROOT_ENV" "VC_REGISTRY_ID" "$VC_REGISTRY_ID"
+upsert_env_var "$ROOT_ENV" "VC_REGISTRY_CONTRACT_ID" "$VC_REGISTRY_ID"
 upsert_env_var "$ROOT_ENV" "BATCH_EXECUTOR_CONTRACT_ID" "$BATCH_EXECUTOR_ID"
 upsert_env_var "$ROOT_ENV" "MEV_GUARD_CONTRACT_ID" "$MEV_GUARD_ID"
 
@@ -305,6 +318,8 @@ if [[ -d "$ROOT_DIR/apps/backend" ]]; then
   upsert_env_var "$BACKEND_ENV" "PORTFOLIO_CONTRACT_ID" "$PORTFOLIO_ID"
   upsert_env_var "$BACKEND_ENV" "GOVERNANCE_CONTRACT_ID" "$GOVERNANCE_ID"
   upsert_env_var "$BACKEND_ENV" "ZK_VERIFIER_CONTRACT_ID" "$ZK_VERIFIER_ID"
+  upsert_env_var "$BACKEND_ENV" "VC_REGISTRY_ID" "$VC_REGISTRY_ID"
+  upsert_env_var "$BACKEND_ENV" "VC_REGISTRY_CONTRACT_ID" "$VC_REGISTRY_ID"
   upsert_env_var "$BACKEND_ENV" "BATCH_EXECUTOR_CONTRACT_ID" "$BATCH_EXECUTOR_ID"
   upsert_env_var "$BACKEND_ENV" "MEV_GUARD_CONTRACT_ID" "$MEV_GUARD_ID"
 fi
@@ -335,8 +350,9 @@ cat <<EOF
   4. Portfolio:    $PORTFOLIO_ID
   5. Governance:   $GOVERNANCE_ID
   6. ZK Verifier:  $ZK_VERIFIER_ID
-  7. Batch Exec.:  $BATCH_EXECUTOR_ID
-  8. MEV Guard:    $MEV_GUARD_ID
+  7. VC Registry:  $VC_REGISTRY_ID
+  8. Batch Exec.:  $BATCH_EXECUTOR_ID
+  9. MEV Guard:    $MEV_GUARD_ID
 
 ⚙️  Parâmetros Configurados:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

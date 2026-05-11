@@ -52,6 +52,7 @@ LOANS_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/loans_pool.wasm"
 PORTFOLIO_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/portfolio.wasm"
 GOV_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/governance.wasm"
 ZK_VERIFIER_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/zk_verifier.wasm"
+VC_REGISTRY_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/vc_registry.wasm"
 BATCH_EXECUTOR_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/batch_executor.wasm"
 MEV_GUARD_WASM="$CONTRACTS_DIR/target/wasm32v1-none/release/mev_guard.wasm"
 
@@ -76,6 +77,7 @@ ensure_wasm_exists "$LOANS_WASM" "loans_pool"
 ensure_wasm_exists "$PORTFOLIO_WASM" "portfolio"
 ensure_wasm_exists "$GOV_WASM" "governance"
 ensure_wasm_exists "$ZK_VERIFIER_WASM" "zk_verifier"
+ensure_wasm_exists "$VC_REGISTRY_WASM" "vc_registry"
 ensure_wasm_exists "$BATCH_EXECUTOR_WASM" "batch_executor"
 ensure_wasm_exists "$MEV_GUARD_WASM" "mev_guard"
 
@@ -171,6 +173,11 @@ ZK_VERIFIER_ID=$(deploy_one "$ZK_VERIFIER_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-
 if ! validate_contract_id "$ZK_VERIFIER_ID"; then echo "Erro: Contract ID inválido para zk_verifier"; exit 1; fi
 echo "ZK_VERIFIER_ID=$ZK_VERIFIER_ID"
 
+echo "==> Deploying vc_registry"
+VC_REGISTRY_ID=$(deploy_one "$VC_REGISTRY_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
+if ! validate_contract_id "$VC_REGISTRY_ID"; then echo "Erro: Contract ID inválido para vc_registry"; exit 1; fi
+echo "VC_REGISTRY_ID=$VC_REGISTRY_ID"
+
 echo "==> Deploying batch_executor"
 BATCH_EXECUTOR_ID=$(deploy_one "$BATCH_EXECUTOR_WASM" | grep -Eo 'C[A-Z0-9]{55}|[0-9a-fA-F]{64}' | tail -n1)
 if ! validate_contract_id "$BATCH_EXECUTOR_ID"; then echo "Erro: Contract ID inválido para batch_executor"; exit 1; fi
@@ -201,7 +208,7 @@ echo "==> Init loans_pool (idempotente)"
 if is_loanspool_initialized "$LOANSPOOL_ID"; then
   echo "loans_pool já inicializado; pulando."
 else
-  invoke_init "$LOANSPOOL_ID" init --admin "$ADMIN" --ltv-bps "$LTV_BPS" --interest-bps "$INTEREST_BPS"
+  invoke_init "$LOANSPOOL_ID" init --admin "$ADMIN" --ltv-bps "$LTV_BPS" --interest-bps "$INTEREST_BPS" --zk-verifier "$ZK_VERIFIER_ID" --vc-registry "$VC_REGISTRY_ID"
 fi
 
 echo "==> Init portfolio (idempotente)"
@@ -216,6 +223,15 @@ if is_governance_initialized "$GOVERNANCE_ID"; then
   echo "governance já inicializado; pulando."
 else
   invoke_init "$GOVERNANCE_ID" init --admin "$ADMIN"
+fi
+
+echo "==> Init vc_registry (idempotente)"
+if soroban contract invoke --id "$VC_REGISTRY_ID" \
+    --rpc-url "$RPC" --network-passphrase "$PASSPHRASE" \
+    --source-account "$ALIAS" --send no -- is_issuer --issuer "$ADMIN" >/dev/null 2>&1; then
+  echo "vc_registry já inicializado; pulando."
+else
+  invoke_init "$VC_REGISTRY_ID" initialize --admin "$ADMIN"
 fi
 
 echo "==> Init batch_executor (idempotente)"
@@ -260,6 +276,8 @@ persist_envs() {
   upsert_env_var "$file" PORTFOLIO_CONTRACT_ID "$PORTFOLIO_ID"
   upsert_env_var "$file" GOVERNANCE_CONTRACT_ID "$GOVERNANCE_ID"
   upsert_env_var "$file" ZK_VERIFIER_CONTRACT_ID "$ZK_VERIFIER_ID"
+  upsert_env_var "$file" VC_REGISTRY_ID "$VC_REGISTRY_ID"
+  upsert_env_var "$file" VC_REGISTRY_CONTRACT_ID "$VC_REGISTRY_ID"
   upsert_env_var "$file" BATCH_EXECUTOR_CONTRACT_ID "$BATCH_EXECUTOR_ID"
   upsert_env_var "$file" MEV_GUARD_CONTRACT_ID "$MEV_GUARD_ID"
   upsert_env_var "$file" STELLAR_PUBLIC_KEY "$ADMIN"
@@ -287,6 +305,7 @@ LOANSPOOL_ID=$LOANSPOOL_ID
 PORTFOLIO_ID=$PORTFOLIO_ID
 GOVERNANCE_ID=$GOVERNANCE_ID
 ZK_VERIFIER_ID=$ZK_VERIFIER_ID
+VC_REGISTRY_ID=$VC_REGISTRY_ID
 BATCH_EXECUTOR_ID=$BATCH_EXECUTOR_ID
 MEV_GUARD_ID=$MEV_GUARD_ID
 ==========================

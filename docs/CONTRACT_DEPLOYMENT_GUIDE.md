@@ -1,6 +1,6 @@
 # Contract Deployment Guide
 
-Version: 2026-04-15
+Version: 2026-05-11
 Status: Repository-aligned
 
 This guide documents the actual deployment flow currently implemented in this repository.
@@ -20,6 +20,7 @@ Current automated deploy scope in both scripts:
 - portfolio
 - governance
 - zk_verifier
+- vc_registry
 - batch_executor
 - mev_guard
 
@@ -50,7 +51,7 @@ From repository root:
 What this script does:
 1. Validates key alias stellaro-testnet-deploy.
 2. Builds contracts with soroban contract build --profile release.
-3. Deploys all 8 contracts listed above.
+3. Deploys all 9 contracts listed above.
 4. Runs init calls (idempotent behavior where supported).
 5. Writes/upserts IDs into:
 - .env-testnet
@@ -63,6 +64,7 @@ Main variables written:
 - PORTFOLIO_CONTRACT_ID
 - GOVERNANCE_CONTRACT_ID
 - ZK_VERIFIER_CONTRACT_ID
+- VC_REGISTRY_ID
 - BATCH_EXECUTOR_CONTRACT_ID
 - MEV_GUARD_CONTRACT_ID
 
@@ -72,28 +74,33 @@ Network written:
 - HORIZON_URL=https://horizon-testnet.stellar.org
 
 
-## 3.1) Current testnet deployment snapshot (2026-04-15)
+## 3.1) Current testnet deployment snapshot (2026-05-11)
 
 Admin public key:
-- GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX
+- GC76AIX26RHU6YI4S3VRMO4DAFVC4H2QPA3ULHCCAL4BU3UKX2N56DJO
+
+Deployment command used:
+- ./infra/deploy_soroban.sh axon-admin
 
 Contracts and explorer links:
-- STABLECOIN_CONTRACT_ID=CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG
-  - https://stellar.expert/explorer/testnet/contract/CCX2C7SN3RXKAVTFTNBQ5MCWLY2WEGXWGRKVFKJ427HN745CHXNRRBVG
-- RISKLOCK_CONTRACT_ID=CAMEHWI55A4CJ5UE7YN5V7NPP4ZPVMOE6ZSIF5JQKQXVJHLENMB464VO
-  - https://stellar.expert/explorer/testnet/contract/CAMEHWI55A4CJ5UE7YN5V7NPP4ZPVMOE6ZSIF5JQKQXVJHLENMB464VO
-- LOANSPOOL_CONTRACT_ID=CAXAKWLYXOHZBUEKHGSOILJR3CU5ICEREZTA3LYYFIJPK3ZQQLCZEYW7
-  - https://stellar.expert/explorer/testnet/contract/CAXAKWLYXOHZBUEKHGSOILJR3CU5ICEREZTA3LYYFIJPK3ZQQLCZEYW7
-- PORTFOLIO_CONTRACT_ID=CC6NTQNQ6CM42F2DB44CYZE24O7IJ7VNMSEHVKPX57NVCV46MEIGKUNB
-  - https://stellar.expert/explorer/testnet/contract/CC6NTQNQ6CM42F2DB44CYZE24O7IJ7VNMSEHVKPX57NVCV46MEIGKUNB
-- GOVERNANCE_CONTRACT_ID=CCUHIZXPRMZQJ2E2YY6BBRP3YSXBGX4HDHZDVVMF2XM3WZIDOYGM47MP
-  - https://stellar.expert/explorer/testnet/contract/CCUHIZXPRMZQJ2E2YY6BBRP3YSXBGX4HDHZDVVMF2XM3WZIDOYGM47MP
-- ZK_VERIFIER_CONTRACT_ID=CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY
-  - https://stellar.expert/explorer/testnet/contract/CDOPZBPMQM24GYMKTGLC2EEY3QOQNNFO3BJ6JTBGW2T5UMJCKFQ5PSVY
-- BATCH_EXECUTOR_CONTRACT_ID=CAHWOMBTMVUWGMRWSJY2TPCBMPO3A3LODCBE6MFXMA6XR4ALZZCGTN7I
-  - https://stellar.expert/explorer/testnet/contract/CAHWOMBTMVUWGMRWSJY2TPCBMPO3A3LODCBE6MFXMA6XR4ALZZCGTN7I
-- MEV_GUARD_CONTRACT_ID=CDHQZQ5YMNVAPKXJ6LVBDSJC4QVZL4UD2TIKSTDYGATMBTWEV7ZSOG3M
-  - https://stellar.expert/explorer/testnet/contract/CDHQZQ5YMNVAPKXJ6LVBDSJC4QVZL4UD2TIKSTDYGATMBTWEV7ZSOG3M
+- STABLECOIN_CONTRACT_ID=CCOOH5HD7QPRLE2M7ENDUS3HFMBFEH6QNUCBTY6W3XV7TKQ2VVOP6DPU
+  - https://stellar.expert/explorer/testnet/contract/CCOOH5HD7QPRLE2M7ENDUS3HFMBFEH6QNUCBTY6W3XV7TKQ2VVOP6DPU
+- RISKLOCK_CONTRACT_ID=CAWWAXLYRDVJLNT4KINIK5BOYZSMQZGOJIUYBU2B7CBLQXUM7PG5ZDBX
+  - https://stellar.expert/explorer/testnet/contract/CAWWAXLYRDVJLNT4KINIK5BOYZSMQZGOJIUYBU2B7CBLQXUM7PG5ZDBX
+- LOANSPOOL_CONTRACT_ID=CBDNBEKIXEKCJPDBSAEBNJ62ZENE4ZJG2EVOTGBYOHJ7SXQ5K6OPUO25
+  - https://stellar.expert/explorer/testnet/contract/CBDNBEKIXEKCJPDBSAEBNJ62ZENE4ZJG2EVOTGBYOHJ7SXQ5K6OPUO25
+- PORTFOLIO_CONTRACT_ID=CB34KFLFRDTG36NUCW2VBAIGKMM4FVIWK7FL76H6RTSEZZT7PQ2XZPYL
+  - https://stellar.expert/explorer/testnet/contract/CB34KFLFRDTG36NUCW2VBAIGKMM4FVIWK7FL76H6RTSEZZT7PQ2XZPYL
+- GOVERNANCE_CONTRACT_ID=CCA6ZOLV2S5AR43VS47KJZSPSV4NGHCPAFQG3DK7UJBOUXIVGGIXQMRO
+  - https://stellar.expert/explorer/testnet/contract/CCA6ZOLV2S5AR43VS47KJZSPSV4NGHCPAFQG3DK7UJBOUXIVGGIXQMRO
+- ZK_VERIFIER_CONTRACT_ID=CBDBZ4V2A4LBWJ2SGCKLIFTINMTEG626S2NH2DPLHZDDCCHRACID5E7L
+  - https://stellar.expert/explorer/testnet/contract/CBDBZ4V2A4LBWJ2SGCKLIFTINMTEG626S2NH2DPLHZDDCCHRACID5E7L
+- VC_REGISTRY_ID=CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z
+  - https://stellar.expert/explorer/testnet/contract/CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z
+- BATCH_EXECUTOR_CONTRACT_ID=CATVMEW7IXDGXZ333K3YWOXAHX3FXZ3CTWNRYZQUJTPK2SISTOFXFGP2
+  - https://stellar.expert/explorer/testnet/contract/CATVMEW7IXDGXZ333K3YWOXAHX3FXZ3CTWNRYZQUJTPK2SISTOFXFGP2
+- MEV_GUARD_CONTRACT_ID=CCNXG3ZSXVI6X7MTCNYMYCNDP3TH43PQNZUKZHCFAQ72RXSEQNWK6L4J
+  - https://stellar.expert/explorer/testnet/contract/CCNXG3ZSXVI6X7MTCNYMYCNDP3TH43PQNZUKZHCFAQ72RXSEQNWK6L4J
 
 
 ## 4) Alternative script
@@ -106,7 +113,7 @@ Example:
 
 Behavior:
 - builds contracts
-- deploys the same 8-contract set
+- deploys the same 9-contract set
 - performs idempotent init checks
 - persists IDs in .env-dev and apps/backend/.env-dev
 
@@ -196,3 +203,14 @@ Scripts used as source:
 Contract workspace:
 - contracts/Cargo.toml
 - contracts/*/src/lib.rs
+
+## 11) ABI compatibility note
+
+Current `loans_pool.init` requires:
+- admin
+- ltv_bps
+- interest_bps
+- zk_verifier
+- vc_registry
+
+Both deploy scripts pass all required arguments.

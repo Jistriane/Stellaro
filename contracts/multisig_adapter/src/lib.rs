@@ -98,7 +98,7 @@ impl MultisigAdapter {
         }
 
         // Execute the call
-        env.invoke_contract::<()>(&tx.target, &tx.function, tx.args);
+        env.invoke_contract::<()>(&tx.target, &tx.function, tx.args.clone());
 
         tx.executed = true;
         env.storage().instance().set(&DataKey::Transaction(tx_id), &tx);

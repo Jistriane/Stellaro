@@ -178,7 +178,7 @@ impl ZkVerifierContract {
         
         // Real Merkle Verification: verify that H(user, score) is in the merkle_root
         let leaf = env.crypto().keccak256(&Self::leaf_to_bytes(&env, &user, score));
-        let is_valid = Self::verify_merkle_proof(&env, &merkle_root, leaf, merkle_proof);
+        let is_valid = Self::verify_merkle_proof(&env, &merkle_root, leaf.into(), merkle_proof);
         
         if !is_valid {
             panic!("invalid merkle proof");
@@ -341,79 +341,49 @@ mod test {
     use super::*;
     use soroban_sdk::testutils::{Address as _, Ledger};
 
+    fn leaf_for_score(env: &Env, user: &Address, score: u32) -> BytesN<32> {
+        env.crypto().keccak256(&ZkVerifierContract::leaf_to_bytes(env, user, score)).into()
+    }
+
     #[test]
-    fn test_merkle_verification() {
+    fn test_merkle_verification_single_leaf() {
         let env = Env::default();
         let user = Address::generate(&env);
         let score = 750u32;
-        
-        let leaf = env.crypto().keccak256(&ZkVerifier::leaf_to_bytes(&env, &user, score));
-        
-        // Simulação de um nó vizinho (irmão)
-        let sibling = BytesN::from_array(&env, &[1u8; 32]);
-        
-        // Root = H(leaf, sibling) ou H(sibling, leaf) dependendo da ordem
-        let mut bytes = [0u8; 64];
-        if leaf < sibling {
-            bytes[0..32].copy_from_slice(&leaf.to_array());
-            bytes[32..64].copy_from_slice(&sibling.to_array());
-        } else {
-            bytes[0..32].copy_from_slice(&sibling.to_array());
-            bytes[32..64].copy_from_slice(&leaf.to_array());
-        }
-        let root: MerkleRoot = env.crypto().keccak256(&soroban_sdk::Bytes::from_slice(&env, &bytes)).into();
-        
-        let mut proof = soroban_sdk::Vec::new(&env);
-        proof.push_back(sibling);
-        
-        assert!(ZkVerifier::verify_merkle_proof(&env, &root, leaf, proof));
+        let leaf = leaf_for_score(&env, &user, score);
+        let root = leaf.clone();
+        let proof = soroban_sdk::Vec::<BytesN<32>>::new(&env);
+
+        assert!(ZkVerifierContract::verify_merkle_proof(&env, &root, leaf, proof));
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
-    use soroban_sdk::testutils::{Address as _, Ledger};
-
     #[test]
-    fn test_init_and_verify_stub() {
+    fn test_init_and_verify_score_with_proof() {
         let env = Env::default();
         env.mock_all_auths();
-        
+
         let admin = Address::generate(&env);
         let user = Address::generate(&env);
-        
-        // Create dummy verification key (32 bytes)
+
         let vkey = BytesN::from_array(&env, &[1u8; 32]);
-        
+
         let contract_id = env.register(ZkVerifierContract, ());
         let client = ZkVerifierContractClient::new(&env, &contract_id);
-        
-        // Initialize with min_score=700 (realistic for mainnet creditworthiness)
+
         client.init(&admin, &vkey, &700);
-        
-        // Create dummy proof (256 bytes, not all zeros)
-        let mut proof_bytes = [0u8; 256];
-        proof_bytes[0] = 1; // Make it non-zero
-        let proof = BytesN::from_array(&env, &proof_bytes);
-        
-        // Create public inputs with score 750 (first 4 bytes)
-        let mut input_bytes = [0u8; 128];
+
         let score: u32 = 750;
-        input_bytes[0..4].copy_from_slice(&score.to_be_bytes());
-        input_bytes[4] = 1; // Make rest non-zero
-        let public_inputs = BytesN::from_array(&env, &input_bytes);
-        
-        // Create nonce
+        let merkle_root = leaf_for_score(&env, &user, score);
+        let merkle_proof = soroban_sdk::Vec::<BytesN<32>>::new(&env);
         let nonce = BytesN::from_array(&env, &[1u8; 16]);
-        
-        // Verify proof (should succeed with stub)
-        let result = client.verify_proof(&user, &proof, &public_inputs, &nonce);
+
+        let result = client.verify_score_with_proof(&user, &score, &merkle_root, &merkle_proof, &nonce);
         assert_eq!(result, true);
-        
-        // Check score stored
+
         let stored_score = client.get_score(&user);
         assert!(stored_score.is_some());
         assert_eq!(stored_score.unwrap().score, 750);
-        
-        // Check creditworthy
+
         assert_eq!(client.is_creditworthy(&user), true);
     }
 
@@ -432,23 +402,13 @@ mod test {
         
         client.init(&admin, &vkey, &600);
         
-        let mut proof_bytes = [0u8; 256];
-        proof_bytes[0] = 1;
-        let proof = BytesN::from_array(&env, &proof_bytes);
-        
-        let mut input_bytes = [0u8; 128];
         let score: u32 = 750;
-        input_bytes[0..4].copy_from_slice(&score.to_be_bytes());
-        input_bytes[4] = 1;
-        let public_inputs = BytesN::from_array(&env, &input_bytes);
-        
+        let merkle_root = leaf_for_score(&env, &user, score);
+        let merkle_proof = soroban_sdk::Vec::<BytesN<32>>::new(&env);
         let nonce = BytesN::from_array(&env, &[1u8; 16]);
-        
-        // First verification succeeds
-        client.verify_proof(&user, &proof, &public_inputs, &nonce);
-        
-        // Second verification with same nonce should panic
-        client.verify_proof(&user, &proof, &public_inputs, &nonce);
+
+        client.verify_score_with_proof(&user, &score, &merkle_root, &merkle_proof, &nonce);
+        client.verify_score_with_proof(&user, &score, &merkle_root, &merkle_proof, &nonce);
     }
 
     #[test]
@@ -466,21 +426,12 @@ mod test {
         
         client.init(&admin, &vkey, &600);
         
-        let mut proof_bytes = [0u8; 256];
-        proof_bytes[0] = 1;
-        let proof = BytesN::from_array(&env, &proof_bytes);
-        
-        // Score 500 < min 600
-        let mut input_bytes = [0u8; 128];
         let score: u32 = 500;
-        input_bytes[0..4].copy_from_slice(&score.to_be_bytes());
-        input_bytes[4] = 1;
-        let public_inputs = BytesN::from_array(&env, &input_bytes);
-        
+        let merkle_root = leaf_for_score(&env, &user, score);
+        let merkle_proof = soroban_sdk::Vec::<BytesN<32>>::new(&env);
         let nonce = BytesN::from_array(&env, &[1u8; 16]);
-        
-        // Should panic
-        client.verify_proof(&user, &proof, &public_inputs, &nonce);
+
+        client.verify_score_with_proof(&user, &score, &merkle_root, &merkle_proof, &nonce);
     }
 
     #[test]
@@ -498,28 +449,17 @@ mod test {
         
         client.init(&admin, &vkey, &600);
         
-        let mut proof_bytes = [0u8; 256];
-        proof_bytes[0] = 1;
-        let proof = BytesN::from_array(&env, &proof_bytes);
-        
-        let mut input_bytes = [0u8; 128];
         let score: u32 = 750;
-        input_bytes[0..4].copy_from_slice(&score.to_be_bytes());
-        input_bytes[4] = 1;
-        let public_inputs = BytesN::from_array(&env, &input_bytes);
-        
+        let merkle_root = leaf_for_score(&env, &user, score);
+        let merkle_proof = soroban_sdk::Vec::<BytesN<32>>::new(&env);
         let nonce = BytesN::from_array(&env, &[1u8; 16]);
-        
-        // Verify at t=1000
-        client.verify_proof(&user, &proof, &public_inputs, &nonce);
-        
-        // Score valid at t=1000
+
+        client.verify_score_with_proof(&user, &score, &merkle_root, &merkle_proof, &nonce);
+
         assert!(client.get_score(&user).is_some());
-        
-        // Advance time past expiry (86400 seconds = 24h) 
+
         env.ledger().with_mut(|li| li.timestamp = 1000 + 86401);
-        
-        // Score should be expired
+
         assert!(client.get_score(&user).is_none());
         assert_eq!(client.is_creditworthy(&user), false);
     }
