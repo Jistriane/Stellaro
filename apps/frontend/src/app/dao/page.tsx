@@ -2,15 +2,9 @@ import Image from "next/image";
 import { getDaoOverview } from "@/lib/v4";
 import DaoGovernanceDashboard from "./DaoGovernanceDashboard";
 
-type SearchParams = {
-  page?: string;
-  pageSize?: string;
-};
-
-export default async function DaoPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
-  const resolvedSearchParams = await searchParams;
-  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1) || 1);
-  const pageSize = Math.min(50, Math.max(1, Number(resolvedSearchParams?.pageSize ?? 5) || 5));
+export default async function DaoPage() {
+  const page = 1;
+  const pageSize = 5;
   const overview = await getDaoOverview({ page, pageSize });
 
   const proposals = overview.proposals.map((p: any) => ({

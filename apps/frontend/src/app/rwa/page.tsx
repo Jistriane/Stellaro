@@ -2,21 +2,12 @@ import Image from "next/image";
 import { getRwaOverview } from "@/lib/v4";
 import RwaMarketplace from "./RwaMarketplace";
 
-type SearchParams = {
-  page?: string;
-  pageSize?: string;
-  status?: string;
-  assetClass?: string;
-  search?: string;
-};
-
-export default async function RwaPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
-  const resolvedSearchParams = await searchParams;
-  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1) || 1);
-  const pageSize = Math.min(50, Math.max(1, Number(resolvedSearchParams?.pageSize ?? 5) || 5));
-  const status = resolvedSearchParams?.status?.trim() || undefined;
-  const assetClass = resolvedSearchParams?.assetClass?.trim() || undefined;
-  const search = resolvedSearchParams?.search?.trim() || undefined;
+export default async function RwaPage() {
+  const page = 1;
+  const pageSize = 5;
+  const status = undefined;
+  const assetClass = undefined;
+  const search = undefined;
 
   const overview = await getRwaOverview({ page, pageSize, status, assetClass, search });
 

@@ -2,21 +2,12 @@ import Image from "next/image";
 import { getSsiOverview } from "@/lib/v4";
 import SsiWallet from "./SsiWallet";
 
-type SearchParams = {
-  page?: string;
-  pageSize?: string;
-  status?: string;
-  type?: string;
-  search?: string;
-};
-
-export default async function SsiPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
-  const resolvedSearchParams = await searchParams;
-  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1) || 1);
-  const pageSize = Math.min(50, Math.max(1, Number(resolvedSearchParams?.pageSize ?? 5) || 5));
-  const status = resolvedSearchParams?.status?.trim() || undefined;
-  const type = resolvedSearchParams?.type?.trim() || undefined;
-  const search = resolvedSearchParams?.search?.trim() || undefined;
+export default async function SsiPage() {
+  const page = 1;
+  const pageSize = 5;
+  const status = undefined;
+  const type = undefined;
+  const search = undefined;
 
   const overview = await getSsiOverview({ page, pageSize, status, type, search });
 
