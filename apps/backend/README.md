@@ -32,3 +32,10 @@ This service implements Stellaro's core backend APIs, orchestration routines, an
 - production
 
 Each profile must use isolated secrets and network settings.
+
+## x402 Documentation
+
+For x402 integration and test execution details, use:
+
+- `docs/X402_INTEGRATION.md`
+- `docs/X402_TESTING.md`

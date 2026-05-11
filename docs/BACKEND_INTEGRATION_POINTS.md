@@ -194,6 +194,34 @@ Behavior:
 - Delegates STLT settlement transfers to ActionsService.stablecoinTransfer.
 
 
+### X402Controller
+
+Files:
+- apps/backend/src/payments/x402.controller.ts
+- apps/backend/src/payments/x402.service.ts
+
+Endpoints:
+- GET /payments/x402/status
+- POST /payments/x402/quote
+
+Behavior:
+- Exposes x402 integration posture (`disabled`, `stub`, `live`) and runtime metadata.
+- Creates facilitator-oriented quote payloads with deterministic settlement envelope fields.
+- Falls back to `stub` mode when `live` is requested but facilitator configuration is incomplete.
+
+Env keys used by this integration:
+- X402_MODE
+- X402_FACILITATOR_URL
+- FACILITATOR_PROVIDER_CONTRACT_ID
+- FACILITATOR_API_KEY
+- X402_NETWORK
+- X402_ACCEPTED_ASSET
+- X402_RESOURCE
+- X402_RECIPIENT
+- X402_FEE_BPS
+- X402_TTL_SECONDS
+
+
 ## 4) Current contract/API alignment caveats
 
 1. Batch Executor payment real path expects token ABI:
