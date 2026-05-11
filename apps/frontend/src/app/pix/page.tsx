@@ -7,6 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 import { createX402Quote, getX402Status, type X402Quote, type X402Status } from "@/lib/x402";
+import {
+  createEtherfuseOrder,
+  createEtherfuseQuote,
+  type EtherfuseOrder,
+  getEtherfuseStatus,
+  type EtherfuseQuote,
+  type EtherfuseStatus,
+} from "@/lib/etherfuse";
 
 export default function PixPage() {
   const t = useTranslations("pix");
@@ -34,6 +42,23 @@ export default function PixPage() {
   const [x402Quote, setX402Quote] = useState<X402Quote | null>(null);
   const [x402Loading, setX402Loading] = useState(false);
   const [x402Error, setX402Error] = useState<string | null>(null);
+  const [etherfuseStatus, setEtherfuseStatus] = useState<EtherfuseStatus>({
+    enabled: false,
+    mode: "disabled",
+    apiBaseUrl: "https://api.sand.etherfuse.com",
+    blockchain: "stellar",
+    defaultQuoteType: "onramp",
+    defaultSourceAsset: "MXN",
+    defaultTargetAsset: "USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
+    customerIdConfigured: false,
+    walletAddressConfigured: false,
+    apiKeyConfigured: false,
+  });
+  const [etherfuseQuote, setEtherfuseQuote] = useState<EtherfuseQuote | null>(null);
+  const [etherfuseOrder, setEtherfuseOrder] = useState<EtherfuseOrder | null>(null);
+  const [etherfuseLoading, setEtherfuseLoading] = useState(false);
+  const [etherfuseOrderLoading, setEtherfuseOrderLoading] = useState(false);
+  const [etherfuseError, setEtherfuseError] = useState<string | null>(null);
 
   // Service status (mock)
   const service = { status: "Available" as "Available" | "Unavailable" | "Maintenance", note: "Operating normally" };
@@ -53,10 +78,12 @@ export default function PixPage() {
   useEffect(() => {
     let active = true;
 
-    getX402Status().then((status) => {
-      if (active) {
-        setX402Status(status);
+    Promise.all([getX402Status(), getEtherfuseStatus()]).then(([x402, etherfuse]) => {
+      if (!active) {
+        return;
       }
+      setX402Status(x402);
+      setEtherfuseStatus(etherfuse);
     });
 
     return () => {
@@ -106,6 +133,56 @@ export default function PixPage() {
 
     setX402Quote(result.quote);
     setX402Loading(false);
+  }
+
+  async function onGenerateEtherfuseQuote() {
+    setEtherfuseLoading(true);
+    setEtherfuseError(null);
+
+    const amount = tab === "deposit" ? amountDep || "250" : amountWdr || "250";
+    const result = await createEtherfuseQuote({
+      amount,
+      quoteType: tab === "deposit" ? "onramp" : "offramp",
+      sourceAsset: etherfuseStatus.defaultSourceAsset,
+      targetAsset: etherfuseStatus.defaultTargetAsset,
+    });
+
+    if (!result.ok || !result.quote) {
+      setEtherfuseQuote(null);
+      setEtherfuseError(result.error || t("etherfuse.quote_error"));
+      setEtherfuseLoading(false);
+      return;
+    }
+
+    setEtherfuseQuote(result.quote);
+    setEtherfuseOrder(null);
+    setEtherfuseLoading(false);
+  }
+
+  async function onCreateEtherfuseOrder() {
+    if (!etherfuseQuote) {
+      setEtherfuseError(t("etherfuse.order_need_quote"));
+      return;
+    }
+
+    setEtherfuseOrderLoading(true);
+    setEtherfuseError(null);
+
+    const result = await createEtherfuseOrder({
+      quoteId: etherfuseQuote.id,
+      walletAddress: x402Quote?.settlement.walletAddress || undefined,
+      memo: `stellaro:${tab}:order`,
+    });
+
+    if (!result.ok || !result.order) {
+      setEtherfuseOrder(null);
+      setEtherfuseError(result.error || t("etherfuse.order_error"));
+      setEtherfuseOrderLoading(false);
+      return;
+    }
+
+    setEtherfuseOrder(result.order);
+    setEtherfuseOrderLoading(false);
   }
 
   return (
@@ -289,6 +366,77 @@ export default function PixPage() {
                   </div>
                 ) : (
                   <div className="text-sm text-slate-400">{t("x402.empty")}</div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <CardHeader>
+            <CardTitle>{t("etherfuse.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="space-y-4">
+                <p className="text-sm text-slate-300">{t("etherfuse.subtitle")}</p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className={`rounded-full px-3 py-1 ${etherfuseStatus.mode === "live" ? "bg-emerald-900/40 text-emerald-300" : etherfuseStatus.mode === "stub" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+                    {t(`etherfuse.mode_${etherfuseStatus.mode}`)}
+                  </span>
+                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("etherfuse.network")}: {etherfuseStatus.blockchain}</span>
+                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("etherfuse.quote_type")}: {etherfuseStatus.defaultQuoteType}</span>
+                </div>
+
+                <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300 space-y-2">
+                  <div>{t("etherfuse.api")}: <span className="text-slate-100 break-all">{etherfuseStatus.apiBaseUrl}</span></div>
+                  <div>{t("etherfuse.source_asset")}: <span className="text-slate-100 break-all">{etherfuseStatus.defaultSourceAsset}</span></div>
+                  <div>{t("etherfuse.target_asset")}: <span className="text-slate-100 break-all">{etherfuseStatus.defaultTargetAsset}</span></div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={onGenerateEtherfuseQuote}
+                    disabled={!etherfuseStatus.enabled || etherfuseLoading}
+                    className={`px-3 py-2 rounded-full text-sm ${!etherfuseStatus.enabled || etherfuseLoading ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-primary text-black"}`}
+                  >
+                    {etherfuseLoading ? t("etherfuse.loading") : t("etherfuse.generate")}
+                  </button>
+                  <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">
+                    {t("etherfuse.docs")}
+                  </Link>
+                  <button
+                    onClick={onCreateEtherfuseOrder}
+                    disabled={!etherfuseQuote || etherfuseOrderLoading}
+                    className={`px-3 py-2 rounded-full text-sm ${!etherfuseQuote || etherfuseOrderLoading ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "border border-slate-700 bg-slate-900/80 text-slate-200"}`}
+                  >
+                    {etherfuseOrderLoading ? t("etherfuse.order_loading") : t("etherfuse.order_create")}
+                  </button>
+                </div>
+
+                {etherfuseError ? <p className="text-sm text-rose-300">{etherfuseError}</p> : null}
+              </div>
+
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300">
+                {etherfuseQuote ? (
+                  <div className="space-y-2">
+                    <div><span className="text-slate-500">{t("etherfuse.quote_id")}:</span> <span className="text-slate-100 break-all">{etherfuseQuote.id}</span></div>
+                    <div><span className="text-slate-500">{t("etherfuse.quote_source")}:</span> <span className="text-slate-100">{etherfuseQuote.sourceAmount} {etherfuseQuote.sourceAsset}</span></div>
+                    <div><span className="text-slate-500">{t("etherfuse.quote_destination")}:</span> <span className="text-slate-100">{etherfuseQuote.destinationAmount} {etherfuseQuote.targetAsset}</span></div>
+                    <div><span className="text-slate-500">{t("etherfuse.quote_rate")}:</span> <span className="text-slate-100">{etherfuseQuote.exchangeRate}</span></div>
+                    <div><span className="text-slate-500">{t("etherfuse.quote_expires")}:</span> <span className="text-slate-100">{new Date(etherfuseQuote.expiresAt).toLocaleString("en-US")}</span></div>
+                    <p className="pt-2 text-xs text-slate-400">{etherfuseQuote.guidance}</p>
+                    {etherfuseOrder ? (
+                      <div className="mt-3 rounded-xl border border-emerald-800/60 bg-emerald-900/20 p-3 text-xs text-emerald-200 space-y-1">
+                        <div>{t("etherfuse.order_id")}: <span className="break-all">{etherfuseOrder.id}</span></div>
+                        <div>{t("etherfuse.order_status")}: {etherfuseOrder.status}</div>
+                        <div>{t("etherfuse.order_direction")}: {etherfuseOrder.direction}</div>
+                        <p className="text-emerald-300/80">{etherfuseOrder.guidance}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="text-sm text-slate-400">{t("etherfuse.empty")}</div>
                 )}
               </div>
             </div>

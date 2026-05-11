@@ -222,6 +222,38 @@ Env keys used by this integration:
 - X402_TTL_SECONDS
 
 
+### EtherfuseController
+
+Files:
+- apps/backend/src/payments/etherfuse.controller.ts
+- apps/backend/src/payments/etherfuse.service.ts
+
+Endpoints:
+- GET /payments/etherfuse/status
+- POST /payments/etherfuse/quote
+- POST /payments/etherfuse/order
+
+Behavior:
+- Exposes Etherfuse integration posture (`disabled`, `stub`, `live`) and runtime metadata.
+- Creates conversion quotes (onramp/offramp/swap envelope) with deterministic stub fallback.
+- Creates order payloads from `quoteId` in stub mode and through Etherfuse API in live mode.
+- Enforces live-mode requirements (`apiKey`, `customerId`, and bank account context for orders).
+
+Env keys used by this integration:
+- ETHERFUSE_MODE
+- ETHERFUSE_API_BASE_URL
+- ETHERFUSE_API_KEY
+- ETHERFUSE_CUSTOMER_ID
+- ETHERFUSE_BANK_ACCOUNT_ID
+- ETHERFUSE_WALLET_ADDRESS
+- ETHERFUSE_BLOCKCHAIN
+- ETHERFUSE_DEFAULT_QUOTE_TYPE
+- ETHERFUSE_SOURCE_ASSET
+- ETHERFUSE_TARGET_ASSET
+- ETHERFUSE_STUB_EXCHANGE_RATE
+- ETHERFUSE_STUB_FEE_BPS
+
+
 ## 4) Current contract/API alignment caveats
 
 1. Batch Executor payment real path expects token ABI:

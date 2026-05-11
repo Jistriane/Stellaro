@@ -39,3 +39,12 @@ For x402 integration and test execution details, use:
 
 - `docs/X402_INTEGRATION.md`
 - `docs/X402_TESTING.md`
+
+## Etherfuse Integration
+
+Etherfuse endpoints are exposed under `payments/etherfuse`:
+
+- `GET /payments/etherfuse/status`
+- `POST /payments/etherfuse/quote`
+
+Runtime configuration uses `ETHERFUSE_*` environment variables (mode, API base URL, API key, customer ID, quote defaults).

@@ -100,6 +100,61 @@ Expected behavior:
 - `mode=live` when all facilitator credentials are configured.
 - Pix page shows **x402 Settlement Rail** and can generate quote payloads for facilitator handoff.
 
+## Etherfuse Activation (Backend + Frontend)
+
+The base Etherfuse integration is available in the payments module and exposed in the Pix screen.
+
+### 1. Required backend environment variables
+
+Set the following variables in `apps/backend/.env`:
+
+```env
+# etherfuse mode: disabled | stub | live
+ETHERFUSE_MODE=stub
+
+# Sandbox or production API base
+ETHERFUSE_API_BASE_URL=https://api.sand.etherfuse.com
+
+# API key must be passed as raw Authorization header (no Bearer prefix)
+ETHERFUSE_API_KEY=replace-with-real-key
+
+# Required for live quote creation in this integration
+ETHERFUSE_CUSTOMER_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+# Optional defaults used by the quote endpoint
+ETHERFUSE_BLOCKCHAIN=stellar
+ETHERFUSE_DEFAULT_QUOTE_TYPE=onramp
+ETHERFUSE_SOURCE_ASSET=MXN
+ETHERFUSE_TARGET_ASSET=USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
+ETHERFUSE_WALLET_ADDRESS=GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Optional stub tuning for local demos
+ETHERFUSE_STUB_EXCHANGE_RATE=0.19
+ETHERFUSE_STUB_FEE_BPS=35
+```
+
+### 2. Verify integration
+
+Status endpoint:
+
+```bash
+curl -s http://localhost:3001/payments/etherfuse/status
+```
+
+Sample quote:
+
+```bash
+curl -s -X POST http://localhost:3001/payments/etherfuse/quote \
+	-H 'Content-Type: application/json' \
+	-d '{"amount":"150","quoteType":"onramp"}'
+```
+
+Expected behavior:
+
+- `mode=stub` without live API credentials.
+- `mode=live` when `ETHERFUSE_API_BASE_URL` + `ETHERFUSE_API_KEY` are configured.
+- Pix page shows **Etherfuse FX Rail** and can generate onramp/offramp quote payloads.
+
 ## Architecture Highlights
 
 - **Digital Sovereignty** --- Full handover to the DAO and decentralized control. [██████████] 100%

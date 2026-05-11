@@ -41,6 +41,24 @@ Required release checks for x402:
 - Quote endpoint returns valid settlement payload and x402 headers.
 - Pix UI renders x402 posture and quote generation flow.
 
+## Etherfuse Coverage
+
+Etherfuse has a dedicated integration and testing documentation set:
+
+- Integration guide: `docs/ETHERFUSE_INTEGRATION.md`
+- Testing guide: `docs/ETHERFUSE_TESTING.md`
+
+Focused backend specs:
+
+- `cd apps/backend && npx jest src/payments/etherfuse.service.spec.ts src/payments/etherfuse.controller.spec.ts --runInBand`
+
+Required release checks for Etherfuse:
+
+- Status endpoint returns expected mode for target environment.
+- Quote endpoint returns valid conversion payload.
+- Order endpoint creates valid order payload from quote id.
+- Pix UI renders Etherfuse posture, quote generation, and order creation flow.
+
 ## Evidence
 
 All release candidates must generate test evidence artifacts for audit trails.
