@@ -14,6 +14,37 @@
 
 Welcome to the Stellaro project. This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 16 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+- Docker + Docker Compose
+
+### Install and Run
+
+```bash
+npm install
+docker compose up -d postgres redis
+
+cd apps/backend && npm run dev
+cd apps/frontend && npm run dev
+```
+
+Default local URLs:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3001`
+
+### Core Health Checks
+
+```bash
+curl -s http://localhost:3001/health
+curl -s http://localhost:3001/payments/x402/status
+curl -s http://localhost:3001/payments/etherfuse/status
+```
+
 ## Frontend Runtime
 
 - The frontend runs with English as the default runtime locale.
@@ -26,6 +57,15 @@ Welcome to the Stellaro project. This monorepo contains the complete architectur
 - This avoids noisy third-party preload/script warnings in dev consoles and automated browser checks.
 - To force-enable the real TradingView widget in development, set `NEXT_PUBLIC_ENABLE_TRADINGVIEW_DEV=true` in your local env.
 - The variable is documented in [.env.example](.env.example).
+
+## Monorepo Structure
+
+- `apps/frontend`: Next.js web app (primary user experience)
+- `apps/backend`: NestJS API gateway and orchestration layer
+- `contracts`: Soroban smart contracts and deployment scripts
+- `docs`: canonical documentation in English
+- `agents`: Python agent services and automations
+- `infra`: infrastructure configuration and deployment assets
 
 ## x402 Live Activation (Backend + Frontend)
 
@@ -121,6 +161,9 @@ ETHERFUSE_API_KEY=replace-with-real-key
 # Required for live quote creation in this integration
 ETHERFUSE_CUSTOMER_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
+# Required for live order creation (unless provided per request)
+ETHERFUSE_BANK_ACCOUNT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
 # Optional defaults used by the quote endpoint
 ETHERFUSE_BLOCKCHAIN=stellar
 ETHERFUSE_DEFAULT_QUOTE_TYPE=onramp
@@ -149,11 +192,19 @@ curl -s -X POST http://localhost:3001/payments/etherfuse/quote \
 	-d '{"amount":"150","quoteType":"onramp"}'
 ```
 
+Sample order from quote id:
+
+```bash
+curl -s -X POST http://localhost:3001/payments/etherfuse/order \
+	-H 'Content-Type: application/json' \
+	-d '{"quoteId":"<quote-id>"}'
+```
+
 Expected behavior:
 
 - `mode=stub` without live API credentials.
 - `mode=live` when `ETHERFUSE_API_BASE_URL` + `ETHERFUSE_API_KEY` are configured.
-- Pix page shows **Etherfuse FX Rail** and can generate onramp/offramp quote payloads.
+- Pix page shows **Etherfuse FX Rail** and can generate onramp/offramp quotes plus order payloads.
 
 ## Architecture Highlights
 
@@ -182,86 +233,97 @@ Expected behavior:
 
 ```mermaid
 flowchart LR
-	U[User]
+	U[User and Operators]
 
-	subgraph Experience[Experience Layer]
+	subgraph UX[Experience Layer]
 		WEB[Web App\nNext.js 16]
 		MOB[Mobile App\nExpo/React Native]
+		ADM[Admin and Ops Views]
 	end
 
-	subgraph Services[Service Layer]
-		API[API Gateway\nNestJS]
+	subgraph API[Application Layer - NestJS]
+		GW[API Gateway]
 		AUTH[Auth and Passkeys]
-		PAY[Payments and PIX]
-		GOV[Governance Services]
-		SSI[SSI and VC Services]
-		RWA[RWA Services]
+		RISK[Risk and Compliance]
+		PAY[Payments Core]
+		X402[x402 Rail]
+		EF[Etherfuse Rail]
+		GOV[Governance]
+		RWA[RWA and SSI]
 	end
 
 	subgraph Intelligence[Intelligence Layer]
 		AI[ElizaOS RiskGuardian]
 		ZK[ZK Credit Scoring]
-		ORACLE[Reflector and DEX Oracle Adapter]
+		ORC[Reflector Oracle Adapter]
 	end
 
-	subgraph Blockchain[Blockchain Layer - Stellar/Soroban]
-		C_STABLE[Stablecoin]
-		C_LOANS[LoansPool]
-		C_DAO[DAO Governance]
-		C_REC[Recurring Payments]
-		C_RWA[RWA Tokenizer and Marketplace]
-		C_VC[VC Registry]
-		C_MEV[MEV Guard and Batch Executor]
+	subgraph Chain[Stellar and Soroban Contracts]
+		CST[Stablecoin]
+		CLN[LoansPool]
+		CDAO[DAO Governance]
+		CREC[Recurring Payments]
+		CRWA[RWA Tokenizer and Marketplace]
+		CVC[VC Registry]
+		CMEV[MEV Guard and Batch Executor]
 	end
 
-	subgraph DataOps[Data and Operations]
-		DB[(PostgreSQL)]
-		REDIS[(Redis)]
+	subgraph Data[Data and Operations]
+		PG[(PostgreSQL)]
+		RD[(Redis)]
 		OBS[Logs, Metrics, Traces]
-		COMP[Compliance and Audit Evidence]
+		AUD[Compliance and Audit Evidence]
 	end
 
 	U --> WEB
 	U --> MOB
+	U --> ADM
 
-	WEB --> API
-	MOB --> API
+	WEB --> GW
+	MOB --> GW
+	ADM --> GW
 
-	API --> AUTH
-	API --> PAY
-	API --> GOV
-	API --> SSI
-	API --> RWA
-	API --> AI
-	API --> ORACLE
+	GW --> AUTH
+	GW --> RISK
+	GW --> PAY
+	GW --> GOV
+	GW --> RWA
 
+	PAY --> X402
+	PAY --> EF
+	PAY --> CST
+	PAY --> CREC
+
+	RISK --> AI
 	AI --> ZK
-	AUTH --> DB
-	PAY --> DB
-	GOV --> DB
-	SSI --> DB
-	RWA --> DB
-	API --> REDIS
+	RISK --> ORC
+	ORC --> CLN
+	ORC --> CST
 
-	PAY --> C_STABLE
-	PAY --> C_REC
-	GOV --> C_DAO
-	RWA --> C_RWA
-	SSI --> C_VC
-	AI --> C_MEV
-	ORACLE --> C_LOANS
-	ORACLE --> C_STABLE
+	GOV --> CDAO
+	RWA --> CRWA
+	RWA --> CVC
+	AI --> CMEV
 
-	C_STABLE --> OBS
-	C_LOANS --> OBS
-	C_DAO --> OBS
-	C_REC --> OBS
-	C_RWA --> OBS
-	C_VC --> OBS
-	C_MEV --> OBS
-	DB --> OBS
-	REDIS --> OBS
-	OBS --> COMP
+	AUTH --> PG
+	RISK --> PG
+	PAY --> PG
+	GOV --> PG
+	RWA --> PG
+	GW --> RD
+
+	X402 --> OBS
+	EF --> OBS
+	CST --> OBS
+	CLN --> OBS
+	CDAO --> OBS
+	CREC --> OBS
+	CRWA --> OBS
+	CVC --> OBS
+	CMEV --> OBS
+	PG --> OBS
+	RD --> OBS
+	OBS --> AUD
 ```
 
 ## Deployment Registry and Explorer Links
@@ -334,10 +396,15 @@ Source: `contracts/reports/20260425_104952/evidence_report.md`.
 
 For detailed information, please refer to:
 
-- [Full Technical Architecture](STELLARO ARQUITETURA TÉCNICA COMPLETA.md)
-- [Technical and Regulatory Architecture](STELLARO ARQUITETURA TÉCNICA E REGULATÓRIA.md)
-- [Security Audit Report](SECURITY_AUDIT_REPORT.md)
-- [Project Expansion Walkthrough](walkthrough.md)
+- [Documentation Index](docs/DOCUMENTATION_INDEX.md)
+- [Getting Started Guide](docs/START_HERE.md)
+- [x402 Integration Guide](docs/X402_INTEGRATION.md)
+- [x402 Testing Guide](docs/X402_TESTING.md)
+- [Etherfuse Integration Guide](docs/ETHERFUSE_INTEGRATION.md)
+- [Etherfuse Testing Guide](docs/ETHERFUSE_TESTING.md)
+- [Security Audit Report](docs/SECURITY_AUDIT_REPORT.md)
+- [Security Upgrade Sprint](docs/SECURITY_UPGRADE_SPRINT_MAY_2026.md)
+- [Project Expansion Walkthrough](docs/walkthrough.md)
 
 ---
 Stellaro V5 Protocol.

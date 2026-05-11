@@ -6,6 +6,6 @@ This document is a historical pointer for the project expansion process. The det
 
 ## Where to Look Instead
 
-- [START_HERE.md](docs/START_HERE.md)
-- [DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md)
-- [Manual.md](docs/Manual.md)
+- [START_HERE.md](START_HERE.md)
+- [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
+- [Manual.md](Manual.md)
