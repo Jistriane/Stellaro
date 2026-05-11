@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:pages": "DEPLOY_TARGET=github-pages next build",
+    "build:pages": "DEPLOY_TARGET=github-pages next build && node tools/fix-pages-asset-paths.mjs",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest"

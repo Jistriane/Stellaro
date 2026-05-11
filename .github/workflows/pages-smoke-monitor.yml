@@ -1,0 +1,52 @@
+name: Pages Smoke Monitor
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-smoke-monitor
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve Pages URL
+        id: pages_url
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          OWNER_LOWER="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          URL="https://${OWNER_LOWER}.github.io/${REPO_NAME}/"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for propagation
+        run: sleep 20
+
+      - name: Check HTTP status
+        env:
+          TARGET_URL: ${{ steps.pages_url.outputs.url }}
+        run: |
+          STATUS="$(curl -sS -o /tmp/pages.html -w "%{http_code}" "${TARGET_URL}")"
+          if [ "${STATUS}" != "200" ]; then
+            echo "Expected HTTP 200, got ${STATUS}"
+            exit 1
+          fi
+
+      - name: Validate expected content
+        run: |
+          grep -q "<title>Stellaro</title>" /tmp/pages.html
+          grep -q "/Stellaro/_next/" /tmp/pages.html
+
+      - name: Report success
+        env:
+          TARGET_URL: ${{ steps.pages_url.outputs.url }}
+        run: echo "Pages smoke check passed for ${TARGET_URL}"
