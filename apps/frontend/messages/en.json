@@ -451,6 +451,29 @@
       "title": "Help & Support",
       "faq_pix": "Questions about Pix",
       "support": "Talk to support"
+    },
+    "x402": {
+      "title": "x402 Settlement Rail",
+      "subtitle": "Use x402 as the handoff layer for facilitator-driven onchain settlement, subscriptions, and paid API access.",
+      "network": "Network",
+      "asset": "Asset",
+      "resource": "Resource",
+      "provider": "Provider contract",
+      "facilitator": "Facilitator",
+      "mode_disabled": "Disabled",
+      "mode_stub": "Stub mode",
+      "mode_live": "Live mode",
+      "generate": "Generate x402 quote",
+      "loading": "Generating quote...",
+      "empty": "No quote generated yet. Use the Pix amount above or generate a sample quote.",
+      "quote_id": "Session",
+      "quote_total": "Total",
+      "quote_expires": "Expires",
+      "quote_url": "Payment URL",
+      "quote_wallet": "Wallet",
+      "quote_memo": "Memo",
+      "quote_error": "Could not generate x402 quote.",
+      "docs": "Read integration docs"
     }
   },
   "login": {

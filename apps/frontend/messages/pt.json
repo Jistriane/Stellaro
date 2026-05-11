@@ -451,6 +451,29 @@
       "title": "Help & Support",
       "faq_pix": "Questions about Pix",
       "support": "Talk to support"
+    },
+    "x402": {
+      "title": "Trilho de liquidação x402",
+      "subtitle": "Use o x402 como camada de handoff para liquidação onchain via facilitator, assinaturas e acesso pago a APIs.",
+      "network": "Rede",
+      "asset": "Ativo",
+      "resource": "Recurso",
+      "provider": "Contrato do provider",
+      "facilitator": "Facilitator",
+      "mode_disabled": "Desabilitado",
+      "mode_stub": "Modo stub",
+      "mode_live": "Modo live",
+      "generate": "Gerar cotação x402",
+      "loading": "Gerando cotação...",
+      "empty": "Nenhuma cotação gerada ainda. Use o valor do Pix acima ou gere uma cotação de exemplo.",
+      "quote_id": "Sessão",
+      "quote_total": "Total",
+      "quote_expires": "Expira em",
+      "quote_url": "URL de pagamento",
+      "quote_wallet": "Carteira",
+      "quote_memo": "Memo",
+      "quote_error": "Não foi possível gerar a cotação x402.",
+      "docs": "Ler docs da integração"
     }
   },
   "login": {

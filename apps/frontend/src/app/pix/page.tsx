@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
+import { createX402Quote, getX402Status, type X402Quote, type X402Status } from "@/lib/x402";
 
 export default function PixPage() {
   const t = useTranslations("pix");
@@ -19,6 +20,20 @@ export default function PixPage() {
   const [amountWdr, setAmountWdr] = useState<string>("");
   const [destKey, setDestKey] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [x402Status, setX402Status] = useState<X402Status>({
+    enabled: false,
+    mode: "disabled",
+    network: "stellar:testnet",
+    acceptedAsset: "STLT",
+    resource: "/payments/x402/settle",
+    facilitatorUrl: null,
+    providerContractId: null,
+    recipient: null,
+    apiKeyConfigured: false,
+  });
+  const [x402Quote, setX402Quote] = useState<X402Quote | null>(null);
+  const [x402Loading, setX402Loading] = useState(false);
+  const [x402Error, setX402Error] = useState<string | null>(null);
 
   // Service status (mock)
   const service = { status: "Available" as "Available" | "Unavailable" | "Maintenance", note: "Operating normally" };
@@ -34,6 +49,20 @@ export default function PixPage() {
     { type: "Deposit", value: 500, date: "2025-08-13 11:20", status: "Completed", key: "email@bank.com" },
     { type: "Withdrawal", value: 300, date: "2025-08-12 16:40", status: "Pending", key: "+55 11 90000-0000" },
   ];
+
+  useEffect(() => {
+    let active = true;
+
+    getX402Status().then((status) => {
+      if (active) {
+        setX402Status(status);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function onCopy() {
     try {
@@ -54,6 +83,29 @@ export default function PixPage() {
       return;
     }
     alert(t("withdraw.request_sent"));
+  }
+
+  async function onGenerateX402Quote() {
+    setX402Loading(true);
+    setX402Error(null);
+
+    const amount = tab === "deposit" ? amountDep || "25.00" : amountWdr || "25.00";
+    const result = await createX402Quote({
+      amount,
+      asset: x402Status.acceptedAsset,
+      intent: tab === "deposit" ? "deposit" : "withdrawal",
+      memo: `stellaro:${tab}`,
+    });
+
+    if (!result.ok || !result.quote) {
+      setX402Quote(null);
+      setX402Error(result.error || t("x402.quote_error"));
+      setX402Loading(false);
+      return;
+    }
+
+    setX402Quote(result.quote);
+    setX402Loading(false);
   }
 
   return (
@@ -186,6 +238,60 @@ export default function PixPage() {
                 <div className="text-xs text-slate-500">{t("withdraw.status_pending")}</div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <CardHeader>
+            <CardTitle>{t("x402.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="space-y-4">
+                <p className="text-sm text-slate-300">{t("x402.subtitle")}</p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className={`rounded-full px-3 py-1 ${x402Status.mode === "live" ? "bg-emerald-900/40 text-emerald-300" : x402Status.mode === "stub" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+                    {t(`x402.mode_${x402Status.mode}`)}
+                  </span>
+                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("x402.network")}: {x402Status.network}</span>
+                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("x402.asset")}: {x402Status.acceptedAsset}</span>
+                </div>
+                <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300 space-y-2">
+                  <div>{t("x402.resource")}: <span className="text-slate-100">{x402Status.resource}</span></div>
+                  <div>{t("x402.provider")}: <span className="text-slate-100">{x402Status.providerContractId || "stub-provider-contract"}</span></div>
+                  <div>{t("x402.facilitator")}: <span className="text-slate-100 break-all">{x402Status.facilitatorUrl || "https://facilitator.stellaro.local"}</span></div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={onGenerateX402Quote}
+                    disabled={!x402Status.enabled || x402Loading}
+                    className={`px-3 py-2 rounded-full text-sm ${!x402Status.enabled || x402Loading ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-primary text-black"}`}
+                  >
+                    {x402Loading ? t("x402.loading") : t("x402.generate")}
+                  </button>
+                  <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">
+                    {t("x402.docs")}
+                  </Link>
+                </div>
+                {x402Error ? <p className="text-sm text-rose-300">{x402Error}</p> : null}
+              </div>
+
+              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300">
+                {x402Quote ? (
+                  <div className="space-y-2">
+                    <div><span className="text-slate-500">{t("x402.quote_id")}:</span> <span className="text-slate-100 break-all">{x402Quote.sessionId}</span></div>
+                    <div><span className="text-slate-500">{t("x402.quote_total")}:</span> <span className="text-slate-100">{x402Quote.settlement.total} {x402Quote.settlement.asset}</span></div>
+                    <div><span className="text-slate-500">{t("x402.quote_expires")}:</span> <span className="text-slate-100">{new Date(x402Quote.settlement.expiresAt).toLocaleString("en-US")}</span></div>
+                    <div><span className="text-slate-500">{t("x402.quote_url")}:</span> <span className="text-slate-100 break-all">{x402Quote.headers["x402-payment-url"]}</span></div>
+                    <div><span className="text-slate-500">{t("x402.quote_wallet")}:</span> <span className="text-slate-100">{x402Quote.settlement.walletAddress || "not provided"}</span></div>
+                    <div><span className="text-slate-500">{t("x402.quote_memo")}:</span> <span className="text-slate-100 break-all">{x402Quote.settlement.memo}</span></div>
+                    <p className="pt-2 text-xs text-slate-400">{x402Quote.guidance}</p>
+                  </div>
+                ) : (
+                  <div className="text-sm text-slate-400">{t("x402.empty")}</div>
+                )}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
