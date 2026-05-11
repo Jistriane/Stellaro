@@ -328,6 +328,9 @@ flowchart LR
 
 ## Deployment Registry and Explorer Links
 
+Canonical source for contract deployment data:
+- `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`
+
 ### Testnet V5 Manifest
 
 | Contract | Contract ID | Stellar Expert |
@@ -339,7 +342,9 @@ flowchart LR
 
 ### Testnet Deployment Snapshot (2026-05-11)
 
-Source: `docs/CONTRACT_DEPLOYMENT_GUIDE.md`.
+Sources:
+- `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`
+- `docs/CONTRACT_DEPLOYMENT_GUIDE.md`
 
 | Contract | Env Key | Contract ID | Stellar Expert |
 | :--- | :--- | :--- | :--- |

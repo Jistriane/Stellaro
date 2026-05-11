@@ -5,6 +5,9 @@ Status: Repository-aligned
 
 This guide documents the actual deployment flow currently implemented in this repository.
 
+Canonical registry reference:
+- `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`
+
 ## 1) What exists today
 
 Primary script:
