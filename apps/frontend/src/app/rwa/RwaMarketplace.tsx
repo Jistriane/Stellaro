@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { Building, Landmark, Percent, Clock, ArrowRight, Gavel, FileText, CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
 import { useSSI } from "@/hooks/useSSI";
+import { getWalletBalances } from "@/lib/soroban";
+import { useWalletStore } from "@/state/wallet";
 
 type RwaAssetView = {
   id: string;
@@ -19,27 +22,83 @@ export default function RwaMarketplace({ initialAssets }: { initialAssets: RwaAs
   const [bidAmount, setBidAmount] = useState<string>("");
   const [isBidding, setIsBidding] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  
-  const { hasKyc, isLoading: isSsiLoading, requestKyc } = useSSI();
-  const [isKycRequesting, setIsKycRequesting] = useState(false);
+  const walletConnected = useWalletStore((s) => s.connected);
+  const walletAddress = useWalletStore((s) => s.address);
+  const walletNetwork = useWalletStore((s) => s.network);
+  const [walletLoading, setWalletLoading] = useState(false);
+  const [walletError, setWalletError] = useState<string | null>(null);
+  const [walletData, setWalletData] = useState<{ xlm: string; stlt: string }>({ xlm: "0", stlt: "0" });
 
-  const handleRequestKyc = async () => {
-    setIsKycRequesting(true);
-    await requestKyc();
-    setIsKycRequesting(false);
-  };
+  const { hasKyc, isLoading: isSsiLoading, error: ssiError } = useSSI({
+    walletAddress,
+    enabled: walletConnected && walletNetwork === "testnet",
+  });
+
+  const walletStatus = useMemo(() => {
+    if (!walletConnected || !walletAddress) {
+      return {
+        label: "Carteira desconectada",
+        note: "Conecte uma carteira Stellar para liberar dados reais de saldo e KYC.",
+      };
+    }
+
+    if (walletNetwork !== "testnet") {
+      return {
+        label: "Rede incorreta",
+        note: "Troque a carteira para Stellar testnet para validar KYC e operar RWA.",
+      };
+    }
+
+    return {
+      label: "Carteira conectada",
+      note: "Dados carregados da carteira conectada na Stellar testnet.",
+    };
+  }, [walletAddress, walletConnected, walletNetwork]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadWalletData() {
+      if (!walletConnected || !walletAddress || walletNetwork !== "testnet") {
+        setWalletData({ xlm: "0", stlt: "0" });
+        setWalletError(null);
+        setWalletLoading(false);
+        return;
+      }
+
+      setWalletLoading(true);
+      setWalletError(null);
+
+      try {
+        const balances = await getWalletBalances(walletAddress);
+        if (!active) return;
+        setWalletData({ xlm: balances.xlm, stlt: balances.stlt });
+      } catch {
+        if (!active) return;
+        setWalletData({ xlm: "0", stlt: "0" });
+        setWalletError("Nao foi possivel carregar os saldos reais da carteira na testnet.");
+      } finally {
+        if (!active) return;
+        setWalletLoading(false);
+      }
+    }
+
+    void loadWalletData();
+
+    return () => {
+      active = false;
+    };
+  }, [walletAddress, walletConnected, walletNetwork]);
 
   const handlePlaceBid = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedAsset) return;
+    if (!selectedAsset || !walletAddress || walletNetwork !== "testnet" || !hasKyc) return;
 
     setIsBidding(true);
-    // Simulate network delay and blockchain interaction
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Simulating successful bid
+
     setIsBidding(false);
-    setSuccessMessage(`Bid of R$ ${bidAmount} successfully recorded on-chain for asset ${selectedAsset.name}.`);
+    setSuccessMessage(`Oferta preparada para a carteira ${walletAddress} no ativo ${selectedAsset.name}. Integracao de envio da transacao ainda pendente.`);
     setTimeout(() => {
       setSuccessMessage("");
       setSelectedAsset(null);
@@ -67,6 +126,11 @@ export default function RwaMarketplace({ initialAssets }: { initialAssets: RwaAs
               <p className="text-lg text-slate-400 leading-relaxed">
                 Invest in fractions of luxury real estate, debentures, and receivables with instant settlement on the Soroban network. Guaranteed yields audited by decentralized oracles.
               </p>
+              <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4 text-sm text-slate-300">
+                <div className="font-semibold text-white">{walletStatus.label}</div>
+                <div className="mt-1 text-slate-400">{walletStatus.note}</div>
+                {walletAddress ? <div className="mt-2 break-all text-xs text-slate-500">{walletAddress}</div> : null}
+              </div>
             </div>
             
             <div className="flex flex-col gap-3 min-w-[200px]">
@@ -74,9 +138,27 @@ export default function RwaMarketplace({ initialAssets }: { initialAssets: RwaAs
                 <div className="text-sm text-slate-500 mb-1">Total Value Locked</div>
                 <div className="text-2xl font-bold text-amber-400">R$ 142.5M</div>
               </div>
+              <div className="p-4 rounded-2xl bg-slate-950/50 border border-slate-800 backdrop-blur-md">
+                <div className="text-sm text-slate-500 mb-1">Carteira conectada</div>
+                <div className="text-lg font-bold text-white">{walletConnected ? walletNetwork : "offline"}</div>
+                <div className="mt-2 text-xs text-slate-400">XLM: {walletLoading ? "..." : walletData.xlm}</div>
+                <div className="text-xs text-slate-400">STLT: {walletLoading ? "..." : walletData.stlt}</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-950/50 border border-slate-800 backdrop-blur-md">
+                <div className="text-sm text-slate-500 mb-1">KYC testnet</div>
+                <div className={`text-lg font-bold ${hasKyc ? "text-emerald-400" : "text-amber-400"}`}>
+                  {isSsiLoading ? "Verificando" : hasKyc ? "Validado" : "Nao validado"}
+                </div>
+              </div>
             </div>
           </div>
         </header>
+
+        {(walletError || ssiError) && (
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-950/30 p-4 text-sm text-amber-100">
+            {walletError || ssiError}
+          </div>
+        )}
 
         {/* Success Alert */}
         {successMessage && (
@@ -138,19 +220,22 @@ export default function RwaMarketplace({ initialAssets }: { initialAssets: RwaAs
                     </div>
                   </div>
 
-                  {!hasKyc ? (
-                    <button 
-                      onClick={handleRequestKyc}
-                      disabled={isKycRequesting || isSsiLoading}
+                  {!walletConnected || walletNetwork !== "testnet" || !hasKyc ? (
+                    <Link
+                      href="/ssi"
                       className="mt-auto w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-800 text-slate-400 font-bold border border-slate-700 hover:bg-slate-700 hover:text-slate-200 transition-all active:scale-95 disabled:opacity-50"
                     >
-                      {isKycRequesting || isSsiLoading ? (
+                      {isSsiLoading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <ShieldAlert className="w-4 h-4 text-amber-500" />
                       )}
-                      Verify Identity (KYC)
-                    </button>
+                      {!walletConnected
+                        ? "Conectar carteira"
+                        : walletNetwork !== "testnet"
+                          ? "Trocar para testnet"
+                          : "Completar KYC real"}
+                    </Link>
                   ) : (
                     <button 
                       onClick={() => setSelectedAsset(asset)}
@@ -177,7 +262,7 @@ export default function RwaMarketplace({ initialAssets }: { initialAssets: RwaAs
               <div className="p-6">
                 <h3 className="text-2xl font-bold text-white mb-2">Make an Offer</h3>
                 <p className="text-slate-400 text-sm mb-6">
-                  You are participating in the auction for <strong>{selectedAsset.name}</strong>. Make sure you have active KYC credentials.
+                  You are preparing an investment order for <strong>{selectedAsset.name}</strong> using the connected Stellar testnet wallet. KYC is validated before enabling this flow.
                 </p>
 
                 <form onSubmit={handlePlaceBid} className="space-y-4">

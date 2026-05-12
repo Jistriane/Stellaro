@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 import { createX402Quote, getX402Status, type X402Quote, type X402Status } from "@/lib/x402";
+import { getHorizonBaseUrl, getWalletBalances } from "@/lib/soroban";
+import { useWalletStore } from "@/state/wallet";
 import {
   createEtherfuseOrder,
   createEtherfuseQuote,
@@ -16,18 +18,37 @@ import {
   type EtherfuseStatus,
 } from "@/lib/etherfuse";
 
+type PixHistoryItem = {
+  type: "Deposit" | "Withdrawal";
+  value: string;
+  asset: string;
+  date: string;
+  status: "Completed";
+  key: string;
+};
+
 export default function PixPage() {
   const t = useTranslations("pix");
+  const walletConnected = useWalletStore((s) => s.connected);
+  const walletAddress = useWalletStore((s) => s.address);
+  const walletNetwork = useWalletStore((s) => s.network);
+  const refreshBalance = useWalletStore((s) => s.refreshBalance);
 
   // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
 
-  // Tab and form state (mock)
+  // Tab and form state
   const [tab, setTab] = useState<"deposit" | "withdraw">("deposit");
   const [amountDep, setAmountDep] = useState<string>("");
   const [amountWdr, setAmountWdr] = useState<string>("");
   const [destKey, setDestKey] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [qrPayload, setQrPayload] = useState<string>("");
+  const [walletLoading, setWalletLoading] = useState(false);
+  const [walletError, setWalletError] = useState<string | null>(null);
+  const [walletData, setWalletData] = useState<{ xlm: string; stlt: string }>({ xlm: "0", stlt: "0" });
+  const [history, setHistory] = useState<PixHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [x402Status, setX402Status] = useState<X402Status>({
     enabled: false,
     mode: "disabled",
@@ -60,20 +81,29 @@ export default function PixPage() {
   const [etherfuseOrderLoading, setEtherfuseOrderLoading] = useState(false);
   const [etherfuseError, setEtherfuseError] = useState<string | null>(null);
 
-  // Service status (mock)
-  const service = { status: "Available" as "Available" | "Unavailable" | "Maintenance", note: "Operating normally" };
+  const service = useMemo(() => {
+    if (!walletConnected || !walletAddress) {
+      return { status: "Unavailable" as const, note: "Connect your wallet to enable Pix." };
+    }
+    if (walletNetwork !== "testnet") {
+      return { status: "Maintenance" as const, note: "Switch to testnet wallet network." };
+    }
+    return { status: "Available" as const, note: "Connected to Stellar testnet." };
+  }, [walletConnected, walletAddress, walletNetwork]);
 
-  // Balances/limits/fees (mock)
-  const wallet = { balanceBRL: 3211, dailyLimitBRL: 10000, feePct: 0 };
+  const dailyLimitBRL = Number(process.env.NEXT_PUBLIC_PIX_DAILY_LIMIT_BRL ?? "0");
+  const feePct = Number(process.env.NEXT_PUBLIC_PIX_FEE_PCT ?? "0");
+  const balanceBRL = Number.parseFloat(walletData.stlt || "0");
+  const wallet = {
+    balanceBRL: Number.isFinite(balanceBRL) ? balanceBRL : 0,
+    dailyLimitBRL,
+    feePct,
+  };
 
-  // Temporary Pix key (mock)
-  const pixKey = useMemo(() => "pix+stelato.mock@example.com", []);
-
-  // Transaction history (mock)
-  const history = [
-    { type: "Deposit", value: 500, date: "2025-08-13 11:20", status: "Completed", key: "email@bank.com" },
-    { type: "Withdrawal", value: 300, date: "2025-08-12 16:40", status: "Pending", key: "+55 11 90000-0000" },
-  ];
+  const pixKey = useMemo(() => {
+    if (!walletAddress) return "";
+    return `stellar:${walletAddress}`;
+  }, [walletAddress]);
 
   useEffect(() => {
     let active = true;
@@ -91,7 +121,89 @@ export default function PixPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+
+    async function loadWalletData() {
+      if (!walletConnected || !walletAddress) {
+        setWalletData({ xlm: "0", stlt: "0" });
+        setHistory([]);
+        setWalletError(null);
+        return;
+      }
+
+      setWalletLoading(true);
+      setHistoryLoading(true);
+      setWalletError(null);
+
+      try {
+        await refreshBalance();
+
+        const [balancesRes, paymentsRes] = await Promise.all([
+          getWalletBalances(walletAddress),
+          fetch(`${getHorizonBaseUrl()}/accounts/${encodeURIComponent(walletAddress)}/payments?limit=20&order=desc`, { cache: "no-store" }),
+        ]);
+
+        if (!active) return;
+
+        setWalletData({ xlm: balancesRes.xlm, stlt: balancesRes.stlt });
+
+        if (!paymentsRes.ok) {
+          throw new Error(`Horizon payments ${paymentsRes.status}`);
+        }
+
+        const body = (await paymentsRes.json()) as {
+          _embedded?: {
+            records?: Array<{
+              type: string;
+              from?: string;
+              to?: string;
+              amount?: string;
+              asset_type?: string;
+              asset_code?: string;
+              created_at?: string;
+            }>;
+          };
+        };
+
+        const records = (body._embedded?.records || []).filter((r) =>
+          r.type === "payment" || r.type === "path_payment_strict_receive" || r.type === "path_payment_strict_send"
+        );
+
+        const parsed = records.map((r): PixHistoryItem => {
+          const isDeposit = (r.to || "") === walletAddress;
+          const asset = r.asset_type === "native" ? "XLM" : r.asset_code || "ASSET";
+          return {
+            type: isDeposit ? "Deposit" : "Withdrawal",
+            value: r.amount || "0",
+            asset,
+            date: r.created_at ? new Date(r.created_at).toLocaleString("en-US") : "-",
+            status: "Completed",
+            key: isDeposit ? (r.from || "-") : (r.to || "-"),
+          };
+        });
+
+        setHistory(parsed);
+      } catch {
+        if (!active) return;
+        setWalletError("Failed to load wallet data from testnet.");
+        setHistory([]);
+      } finally {
+        if (!active) return;
+        setWalletLoading(false);
+        setHistoryLoading(false);
+      }
+    }
+
+    void loadWalletData();
+
+    return () => {
+      active = false;
+    };
+  }, [walletConnected, walletAddress, walletNetwork, refreshBalance]);
+
   async function onCopy() {
+    if (!pixKey) return;
     try {
       await navigator.clipboard.writeText(pixKey);
       setCopied(true);
@@ -100,16 +212,39 @@ export default function PixPage() {
   }
 
   function onGenerateQR() {
-    // Mock only; real integration would generate EMV/BR Code payload
-    alert(t("deposit.qr_generated", { key: pixKey }));
+    if (!walletConnected || !walletAddress || !pixKey) {
+      alert("Connect a testnet wallet before generating Pix data.");
+      return;
+    }
+    const amount = tab === "deposit" ? (amountDep || "0") : (amountWdr || "0");
+    const payload = JSON.stringify(
+      {
+        network: "stellar:testnet",
+        walletAddress,
+        pixKey,
+        amount,
+        createdAt: new Date().toISOString(),
+      },
+      null,
+      2
+    );
+    setQrPayload(payload);
   }
 
   function onRequestWithdraw() {
+    if (!walletConnected || !walletAddress) {
+      alert("Connect a testnet wallet before requesting withdrawal.");
+      return;
+    }
     if (!amountWdr || Number(amountWdr) <= 0 || !destKey) {
       alert(t("withdraw.need_valid"));
       return;
     }
-    alert(t("withdraw.request_sent"));
+    if (Number(amountWdr) > wallet.balanceBRL) {
+      alert("Insufficient STLT balance for this withdrawal amount.");
+      return;
+    }
+    alert("Withdrawal request created.");
   }
 
   async function onGenerateX402Quote() {
@@ -120,6 +255,7 @@ export default function PixPage() {
     const result = await createX402Quote({
       amount,
       asset: x402Status.acceptedAsset,
+      walletAddress: walletAddress || undefined,
       intent: tab === "deposit" ? "deposit" : "withdrawal",
       memo: `stellaro:${tab}`,
     });
@@ -170,7 +306,7 @@ export default function PixPage() {
 
     const result = await createEtherfuseOrder({
       quoteId: etherfuseQuote.id,
-      walletAddress: x402Quote?.settlement.walletAddress || undefined,
+      walletAddress: walletAddress || x402Quote?.settlement.walletAddress || undefined,
       memo: `stellaro:${tab}:order`,
     });
 
@@ -236,12 +372,16 @@ export default function PixPage() {
               <span className={`rounded-full px-3 py-1 text-xs ${service.status === "Available" ? "bg-emerald-900/40 text-emerald-300" : service.status === "Maintenance" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
                 {service.status === "Available" ? t("service.available") : service.status === "Maintenance" ? t("service.maintenance") : t("service.unavailable")}
               </span>
-              <span className="text-slate-400">{t("service.note_ok")}</span>
+              <span className="text-slate-400">{service.note}</span>
             </div>
             <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-200">
               <div className="text-xs uppercase tracking-[0.3em] text-slate-500">Wallet</div>
-              <div className="mt-2">R$ {wallet.balanceBRL.toLocaleString("en-US")} available</div>
+              <div className="mt-2">R$ {wallet.balanceBRL.toLocaleString("en-US", { maximumFractionDigits: 2 })} available</div>
+              <div className="mt-1 text-xs text-slate-500">XLM: {walletData.xlm} • STLT: {walletData.stlt}</div>
               <div className="mt-1 text-xs text-slate-500">Daily limit: R$ {wallet.dailyLimitBRL.toLocaleString("en-US")}</div>
+              {walletAddress ? <div className="mt-1 text-[11px] break-all text-slate-500">{walletAddress}</div> : null}
+              {walletLoading ? <div className="mt-1 text-xs text-slate-500">Loading wallet data...</div> : null}
+              {walletError ? <div className="mt-1 text-xs text-rose-300">{walletError}</div> : null}
             </div>
           </div>
         </header>
@@ -273,11 +413,11 @@ export default function PixPage() {
                 <div className="space-y-2">
                   <div className="text-sm text-slate-400">{t("deposit.temp_key")}</div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="rounded-xl bg-slate-900/90 px-3 py-2 text-sm select-all border border-slate-800">{pixKey}</div>
-                    <button onClick={onCopy} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs">{copied ? t("deposit.copied") : t("deposit.copy")}</button>
-                    <button onClick={onGenerateQR} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs">{t("deposit.qr")}</button>
+                    <div className="rounded-xl bg-slate-900/90 px-3 py-2 text-sm select-all border border-slate-800">{pixKey || "Connect wallet to generate key"}</div>
+                    <button onClick={onCopy} disabled={!pixKey} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs disabled:opacity-50 disabled:cursor-not-allowed">{copied ? t("deposit.copied") : t("deposit.copy")}</button>
+                    <button onClick={onGenerateQR} disabled={!pixKey} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs disabled:opacity-50 disabled:cursor-not-allowed">Generate payload</button>
                   </div>
-                  <div className="mt-1 h-28 w-28 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-500">QR CODE (mock)</div>
+                  <div className="mt-1 rounded-2xl bg-slate-800 border border-slate-700 p-3 text-[11px] text-slate-300 whitespace-pre-wrap break-all min-h-28">{qrPayload || "Generate a payload to render with your QR provider."}</div>
                 </div>
 
                 <div className="text-xs text-slate-500">
@@ -307,12 +447,12 @@ export default function PixPage() {
                   placeholder={t("withdraw.placeholder_key")}
                   className="w-full max-w-lg rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
                 />
-                <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US"), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
+                <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US", { maximumFractionDigits: 2 }), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
                 <div className="flex gap-2 flex-wrap">
                   <button onClick={onRequestWithdraw} className="px-3 py-2 rounded-full bg-primary text-black text-sm">{t("withdraw.request")}</button>
                   <button onClick={() => confirm("OK?") && onRequestWithdraw()} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">{t("withdraw.confirm")}</button>
                 </div>
-                <div className="text-xs text-slate-500">{t("withdraw.status_pending")}</div>
+                <div className="text-xs text-slate-500">Requests are prepared from your connected wallet context.</div>
               </div>
             )}
           </CardContent>
@@ -449,14 +589,16 @@ export default function PixPage() {
             <CardTitle>{t("history.title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            {history.length === 0 ? (
+            {historyLoading ? (
+              <div className="text-sm text-slate-400">Loading testnet history...</div>
+            ) : history.length === 0 ? (
               <div className="text-sm text-slate-400">{t("history.empty")}</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                 {history.map((tItem, i) => (
                   <div key={i} className="flex items-center justify-between rounded-xl border border-slate-800/80 bg-slate-900/70 px-3 py-2">
-                    <div className="text-slate-300">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • R$ {tItem.value.toLocaleString("en-US")}</div>
-                    <div className="text-xs text-slate-500">{tItem.date} • {tItem.status === "Completed" ? t("history.status_done") : t("history.status_pending")} • {tItem.key}</div>
+                    <div className="text-slate-300">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • {tItem.value} {tItem.asset}</div>
+                    <div className="text-xs text-slate-500">{tItem.date} • {t("history.status_done")} • {tItem.key}</div>
                   </div>
                 ))}
               </div>

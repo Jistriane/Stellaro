@@ -48,6 +48,7 @@ describe('SsiController', () => {
 
   it('should issue credential using service', () => {
     const payload = {
+      userAddress: 'GTESTUSERADDRESS1234567890ABCDEFGHJKLMNPQRSTUVWXYZ23456',
       type: 'ProofOfFunds',
       issuer: 'stellaro-kyc',
     };

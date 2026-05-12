@@ -1,6 +1,7 @@
 "use client";
 import { create } from "zustand";
-import { AllConnectors, FreighterConnector, type WalletType, detectAvailable } from "../lib/wallets/connectors";
+import { AllConnectors, FreighterConnector, type WalletType, detectAvailable, probeWalletHints } from "../lib/wallets/connectors";
+import { getHorizonBaseUrl } from "../lib/soroban";
 
 // Basic network types
 export type StellarNetwork = "public" | "testnet";
@@ -40,7 +41,7 @@ interface WalletState {
   loading: boolean;
   error: string | null;
   // multi-wallet
-  available: { id: WalletType; name: string; available: boolean }[];
+  available: { id: WalletType; name: string; available: boolean; providerHint?: string }[];
   activeType: WalletType | null;
   connectByType: (type: WalletType) => Promise<void>;
   connectFreighter: () => Promise<void>;
@@ -69,13 +70,20 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       set({ loading: true, error: null });
       // Select connector
       const connector = AllConnectors.find((c) => c.id === type) ?? FreighterConnector;
-      // Allow trying connection even if isAvailable() is false for freighter/xbull
-      const canTry = connector.isAvailable() || type === "freighter" || type === "xbull";
+      // Allow trying connection even if the provider has not been injected yet.
+      const canTry = connector.isAvailable() || type === "freighter" || type === "xbull" || type === "albedo" || type === "rabet";
       if (!canTry) {
         const msg = `Connector ${type} unavailable in this browser.`;
         throw new Error(msg);
       }
       const session = await connector.connect();
+      const validAddress = typeof session.address === "string" && /^G[A-Z2-7]{55}$/.test(session.address);
+      if (!validAddress) {
+        if (type === "freighter") {
+          throw new Error("ERR_FREIGHTER_NO_PUBKEY");
+        }
+        throw new Error("Wallet returned an invalid address");
+      }
       set({ connected: true, address: session.address, network: session.network, activeType: type });
       
       // Fires custom event to notify connection
@@ -107,6 +115,25 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     if (typeof console !== "undefined") console.debug("[wallet] detectAvailable (initial)", list);
     set({ available: list });
 
+    const applyProbeHints = (baseList?: { id: WalletType; name: string; available: boolean; providerHint?: string }[]) => {
+      void probeWalletHints()
+        .then((hints) => {
+          set((prev) => {
+            const source = baseList ?? prev.available;
+            const merged = source.map((w) => ({
+              ...w,
+              providerHint: hints[w.id] ?? w.providerHint,
+            }));
+            return { available: merged };
+          });
+        })
+        .catch(() => {
+          // best-effort hints, ignore probe errors
+        });
+    };
+
+    applyProbeHints(list);
+
     // Listens to custom wallet events for real-time detection
     const handleWalletEvent = (event: Event) => {
       if (typeof console !== "undefined") console.debug('[wallet] wallet event received:', event.type);
@@ -114,6 +141,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         const updated = detectAvailable();
         if (typeof console !== "undefined") console.debug('[wallet] updated after event:', updated);
         set({ available: updated });
+        applyProbeHints(updated);
       }, 100); // small delay to ensure the wallet is initialized
     };
 
@@ -154,6 +182,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         setTimeout(() => {
           const updated = detectAvailable();
           set({ available: updated });
+          applyProbeHints(updated);
         }, 500);
       }
     });
@@ -179,6 +208,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
         }
         const updated = detectAvailable();
         set({ available: updated });
+        applyProbeHints(updated);
       }
     };
 
@@ -198,25 +228,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
     // Store cleanup function for potential future use
     (window as any).__walletDetectionCleanup = cleanup;
 
-    // Additional async check: Freighter via official package
-    // Sometimes Chrome doesn't inject window.freighterApi, but the extension is active.
-    (async () => {
-      try {
-        const freighter = (await import("@stellar/freighter-api")) as unknown as {
-          isConnected: () => Promise<boolean>;
-        };
-        const ok = await freighter.isConnected();
-        if (ok) {
-          set((prev) => {
-            const updated = (prev.available || list).map((w) =>
-              w.id === "freighter" ? { ...w, available: true } : w
-            );
-            if (typeof console !== "undefined") console.debug("[wallet] freighter isConnected=true (async)");
-            return { available: updated };
-          });
-        }
-      } catch {}
-    })();
+    // Keep refresh flow import-free to avoid Turbopack HMR async-loader churn.
     // Robust polling: some extensions inject provider late after load
     // We make multiple attempts to catch late injection of different wallets.
     const interesting = (arr: { id: WalletType; available: boolean }[]) =>
@@ -249,6 +261,10 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       }
       
       set({ available: next });
+
+      if (attempts === 1 || attempts % 8 === 0) {
+        applyProbeHints(next);
+      }
       
       // Stops earlier if found wallets OR reached limit OR page is not visible
       const shouldStop = attempts >= maxAttempts || 
@@ -293,11 +309,11 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   },
 
   refreshBalance: async () => {
-    const { address, network } = get();
+    const { address } = get();
     if (!address) return;
     try {
       set({ loading: true });
-      const horizon = network === "testnet" ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org";
+      const horizon = getHorizonBaseUrl();
       const res = await fetch(`${horizon}/accounts/${address}`);
       if (!res.ok) throw new Error("Failed to fetch account from Horizon");
       const data: HorizonAccountResponse = await res.json();

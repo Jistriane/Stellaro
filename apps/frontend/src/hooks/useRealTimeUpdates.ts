@@ -8,7 +8,12 @@ import { getWalletBalances } from "../lib/soroban";
  * Hook to manage real-time updates
  * Automatically updates data when wallet is connected/disconnected
  */
-export function useRealTimeUpdates() {
+export function useRealTimeUpdates(options?: {
+  enabled?: boolean;
+  suppressDisconnectedNotice?: boolean;
+}) {
+  const enabled = options?.enabled ?? true;
+  const suppressDisconnectedNotice = options?.suppressDisconnectedNotice ?? false;
   const walletConnected = useWalletStore((s) => s.connected);
   const walletAddress = useWalletStore((s) => s.address);
   const refreshBalance = useWalletStore((s) => s.refreshBalance);
@@ -18,6 +23,10 @@ export function useRealTimeUpdates() {
   useEffect(() => {
     let balanceInterval: NodeJS.Timeout | null = null;
     let sorobanInterval: NodeJS.Timeout | null = null;
+
+    if (!enabled) {
+      return;
+    }
 
     if (walletConnected && walletAddress) {
       console.log('[realtime] Wallet connected, starting real-time updates for:', walletAddress);
@@ -50,7 +59,9 @@ export function useRealTimeUpdates() {
 
       console.log('[realtime] Real-time updates started');
     } else {
-      console.log('[realtime] Wallet disconnected, stopping real-time updates');
+      if (!suppressDisconnectedNotice) {
+        console.log('[realtime] Wallet disconnected, stopping real-time updates');
+      }
       
       // Clear balances when disconnected
       setBalances({ xlm: '0', stlt: '0' });
@@ -67,11 +78,14 @@ export function useRealTimeUpdates() {
         console.log('[realtime] Soroban balance interval cleared');
       }
     };
-  }, [walletConnected, walletAddress, refreshBalance, setBalances]);
+  }, [enabled, suppressDisconnectedNotice, walletConnected, walletAddress, refreshBalance, setBalances]);
 
   // Effect to react to page visibility changes
   useEffect(() => {
     const handleVisibilityChange = () => {
+      if (!enabled) {
+        return;
+      }
       if (document.visibilityState === 'visible' && walletConnected && walletAddress) {
         console.log('[realtime] Page became visible, refreshing data...');
         refreshBalance();
@@ -95,10 +109,10 @@ export function useRealTimeUpdates() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleVisibilityChange);
     };
-  }, [walletConnected, walletAddress, refreshBalance, setBalances]);
+  }, [enabled, walletConnected, walletAddress, refreshBalance, setBalances]);
 
   return {
-    isUpdating: walletConnected,
+    isUpdating: enabled && walletConnected,
     address: walletAddress
   };
 }

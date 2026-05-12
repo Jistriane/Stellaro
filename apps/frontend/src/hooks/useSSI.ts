@@ -7,55 +7,56 @@ export interface SSICredential {
   status: string;
 }
 
-export function useSSI() {
+type UseSSIOptions = {
+  walletAddress?: string | null;
+  enabled?: boolean;
+};
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+export function useSSI({ walletAddress, enabled = true }: UseSSIOptions = {}) {
   const [hasKyc, setHasKyc] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulação de verificação de KYC no backend
   const checkKycStatus = useCallback(async () => {
+    if (!enabled || !walletAddress) {
+      setHasKyc(false);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Em produção, isso chamaria GET /api/v5/ssi/status ou similar
-      // Simulando latência de rede
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Recupera do localStorage para persistir a simulação na sessão
-      const kycFlag = localStorage.getItem('stellaro_kyc_verified');
-      setHasKyc(kycFlag === 'true');
+      setError(null);
+      const response = await fetch(`${apiUrl}/ssi/verify/${encodeURIComponent(walletAddress)}`, {
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error(`SSI verify ${response.status}`);
+      }
+
+      const verified = (await response.json()) as boolean;
+      setHasKyc(Boolean(verified));
     } catch (error) {
       console.error('Erro ao verificar status SSI:', error);
       setHasKyc(false);
+      setError('Nao foi possivel validar o KYC da carteira conectada na testnet.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  // Simulação de solicitação de KYC
-  const requestKyc = async () => {
-    setIsLoading(true);
-    try {
-      // Simula o processo de Verifiable Credential Issuance
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      localStorage.setItem('stellaro_kyc_verified', 'true');
-      setHasKyc(true);
-      return true;
-    } catch (error) {
-      console.error('Erro ao solicitar KYC:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [enabled, walletAddress]);
 
   useEffect(() => {
-    checkKycStatus();
+    void checkKycStatus();
   }, [checkKycStatus]);
 
   return {
     hasKyc,
     isLoading,
-    requestKyc,
+    error,
     refreshKycStatus: checkKycStatus
   };
 }

@@ -25,6 +25,12 @@ export default function LoginPage() {
   const [freighterAvailable, setFreighterAvailable] = useState(false);
   const [albedoAvailable, setAlbedoAvailable] = useState(false);
   const [error, setError] = useState<string>("");
+  // Modal states for email code verification
+  const [showEmailCodeModal, setShowEmailCodeModal] = useState(false);
+  const [emailCodeInput, setEmailCodeInput] = useState("");
+  const [emailCodeHint, setEmailCodeHint] = useState("");
+  const [pendingEmailVerification, setPendingEmailVerification] = useState<{ email: string; challenge: string } | null>(null);
+  
   const setLoggedIn = useAppStore((s) => s.setLoggedIn);
   const setBalances = useAppStore((s) => s.setBalances);
   const pushEvent = useAppStore((s) => s.pushEvent);
@@ -383,6 +389,7 @@ export default function LoginPage() {
     }
     setError("");
     setLoadingEmail(true);
+    setEmailCodeInput("");
     try {
       // 1) Initiate code sending
       const initRes = await fetch(`${apiUrl}/auth/email/init`, {
@@ -394,31 +401,52 @@ export default function LoginPage() {
       if (!initRes.ok) throw new Error(tLoginErrors("email_init_fail"));
       const initJson: { ok: boolean; code?: string } = await initRes.json();
 
-      // 2) Requests code from user (DEV: we show returned code if provided)
-      const hint = initJson.code ? ` (DEV: ${initJson.code})` : "";
-      const input = window.prompt(`${t("email_prompt")}${hint}`) ?? "";
-      const code = input.trim();
-      if (!code) throw new Error(tLoginErrors("email_code_required"));
+      // 2) Show modal for code input instead of using prompt()
+      const hint = initJson.code ? `(DEV: ${initJson.code})` : "";
+      setEmailCodeHint(hint);
+      setPendingEmailVerification({ email, challenge: initJson.code || "" });
+      setShowEmailCodeModal(true);
+      setLoadingEmail(false);
+    } catch (e: unknown) {
+      const maybeMsg = e && typeof e === "object" && "message" in e ? (e as { message?: unknown }).message : undefined;
+      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("email_init_fail");
+      setError(msg);
+      setLoadingEmail(false);
+    }
+  }, [apiUrl, email, tLoginErrors]);
 
+  const onEmailCodeSubmit = useCallback(async (code: string) => {
+    if (!code.trim()) {
+      setError(tLoginErrors("email_code_required"));
+      return;
+    }
+    if (!apiUrl || !pendingEmailVerification) {
+      setError(tLoginErrors("email_verify_fail"));
+      return;
+    }
+    setError("");
+    setLoadingEmail(true);
+    try {
       // 3) Verifies code and receives HttpOnly cookie
       const verifyRes = await fetch(`${apiUrl}/auth/email/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, code }),
+        body: JSON.stringify({ email: pendingEmailVerification.email, code: code.trim() }),
       });
       if (!verifyRes.ok) throw new Error(tLoginErrors("email_verify_fail"));
 
       setLoggedIn(true, undefined);
       pushEvent("LOGGED_IN");
+      setShowEmailCodeModal(false);
+      setPendingEmailVerification(null);
     } catch (e: unknown) {
       const maybeMsg = e && typeof e === "object" && "message" in e ? (e as { message?: unknown }).message : undefined;
       const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("email_verify_fail");
       setError(msg);
-    } finally {
       setLoadingEmail(false);
     }
-  }, [apiUrl, email, pushEvent, setLoggedIn, t, tLoginErrors]);
+  }, [apiUrl, email, pendingEmailVerification, pushEvent, setLoggedIn, tLoginErrors]);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
@@ -605,6 +633,62 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Email Code Verification Modal */}
+      {showEmailCodeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <Card className="w-96 border border-slate-800/70 bg-slate-950/70 backdrop-blur-xl shadow-2xl">
+            <CardHeader className="border-b border-slate-800/80 bg-slate-950/60">
+              <CardTitle className="text-slate-50">{t("email_code_title") || "Enter Verification Code"}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-200 mb-2">
+                  {t("email_code_label") || "Verification Code"}
+                </label>
+                <p className="text-xs text-slate-400 mb-3">{t("email_code_hint") || "Enter the code sent to your email"}</p>
+                {emailCodeHint && <p className="text-xs text-emerald-400 mb-3">{emailCodeHint}</p>}
+                <input
+                  type="text"
+                  value={emailCodeInput}
+                  onChange={(e) => setEmailCodeInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && onEmailCodeSubmit(emailCodeInput)}
+                  placeholder="000000"
+                  className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-center text-2xl font-mono outline-none transition-colors placeholder:text-slate-600 focus:border-emerald-500/60"
+                  disabled={loadingEmail}
+                  autoFocus
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowEmailCodeModal(false);
+                    setPendingEmailVerification(null);
+                    setEmailCodeInput("");
+                    setError("");
+                  }}
+                  className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 transition-colors hover:bg-slate-700 disabled:opacity-60"
+                  disabled={loadingEmail}
+                >
+                  {t("cancel") || "Cancel"}
+                </button>
+                <button
+                  onClick={() => onEmailCodeSubmit(emailCodeInput)}
+                  className="flex-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-100 transition-colors hover:bg-emerald-500/15 disabled:opacity-60"
+                  disabled={loadingEmail || !emailCodeInput.trim()}
+                >
+                  {loadingEmail ? (t("verifying") || "Verifying...") : (t("verify") || "Verify")}
+                </button>
+              </div>
+              {error && showEmailCodeModal && (
+                <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+                  {error}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -38,6 +38,29 @@ export default function WalletPanel() {
     return available.map((w) => ({ ...w, disabled: !w.available }));
   }, [available]);
 
+  const optionStatusLabel = (hint?: string, availableFlag?: boolean) => {
+    switch (hint) {
+      case "installed":
+        return t("status_installed");
+      case "needs-unlock":
+        return t("status_needs_unlock");
+      case "needs-open-extension":
+        return t("status_needs_open_extension");
+      case "try-connect":
+        return t("status_try_connect");
+      case "web-wallet":
+        return t("status_web_wallet");
+      case "absent":
+        return t("not_detected");
+      case "webhid-ready":
+        return t("status_ready");
+      case "webhid-unavailable":
+        return t("status_unavailable");
+      default:
+        return availableFlag ? "" : t("not_detected");
+    }
+  };
+
   const walletLabel = useMemo(() => {
     const map: Record<string, string> = {
       freighter: "Freighter",
@@ -154,7 +177,10 @@ export default function WalletPanel() {
                   </option>
                   {options.map((opt) => (
                     <option key={opt.id} value={opt.id}>
-                      {opt.name}{!opt.available ? ` (${t("not_detected")})` : ""}
+                      {opt.name}
+                      {optionStatusLabel(opt.providerHint, opt.available)
+                        ? ` (${optionStatusLabel(opt.providerHint, opt.available)})`
+                        : ""}
                     </option>
                   ))}
                 </select>

@@ -22,6 +22,16 @@ export interface WalletConnectorInfo {
   providerHint?: string;
 }
 
+export type WalletProviderHint =
+  | "installed"
+  | "needs-unlock"
+  | "needs-open-extension"
+  | "try-connect"
+  | "web-wallet"
+  | "absent"
+  | "webhid-ready"
+  | "webhid-unavailable";
+
 export interface WalletSession {
   address: string;
   network: StellarNetwork;
@@ -56,6 +66,16 @@ interface XBullApi {
   getPublicKey(): Promise<string>;
 }
 
+type FreighterApiCompat = {
+  getPublicKey?: () => Promise<string>;
+  getAddress?: () => Promise<string | { address?: string; error?: unknown }>;
+  requestAccess?: () => Promise<string | { address?: string; error?: unknown }>;
+  isAllowed?: () => Promise<boolean | { isAllowed?: boolean; error?: unknown }>;
+  getNetworkDetails?: () => Promise<{ network: string; networkPassphrase?: string }>;
+  getNetwork?: () => Promise<string | { network: string; networkPassphrase?: string }>;
+  isConnected?: () => Promise<boolean | { isConnected?: boolean }>;
+};
+
 type ProviderWindow = Window & {
   freighterApi?: FreighterApi;
   freighter?: unknown;
@@ -79,6 +99,50 @@ function normalizeAddress(val: unknown): string {
     for (const c of cands) if (typeof c === "string") return c;
   }
   return String(val);
+}
+
+function extractBoolean(val: unknown, key = "isConnected"): boolean {
+  if (typeof val === "boolean") return val;
+  if (val && typeof val === "object") {
+    const obj = val as Record<string, unknown>;
+    if (typeof obj[key] === "boolean") return obj[key] as boolean;
+  }
+  return false;
+}
+
+function isValidStellarAddress(address: string): boolean {
+  return typeof address === "string" && /^G[A-Z2-7]{55}$/.test(address);
+}
+
+function extractApiErrorMessage(val: unknown): string | null {
+  if (!val || typeof val !== "object") return null;
+  const obj = val as Record<string, unknown>;
+  const errorVal = obj.error;
+  if (!errorVal) return null;
+  if (typeof errorVal === "string") return errorVal;
+  if (typeof errorVal === "object" && errorVal !== null) {
+    const maybeMsg = (errorVal as Record<string, unknown>).message;
+    if (typeof maybeMsg === "string") return maybeMsg;
+  }
+  return String(errorVal);
+}
+
+let freighterApiLoader: Promise<FreighterApiCompat> | null = null;
+
+async function loadFreighterApi(): Promise<FreighterApiCompat> {
+  if (!freighterApiLoader) {
+    freighterApiLoader = import("@stellar/freighter-api")
+      .then((mod) => {
+        const api = (mod as { default?: FreighterApiCompat }).default ?? (mod as unknown as FreighterApiCompat);
+        return api;
+      })
+      .catch((error) => {
+        // Reset cache so a new attempt can happen after HMR settles.
+        freighterApiLoader = null;
+        throw error;
+      });
+  }
+  return freighterApiLoader;
 }
 
 // Freighter
@@ -122,34 +186,71 @@ export const FreighterConnector: WalletConnector = {
     // Method 1: Try via official package first (more robust in Chrome)
     try {
       console.log('[freighter] Trying official @stellar/freighter-api package...');
-      type FreighterApiCompat = {
-        getPublicKey?: () => Promise<string>;
-        getAddress?: () => Promise<string>;
-        getNetworkDetails?: () => Promise<{ network: string; networkPassphrase?: string }>;
-        getNetwork?: () => Promise<string | { network: string; networkPassphrase?: string }>;
-        isConnected?: () => Promise<boolean>;
-      };
-      
-      const mod = (await import("@stellar/freighter-api")) as unknown as FreighterApiCompat & { default?: FreighterApiCompat };
-      const api: FreighterApiCompat = mod.default ?? mod;
+      let api: FreighterApiCompat;
+      try {
+        api = await loadFreighterApi();
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        if (message.includes('deleted by an HMR update')) {
+          // Retry once after invalidating cache; common during Fast Refresh.
+          freighterApiLoader = null;
+          api = await loadFreighterApi();
+        } else {
+          throw e;
+        }
+      }
       
       // Check connection status first (when available)
       if (api.isConnected) {
-        const connected = await api.isConnected();
-        console.log('[freighter] isConnected result:', connected);
+        const connectedRes = await api.isConnected();
+        const connected = extractBoolean(connectedRes);
+        console.log('[freighter] isConnected result:', connectedRes);
         if (!connected) {
           throw new Error("Freighter is installed but not connected");
         }
       }
       
-      const getPk = api.getPublicKey ?? api.getAddress;
       const getNetDetails = api.getNetworkDetails ?? api.getNetwork;
-      if (!getPk) throw new Error("Freighter API unavailable (getPublicKey/getAddress not found)");
-      
-      console.log('[freighter] Calling getPublicKey/getAddress...');
-      const pkRes = await getPk();
-      const address = normalizeAddress(pkRes);
-      console.log('[freighter] Got address:', address);
+
+      const tryReadAddress = async (fn: (() => Promise<unknown>) | undefined, label: string): Promise<string | null> => {
+        if (!fn) return null;
+        const res = await fn();
+        const apiErr = extractApiErrorMessage(res);
+        const address = normalizeAddress(res).trim();
+        console.log(`[freighter] ${label} result:`, res);
+        if (apiErr) {
+          throw new Error(`ERR_FREIGHTER_API:${apiErr}`);
+        }
+        if (isValidStellarAddress(address)) {
+          return address;
+        }
+        return null;
+      };
+
+      let address: string | null = null;
+
+      // v4 flow: first try existing authorization state.
+      address = await tryReadAddress(api.getAddress, "getAddress");
+
+      // If not authorized yet, request access explicitly and capture address from response.
+      if (!address) {
+        const allowedRes = api.isAllowed ? await api.isAllowed() : null;
+        const isAllowed = extractBoolean(allowedRes, "isAllowed");
+        console.log('[freighter] isAllowed result:', allowedRes);
+
+        if (!isAllowed && api.requestAccess) {
+          address = await tryReadAddress(api.requestAccess, "requestAccess");
+        }
+      }
+
+      // Compatibility fallback.
+      if (!address) {
+        address = await tryReadAddress(api.getPublicKey, "getPublicKey");
+      }
+
+      if (!address) {
+        throw new Error("ERR_FREIGHTER_NO_PUBKEY");
+      }
       
       const details = getNetDetails ? await getNetDetails() : undefined;
       const netStr: string | undefined = typeof details === "string" ? details : details?.network;
@@ -158,6 +259,7 @@ export const FreighterConnector: WalletConnector = {
       
       return { address, network };
     } catch (error) {
+      let lastError: unknown = error;
       console.log('[freighter] Official package failed:', error);
       
       // Method 2: Fallback to global window.freighterApi API
@@ -170,9 +272,13 @@ export const FreighterConnector: WalletConnector = {
           const info = await api.getUserInfo();
           const net: StellarNetwork = info.network === "TESTNET" ? "testnet" : "public";
           const address = normalizeAddress(info.publicKey);
+          if (!isValidStellarAddress(address)) {
+            throw new Error("ERR_FREIGHTER_NO_PUBKEY");
+          }
           console.log('[freighter] window.freighterApi success:', { address, network: net });
           return { address, network: net };
         } catch (apiError) {
+          lastError = apiError;
           console.log('[freighter] window.freighterApi failed:', apiError);
         }
       }
@@ -187,23 +293,33 @@ export const FreighterConnector: WalletConnector = {
             if (altApi.getPublicKey) {
               const pk = await altApi.getPublicKey();
               const address = normalizeAddress(pk);
+              if (!isValidStellarAddress(address)) {
+                throw new Error("ERR_FREIGHTER_NO_PUBKEY");
+              }
               console.log(`[freighter] Alternative ${altName} success:`, address);
               return { address, network: "public" };
             }
             if (altApi.getUserInfo) {
               const info = await altApi.getUserInfo();
               const address = normalizeAddress(info.publicKey);
+              if (!isValidStellarAddress(address)) {
+                throw new Error("ERR_FREIGHTER_NO_PUBKEY");
+              }
               const network: StellarNetwork = info.network === "TESTNET" ? "testnet" : "public";
               console.log(`[freighter] Alternative ${altName} getUserInfo success:`, { address, network });
               return { address, network };
             }
           } catch (altError) {
+            lastError = altError;
             console.log(`[freighter] Alternative ${altName} failed:`, altError);
           }
         }
       }
       
-      console.error('[freighter] All connection methods failed');
+      console.warn('[freighter] All connection methods failed');
+      if (lastError instanceof Error && lastError.message) {
+        throw lastError;
+      }
       throw new Error("ERR_FREIGHTER_NOT_FOUND");
     }
   },
@@ -311,10 +427,8 @@ export const XBullConnector: WalletConnector = {
       }
     }
     
-    // AGGRESSIVE METHOD: If user has xBull installed but not detected,
-    // always return true to try the connection
-    console.debug('[wallet][detect] xbull not found, but forcing availability for connection attempt');
-    return true; // FORCE AVAILABILITY FOR TESTING
+    console.debug('[wallet][detect] xbull not found');
+    return false;
   },
   async connect() {
     console.log('[xbull] 🚀 Starting REAL xBull connection...');
@@ -773,6 +887,38 @@ export const AllConnectors: WalletConnector[] = [
   ChainlinkBridgeConnector,
 ];
 
+export async function probeWalletHints(): Promise<
+  Partial<Record<WalletType, WalletProviderHint>>
+> {
+  const hints: Partial<Record<WalletType, WalletProviderHint>> = {};
+
+  if (typeof window === "undefined") return hints;
+
+  if (FreighterConnector.isAvailable()) {
+    hints.freighter = "installed";
+  } else if (typeof (window as ProviderWindow).freighterApi !== "undefined") {
+    hints.freighter = "needs-open-extension";
+  } else {
+    // Keep probe import-free to avoid Turbopack HMR async-loader churn.
+    hints.freighter = "try-connect";
+  }
+
+  hints.albedo = AlbedoConnector.isAvailable() ? "installed" : "web-wallet";
+  hints.rabet = RabetConnector.isAvailable() ? "installed" : "absent";
+
+  if (XBullConnector.isAvailable()) {
+    hints.xbull = "installed";
+  } else if (typeof (window as ProviderWindow).freighterApi !== "undefined") {
+    hints.xbull = "needs-open-extension";
+  } else {
+    hints.xbull = "absent";
+  }
+
+  hints.ledger = LedgerConnector.isAvailable() ? "webhid-ready" : "webhid-unavailable";
+
+  return hints;
+}
+
 export function detectAvailable(): WalletConnectorInfo[] {
   // Debug: List all window properties that might be wallets
   if (typeof window !== "undefined" && typeof console !== "undefined") {
@@ -797,8 +943,23 @@ export function detectAvailable(): WalletConnectorInfo[] {
     }
   }
 
+  const browserWallets = new Set<WalletType>(["freighter", "albedo", "rabet", "xbull"]);
+
   const results: WalletConnectorInfo[] = AllConnectors
-    .map((c): WalletConnectorInfo => ({ id: c.id, name: c.name, available: c.isAvailable() }))
+    .map((c): WalletConnectorInfo => {
+      const detected = c.isAvailable();
+
+      // Browser wallets can often be connected even before their provider is injected.
+      // Keep them selectable so the user can trigger the extension flow manually.
+      const available = detected || browserWallets.has(c.id);
+
+      return {
+        id: c.id,
+        name: c.name,
+        available,
+        providerHint: detected ? undefined : (browserWallets.has(c.id) ? "try-connect" : undefined),
+      };
+    })
     .sort((a: WalletConnectorInfo, b: WalletConnectorInfo) => Number(b.available) - Number(a.available));
   
   if (typeof console !== 'undefined') {
@@ -925,8 +1086,4 @@ export function debugXBullDetection(): void {
   });
 }
 
-// Add global function for easy debugging
-if (typeof window !== "undefined") {
-  (window as any).debugXBull = debugXBullDetection;
-  console.log('[xbull][debug] Added window.debugXBull() function for manual testing');
-}
+// The debug helper stays exported, but is no longer attached to window automatically.

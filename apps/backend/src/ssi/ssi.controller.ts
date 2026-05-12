@@ -5,6 +5,11 @@ import { SsiService } from './ssi.service';
 export class SsiController {
   constructor(private readonly service: SsiService) {}
 
+  @Get('status')
+  getStatus() {
+    return this.service.getIssuanceStatus();
+  }
+
   @Get()
   getOverview(
     @Query()
@@ -22,7 +27,7 @@ export class SsiController {
   @Post()
   issueCredential(
     @Body()
-    body: { userAddress: string; type: string; issuer: string; vcHash: string },
+    body: { userAddress: string; type: string; issuer: string; vcHash?: string },
   ) {
     return this.service.issueCredential(body);
   }

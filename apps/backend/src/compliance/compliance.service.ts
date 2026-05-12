@@ -9,6 +9,29 @@ export interface KycResult {
   reasons?: string[];
 }
 
+type KycSubmissionBody = {
+  userId?: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  dob?: string;
+  publicKey?: string;
+  document: string;
+  addressLine1?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  revenue?: string;
+};
+
+type KycFiles = {
+  idDocument?: Express.Multer.File[];
+  selfie?: Express.Multer.File[];
+  addressProof?: Express.Multer.File[];
+  revenueProof?: Express.Multer.File[];
+};
+
 @Injectable()
 export class ComplianceService {
   private readonly logger = new Logger(ComplianceService.name);
@@ -48,6 +71,168 @@ export class ComplianceService {
     }
 
     return Promise.resolve({ ok: true, level: 'basic' });
+  }
+
+  async submitKycApplication(body: KycSubmissionBody, files: KycFiles) {
+    const baseResult = await this.kycCheck(body.document, body.name);
+    const attachmentMeta = {
+      idDocument: files.idDocument?.[0]
+        ? {
+            name: files.idDocument[0].originalname,
+            type: files.idDocument[0].mimetype,
+            size: files.idDocument[0].size,
+            path: files.idDocument[0].path,
+          }
+        : null,
+      selfie: files.selfie?.[0]
+        ? {
+            name: files.selfie[0].originalname,
+            type: files.selfie[0].mimetype,
+            size: files.selfie[0].size,
+            path: files.selfie[0].path,
+          }
+        : null,
+      addressProof: files.addressProof?.[0]
+        ? {
+            name: files.addressProof[0].originalname,
+            type: files.addressProof[0].mimetype,
+            size: files.addressProof[0].size,
+            path: files.addressProof[0].path,
+          }
+        : null,
+      revenueProof: files.revenueProof?.[0]
+        ? {
+            name: files.revenueProof[0].originalname,
+            type: files.revenueProof[0].mimetype,
+            size: files.revenueProof[0].size,
+            path: files.revenueProof[0].path,
+          }
+        : null,
+    };
+
+    const profilePayload = {
+      applicant: {
+        name: body.name,
+        email: body.email ?? null,
+        phone: body.phone ?? null,
+        dob: body.dob ?? null,
+        publicKey: body.publicKey ?? null,
+      },
+      identity: {
+        document: body.document,
+      },
+      address: {
+        addressLine1: body.addressLine1 ?? null,
+        city: body.city ?? null,
+        state: body.state ?? null,
+        postalCode: body.postalCode ?? null,
+        country: body.country ?? 'BR',
+      },
+      financial: {
+        revenue: body.revenue ?? null,
+      },
+      attachments: attachmentMeta,
+      screening: baseResult,
+      submittedAt: new Date().toISOString(),
+    };
+
+    let referenceId: string | null = null;
+    if (body.userId) {
+      const created = await this.prisma.kycProfile.create({
+        data: {
+          userId: body.userId,
+          provider: 'MANUAL',
+          status: baseResult.ok ? 'PENDING' : 'REJECTED',
+          data: profilePayload,
+        },
+      });
+      referenceId = created.id;
+    }
+
+    return {
+      ok: baseResult.ok,
+      level: baseResult.level,
+      reasons: baseResult.reasons,
+      status: baseResult.ok ? 'waiting_validation' : 'rejected',
+      uploaded: {
+        idDocument: Boolean(attachmentMeta.idDocument),
+        selfie: Boolean(attachmentMeta.selfie),
+        addressProof: Boolean(attachmentMeta.addressProof),
+        revenueProof: Boolean(attachmentMeta.revenueProof),
+      },
+      referenceId,
+    };
+  }
+
+  async getLatestKycForUser(userId: string) {
+    const latest = await this.prisma.kycProfile.findFirst({
+      where: { userId },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    if (!latest) {
+      return {
+        hasSubmission: false,
+        status: 'Not started',
+        progressPct: 0,
+        nextStep: 'Submit KYC application',
+        documents: [],
+      };
+    }
+
+    const rawData = (latest.data ?? {}) as any;
+    const attachments = rawData.attachments ?? {};
+    const docs = [
+      { key: 'idDocument', label: 'ID (front/back)', file: attachments.idDocument ?? null },
+      { key: 'selfie', label: 'Selfie holding ID', file: attachments.selfie ?? null },
+      { key: 'addressProof', label: 'Proof of address', file: attachments.addressProof ?? null },
+      { key: 'revenueProof', label: 'Revenue proof', file: attachments.revenueProof ?? null },
+    ].map((item) => ({
+      ...item,
+      status: item.file ? (latest.status === 'APPROVED' ? 'Approved' : latest.status === 'REJECTED' ? 'Rejected' : 'Under review') : 'Pending',
+    }));
+
+    const progressPct = docs.reduce((acc, item) => acc + (item.file ? 25 : 0), 0);
+    const nextPending = docs.find((item) => !item.file);
+
+    return {
+      hasSubmission: true,
+      referenceId: latest.id,
+      status:
+        latest.status === 'APPROVED'
+          ? 'Approved'
+          : latest.status === 'REJECTED'
+            ? 'Rejected'
+            : 'Waiting for validation',
+      progressPct,
+      nextStep: nextPending ? `Upload ${nextPending.label}` : 'Awaiting compliance validation',
+      level: latest.status === 'APPROVED' ? 'Enhanced' : 'Basic',
+      documents: docs,
+      updatedAt: latest.updatedAt,
+    };
+  }
+
+  async getKycHistoryForUser(userId: string) {
+    const rows = await this.prisma.kycProfile.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+
+    return {
+      items: rows.map((row) => ({
+        id: row.id,
+        status:
+          row.status === 'APPROVED'
+            ? 'Approved'
+            : row.status === 'REJECTED'
+              ? 'Rejected'
+              : 'Waiting for validation',
+        provider: row.provider,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+      })),
+    };
   }
 
   /**

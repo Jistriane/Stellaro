@@ -80,8 +80,16 @@ export class AuthController {
         token = auth.substring(7);
       }
     }
-    const { user } = await this.authService.meFromToken(token);
-    return { user };
+    if (!token) {
+      return { authenticated: false, user: null };
+    }
+
+    try {
+      const { user } = await this.authService.meFromToken(token);
+      return { authenticated: true, user };
+    } catch {
+      return { authenticated: false, user: null };
+    }
   }
 
   @Patch('me')

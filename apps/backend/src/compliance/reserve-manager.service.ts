@@ -80,6 +80,31 @@ export class ReserveManagerService implements OnModuleInit {
   }> {
     const snapshot = await this.getCurrentSnapshot();
 
+    const strictModeRaw = String(
+      this.configService.get('RESERVES_STRICT_MODE') ?? '',
+    ).toLowerCase();
+    const strictMode =
+      strictModeRaw === '1' ||
+      strictModeRaw === 'true' ||
+      this.configService.get('NODE_ENV') === 'production';
+
+    const hasOperationalData =
+      snapshot.stablecoinSupply > 0 && snapshot.totalReserveValue > 0;
+
+    // In local/dev environments it's common to run without full on-chain config.
+    // Avoid triggering emergency actions when monitoring inputs are incomplete.
+    if (!strictMode && !hasOperationalData) {
+      this.logger.warn(
+        'Collateralization inputs incomplete (supply/reserves). Skipping enforcement in non-strict mode.',
+      );
+
+      return {
+        healthy: true,
+        ratio: snapshot.collateralizationRatio,
+        snapshot,
+      };
+    }
+
     const healthy = snapshot.collateralizationRatio >= this.MIN_COLLATERAL_RATIO;
 
     if (!healthy) {

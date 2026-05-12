@@ -12,6 +12,16 @@ interface LoansPoolParams {
   [key: string]: any;
 }
 
+type VcIssuanceStatus = {
+  available: boolean;
+  reason: string | null;
+  checks: {
+    vcRegistryConfigured: boolean;
+    masterSecretConfigured: boolean;
+    masterSecretValid: boolean;
+  };
+};
+
 @Injectable()
 export class SorobanService {
   private readonly logger = new Logger(SorobanService.name);
@@ -262,7 +272,10 @@ export class SorobanService {
   async registerUserVc(user: string, vcHash: string): Promise<string> {
     const contractId = process.env.VC_REGISTRY_ID;
     const issuerSecret = process.env.MASTER_SECRET_KEY;
-    if (!contractId || !issuerSecret) throw new Error('VC Registry configuration missing');
+    if (!contractId) throw new Error('VC_REGISTRY_ID is not configured');
+    if (!issuerSecret || !StellarSdk.StrKey.isValidEd25519SecretSeed(issuerSecret)) {
+      throw new Error('MASTER_SECRET_KEY is missing or invalid for VC issuance');
+    }
 
     const args = [
       StellarSdk.Address.fromString(StellarSdk.Keypair.fromSecret(issuerSecret).publicKey()).toScVal(),
@@ -271,6 +284,50 @@ export class SorobanService {
     ];
 
     return this.executeContractCall(contractId, 'register_user_vc', args, issuerSecret);
+  }
+
+  getVcIssuanceStatus(): VcIssuanceStatus {
+    const contractId = process.env.VC_REGISTRY_ID;
+    const issuerSecret = process.env.MASTER_SECRET_KEY;
+    const vcRegistryConfigured = Boolean(contractId);
+    const masterSecretConfigured = Boolean(issuerSecret);
+    const masterSecretValid = Boolean(
+      issuerSecret && StellarSdk.StrKey.isValidEd25519SecretSeed(issuerSecret),
+    );
+
+    if (!vcRegistryConfigured) {
+      return {
+        available: false,
+        reason: 'VC_REGISTRY_ID is not configured',
+        checks: {
+          vcRegistryConfigured,
+          masterSecretConfigured,
+          masterSecretValid,
+        },
+      };
+    }
+
+    if (!masterSecretConfigured || !masterSecretValid) {
+      return {
+        available: false,
+        reason: 'MASTER_SECRET_KEY is missing or invalid for VC issuance',
+        checks: {
+          vcRegistryConfigured,
+          masterSecretConfigured,
+          masterSecretValid,
+        },
+      };
+    }
+
+    return {
+      available: true,
+      reason: null,
+      checks: {
+        vcRegistryConfigured,
+        masterSecretConfigured,
+        masterSecretValid,
+      },
+    };
   }
 
   /**

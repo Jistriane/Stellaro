@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShieldCheck, UserCheck, Key, RefreshCcw, Plus, Activity, Clock, BadgeCheck } from "lucide-react";
+import { useWalletStore } from "@/state/wallet";
 
 type Credential = {
   id: string;
@@ -11,46 +12,104 @@ type Credential = {
   issuedAt: string;
 };
 
+type IssuanceStatus = {
+  status: "operational" | "degraded";
+  available: boolean;
+  reason: string | null;
+};
+
 export default function SsiWallet({ initialCredentials }: { initialCredentials: Credential[] }) {
   const [credentials, setCredentials] = useState<Credential[]>(initialCredentials);
   const [isMinting, setIsMinting] = useState(false);
   const [showKycForm, setShowKycForm] = useState(false);
+  const [mintError, setMintError] = useState<string | null>(null);
+  const [issuanceStatus, setIssuanceStatus] = useState<IssuanceStatus | null>(null);
+  const walletConnected = useWalletStore((s) => s.connected);
+  const walletAddress = useWalletStore((s) => s.address);
+  const walletNetwork = useWalletStore((s) => s.network);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadIssuanceStatus = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/ssi/status`, {
+          cache: "no-store",
+        });
+        if (!response.ok) return;
+
+        const data = await response.json() as IssuanceStatus;
+        if (!active) return;
+        setIssuanceStatus(data);
+      } catch {
+        // Keep UI usable even when backend status endpoint is temporarily unreachable.
+      }
+    };
+
+    loadIssuanceStatus();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleKycSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!walletConnected || !walletAddress) {
+      setMintError("Conecte uma carteira Stellar antes de emitir uma credencial.");
+      return;
+    }
+    if (walletNetwork !== "testnet") {
+      setMintError("Troque a carteira para a Stellar testnet antes de emitir a credencial.");
+      return;
+    }
+    if (issuanceStatus && !issuanceStatus.available) {
+      setMintError(issuanceStatus.reason || "Servico de emissao SSI indisponivel no momento.");
+      return;
+    }
+
     setIsMinting(true);
+    setMintError(null);
 
     const formData = new FormData(e.currentTarget);
     const type = formData.get("type") as string;
-    
-    // Simulate network delay and KYC process
-    await new Promise(resolve => setTimeout(resolve, 2000));
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/ssi`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userAddress: "GDK...USER", // Mock user address
+          userAddress: walletAddress,
           type,
           issuer: "stellaro-identity-provider"
         }),
       });
 
-      if (response.ok) {
-        // Optimistic UI update
-        const newCred = {
-          id: `vc-${Date.now()}`,
-          type,
-          issuer: "stellaro-identity-provider",
-          status: "active",
-          issuedAt: new Date().toISOString(),
-        };
-        setCredentials(prev => [newCred, ...prev]);
-        setShowKycForm(false);
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null) as { message?: string } | null;
+        throw new Error(errorBody?.message || "SSI issuance failed");
       }
+
+      const created = await response.json() as {
+        id: string;
+        type: string;
+        issuer: string;
+        status: string;
+        createdAt?: string;
+      };
+
+      const newCred = {
+        id: created.id,
+        type: created.type,
+        issuer: created.issuer,
+        status: created.status,
+        issuedAt: created.createdAt || new Date().toISOString(),
+      };
+      setCredentials(prev => [newCred, ...prev]);
+      setShowKycForm(false);
     } catch (err) {
       console.error(err);
+      const message = err instanceof Error ? err.message : "Nao foi possivel emitir a credencial na testnet.";
+      setMintError(message);
     } finally {
       setIsMinting(false);
     }
@@ -76,10 +135,14 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
               <p className="text-slate-400 max-w-xl text-lg">
                 Your identity, your control. Issue and manage verifiable credentials (VCs) to interact with the Stellaro ecosystem and access RWA with full compliance.
               </p>
+              <div className="text-sm text-slate-400">
+                {walletAddress ? `Connected wallet: ${walletAddress}` : "No Stellar wallet connected."}
+              </div>
             </div>
 
             <button 
               onClick={() => setShowKycForm(!showKycForm)}
+              disabled={issuanceStatus ? !issuanceStatus.available : false}
               className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white transition-all duration-300 bg-emerald-500/10 border border-emerald-500/30 rounded-full hover:bg-emerald-500 hover:text-slate-950 hover:shadow-[0_0_2rem_-0.5rem_#10b981]"
             >
               <Plus className="w-5 h-5 transition-transform group-hover:rotate-90" />
@@ -87,6 +150,13 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
             </button>
           </div>
         </header>
+
+        {issuanceStatus && !issuanceStatus.available ? (
+          <div className="rounded-2xl border border-amber-500/40 bg-amber-950/30 px-5 py-4 text-amber-100">
+            <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">SSI issuance status: degraded</p>
+            <p className="mt-1 text-sm">{issuanceStatus.reason || "SSI issuance is temporarily unavailable."}</p>
+          </div>
+        ) : null}
 
         {/* Dynamic KYC Form */}
         {showKycForm && (
@@ -99,6 +169,12 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
             </div>
             
             <form onSubmit={handleKycSubmit} className="space-y-6">
+              {mintError ? (
+                <div className="rounded-xl border border-rose-500/30 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">
+                  {mintError}
+                </div>
+              ) : null}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-300">Credential Type</label>
@@ -113,6 +189,16 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
                     <option value="ProofOfAddress">Proof of Address</option>
                     <option value="AccreditedInvestor">Accredited Investor</option>
                   </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-300">Connected Wallet</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={walletAddress || "Connect a wallet to continue"}
+                    title="Connected wallet address"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-400 cursor-not-allowed"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-300">Authorized Issuer</label>
@@ -145,7 +231,13 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
                 </button>
                 <button 
                   type="submit" 
-                  disabled={isMinting}
+                  disabled={
+                    isMinting ||
+                    !walletConnected ||
+                    !walletAddress ||
+                    walletNetwork !== "testnet" ||
+                    (issuanceStatus ? !issuanceStatus.available : false)
+                  }
                   className="relative inline-flex items-center justify-center gap-2 px-8 py-2.5 font-semibold text-slate-950 bg-emerald-400 rounded-full hover:bg-emerald-300 transition-all disabled:opacity-70 disabled:cursor-wait"
                 >
                   {isMinting ? (

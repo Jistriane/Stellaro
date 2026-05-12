@@ -21,6 +21,14 @@ export function getContractIds(): ContractIds {
   };
 }
 
+export function getHorizonBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_HORIZON_URL || process.env.HORIZON_URL;
+  if (configured) return configured;
+
+  const network = process.env.NEXT_PUBLIC_STELLAR_NETWORK || process.env.STELLAR_NETWORK;
+  return network === "public" ? "https://horizon.stellar.org" : "https://horizon-testnet.stellar.org";
+}
+
 // View stubs. Avoid fictitious values.
 export async function viewStablecoin() {
   return {
@@ -94,7 +102,7 @@ export async function getWalletBalances(pubkey?: string) {
   if (!pubkey) {
     return { publicKey: undefined, xlm: "0", stlt: "0" } as { publicKey?: string; xlm: string; stlt: string };
   }
-  const horizon = "https://horizon.stellar.org"; // TODO: allow testnet via global config
+  const horizon = getHorizonBaseUrl();
   try {
     const res = await fetch(`${horizon}/accounts/${encodeURIComponent(pubkey)}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`Horizon ${res.status}`);

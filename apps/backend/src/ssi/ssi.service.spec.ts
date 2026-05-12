@@ -2,9 +2,14 @@ import { SsiService } from './ssi.service';
 
 describe('SsiService', () => {
   let service: SsiService;
+  let sorobanService: { registerUserVc: jest.Mock; hasValidVc: jest.Mock };
 
   beforeEach(() => {
-    service = new SsiService();
+    sorobanService = {
+      registerUserVc: jest.fn().mockResolvedValue('tx-test-123'),
+      hasValidVc: jest.fn().mockResolvedValue(true),
+    };
+    service = new SsiService(undefined, sorobanService as any);
   });
 
   it('returns overview with initial credentials', async () => {
@@ -20,6 +25,7 @@ describe('SsiService', () => {
     const before = (await service.listCredentials()).total;
 
     const created = await service.issueCredential({
+      userAddress: 'GTESTUSERADDRESS1234567890ABCDEFGHJKLMNPQRSTUVWXYZ23456',
       type: 'ProofOfIncome',
       issuer: 'stellaro-compliance',
     });
@@ -28,6 +34,9 @@ describe('SsiService', () => {
 
     expect(created.id).toMatch(/^vc-\d{3}$/);
     expect(created.status).toBe('active');
+    expect(created.txHash).toBe('tx-test-123');
+    expect(created.vcHash).toMatch(/^[a-f0-9]{64}$/);
+    expect(sorobanService.registerUserVc).toHaveBeenCalledTimes(1);
     expect(after).toBe(before + 1);
   });
 
