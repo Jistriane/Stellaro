@@ -27,6 +27,7 @@ jobs:
           OWNER_LOWER="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
           URL="https://${OWNER_LOWER}.github.io/${REPO_NAME}/"
           echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          echo "repo_name=${REPO_NAME}" >> "$GITHUB_OUTPUT"
 
       - name: Wait for propagation
         run: sleep 20
@@ -42,9 +43,39 @@ jobs:
           fi
 
       - name: Validate expected content
+        env:
+          REPO_NAME: ${{ steps.pages_url.outputs.repo_name }}
         run: |
           grep -q "<title>Stellaro</title>" /tmp/pages.html
-          grep -q "/Stellaro/_next/" /tmp/pages.html
+          grep -q "/${REPO_NAME}/_next/" /tmp/pages.html
+          grep -q "/${REPO_NAME}/logo.png" /tmp/pages.html
+          grep -q "/${REPO_NAME}/capa.png" /tmp/pages.html
+
+      - name: Validate static assets
+        env:
+          TARGET_URL: ${{ steps.pages_url.outputs.url }}
+        run: |
+          for asset in logo.png capa.png favicon.ico; do
+            ASSET_URL="${TARGET_URL}${asset}"
+            STATUS="$(curl -sS -o /dev/null -w "%{http_code}" "${ASSET_URL}")"
+            if [ "${STATUS}" != "200" ]; then
+              echo "Expected HTTP 200 for ${ASSET_URL}, got ${STATUS}"
+              exit 1
+            fi
+          done
+
+      - name: Validate analytics route (charts page)
+        env:
+          TARGET_URL: ${{ steps.pages_url.outputs.url }}
+          REPO_NAME: ${{ steps.pages_url.outputs.repo_name }}
+        run: |
+          ANALYTICS_URL="${TARGET_URL}dashboard/analytics/"
+          STATUS="$(curl -sS -o /tmp/pages-analytics.html -w "%{http_code}" "${ANALYTICS_URL}")"
+          if [ "${STATUS}" != "200" ]; then
+            echo "Expected HTTP 200 for ${ANALYTICS_URL}, got ${STATUS}"
+            exit 1
+          fi
+          grep -q "/${REPO_NAME}/_next/" /tmp/pages-analytics.html
 
       - name: Report success
         env:
