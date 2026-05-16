@@ -558,8 +558,8 @@
     },
     "errors": {
       "need_api": "API not configured (NEXT_PUBLIC_API_URL missing)",
-      "need_email_register": "Provide your email to register the passkey",
-      "need_email_login": "Provide your email to login with passkey",
+      "need_email_register": "Provide your email to register a passkey",
+      "need_email_login": "Provide your email to continue",
       "passkey_init_fail": "Failed to initialize passkey login",
       "passkey_verify_fail": "Failed to verify passkey",
       "passkey_register_init_fail": "Failed to initialize passkey registration",
@@ -575,7 +575,7 @@
       "ledger_unsupported": "Ledger support requires extra dependencies (WebHID)",
       "soroban_no_compat": "No compatible wallet found for Soroban",
       "chainlink_not_ready": "Chainlink Bridge integration not configured",
-      "email_required": "Provide a valid email",
+      "email_required": "Provide a valid email to login",
       "email_init_fail": "Failed to send code to your email",
       "email_verify_fail": "Invalid or expired code. Try again.",
       "email_code_required": "Provide the verification code received by email"

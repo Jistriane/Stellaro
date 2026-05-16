@@ -23,7 +23,7 @@ export function LayoutClient({ children }: LayoutClientProps) {
   }
 
   return (
-    <div className="flex">
+    <div className="flex notranslate" translate="no">
       <Suspense fallback={null}>
         <Sidebar />
       </Suspense>

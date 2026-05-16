@@ -12,8 +12,7 @@ export type WalletType =
   | "rabet"
   | "xbull"
   | "ledger"
-  | "soroban-smart"
-  | "chainlink-bridge"; // interoperabilidade via bridge (placeholder)
+  | "soroban-smart";
 
 export interface WalletConnectorInfo {
   id: WalletType;
@@ -200,13 +199,14 @@ export const FreighterConnector: WalletConnector = {
         }
       }
       
-      // Check connection status first (when available)
+      // Check connection status first (when available), but do not fail early:
+      // requestAccess/getAddress below can establish authorization.
       if (api.isConnected) {
         const connectedRes = await api.isConnected();
         const connected = extractBoolean(connectedRes);
         console.log('[freighter] isConnected result:', connectedRes);
         if (!connected) {
-          throw new Error("Freighter is installed but not connected");
+          console.log('[freighter] Not connected yet, attempting requestAccess/getAddress flow...');
         }
       }
       
@@ -650,39 +650,10 @@ export const XBullConnector: WalletConnector = {
       console.log('[xbull] postMessage method failed:', error);
     }
     
-    // STEP 2.5: Try Freighter API directly (xBull may be compatible)
-    try {
-      console.log('[xbull] Step 2.5: Trying Freighter API directly...');
-      
-      const freighterModule = await import("@stellar/freighter-api");
-      const freighterApi = freighterModule.default || freighterModule;
-      
-      if (freighterApi.getAddress) {
-        console.log('[xbull] Trying freighter-api getAddress...');
-        const result = await freighterApi.getAddress();
-        
-        if (result && result.address) {
-          console.log('[xbull] ✅ SUCCESS via Freighter API compatibility!', result.address);
-          
-          // Detect network
-          let network: StellarNetwork = "testnet";
-          if (freighterApi.getNetworkDetails) {
-            try {
-              const netDetails = await freighterApi.getNetworkDetails();
-              network = netDetails.network === 'TESTNET' ? 'testnet' : 'public';
-              console.log('[xbull] Network detected:', network);
-            } catch (e) {
-              console.log('[xbull] Using default testnet');
-            }
-          }
-          
-          return { address: result.address, network };
-        }
-      }
-      
-    } catch (error) {
-      console.log('[xbull] Freighter API compatibility failed:', error);
-    }
+    // NÃO fazer fallback para Freighter. Se xBull não for detectado, mostrar erro claro.
+    // O usuário deve ativar/clicar na extensão xBull manualmente.
+    console.error('[xbull] 🚨 xBull não detectado ou não autorizado. Ative/click na extensão xBull e tente novamente.');
+    throw new Error("ERR_XBULL_NOT_FOUND - xBull não detectado ou não autorizado. Por favor, clique no ícone da extensão xBull e aprove a conexão.");
     
     // STEP 3: Try via content script injection
     try {
@@ -751,7 +722,9 @@ export const XBullConnector: WalletConnector = {
       `;
       
       document.head.appendChild(script);
-      document.head.removeChild(script);
+      if (script.parentNode === document.head) {
+        script.remove();
+      }
       
       // Wait for response from the injected script
       await new Promise((resolve, reject) => {
@@ -837,9 +810,8 @@ export const LedgerConnector: WalletConnector = {
   id: "ledger",
   name: "Ledger (WebHID)",
   isAvailable() {
-    type NavigatorHid = Navigator & { hid?: unknown };
-    if (typeof navigator === "undefined") return false;
-    return Boolean((navigator as NavigatorHid).hid); // WebHID available
+    // Keep disabled until full Ledger transport/sign flow is implemented.
+    return false;
   },
   async connect() {
     // For a complete implementation: use @ledgerhq/hw-transport-webhid + Stellar app
@@ -865,17 +837,7 @@ export const SorobanSmartConnector: WalletConnector = {
   },
 };
 
-// Placeholder for Chainlink Bridge interoperability
-export const ChainlinkBridgeConnector: WalletConnector = {
-  id: "chainlink-bridge",
-  name: "Chainlink Bridge",
-  isAvailable() {
-    return true; // always listed as an informative option
-  },
-  async connect() {
-    throw new Error("ERR_CHAINLINK_NOT_READY");
-  },
-};
+
 
 export const AllConnectors: WalletConnector[] = [
   FreighterConnector,
@@ -884,7 +846,6 @@ export const AllConnectors: WalletConnector[] = [
   XBullConnector,
   LedgerConnector,
   SorobanSmartConnector,
-  ChainlinkBridgeConnector,
 ];
 
 export async function probeWalletHints(): Promise<

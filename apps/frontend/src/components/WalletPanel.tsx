@@ -176,7 +176,7 @@ export default function WalletPanel() {
                     {t("select_wallet")}
                   </option>
                   {options.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
+                    <option key={opt.id} value={opt.id} disabled={opt.disabled}>
                       {opt.name}
                       {optionStatusLabel(opt.providerHint, opt.available)
                         ? ` (${optionStatusLabel(opt.providerHint, opt.available)})`

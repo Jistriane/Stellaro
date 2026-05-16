@@ -66,223 +66,89 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   activeType: null,
 
   connectByType: async (type: WalletType) => {
-    try {
-      set({ loading: true, error: null });
-      // Select connector
-      const connector = AllConnectors.find((c) => c.id === type) ?? FreighterConnector;
-      // Allow trying connection even if the provider has not been injected yet.
-      const canTry = connector.isAvailable() || type === "freighter" || type === "xbull" || type === "albedo" || type === "rabet";
-      if (!canTry) {
-        const msg = `Connector ${type} unavailable in this browser.`;
-        throw new Error(msg);
-      }
-      const session = await connector.connect();
-      const validAddress = typeof session.address === "string" && /^G[A-Z2-7]{55}$/.test(session.address);
-      if (!validAddress) {
-        if (type === "freighter") {
-          throw new Error("ERR_FREIGHTER_NO_PUBKEY");
-        }
-        throw new Error("Wallet returned an invalid address");
-      }
-      set({ connected: true, address: session.address, network: session.network, activeType: type });
-      
-      // Fires custom event to notify connection
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent('wallet:connected', { 
-          detail: { 
-            type, 
-            address: session.address, 
-            network: session.network 
-          } 
-        }));
-        console.log(`[wallet] Dispatched wallet:connected event for ${type}`, session);
-      }
-      
-      await get().refreshBalance();
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      set({ error: message ?? "Failed to connect" });
-    } finally {
-      // Recalculates available wallets (e.g., after installing/activating)
-      set({ loading: false, available: detectAvailable() });
+    set({ loading: true, error: null });
+    // Select connector
+    const connector = AllConnectors.find((c) => c.id === type);
+    if (!connector) {
+      const msg = `Connector ${type} not found.`;
+      set({ loading: false, error: msg });
+      throw new Error(msg);
     }
+    // Allow trying connection even if the provider has not been injected yet.
+    const canTry = connector.isAvailable() || type === "freighter" || type === "xbull" || type === "albedo" || type === "rabet";
+    if (!canTry) {
+      const msg = `Connector ${type} unavailable in this browser.`;
+      set({ loading: false, error: msg });
+      throw new Error(msg);
+    }
+    const session = await connector.connect();
+    const validAddress = typeof session.address === "string" && /^G[A-Z2-7]{55}$/.test(session.address);
+    if (!validAddress) {
+      if (type === "freighter") {
+        throw new Error("ERR_FREIGHTER_NO_PUBKEY");
+      }
+      throw new Error("Wallet returned an invalid address");
+    }
+    set({ connected: true, address: session.address, network: session.network, activeType: type });
+    // Fires custom event to notify connection
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent('wallet:connected', { 
+        detail: { 
+          type, 
+          address: session.address, 
+          network: session.network 
+        } 
+      }));
+      console.log(`[wallet] Dispatched wallet:connected event for ${type}`, session);
+    }
+    await get().refreshBalance();
+    set({ loading: false, available: detectAvailable() });
   },
 
   refreshAvailable: () => {
-    // Recalculates list of available connectors in client context
+    // Recalculates list of available connectors in client context.
     if (typeof window === "undefined") return;
-    const list = detectAvailable();
-    if (typeof console !== "undefined") console.debug("[wallet] detectAvailable (initial)", list);
-    set({ available: list });
 
-    const applyProbeHints = (baseList?: { id: WalletType; name: string; available: boolean; providerHint?: string }[]) => {
+    const applyProbeHints = (
+      baseList: { id: WalletType; name: string; available: boolean; providerHint?: string }[]
+    ) => {
       void probeWalletHints()
         .then((hints) => {
-          set((prev) => {
-            const source = baseList ?? prev.available;
-            const merged = source.map((w) => ({
-              ...w,
-              providerHint: hints[w.id] ?? w.providerHint,
-            }));
-            return { available: merged };
-          });
+          const merged = baseList.map((item) => ({
+            ...item,
+            providerHint: hints[item.id] ?? item.providerHint,
+          }));
+          set({ available: merged });
         })
         .catch(() => {
-          // best-effort hints, ignore probe errors
+          // Keep base detection when hint probing fails.
+          set({ available: baseList });
         });
     };
 
-    applyProbeHints(list);
-
-    // Listens to custom wallet events for real-time detection
-    const handleWalletEvent = (event: Event) => {
-      if (typeof console !== "undefined") console.debug('[wallet] wallet event received:', event.type);
-      setTimeout(() => {
-        const updated = detectAvailable();
-        if (typeof console !== "undefined") console.debug('[wallet] updated after event:', updated);
-        set({ available: updated });
-        applyProbeHints(updated);
-      }, 100); // small delay to ensure the wallet is initialized
-    };
-
-    // Remove existing listeners to avoid duplication
-    window.removeEventListener('freighter:ready', handleWalletEvent);
-    window.removeEventListener('rabet:connected', handleWalletEvent);
-    window.removeEventListener('xbull:ready', handleWalletEvent);
-    window.removeEventListener('albedo:ready', handleWalletEvent);
-
-    // Add listeners for wallet events
-    window.addEventListener('freighter:ready', handleWalletEvent);
-    window.addEventListener('rabet:connected', handleWalletEvent);
-    window.addEventListener('xbull:ready', handleWalletEvent);
-    window.addEventListener('albedo:ready', handleWalletEvent);
-
-    // Observer for DOM changes that may indicate extension injection
-    const observer = new MutationObserver((mutations) => {
-      let foundWalletInjection = false;
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE) {
-              const element = node as Element;
-              // Check if script could be from a wallet extension
-              if (element.tagName === 'SCRIPT' && element.hasAttribute('src')) {
-                const src = element.getAttribute('src') || '';
-                if (src.includes('freighter') || src.includes('xbull') || src.includes('albedo') || src.includes('rabet')) {
-                  foundWalletInjection = true;
-                }
-              }
-            }
-          });
-        }
-      });
-      
-      if (foundWalletInjection) {
-        if (typeof console !== "undefined") console.debug('[wallet] detected wallet script injection, re-checking...');
-        setTimeout(() => {
-          const updated = detectAvailable();
-          set({ available: updated });
-          applyProbeHints(updated);
-        }, 500);
-      }
-    });
-
-    // Observe changes in document.head and document.body
-    observer.observe(document.head, { childList: true, subtree: true });
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Monitor changes in window properties
-    const checkWindowChanges = () => {
-      const currentKeys = Object.keys(window).filter(key => {
-        const lowerKey = key.toLowerCase();
-        return lowerKey.includes('freighter') || 
-               lowerKey.includes('albedo') || 
-               lowerKey.includes('rabet') || 
-               lowerKey.includes('xbull');
-      });
-      
-      // Check if there are new wallet-related properties
-      if (currentKeys.length > 0) {
-        if (typeof console !== "undefined") {
-          console.debug('[wallet] Found new wallet properties on window:', currentKeys);
-        }
-        const updated = detectAvailable();
-        set({ available: updated });
-        applyProbeHints(updated);
-      }
-    };
-
-    // Periodically check for new properties (observer backup)
-    const windowCheckInterval = setInterval(checkWindowChanges, 2000);
-    
-    // Cleanup function
-    const cleanup = () => {
-      observer.disconnect();
-      clearInterval(windowCheckInterval);
-      window.removeEventListener('freighter:ready', handleWalletEvent);
-      window.removeEventListener('rabet:connected', handleWalletEvent);
-      window.removeEventListener('xbull:ready', handleWalletEvent);
-      window.removeEventListener('albedo:ready', handleWalletEvent);
-    };
-
-    // Store cleanup function for potential future use
-    (window as any).__walletDetectionCleanup = cleanup;
-
-    // Keep refresh flow import-free to avoid Turbopack HMR async-loader churn.
-    // Robust polling: some extensions inject provider late after load
-    // We make multiple attempts to catch late injection of different wallets.
-    const interesting = (arr: { id: WalletType; available: boolean }[]) =>
-      arr.some((w) => w.available && (w.id === "freighter" || w.id === "xbull" || w.id === "albedo" || w.id === "rabet"));
-    
-    // If already found wallets, still makes some attempts to find more
-    const initialWallets = list.filter(w => w.available).length;
-    if (interesting(list) && initialWallets > 0) {
-      if (typeof console !== "undefined") {
-        console.debug('[wallet] Found wallets initially, doing short poll for more:', initialWallets);
-      }
+    const initial = detectAvailable();
+    if (typeof console !== "undefined") {
+      console.debug("[wallet] detectAvailable (initial)", initial);
     }
-    
+    set({ available: initial });
+    applyProbeHints(initial);
+
+    // Poll briefly to catch late wallet provider injection.
     let attempts = 0;
-    const maxAttempts = 60; // ~20s with 350ms - more time for slow extensions
-    const interval = 350; // slightly longer interval
-    
+    const maxAttempts = 30;
     const timer = setInterval(() => {
-      attempts++;
+      attempts += 1;
       const next = detectAvailable();
-      const foundWallets = next.filter(w => w.available).map(w => w.id);
-      
-      if (typeof console !== "undefined") {
-        console.debug(`[wallet] detectAvailable retry ${attempts}/${maxAttempts}`, { 
-          foundWallets, 
-          totalAvailable: foundWallets.length,
-          visibilityState: document.visibilityState,
-          initialWallets 
-        });
-      }
-      
       set({ available: next });
 
-      if (attempts === 1 || attempts % 8 === 0) {
+      if (attempts === 1 || attempts % 6 === 0) {
         applyProbeHints(next);
       }
-      
-      // Stops earlier if found wallets OR reached limit OR page is not visible
-      const shouldStop = attempts >= maxAttempts || 
-                        document.visibilityState !== "visible" ||
-                        (foundWallets.length > initialWallets && attempts > 10); // Stop if found more wallets after 10 attempts
-      
-      if (shouldStop) {
+
+      if (attempts >= maxAttempts || document.visibilityState !== "visible") {
         clearInterval(timer);
-        if (typeof console !== "undefined") {
-          console.debug('[wallet] polling finished:', { 
-            attempts, 
-            finalWallets: foundWallets, 
-            reason: attempts >= maxAttempts ? 'max_attempts' : 
-                   document.visibilityState !== 'visible' ? 'not_visible' : 'found_more_wallets'
-          });
-        }
       }
-    }, interval);
+    }, 500);
   },
 
   connectFreighter: async () => {

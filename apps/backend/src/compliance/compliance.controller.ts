@@ -35,10 +35,10 @@ type KycSubmissionBody = {
 };
 
 type KycFiles = {
-  idDocument?: Express.Multer.File[];
-  selfie?: Express.Multer.File[];
-  addressProof?: Express.Multer.File[];
-  revenueProof?: Express.Multer.File[];
+  idDocument?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
+  selfie?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
+  addressProof?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
+  revenueProof?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
 };
 
 @Controller('compliance')

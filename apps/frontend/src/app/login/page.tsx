@@ -4,7 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppStore } from "@/store/app";
 import { getWalletBalances } from "@/lib/soroban";
 import { useTranslations } from "next-intl";
@@ -12,7 +12,7 @@ import { useWalletStore } from "@/state/wallet";
 
 type FreighterApi = {
   getPublicKey(): Promise<string>;
-  signMessage(message: string): Promise<string>;
+  signMessage?: (message: string) => Promise<string>;
 };
 
 export default function LoginPage() {
@@ -30,6 +30,7 @@ export default function LoginPage() {
   const [emailCodeInput, setEmailCodeInput] = useState("");
   const [emailCodeHint, setEmailCodeHint] = useState("");
   const [pendingEmailVerification, setPendingEmailVerification] = useState<{ email: string; challenge: string } | null>(null);
+  const emailInputRef = useRef<HTMLInputElement | null>(null);
   
   const setLoggedIn = useAppStore((s) => s.setLoggedIn);
   const setBalances = useAppStore((s) => s.setBalances);
@@ -276,17 +277,16 @@ export default function LoginPage() {
     const localApiUrl = apiUrl;
 
     try {
+      if (kind === "ledger") {
+        throw new Error("ERR_LEDGER_UNSUPPORTED");
+      }
+
       // Usar os conectores atualizados do wallet store
       const { AllConnectors } = await import("@/lib/wallets/connectors");
       const connector = AllConnectors.find(c => c.id === kind);
       
       if (!connector) {
         setError(tLoginErrors("wallet_connect_fail"));
-        return;
-      }
-
-      if (!connector.isAvailable()) {
-        setError(tLoginErrors(`${kind}_not_found`));
         return;
       }
 
@@ -320,7 +320,7 @@ export default function LoginPage() {
       
       if (kind === "freighter") {
         const w = (globalThis as unknown as { freighterApi?: FreighterApi }).freighterApi;
-        if (w && w.signMessage) {
+        if (w?.signMessage) {
           try {
             signature = await w.signMessage(nonce);
           } catch {
@@ -331,6 +331,30 @@ export default function LoginPage() {
             }
           }
         }
+
+        if (!signature) {
+          try {
+            const freighterApi = await import("@stellar/freighter-api");
+            const maybeSignMessage = (freighterApi as unknown as { signMessage?: (...args: unknown[]) => Promise<unknown> }).signMessage;
+            if (typeof maybeSignMessage === "function") {
+              const out = await maybeSignMessage(nonce, { address: pubkey });
+              if (typeof out === "string") {
+                signature = out;
+              } else if (out && typeof out === "object") {
+                const obj = out as Record<string, unknown>;
+                const candidates = [obj.signature, obj.signedMessage, obj.signed_message];
+                for (const c of candidates) {
+                  if (typeof c === "string" && c.length > 0) {
+                    signature = c;
+                    break;
+                  }
+                }
+              }
+            }
+          } catch {
+            // handled by generic error below
+          }
+        }
       } else if (kind === "albedo") {
         type AlbedoApi = {
           signMessage?: (args: { message: string; pubkey: string }) => Promise<{ signature: string } | string>;
@@ -338,7 +362,18 @@ export default function LoginPage() {
         const w = (globalThis as unknown as { albedo?: AlbedoApi }).albedo;
         if (w && w.signMessage) {
           const sigRes = await w.signMessage({ message: nonce, pubkey });
-          signature = typeof sigRes === "string" ? sigRes : (sigRes as { signature?: string })?.signature;
+          if (typeof sigRes === "string") {
+            signature = sigRes;
+          } else {
+            const obj = sigRes as Record<string, unknown>;
+            const candidates = [obj.signature, obj.signedMessage, obj.signed_message];
+            for (const c of candidates) {
+              if (typeof c === "string" && c.length > 0) {
+                signature = c;
+                break;
+              }
+            }
+          }
         }
       }
 
@@ -366,12 +401,23 @@ export default function LoginPage() {
       }
 
     } catch (e: unknown) {
-      console.error(`[login] Wallet connection failed for ${kind}:`, e);
+      const maybeCode = e && typeof e === "object" && "message" in e ? (e as { message?: unknown }).message : undefined;
+      const code = typeof maybeCode === "string" ? maybeCode.toUpperCase() : "";
+      if (code.includes("ERR_")) {
+        console.warn(`[login] Wallet connection blocked for ${kind}:`, code);
+      } else {
+        console.error(`[login] Wallet connection failed for ${kind}:`, e);
+      }
       const maybeMsg =
         e && typeof e === "object" && "message" in e
           ? (e as { message?: unknown }).message
           : undefined;
-      const msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("wallet_connect_fail");
+      let msg = typeof maybeMsg === "string" && maybeMsg.length > 0 ? maybeMsg : tLoginErrors("wallet_connect_fail");
+      if (code.includes("ERR_FREIGHTER_NOT_FOUND")) {
+        msg = tLoginErrors("freighter_not_found");
+      } else if (code.includes("ERR_ALBEDO_NOT_FOUND")) {
+        msg = tLoginErrors("albedo_not_found");
+      }
       setError(msg);
     } finally {
       setLoadingWallet(null);
@@ -379,8 +425,11 @@ export default function LoginPage() {
   }, [apiUrl, pushEvent, setBalances, setLoggedIn, tLoginErrors]);
 
   const onEmailLogin = useCallback(async () => {
-    if (!email.trim()) {
+    const normalizedEmail = email.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+    if (!normalizedEmail || !emailOk) {
       setError(tLoginErrors("email_required"));
+      emailInputRef.current?.focus();
       return;
     }
     if (!apiUrl) {
@@ -396,7 +445,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: normalizedEmail }),
       });
       if (!initRes.ok) throw new Error(tLoginErrors("email_init_fail"));
       const initJson: { ok: boolean; code?: string } = await initRes.json();
@@ -404,7 +453,7 @@ export default function LoginPage() {
       // 2) Show modal for code input instead of using prompt()
       const hint = initJson.code ? `(DEV: ${initJson.code})` : "";
       setEmailCodeHint(hint);
-      setPendingEmailVerification({ email, challenge: initJson.code || "" });
+      setPendingEmailVerification({ email: normalizedEmail, challenge: initJson.code || "" });
       setShowEmailCodeModal(true);
       setLoadingEmail(false);
     } catch (e: unknown) {
@@ -576,8 +625,8 @@ export default function LoginPage() {
                     <button
                       onClick={() => onWallet("ledger")}
                       className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
-                      disabled={loadingWallet !== null}
-                      title={t("ledger_desc")}
+                      disabled={true}
+                      title={tLoginErrors("ledger_unsupported")}
                     >
                       <span className="inline-flex items-center gap-2">
                         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="text-primary">
@@ -585,7 +634,7 @@ export default function LoginPage() {
                           <rect x="3" y="5.5" width="10" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
                           <circle cx="5" cy="8" r="0.9" fill="currentColor" />
                         </svg>
-                        <span>{loadingWallet === "ledger" ? t("waiting") : t("ledger_button")}</span>
+                        <span>{t("ledger_button")} ({t("waiting")})</span>
                       </span>
                     </button>
                   </div>
@@ -601,6 +650,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <input
+                      ref={emailInputRef}
                       className="flex-1 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-3 text-sm outline-none transition-colors placeholder:text-slate-600 focus:border-emerald-500/60"
                       placeholder={t("email_placeholder")}
                       value={email}

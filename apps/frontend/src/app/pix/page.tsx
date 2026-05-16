@@ -322,7 +322,7 @@ export default function PixPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8 notranslate" translate="no">
       <Image
         src="/capa.png"
         alt="Stellaro background"

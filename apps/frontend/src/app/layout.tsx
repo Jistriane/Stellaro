@@ -19,6 +19,9 @@ import enMessages from "../../messages/en.json";
 export const metadata: Metadata = {
   title: "Stellaro",
   description: "Stellaro frontend application",
+  other: {
+    google: "notranslate",
+  },
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
@@ -34,8 +37,8 @@ export default async function RootLayout({
   const locale = "en";
 
   return (
-    <html lang={locale} className="dark" suppressHydrationWarning>
-      <body className="antialiased">
+    <html lang={locale} className="dark notranslate" suppressHydrationWarning translate="no">
+      <body className="antialiased notranslate" translate="no">
         <NextIntlClientProvider locale={locale} messages={enMessages}>
           <LayoutClient>{children}</LayoutClient>
         </NextIntlClientProvider>
