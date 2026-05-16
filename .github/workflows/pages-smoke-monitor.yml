@@ -36,9 +36,23 @@ jobs:
         env:
           TARGET_URL: ${{ steps.pages_url.outputs.url }}
         run: |
-          STATUS="$(curl -sS -o /tmp/pages.html -w "%{http_code}" "${TARGET_URL}")"
+          ATTEMPTS=5
+          DELAY=8
+          STATUS=""
+
+          for attempt in $(seq 1 "${ATTEMPTS}"); do
+            STATUS="$(curl -sS -o /tmp/pages.html -w "%{http_code}" "${TARGET_URL}")"
+            if [ "${STATUS}" = "200" ]; then
+              break
+            fi
+            echo "Attempt ${attempt}/${ATTEMPTS} failed for ${TARGET_URL} (HTTP ${STATUS})."
+            if [ "${attempt}" -lt "${ATTEMPTS}" ]; then
+              sleep "${DELAY}"
+            fi
+          done
+
           if [ "${STATUS}" != "200" ]; then
-            echo "Expected HTTP 200, got ${STATUS}"
+            echo "Expected HTTP 200 for ${TARGET_URL}, got ${STATUS} after ${ATTEMPTS} attempts"
             exit 1
           fi
 
@@ -55,11 +69,26 @@ jobs:
         env:
           TARGET_URL: ${{ steps.pages_url.outputs.url }}
         run: |
+          ATTEMPTS=4
+          DELAY=6
+
           for asset in logo.png capa.png favicon.ico; do
             ASSET_URL="${TARGET_URL}${asset}"
-            STATUS="$(curl -sS -o /dev/null -w "%{http_code}" "${ASSET_URL}")"
+            STATUS=""
+
+            for attempt in $(seq 1 "${ATTEMPTS}"); do
+              STATUS="$(curl -sS -o /dev/null -w "%{http_code}" "${ASSET_URL}")"
+              if [ "${STATUS}" = "200" ]; then
+                break
+              fi
+              echo "Attempt ${attempt}/${ATTEMPTS} failed for ${ASSET_URL} (HTTP ${STATUS})."
+              if [ "${attempt}" -lt "${ATTEMPTS}" ]; then
+                sleep "${DELAY}"
+              fi
+            done
+
             if [ "${STATUS}" != "200" ]; then
-              echo "Expected HTTP 200 for ${ASSET_URL}, got ${STATUS}"
+              echo "Expected HTTP 200 for ${ASSET_URL}, got ${STATUS} after ${ATTEMPTS} attempts"
               exit 1
             fi
           done
@@ -70,9 +99,23 @@ jobs:
           REPO_NAME: ${{ steps.pages_url.outputs.repo_name }}
         run: |
           ANALYTICS_URL="${TARGET_URL}dashboard/analytics/"
-          STATUS="$(curl -sS -o /tmp/pages-analytics.html -w "%{http_code}" "${ANALYTICS_URL}")"
+          ATTEMPTS=5
+          DELAY=8
+          STATUS=""
+
+          for attempt in $(seq 1 "${ATTEMPTS}"); do
+            STATUS="$(curl -sS -o /tmp/pages-analytics.html -w "%{http_code}" "${ANALYTICS_URL}")"
+            if [ "${STATUS}" = "200" ]; then
+              break
+            fi
+            echo "Attempt ${attempt}/${ATTEMPTS} failed for ${ANALYTICS_URL} (HTTP ${STATUS})."
+            if [ "${attempt}" -lt "${ATTEMPTS}" ]; then
+              sleep "${DELAY}"
+            fi
+          done
+
           if [ "${STATUS}" != "200" ]; then
-            echo "Expected HTTP 200 for ${ANALYTICS_URL}, got ${STATUS}"
+            echo "Expected HTTP 200 for ${ANALYTICS_URL}, got ${STATUS} after ${ATTEMPTS} attempts"
             exit 1
           fi
           grep -q "/${REPO_NAME}/_next/" /tmp/pages-analytics.html
