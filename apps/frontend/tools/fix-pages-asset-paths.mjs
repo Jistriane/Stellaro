@@ -98,6 +98,13 @@ function walk(dir) {
 }
 
 walk(outDir);
+
+// Ensure GitHub Pages does not run Jekyll filtering, which would ignore `/_next` assets.
+const noJekyllPath = path.join(outDir, ".nojekyll");
+if (!fs.existsSync(noJekyllPath)) {
+  fs.writeFileSync(noJekyllPath, "", "utf8");
+}
+
 console.log(
   `[fix-pages-assets] patched out/* using base path ${basePath} for ${targetAssets.length} public assets`
 );
