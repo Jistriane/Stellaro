@@ -53,11 +53,60 @@ jobs:
         run: npm run build:pages
 
       - name: Validate exported asset paths
+        env:
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
         run: |
-          if grep -R -n '"/logo.png"\|"/capa.png"\|"/favicon.ico"\|'"'"'/logo.png'"'"'\|'"'"'/capa.png'"'"'\|'"'"'/favicon.ico'"'"'' out; then
-            echo "Found unprefixed public asset paths in exported files."
-            exit 1
-          fi
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          const outDir = path.resolve('out');
+          const publicDir = path.resolve('public');
+          const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+          const textExtensions = new Set(['.html', '.js', '.txt', '.json', '.xml', '.map', '.webmanifest']);
+
+          function walk(dir, files = []) {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                walk(fullPath, files);
+              } else {
+                files.push(fullPath);
+              }
+            }
+            return files;
+          }
+
+          const publicAssets = walk(publicDir)
+            .map((file) => '/' + path.relative(publicDir, file).split(path.sep).join('/'));
+
+          const offenders = [];
+          for (const file of walk(outDir)) {
+            if (!textExtensions.has(path.extname(file).toLowerCase())) continue;
+            const content = fs.readFileSync(file, 'utf8');
+
+            for (const asset of publicAssets) {
+              const unprefixed = new RegExp(`(?<![A-Za-z0-9:])${asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g');
+              if (unprefixed.test(content)) {
+                offenders.push(`${path.relative(process.cwd(), file)} -> ${asset}`);
+                break;
+              }
+            }
+          }
+
+          if (offenders.length > 0) {
+            console.error('Found unprefixed public asset paths in exported files:');
+            for (const offender of offenders.slice(0, 50)) {
+              console.error(` - ${offender}`);
+            }
+            if (offenders.length > 50) {
+              console.error(` - ...and ${offenders.length - 50} more`);
+            }
+            process.exit(1);
+          }
+
+          console.log(`Pages asset path validation passed for basePath ${basePath}.`);
+          NODE
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

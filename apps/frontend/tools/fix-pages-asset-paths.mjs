@@ -22,7 +22,29 @@ if (!fs.existsSync(outDir)) {
   process.exit(1);
 }
 
-const targetAssets = ["/logo.png", "/capa.png", "/favicon.ico"];
+const publicDir = path.resolve("public");
+if (!fs.existsSync(publicDir)) {
+  console.error(`[fix-pages-assets] public directory not found: ${publicDir}`);
+  process.exit(1);
+}
+
+function getPublicAssets(dir, root = dir, files = []) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      getPublicAssets(fullPath, root, files);
+      continue;
+    }
+
+    const relativePath = path.relative(root, fullPath).split(path.sep).join("/");
+    files.push(`/${relativePath}`);
+  }
+
+  return files;
+}
+
+const targetAssets = getPublicAssets(publicDir);
 const textExtensions = new Set([
   ".html",
   ".js",
@@ -44,7 +66,7 @@ function patchContent(content) {
 
   for (const asset of targetAssets) {
     const escapedAsset = escapeRegex(asset);
-    const regex = new RegExp(`(?<!${escapedBasePath})${escapedAsset}`, "g");
+    const regex = new RegExp(`(?<![A-Za-z0-9:])(?<!${escapedBasePath})${escapedAsset}`, "g");
     updated = updated.replace(regex, `${basePath}${asset}`);
   }
 
@@ -76,4 +98,6 @@ function walk(dir) {
 }
 
 walk(outDir);
-console.log(`[fix-pages-assets] patched out/* using base path ${basePath}`);
+console.log(
+  `[fix-pages-assets] patched out/* using base path ${basePath} for ${targetAssets.length} public assets`
+);
