@@ -159,6 +159,18 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 1 test passed.
 - Added admin analytics page coverage in `apps/frontend/src/__tests__/admin-analytics-page.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added settings advanced page coverage in `apps/frontend/src/__tests__/settings-advanced-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added liquidity pools page coverage in `apps/frontend/src/__tests__/liquidity-pools-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added liquidity manage page coverage in `apps/frontend/src/__tests__/liquidity-manage-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added governance vote page coverage in `apps/frontend/src/__tests__/governance-vote-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added examples page coverage in `apps/frontend/src/__tests__/examples-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added DeFi stats page coverage in `apps/frontend/src/__tests__/defi-stats-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
