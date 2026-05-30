@@ -396,6 +396,30 @@ describe('PixService', () => {
   });
 
   describe('edge cases', () => {
+    it('should disable integration when PIX_MODE=live without credentials', async () => {
+      const localConfigService = {
+        get: jest.fn((key: string) => {
+          const config = {
+            PIX_MODE: 'live',
+            PIX_API_KEY: undefined,
+            PIX_API_URL: undefined,
+            PIX_WEBHOOK_SECRET: 'test-secret',
+          } as Record<string, string | undefined>;
+          return config[key];
+        }),
+      } as unknown as ConfigService;
+
+      const localService = new PixService(localConfigService, prisma, actionsService);
+      const status = localService.getStatus();
+
+      expect(status).toMatchObject({
+        enabled: false,
+        mode: 'disabled',
+        fallbackActive: true,
+      });
+      expect(status.fallbackReason).toContain('PIX_MODE=live');
+    });
+
     it('should handle database errors gracefully', async () => {
       jest
         .spyOn(prisma.pixPayment, 'create')

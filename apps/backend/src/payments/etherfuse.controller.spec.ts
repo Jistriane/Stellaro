@@ -23,9 +23,21 @@ describe('EtherfuseController', () => {
   });
 
   it('should return etherfuse status', () => {
-    etherfuseService.getStatus.mockReturnValue({ enabled: true, mode: 'stub' });
+    etherfuseService.getStatus.mockReturnValue({
+      enabled: true,
+      mode: 'stub',
+      configuredMode: null,
+      fallbackActive: true,
+      fallbackReason: 'ETHERFUSE credentials not fully configured; using implicit stub mode',
+    });
 
-    expect(controller.getStatus()).toEqual({ enabled: true, mode: 'stub' });
+    expect(controller.getStatus()).toEqual({
+      enabled: true,
+      mode: 'stub',
+      configuredMode: null,
+      fallbackActive: true,
+      fallbackReason: 'ETHERFUSE credentials not fully configured; using implicit stub mode',
+    });
     expect(etherfuseService.getStatus).toHaveBeenCalled();
   });
 

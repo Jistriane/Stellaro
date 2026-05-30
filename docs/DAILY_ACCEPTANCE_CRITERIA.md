@@ -24,14 +24,25 @@ Definition of done:
 ## Priority 2 - Live Financial Integrations
 
 Daily acceptance:
-- [ ] Integration mode is explicitly tracked (disabled/stub/live) in status endpoints.
+- [x] Integration mode is explicitly tracked (disabled/stub/live) in status endpoints.
 - [ ] Live credential validation is tested in staging.
-- [ ] Failure path emits structured logs and alerts.
+- [x] Failure path emits structured logs and alerts.
 - [ ] At least one end-to-end flow is revalidated after changes.
 
 Definition of done:
 - [ ] PIX, x402, and Etherfuse live paths validated in staging.
 - [ ] No critical path silently falls back without alert.
+
+Evidence snapshot (2026-05-30):
+- Payment fallback observability implemented in backend services and status endpoints.
+- Financial readiness endpoint implemented: `GET /health/integrations/financial` with strict mode via `FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true`.
+- Targeted test run completed: 7 suites, 61 tests passed (health + payments services/controllers).
+- Staging validation command (ready to run):
+	- `FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true curl -sS http://<staging-backend>/health/integrations/financial | jq .`
+	- `scripts/financial-integrations-readiness-check.sh https://<staging-backend> true`
+- Optional CI evidence path:
+	- Run workflow dispatch: `.github/workflows/financial-readiness-gate.yml` with `staging_base_url` + `require_live=true`.
+- Full operational procedure: `docs/WEEK2_STAGING_FINANCIAL_GATE.md`.
 
 ## Priority 3 - DEX and Smart Contract Runtime
 

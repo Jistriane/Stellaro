@@ -22,9 +22,21 @@ describe('X402Controller', () => {
   });
 
   it('should return x402 status', () => {
-    x402Service.getStatus.mockReturnValue({ enabled: true, mode: 'stub' });
+    x402Service.getStatus.mockReturnValue({
+      enabled: true,
+      mode: 'stub',
+      configuredMode: null,
+      fallbackActive: true,
+      fallbackReason: 'Facilitator config missing',
+    });
 
-    expect(controller.getStatus()).toEqual({ enabled: true, mode: 'stub' });
+    expect(controller.getStatus()).toEqual({
+      enabled: true,
+      mode: 'stub',
+      configuredMode: null,
+      fallbackActive: true,
+      fallbackReason: 'Facilitator config missing',
+    });
     expect(x402Service.getStatus).toHaveBeenCalled();
   });
 

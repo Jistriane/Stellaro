@@ -7,6 +7,7 @@ export type X402Mode = 'disabled' | 'stub' | 'live';
 export type X402Status = {
   enabled: boolean;
   mode: X402Mode;
+  configuredMode: string | null;
   network: string;
   acceptedAsset: string;
   resource: string;
@@ -14,6 +15,8 @@ export type X402Status = {
   providerContractId: string | null;
   recipient: string | null;
   apiKeyConfigured: boolean;
+  fallbackActive: boolean;
+  fallbackReason: string | null;
 };
 
 export type X402QuoteRequest = {
@@ -58,7 +61,9 @@ export class X402Service {
   constructor(private readonly configService: ConfigService) {}
 
   getStatus(): X402Status {
-    const mode = this.resolveMode();
+    const configuredMode = this.getString('X402_MODE')?.toLowerCase() ?? null;
+    const resolved = this.resolveMode();
+    const mode = resolved.mode;
     const facilitatorUrl = this.getString('X402_FACILITATOR_URL');
     const providerContractId = this.getString('FACILITATOR_PROVIDER_CONTRACT_ID');
     const recipient = this.getString('X402_RECIPIENT');
@@ -70,6 +75,7 @@ export class X402Service {
     return {
       enabled: mode !== 'disabled',
       mode,
+      configuredMode,
       network,
       acceptedAsset,
       resource,
@@ -77,6 +83,8 @@ export class X402Service {
       providerContractId: providerContractId ?? null,
       recipient: recipient ?? null,
       apiKeyConfigured,
+      fallbackActive: mode !== 'live',
+      fallbackReason: mode === 'live' ? null : resolved.reason,
     };
   }
 
@@ -104,6 +112,10 @@ export class X402Service {
 
     if (status.mode === 'live') {
       this.logger.log(`Generated live x402 quote ${sessionId} for ${asset} ${amount.toFixed(2)}`);
+    } else {
+      this.logger.warn(
+        `[X402_FALLBACK] action=create_quote mode=${status.mode} reason="${status.fallbackReason ?? 'non-live mode'}"`,
+      );
     }
 
     return {
@@ -142,7 +154,7 @@ export class X402Service {
     };
   }
 
-  private resolveMode(): X402Mode {
+  private resolveMode(): { mode: X402Mode; reason: string | null } {
     const configuredMode = this.getString('X402_MODE')?.toLowerCase();
     const facilitatorUrl = this.getString('X402_FACILITATOR_URL');
     const providerContractId = this.getString('FACILITATOR_PROVIDER_CONTRACT_ID');
@@ -150,22 +162,34 @@ export class X402Service {
     const liveReady = !!facilitatorUrl && !!providerContractId && !!apiKey;
 
     if (configuredMode === 'disabled') {
-      return 'disabled';
+      return { mode: 'disabled', reason: 'X402_MODE=disabled' };
     }
 
     if (configuredMode === 'live') {
       if (!liveReady) {
         this.logger.warn('x402 live mode requested but facilitator configuration is incomplete');
-        return 'disabled';
+        return {
+          mode: 'disabled',
+          reason:
+            'X402_MODE=live but X402_FACILITATOR_URL/FACILITATOR_PROVIDER_CONTRACT_ID/FACILITATOR_API_KEY is incomplete',
+        };
       }
-      return 'live';
+      return { mode: 'live', reason: null };
     }
 
     if (configuredMode === 'stub') {
-      return 'stub';
+      return { mode: 'stub', reason: 'X402_MODE=stub' };
     }
 
-    return liveReady ? 'live' : 'stub';
+    if (liveReady) {
+      return { mode: 'live', reason: null };
+    }
+
+    return {
+      mode: 'stub',
+      reason:
+        'Facilitator config missing (X402_FACILITATOR_URL/FACILITATOR_PROVIDER_CONTRACT_ID/FACILITATOR_API_KEY); using stub mode',
+    };
   }
 
   private getString(key: string): string | undefined {

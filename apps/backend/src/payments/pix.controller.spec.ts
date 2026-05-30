@@ -13,6 +13,7 @@ describe('PixController', () => {
       generatePixCharge: jest.fn(),
       handlePixWebhook: jest.fn(),
       initPixWithdrawal: jest.fn(),
+      getStatus: jest.fn(),
       getPaymentStatus: jest.fn(),
     };
 
@@ -316,6 +317,29 @@ describe('PixController', () => {
 
       expect(result.ok).toBe(false);
       expect(result.error).toBe('Payment not found');
+    });
+  });
+
+  describe('getStatus', () => {
+    it('should return pix integration status', () => {
+      pixService.getStatus.mockReturnValueOnce({
+        enabled: true,
+        mode: 'stub',
+        apiUrlConfigured: false,
+        apiKeyConfigured: false,
+        webhookSecretConfigured: true,
+        fallbackActive: true,
+        fallbackReason: 'PIX credentials not configured; using implicit stub mode',
+      });
+
+      const result = controller.getStatus();
+
+      expect(result).toMatchObject({
+        enabled: true,
+        mode: 'stub',
+        fallbackActive: true,
+      });
+      expect(pixService.getStatus).toHaveBeenCalled();
     });
   });
 });

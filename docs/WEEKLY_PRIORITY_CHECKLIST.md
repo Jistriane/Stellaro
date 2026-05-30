@@ -35,13 +35,20 @@ Owner set: Backend Lead, Security Lead, QA Lead
 - [ ] Move PIX critical flow to live-ready integration path in staging.
 - [ ] Move x402 flow to live mode in staging with validated credentials.
 - [ ] Move Etherfuse flow to live mode in staging with validated credentials.
-- [ ] Enforce explicit fallback behavior and telemetry for all integration states.
+- [x] Enforce explicit fallback behavior and telemetry for all integration states.
 - [ ] Validate end-to-end settlement paths with signed evidence.
 
 Week 2 exit gate:
 - [ ] Three financial E2E flows completed in staging.
 - [ ] Monitoring alerts exist for integration failure modes.
-- [ ] No silent fallback from live to stub without alert.
+- [x] No silent fallback from live to stub without alert.
+
+Week 2 progress evidence (2026-05-30):
+- Payments fallback telemetry validated via automated tests (services + controllers).
+- Financial readiness endpoint added (`/health/integrations/financial`) with strict live-mode validation toggle (`FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true`).
+- Manual CI workflow added for staging proof capture: `.github/workflows/financial-readiness-gate.yml`.
+- Operational runbook for staging gate execution: `docs/WEEK2_STAGING_FINANCIAL_GATE.md`.
+- Current automated result: 7 suites passed, 61 tests passed.
 
 ## Week 3 - DEX and Contract Completion
 

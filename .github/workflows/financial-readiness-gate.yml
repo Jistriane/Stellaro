@@ -1,0 +1,54 @@
+name: Financial Readiness Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_base_url:
+        description: Staging backend base URL (example: https://api-staging.stellaro.com)
+        required: true
+        type: string
+      require_live:
+        description: Require all rails in live mode
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  readiness-check:
+    name: Validate Financial Integrations Readiness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Ensure tooling
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Run financial readiness check
+        env:
+          STAGING_BASE_URL: ${{ inputs.staging_base_url }}
+          REQUIRE_LIVE: ${{ inputs.require_live }}
+        run: |
+          set -euo pipefail
+          scripts/financial-integrations-readiness-check.sh "${STAGING_BASE_URL}" "${REQUIRE_LIVE}"
+
+      - name: Save readiness payload
+        if: always()
+        env:
+          STAGING_BASE_URL: ${{ inputs.staging_base_url }}
+          REQUIRE_LIVE: ${{ inputs.require_live }}
+        run: |
+          set -euo pipefail
+          FINANCIAL_INTEGRATIONS_REQUIRE_LIVE="${REQUIRE_LIVE}" curl -fsS "${STAGING_BASE_URL%/}/health/integrations/financial" > financial-readiness.json
+          jq . financial-readiness.json
+
+      - name: Upload readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: financial-readiness
+          path: financial-readiness.json

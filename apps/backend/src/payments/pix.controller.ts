@@ -99,6 +99,12 @@ export class PixController {
     return result;
   }
 
+  @Get('status')
+  @ApiOperation({ summary: 'Returns PIX integration mode and fallback telemetry' })
+  getStatus() {
+    return this.pixService.getStatus();
+  }
+
   @Get('status/:txId')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()

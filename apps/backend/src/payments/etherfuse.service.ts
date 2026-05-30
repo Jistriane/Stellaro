@@ -7,6 +7,7 @@ export type EtherfuseMode = 'disabled' | 'stub' | 'live';
 export type EtherfuseStatus = {
   enabled: boolean;
   mode: EtherfuseMode;
+  configuredMode: string | null;
   apiBaseUrl: string;
   blockchain: 'stellar' | 'solana' | 'base' | 'polygon' | 'monad';
   defaultQuoteType: 'onramp' | 'offramp' | 'swap';
@@ -15,6 +16,8 @@ export type EtherfuseStatus = {
   customerIdConfigured: boolean;
   walletAddressConfigured: boolean;
   apiKeyConfigured: boolean;
+  fallbackActive: boolean;
+  fallbackReason: string | null;
 };
 
 export type EtherfuseQuoteRequest = {
@@ -81,7 +84,9 @@ export class EtherfuseService {
   constructor(private readonly configService: ConfigService) {}
 
   getStatus(): EtherfuseStatus {
-    const mode = this.resolveMode();
+    const configuredMode = this.getString('ETHERFUSE_MODE')?.toLowerCase() ?? null;
+    const resolved = this.resolveMode();
+    const mode = resolved.mode;
     const apiBaseUrl = this.getString('ETHERFUSE_API_BASE_URL') ?? 'https://api.sand.etherfuse.com';
     const blockchain = this.getBlockchain();
     const defaultQuoteType = this.getQuoteType('ETHERFUSE_DEFAULT_QUOTE_TYPE') ?? 'onramp';
@@ -91,6 +96,7 @@ export class EtherfuseService {
     return {
       enabled: mode !== 'disabled',
       mode,
+      configuredMode,
       apiBaseUrl,
       blockchain,
       defaultQuoteType,
@@ -99,6 +105,8 @@ export class EtherfuseService {
       customerIdConfigured: !!this.getString('ETHERFUSE_CUSTOMER_ID'),
       walletAddressConfigured: !!this.getString('ETHERFUSE_WALLET_ADDRESS'),
       apiKeyConfigured: !!this.getString('ETHERFUSE_API_KEY'),
+      fallbackActive: mode !== 'live',
+      fallbackReason: mode === 'live' ? null : resolved.reason,
     };
   }
 
@@ -117,6 +125,10 @@ export class EtherfuseService {
       return this.createLiveQuote(params, status);
     }
 
+    this.logger.warn(
+      `[ETHERFUSE_FALLBACK] action=create_quote mode=${status.mode} reason="${status.fallbackReason ?? 'non-live mode'}"`,
+    );
+
     return this.createStubQuote(params, status);
   }
 
@@ -134,6 +146,10 @@ export class EtherfuseService {
     if (status.mode === 'live') {
       return this.createLiveOrder(params, status);
     }
+
+    this.logger.warn(
+      `[ETHERFUSE_FALLBACK] action=create_order mode=${status.mode} reason="${status.fallbackReason ?? 'non-live mode'}"`,
+    );
 
     return this.createStubOrder(params, status);
   }
@@ -356,29 +372,39 @@ export class EtherfuseService {
     };
   }
 
-  private resolveMode(): EtherfuseMode {
+  private resolveMode(): { mode: EtherfuseMode; reason: string | null } {
     const configuredMode = this.getString('ETHERFUSE_MODE')?.toLowerCase();
     const apiBaseUrl = this.getString('ETHERFUSE_API_BASE_URL');
     const apiKey = this.getString('ETHERFUSE_API_KEY');
     const liveReady = !!apiBaseUrl && !!apiKey;
 
     if (configuredMode === 'disabled') {
-      return 'disabled';
+      return { mode: 'disabled', reason: 'ETHERFUSE_MODE=disabled' };
     }
 
     if (configuredMode === 'live') {
       if (!liveReady) {
         this.logger.warn('Etherfuse live mode requested but ETHERFUSE_API_BASE_URL or ETHERFUSE_API_KEY is missing');
-        return 'disabled';
+        return {
+          mode: 'disabled',
+          reason: 'ETHERFUSE_MODE=live but ETHERFUSE_API_BASE_URL or ETHERFUSE_API_KEY is missing',
+        };
       }
-      return 'live';
+      return { mode: 'live', reason: null };
     }
 
     if (configuredMode === 'stub') {
-      return 'stub';
+      return { mode: 'stub', reason: 'ETHERFUSE_MODE=stub' };
     }
 
-    return liveReady ? 'live' : 'stub';
+    if (liveReady) {
+      return { mode: 'live', reason: null };
+    }
+
+    return {
+      mode: 'stub',
+      reason: 'ETHERFUSE credentials not fully configured; using implicit stub mode',
+    };
   }
 
   private getString(key: string): string | undefined {

@@ -5,6 +5,18 @@ import { ActionsService } from '../actions/actions.service';
 import axios, { AxiosInstance } from 'axios';
 import { randomBytes } from 'crypto';
 
+export type PixMode = 'disabled' | 'stub' | 'live';
+
+export type PixStatus = {
+  enabled: boolean;
+  mode: PixMode;
+  apiUrlConfigured: boolean;
+  apiKeyConfigured: boolean;
+  webhookSecretConfigured: boolean;
+  fallbackActive: boolean;
+  fallbackReason: string | null;
+};
+
 export interface PixPayment {
   id: string;
   txId: string;
@@ -34,6 +46,8 @@ export class PixService {
   private readonly enabled: boolean;
   private readonly webhookSecret: string;
   private readonly stubMode: boolean;
+  private readonly mode: PixMode;
+  private readonly fallbackReason: string | null;
 
   constructor(
     private configService: ConfigService,
@@ -53,9 +67,35 @@ export class PixService {
       process.env.PIX_MODE ||
       '';
     this.enabled = !!apiKey && !!apiUrl;
-    this.stubMode = String(modeRaw).toLowerCase() === 'stub';
+    const configuredMode = String(modeRaw).toLowerCase();
 
-    if (this.enabled && apiUrl) {
+    if (configuredMode === 'disabled') {
+      this.mode = 'disabled';
+      this.stubMode = false;
+      this.fallbackReason = null;
+    } else if (configuredMode === 'live') {
+      if (this.enabled) {
+        this.mode = 'live';
+        this.stubMode = false;
+        this.fallbackReason = null;
+      } else {
+        this.mode = 'disabled';
+        this.stubMode = false;
+        this.fallbackReason = 'PIX_MODE=live but PIX_API_KEY/PIX_API_URL is missing';
+      }
+    } else if (configuredMode === 'stub') {
+      this.mode = 'stub';
+      this.stubMode = true;
+      this.fallbackReason = null;
+    } else {
+      this.mode = this.enabled ? 'live' : 'stub';
+      this.stubMode = !this.enabled;
+      this.fallbackReason = this.stubMode
+        ? 'PIX credentials not configured; using implicit stub mode'
+        : null;
+    }
+
+    if (this.mode === 'live' && this.enabled && apiUrl) {
       this.client = axios.create({
         baseURL: apiUrl,
         headers: {
@@ -66,12 +106,34 @@ export class PixService {
       });
       this.logger.log('PIX integration enabled');
     } else {
-      if (this.stubMode) {
-        this.logger.log('PIX integration running in STUB mode');
+      if (this.mode === 'stub') {
+        const reason = this.fallbackReason ?? 'PIX_MODE=stub';
+        this.logger.warn(
+          `[PIX_FALLBACK] mode=stub reason="${reason}" apiKeyConfigured=${!!apiKey} apiUrlConfigured=${!!apiUrl}`,
+        );
       } else {
-        this.logger.warn('PIX integration disabled (missing API credentials)');
+        const reason = this.fallbackReason ?? 'PIX_MODE=disabled';
+        this.logger.warn(
+          `[PIX_DISABLED] mode=disabled reason="${reason}" apiKeyConfigured=${!!apiKey} apiUrlConfigured=${!!apiUrl}`,
+        );
       }
     }
+  }
+
+  getStatus(): PixStatus {
+    return {
+      enabled: this.mode !== 'disabled',
+      mode: this.mode,
+      apiUrlConfigured: !!(
+        this.configService.get<string>('PIX_API_URL') || process.env.PIX_API_URL
+      ),
+      apiKeyConfigured: !!(
+        this.configService.get<string>('PIX_API_KEY') || process.env.PIX_API_KEY
+      ),
+      webhookSecretConfigured: !!this.webhookSecret,
+      fallbackActive: this.mode !== 'live',
+      fallbackReason: this.mode === 'live' ? null : this.fallbackReason,
+    };
   }
 
   /**
@@ -103,6 +165,9 @@ export class PixService {
         if (!this.stubMode) {
           throw new Error('PIX integration not configured');
         }
+        this.logger.warn(
+          `[PIX_FALLBACK] action=generate_charge mode=stub txScope=user:${params.userId}`,
+        );
         // STUB: simular falhas por valor extremo
         if (amountVal > 500000) {
           return { ok: false, error: 'Provider error: amount too high' };
@@ -344,6 +409,9 @@ export class PixService {
         if (!this.stubMode) {
           throw new Error('PIX integration not configured');
         }
+        this.logger.warn(
+          `[PIX_FALLBACK] action=init_withdrawal mode=stub txScope=user:${params.userId}`,
+        );
         // STUB: simular falha de burn com endereço inválido ou valor extremo
         const amountNum = Number(params.amountSTLT);
         if (params.stellarAddress === 'INVALID_ADDRESS' || amountNum > 1000000) {

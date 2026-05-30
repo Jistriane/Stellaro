@@ -21,6 +21,7 @@ describe('EtherfuseService', () => {
     expect(service.getStatus()).toMatchObject({
       enabled: true,
       mode: 'stub',
+      fallbackActive: true,
       blockchain: 'stellar',
     });
   });
@@ -36,9 +37,24 @@ describe('EtherfuseService', () => {
     expect(service.getStatus()).toMatchObject({
       enabled: true,
       mode: 'live',
+      fallbackActive: false,
       apiKeyConfigured: true,
       customerIdConfigured: true,
     });
+  });
+
+  it('should disable explicit live mode with fallback reason when credentials are missing', () => {
+    const service = createService({
+      ETHERFUSE_MODE: 'live',
+      ETHERFUSE_API_BASE_URL: 'https://api.sand.etherfuse.com',
+    });
+
+    expect(service.getStatus()).toMatchObject({
+      enabled: false,
+      mode: 'disabled',
+      fallbackActive: true,
+    });
+    expect(service.getStatus().fallbackReason).toContain('ETHERFUSE_MODE=live');
   });
 
   it('should generate stub quote in stub mode', async () => {

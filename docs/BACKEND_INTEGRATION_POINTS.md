@@ -164,6 +164,21 @@ Behavior:
 - Reports chain config and checks real simulation availability.
 
 
+### HealthController
+
+File:
+- apps/backend/src/health/health.controller.ts
+
+Endpoints:
+- GET /health
+- GET /health/integrations/financial
+
+Behavior:
+- Returns baseline service liveness on `/health`.
+- Returns payment-rail readiness on `/health/integrations/financial` with explicit checks for PIX, x402, and Etherfuse modes/credentials.
+- Supports strict validation mode through `FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true` to fail readiness when any rail is not in `live` mode.
+
+
 ### ActionsController
 
 File:

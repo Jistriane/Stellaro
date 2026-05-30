@@ -17,6 +17,7 @@ describe('X402Service', () => {
     expect(service.getStatus()).toMatchObject({
       enabled: true,
       mode: 'stub',
+      fallbackActive: true,
       acceptedAsset: 'STLT',
       network: 'stellar:testnet',
     });
@@ -34,6 +35,7 @@ describe('X402Service', () => {
     expect(service.getStatus()).toMatchObject({
       enabled: true,
       mode: 'live',
+      fallbackActive: false,
       facilitatorUrl: 'https://facilitator.example.com',
       providerContractId: 'C_PROVIDER_123',
       recipient: 'GRECIPIENT',
@@ -50,7 +52,14 @@ describe('X402Service', () => {
     expect(service.getStatus()).toMatchObject({
       enabled: false,
       mode: 'disabled',
+      fallbackActive: true,
     });
+  });
+
+  it('should expose fallback reason when implicit stub is used', () => {
+    const service = createService({});
+
+    expect(service.getStatus().fallbackReason).toContain('Facilitator config missing');
   });
 
   it('should create a quote with settlement details', () => {
