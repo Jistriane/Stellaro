@@ -95,6 +95,8 @@ Week 4 progress evidence (2026-05-30):
 - Current focused test result: 1 suite passed, 13 tests passed.
 - Added wallet detection coverage in `apps/frontend/src/__tests__/wallet-detection-enforcer.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 2 tests passed.
+- Added governance vote coverage in `apps/frontend/src/__tests__/voting-panel.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 2 tests passed.
 
 ## Week 5 - Agents and Operations Hardening
 
