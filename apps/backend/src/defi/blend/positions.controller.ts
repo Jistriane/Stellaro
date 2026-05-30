@@ -1,9 +1,18 @@
 import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
+import { BlendYieldService } from '../blend-yield.service';
 import { BlendPositionsService } from './positions.service';
 
 @Controller('defi/blend')
 export class BlendPositionsController {
-  constructor(private readonly positionsService: BlendPositionsService) {}
+  constructor(
+    private readonly positionsService: BlendPositionsService,
+    private readonly blendYieldService: BlendYieldService,
+  ) {}
+
+  @Get('positions/status')
+  getStatus() {
+    return this.blendYieldService.getOverview();
+  }
 
   @Get('positions/:address')
   async getPositions(@Param('address') address: string, @Query('quote') quote: string = 'USD') {
