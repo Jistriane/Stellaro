@@ -90,6 +90,10 @@ Week 4 exit gate:
 - [ ] Critical user journeys have deterministic E2E tests.
 - [ ] Test pipeline runtime remains within team SLA.
 
+Week 4 progress evidence (2026-05-30):
+- Added Soroban VC issuance status coverage in `apps/backend/src/chain/soroban.service.spec.ts`.
+- Current focused test result: 1 suite passed, 13 tests passed.
+
 ## Week 5 - Agents and Operations Hardening
 
 Owner set: Backend Lead, QA Lead, DevOps Lead

@@ -86,6 +86,68 @@ describe('SorobanService', () => {
     });
   });
 
+  describe('getVcIssuanceStatus', () => {
+    it('should report unavailable when VC registry is missing', () => {
+      const prevVcRegistryId = process.env.VC_REGISTRY_ID;
+      const prevMasterSecret = process.env.MASTER_SECRET_KEY;
+      delete process.env.VC_REGISTRY_ID;
+      process.env.MASTER_SECRET_KEY = prevMasterSecret || '';
+
+      const status = service.getVcIssuanceStatus();
+
+      expect(status.available).toBe(false);
+      expect(status.reason).toContain('VC_REGISTRY_ID is not configured');
+
+      if (prevVcRegistryId) process.env.VC_REGISTRY_ID = prevVcRegistryId;
+      if (prevMasterSecret) process.env.MASTER_SECRET_KEY = prevMasterSecret;
+      else delete process.env.MASTER_SECRET_KEY;
+    });
+
+    it('should report unavailable when master secret is missing or invalid', () => {
+      const prevVcRegistryId = process.env.VC_REGISTRY_ID;
+      const prevMasterSecret = process.env.MASTER_SECRET_KEY;
+      process.env.VC_REGISTRY_ID = 'CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z';
+      process.env.MASTER_SECRET_KEY = 'invalid-secret';
+      const validitySpy = jest.spyOn(StellarSdk.StrKey, 'isValidEd25519SecretSeed').mockReturnValue(false);
+
+      const status = service.getVcIssuanceStatus();
+
+      expect(status.available).toBe(false);
+      expect(status.reason).toContain('MASTER_SECRET_KEY is missing or invalid');
+      expect(status.checks.vcRegistryConfigured).toBe(true);
+      expect(status.checks.masterSecretConfigured).toBe(true);
+      expect(status.checks.masterSecretValid).toBe(false);
+      validitySpy.mockRestore();
+
+      if (prevVcRegistryId) process.env.VC_REGISTRY_ID = prevVcRegistryId;
+      else delete process.env.VC_REGISTRY_ID;
+      if (prevMasterSecret) process.env.MASTER_SECRET_KEY = prevMasterSecret;
+      else delete process.env.MASTER_SECRET_KEY;
+    });
+
+    it('should report available when registry and master secret are configured', () => {
+      const prevVcRegistryId = process.env.VC_REGISTRY_ID;
+      const prevMasterSecret = process.env.MASTER_SECRET_KEY;
+      process.env.VC_REGISTRY_ID = 'CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z';
+      process.env.MASTER_SECRET_KEY = 'SCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const validitySpy = jest.spyOn(StellarSdk.StrKey, 'isValidEd25519SecretSeed').mockReturnValue(true);
+
+      const status = service.getVcIssuanceStatus();
+
+      expect(status.available).toBe(true);
+      expect(status.reason).toBeNull();
+      expect(status.checks.vcRegistryConfigured).toBe(true);
+      expect(status.checks.masterSecretConfigured).toBe(true);
+      expect(status.checks.masterSecretValid).toBe(true);
+      validitySpy.mockRestore();
+
+      if (prevVcRegistryId) process.env.VC_REGISTRY_ID = prevVcRegistryId;
+      else delete process.env.VC_REGISTRY_ID;
+      if (prevMasterSecret) process.env.MASTER_SECRET_KEY = prevMasterSecret;
+      else delete process.env.MASTER_SECRET_KEY;
+    });
+  });
+
   describe('setMintingEnabled', () => {
     it('should enable minting when properly configured', async () => {
       const secret = process.env.SOROBAN_ADMIN_SECRET;
