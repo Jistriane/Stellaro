@@ -1,0 +1,98 @@
+name: Security Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  npm-audit:
+    name: NPM Audit High-Severity Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Validate High Severity (root/backend/frontend)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          check_high() {
+            local label="$1"
+            local cmd="$2"
+
+            local json
+            json=$(eval "$cmd" || true)
+            local high
+            high=$(printf '%s' "$json" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{const j=JSON.parse(d);const h=j?.metadata?.vulnerabilities?.high ?? 0;process.stdout.write(String(h));});')
+
+            echo "$label high severity: $high"
+            if [ "$high" -gt 0 ]; then
+              echo "ERROR: $label has high vulnerabilities"
+              exit 1
+            fi
+          }
+
+          check_high "root" "npm audit --json"
+          check_high "backend" "npm --workspace apps/backend audit --json"
+          check_high "frontend" "npm --workspace apps/frontend audit --json"
+
+  cargo-audit:
+    name: Cargo Audit Vulnerability Gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./contracts
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run cargo-audit
+        run: |
+          cargo install cargo-audit
+          cargo audit
+
+  pip-audit:
+    name: Pip Audit Agents Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pip-audit
+
+      - name: Run pip-audit
+        run: pip-audit -r agents/requirements.txt -f json -o pip-audit-report.json
+
+      - name: Upload pip-audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-audit-report
+          path: pip-audit-report.json
