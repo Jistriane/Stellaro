@@ -141,6 +141,12 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 1 test passed.
 - Added bridge page coverage in `apps/frontend/src/__tests__/bridge-page.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added RWA page coverage in `apps/frontend/src/__tests__/rwa-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added SSI page coverage in `apps/frontend/src/__tests__/ssi-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added cards page coverage in `apps/frontend/src/__tests__/cards-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
