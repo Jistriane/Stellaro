@@ -93,6 +93,8 @@ Week 4 exit gate:
 Week 4 progress evidence (2026-05-30):
 - Added Soroban VC issuance status coverage in `apps/backend/src/chain/soroban.service.spec.ts`.
 - Current focused test result: 1 suite passed, 13 tests passed.
+- Added wallet detection coverage in `apps/frontend/src/__tests__/wallet-detection-enforcer.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 2 tests passed.
 
 ## Week 5 - Agents and Operations Hardening
 
