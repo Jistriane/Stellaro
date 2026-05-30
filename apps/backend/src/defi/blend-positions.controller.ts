@@ -1,7 +1,15 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { BlendYieldService } from './blend-yield.service';
 
 @Controller('defi/blend/positions')
 export class BlendPositionsController {
+  constructor(private readonly blendYieldService: BlendYieldService) {}
+
+  @Get('status')
+  getStatus() {
+    return this.blendYieldService.getOverview();
+  }
+
   @Get(':address')
   getPositions(@Param('address') address: string) {
     // Stub de posições para desenvolvimento

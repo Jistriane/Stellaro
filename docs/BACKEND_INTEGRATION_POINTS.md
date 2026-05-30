@@ -1,3 +1,5 @@
+# markdownlint-disable-file MD025 MD032 MD012
+
 # Backend Integration Points
 
 Version: 2026-04-15
@@ -126,6 +128,20 @@ Env dependencies:
 - LOANS_POOL_CONTRACT_ID
 - LOANSPOOL_INTEREST_BPS (fallback)
 - BACKEND_PUBLIC_URL or BACKEND_URL for oracle endpoint
+
+
+### BlendPositionsController
+
+File:
+- apps/backend/src/defi/blend-positions.controller.ts
+
+Endpoints:
+- GET /defi/blend/positions/status
+- GET /defi/blend/positions/:address
+
+Behavior:
+- Exposes a lightweight Blend readiness overview for DEX operations.
+- Keeps the positions endpoint as a deterministic development stub while surfacing the readiness metadata needed for Week 3 evidence.
 
 
 ### ReserveManagerService

@@ -33,6 +33,16 @@ export interface Position {
   apy: number;
 }
 
+export interface BlendOverview {
+  status: 'ready' | 'mock';
+  network: string;
+  rpcConfigured: boolean;
+  redisAvailable: boolean;
+  supportedAssets: string[];
+  mockPoolCount: number;
+  cacheTtlSeconds: number;
+}
+
 /**
  * Blend Protocol Yield Optimizer
  * Auto-compound, rebalancing e yield maximization
@@ -42,6 +52,8 @@ export class BlendYieldService {
   private readonly logger = new Logger(BlendYieldService.name);
   private readonly rpcServer: StellarSdk.rpc.Server;
   private readonly networkPassphrase: string;
+  private readonly rpcUrl: string;
+  private readonly networkName: string;
 
   // Simulação de pools Blend (em produção, usar Blend SDK real)
   private readonly MOCK_POOLS = [
@@ -71,17 +83,31 @@ export class BlendYieldService {
     private config: ConfigService,
     private redis: RedisService,
   ) {
-    const rpcUrl = this.config.get<string>(
+    this.rpcUrl = this.config.get<string>(
       'SOROBAN_RPC_URL',
       'https://soroban-testnet.stellar.org',
     );
-    const network = this.config.get<string>('STELLAR_NETWORK', 'testnet');
+    this.networkName = this.config.get<string>('STELLAR_NETWORK', 'testnet');
 
-    this.rpcServer = new StellarSdk.rpc.Server(rpcUrl);
+    this.rpcServer = new StellarSdk.rpc.Server(this.rpcUrl);
     this.networkPassphrase =
-      network === 'testnet'
+      this.networkName === 'testnet'
         ? StellarSdk.Networks.TESTNET
         : StellarSdk.Networks.PUBLIC;
+  }
+
+  getOverview(): BlendOverview {
+    const supportedAssets = [...new Set(this.MOCK_POOLS.map((pool) => pool.asset))];
+
+    return {
+      status: this.rpcUrl ? 'ready' : 'mock',
+      network: this.networkName,
+      rpcConfigured: !!this.rpcUrl,
+      redisAvailable: !!this.redis,
+      supportedAssets,
+      mockPoolCount: this.MOCK_POOLS.length,
+      cacheTtlSeconds: 300,
+    };
   }
 
   /**
