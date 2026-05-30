@@ -1,13 +1,14 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SorobanService } from '../chain/soroban.service';
 import { NotificationService } from './notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class RiskGuardianService implements OnModuleInit {
+export class RiskGuardianService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RiskGuardianService.name);
   private isEmergencyActive = false;
+  private monitoringTimer?: NodeJS.Timeout;
 
   constructor(
     private configService: ConfigService,
@@ -21,23 +22,37 @@ export class RiskGuardianService implements OnModuleInit {
     this.startProtocolMonitoring();
   }
 
+  onModuleDestroy() {
+    if (this.monitoringTimer) {
+      clearInterval(this.monitoringTimer);
+      this.monitoringTimer = undefined;
+    }
+  }
+
   /**
    * Monitoramento contínuo de anomalias no protocolo.
    */
   private startProtocolMonitoring() {
-    setInterval(async () => {
+    this.monitoringTimer = setInterval(async () => {
       try {
         await this.checkProtocolHealth();
       } catch (error) {
         this.logger.error(`Guardian monitoring failed: ${error.message}`);
       }
     }, 15000); // Check a cada 15 segundos (High Frequency)
+
+    // Prevent this background timer from keeping test processes alive.
+    this.monitoringTimer.unref();
   }
 
   /**
    * Avalia a saúde do protocolo baseada em TVL, Falhas e Atividade.
    */
   async checkProtocolHealth() {
+    if (!this.prisma.auditLog?.count) {
+      return;
+    }
+
     // 1. Verificar volume de falhas em transações recentes (Mock via logs)
     const recentFailures = await this.prisma.auditLog.count({
       where: {

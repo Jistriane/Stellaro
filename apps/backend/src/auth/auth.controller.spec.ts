@@ -118,7 +118,7 @@ describe('AuthController', () => {
       const req: any = { cookies: { token: 'jwt-token' } };
       const result = await controller.me(req);
 
-      expect(result).toEqual({ user: mockUser });
+      expect(result).toEqual({ authenticated: true, user: mockUser });
       expect(authStub.meFromToken).toHaveBeenCalledWith('jwt-token');
     });
 
@@ -132,8 +132,17 @@ describe('AuthController', () => {
       };
       const result = await controller.me(req);
 
-      expect(result).toEqual({ user: mockUser });
+      expect(result).toEqual({ authenticated: true, user: mockUser });
       expect(authStub.meFromToken).toHaveBeenCalledWith('jwt-token-from-header');
+    });
+
+    it('should return unauthenticated payload when token is missing', async () => {
+      const req: any = { cookies: {}, headers: {} };
+
+      const result = await controller.me(req);
+
+      expect(result).toEqual({ authenticated: false, user: null });
+      expect(authStub.meFromToken).not.toHaveBeenCalled();
     });
   });
 

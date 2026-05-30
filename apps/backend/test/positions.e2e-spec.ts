@@ -6,6 +6,8 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { RedisService } from '../src/redis/redis.service';
 import { ReserveManagerService } from '../src/compliance/reserve-manager.service';
 import { IngestorService } from '../src/analytics/ingestor.service';
+import { HorizonService } from '../src/chain/horizon.service';
+import { SorobanService } from '../src/chain/soroban.service';
 import { createIngestorStub, createPrismaMock, createRedisStub, createReserveManagerStub } from './test-utils';
 
 describe('DeFi Positions (e2e)', () => {
@@ -25,6 +27,19 @@ describe('DeFi Positions (e2e)', () => {
       .useValue(createReserveManagerStub())
       .overrideProvider(IngestorService)
       .useValue(createIngestorStub())
+      .overrideProvider(HorizonService)
+      .useValue({
+        getAccount: async () => ({
+          balances: [
+            { asset_type: 'native', balance: '100.5' },
+            { asset_type: 'credit_alphanum4', asset_code: 'USDC', balance: '25.0' },
+          ],
+        }),
+      })
+      .overrideProvider(SorobanService)
+      .useValue({
+        getLoansPoolParams: async () => ({ interest_bps: 1500 }),
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -76,8 +91,8 @@ describe('DeFi Positions (e2e)', () => {
       return request(app.getHttpServer())
         .get('/defi/blend/positions/INVALID_ADDRESS')
         .expect((res) => {
-          // Deve retornar erro 4xx (Stellar responde 400/404 para endereço inválido)
-          expect([400, 404]).toContain(res.status);
+          // Controller valida formato e retorna 400 para endereço inválido
+          expect(res.status).toBe(400);
         });
     });
 

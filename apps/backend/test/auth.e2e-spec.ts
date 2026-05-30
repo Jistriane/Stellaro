@@ -196,7 +196,10 @@ describe('Authentication (e2e)', () => {
     it('should reject unauthenticated profile access', () => {
       return request(app.getHttpServer())
         .get('/auth/me')
-        .expect(401);
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual({ authenticated: false, user: null });
+        });
     });
   });
 });

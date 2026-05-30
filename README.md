@@ -3,7 +3,7 @@
 ![Stellaro Logo](stellaro-logo.png)
 
 <p align="center">
-	<img src="Stellaro%20Capa.png" alt="Stellaro Hero Banner" style="width:100%; max-width:1200px; height:auto;" />
+	<img src="Stellaro-Capa.png" alt="Stellaro Hero Banner" style="width:100%; max-width:1200px; height:auto;" />
 </p>
 
 <p align="center">
