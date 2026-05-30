@@ -48,10 +48,7 @@ Failure handling:
 
 Run workflow dispatch:
 
-scripts/financial-readiness-dispatch.sh https://<staging-backend> true
-scripts/financial-readiness-fetch-artifact.sh
-
-Then verify latest run and download artifact:
+scripts/financial-readiness-evidence.sh https://<staging-backend> true
 
 Expected:
 - Workflow job succeeds.

@@ -48,6 +48,8 @@ Evidence snapshot (2026-05-30):
 	- `scripts/financial-readiness-dispatch.sh https://<staging-backend> true`
 - Artifact fetch helper:
 	- `scripts/financial-readiness-fetch-artifact.sh`
+- One-shot evidence helper:
+	- `scripts/financial-readiness-evidence.sh https://<staging-backend> true`
 - Full operational procedure: `docs/WEEK2_STAGING_FINANCIAL_GATE.md`.
 
 ## Priority 3 - DEX and Smart Contract Runtime
