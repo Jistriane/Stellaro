@@ -70,7 +70,7 @@ Week 3 exit gate:
 - [ ] No pending DEX placeholder in canonical references.
 
 Week 3 progress evidence (2026-05-30):
-- Added Blend readiness endpoint at `GET /defi/blend/positions/status` to surface DEX operational posture.
+- Added Blend readiness endpoint at `GET /defi/blend/positions/status` in `apps/backend/src/defi/blend/positions.controller.ts`.
 - Added focused controller coverage for Blend readiness and real positions path.
 - Added one-shot contract evidence helper: `contracts/scripts/testnet_week3_evidence.sh`.
 - Added real Blend positions controller coverage in `apps/backend/src/defi/blend/positions.controller.spec.ts`.

@@ -133,7 +133,7 @@ Env dependencies:
 ### BlendPositionsController
 
 File:
-- apps/backend/src/defi/blend-positions.controller.ts
+- apps/backend/src/defi/blend/positions.controller.ts
 
 Endpoints:
 - GET /defi/blend/positions/status
@@ -141,7 +141,7 @@ Endpoints:
 
 Behavior:
 - Exposes a lightweight Blend readiness overview for DEX operations.
-- Keeps the positions endpoint as a deterministic development stub while surfacing the readiness metadata needed for Week 3 evidence.
+- Delegates live position lookups to `BlendPositionsService` with Stellar address validation and cached account enrichment.
 
 
 ### ReserveManagerService
