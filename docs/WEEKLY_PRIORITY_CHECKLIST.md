@@ -153,6 +153,12 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 1 test passed.
 - Added transactions history page coverage in `apps/frontend/src/__tests__/transactions-history-page.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added risk analysis page coverage in `apps/frontend/src/__tests__/risk-analysis-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added dashboard analytics page coverage in `apps/frontend/src/__tests__/dashboard-analytics-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added admin analytics page coverage in `apps/frontend/src/__tests__/admin-analytics-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
