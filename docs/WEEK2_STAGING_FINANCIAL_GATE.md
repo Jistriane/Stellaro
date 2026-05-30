@@ -1,3 +1,5 @@
+<!-- markdownlint-disable-file MD025 MD032 MD007 MD010 MD033 -->
+
 # Week 2 Staging Financial Gate Runbook
 
 Date baseline: 2026-05-30
@@ -47,12 +49,9 @@ Failure handling:
 Run workflow dispatch:
 
 scripts/financial-readiness-dispatch.sh https://<staging-backend> true
+scripts/financial-readiness-fetch-artifact.sh
 
 Then verify latest run and download artifact:
-
-gh run list --workflow financial-readiness-gate.yml --limit 5
-gh run download <run-id> -n financial-readiness
-cat financial-readiness.json | jq .
 
 Expected:
 - Workflow job succeeds.

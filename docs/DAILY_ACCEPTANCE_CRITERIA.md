@@ -1,3 +1,5 @@
+<!-- markdownlint-disable-file MD025 MD032 MD007 MD010 MD033 -->
+
 # Daily Acceptance Criteria - Priority Closure
 
 Date baseline: 2026-05-30
@@ -44,6 +46,8 @@ Evidence snapshot (2026-05-30):
 	- Run workflow dispatch: `.github/workflows/financial-readiness-gate.yml` with `staging_base_url` + `require_live=true`.
 - Operational dispatch helper:
 	- `scripts/financial-readiness-dispatch.sh https://<staging-backend> true`
+- Artifact fetch helper:
+	- `scripts/financial-readiness-fetch-artifact.sh`
 - Full operational procedure: `docs/WEEK2_STAGING_FINANCIAL_GATE.md`.
 
 ## Priority 3 - DEX and Smart Contract Runtime
