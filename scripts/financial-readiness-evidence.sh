@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Dispatches the financial readiness workflow, waits for completion, and downloads the artifact.
+# Dispatches the financial readiness workflow, waits for completion, downloads the artifact, and prints paste-ready evidence.
 # Usage:
 #   scripts/financial-readiness-evidence.sh https://staging.example.com true
 
@@ -84,6 +84,12 @@ if [[ -f financial-readiness.json ]]; then
 else
   echo "ERROR: financial-readiness.json was not downloaded" >&2
   exit 1
+fi
+
+if [[ -x ./scripts/financial-evidence-format.sh ]]; then
+  echo ""
+  echo "Paste-ready evidence block:"
+  ./scripts/financial-evidence-format.sh financial-readiness.json "${STAGING_BASE_URL}" "${run_id}" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 fi
 
 echo "PASS: readiness evidence collected for run ${run_id}"
