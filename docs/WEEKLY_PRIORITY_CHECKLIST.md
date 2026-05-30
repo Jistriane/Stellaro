@@ -131,6 +131,10 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 1 test passed.
 - Added learn page coverage in `apps/frontend/src/__tests__/learn-page.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added recurring payments page coverage in `apps/frontend/src/__tests__/recurring-payments-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added settings page coverage in `apps/frontend/src/__tests__/settings-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
