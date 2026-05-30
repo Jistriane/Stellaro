@@ -85,3 +85,4 @@ Update policy:
 
 Week 3 operational evidence:
 - Use `contracts/scripts/testnet_week3_evidence.sh` to generate the ABI strict + mutation + transactional E2E bundle before updating this registry with any new Contract ID.
+- Use `contracts/scripts/testnet_registry_sync_check.sh` to confirm `.env-dev`, `apps/backend/.env-dev`, and this registry remain synchronized after each deployment.
