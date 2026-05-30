@@ -46,9 +46,7 @@ Failure handling:
 
 Run workflow dispatch:
 
-gh workflow run financial-readiness-gate.yml \
-  -f staging_base_url=https://<staging-backend> \
-  -f require_live=true
+scripts/financial-readiness-dispatch.sh https://<staging-backend> true
 
 Then verify latest run and download artifact:
 
