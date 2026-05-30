@@ -53,6 +53,7 @@ scripts/financial-readiness-evidence.sh https://<staging-backend> true
 Expected:
 - Workflow job succeeds.
 - Artifact financial-readiness.json exists and shows status ok.
+- Use `scripts/financial-evidence-format.sh financial-readiness.json <staging-backend> <run-id> <timestamp-utc>` to generate paste-ready evidence text.
 
 ## Step 4 - Documentation evidence update
 
