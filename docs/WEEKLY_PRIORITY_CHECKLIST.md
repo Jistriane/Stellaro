@@ -1,5 +1,7 @@
 # markdownlint-disable-file MD025 MD032 MD012
 
+<!-- markdownlint-disable-file MD025 MD032 MD012 -->
+
 # Weekly Priority Checklist - Production Readiness
 
 Date baseline: 2026-05-30
@@ -70,6 +72,7 @@ Week 3 exit gate:
 Week 3 progress evidence (2026-05-30):
 - Added Blend readiness endpoint at `GET /defi/blend/positions/status` to surface DEX operational posture.
 - Added focused controller coverage for Blend readiness and static positions stub.
+- Added one-shot contract evidence helper: `contracts/scripts/testnet_week3_evidence.sh`.
 - Current focused test result: 1 suite passed, 2 tests passed.
 
 ## Week 4 - Test Coverage Expansion

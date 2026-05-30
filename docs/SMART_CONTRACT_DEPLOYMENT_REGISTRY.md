@@ -1,3 +1,5 @@
+<!-- markdownlint-disable-file MD025 MD032 MD034 -->
+
 # Smart Contract Deployment Registry
 
 Version: 2026-05-11
@@ -80,3 +82,6 @@ Primary references:
 Update policy:
 - After each new deployment, update this document first.
 - Keep Contract IDs and Stellar Expert links synchronized with `.env-dev` and deployment guide snapshots.
+
+Week 3 operational evidence:
+- Use `contracts/scripts/testnet_week3_evidence.sh` to generate the ABI strict + mutation + transactional E2E bundle before updating this registry with any new Contract ID.

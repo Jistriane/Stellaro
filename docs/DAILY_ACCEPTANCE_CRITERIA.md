@@ -62,6 +62,10 @@ Daily acceptance:
 - [ ] Contract registry updated for every new deployed ID.
 - [ ] Script outputs archived in evidence report.
 
+Evidence snapshot (2026-05-30):
+- Week 3 evidence helper added: `contracts/scripts/testnet_week3_evidence.sh`.
+- Blend readiness endpoint added for DEX operational posture: `GET /defi/blend/positions/status`.
+
 Definition of done:
 - [ ] DEX flow is operational in test environment.
 - [ ] Required contract methods are callable and verified.
