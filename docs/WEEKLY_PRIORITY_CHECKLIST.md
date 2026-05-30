@@ -135,6 +135,12 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 1 test passed.
 - Added settings page coverage in `apps/frontend/src/__tests__/settings-page.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added DAO page coverage in `apps/frontend/src/__tests__/dao-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added insurance page coverage in `apps/frontend/src/__tests__/insurance-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added bridge page coverage in `apps/frontend/src/__tests__/bridge-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
