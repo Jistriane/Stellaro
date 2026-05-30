@@ -115,6 +115,8 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 1 test passed.
 - Added governance page coverage in `apps/frontend/src/__tests__/governance-page.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 1 test passed.
+- Added trading page coverage in `apps/frontend/src/__tests__/trading-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
