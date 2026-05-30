@@ -101,6 +101,8 @@ Week 4 progress evidence (2026-05-30):
 - Current focused frontend test result: 1 suite passed, 2 tests passed.
 - Added passkey session coverage in `apps/frontend/src/__tests__/use-passkey-session.test.tsx`.
 - Current focused frontend test result: 1 suite passed, 3 tests passed.
+- Added dashboard load/render coverage in `apps/frontend/src/__tests__/dashboard-page.test.tsx`.
+- Current focused frontend test result: 1 suite passed, 1 test passed.
 
 ## Week 5 - Agents and Operations Hardening
 
