@@ -71,9 +71,10 @@ Week 3 exit gate:
 
 Week 3 progress evidence (2026-05-30):
 - Added Blend readiness endpoint at `GET /defi/blend/positions/status` to surface DEX operational posture.
-- Added focused controller coverage for Blend readiness and static positions stub.
+- Added focused controller coverage for Blend readiness and real positions path.
 - Added one-shot contract evidence helper: `contracts/scripts/testnet_week3_evidence.sh`.
-- Current focused test result: 1 suite passed, 2 tests passed.
+- Added real Blend positions controller coverage in `apps/backend/src/defi/blend/positions.controller.spec.ts`.
+- Current focused test result: 2 suites passed, 4 tests passed.
 
 ## Week 4 - Test Coverage Expansion
 
