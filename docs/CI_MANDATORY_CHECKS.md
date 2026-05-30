@@ -29,6 +29,7 @@ Current evidence snapshot (2026-05-30):
 - `npm audit` (full scope): root high=0, backend high=0, frontend high=0.
 - `cargo audit` (contracts): 0 vulnerabilities, warnings tracked as technical debt.
 - `pip-audit` (agents): no known vulnerabilities; local artifact generated at `docs/pip-audit-report.json` via containerized Python.
+- Remote CI confirmation: workflow `Security Gate` run `26676718227` completed with success on all security jobs.
 
 Failure policy:
 - Any high severity in release branch blocks merge and release.

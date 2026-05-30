@@ -25,7 +25,7 @@ Owner set: Security Lead, Backend Lead, DevOps Lead
 
 Week 1 exit gate:
 - [x] High severity vulnerabilities = 0.
-- [ ] CI security jobs green on default branch.
+- [x] CI security jobs green on default branch.
 - [x] Rollback procedure tested for dependency rollback.
 
 ## Week 2 - Live Integrations (Replace Stubs)

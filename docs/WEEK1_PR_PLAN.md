@@ -148,5 +148,8 @@ Rationale:
 - Rust security remediation applied: `time` updated to `0.3.47` in contracts lockfile, removing `RUSTSEC-2026-0009` from `cargo-audit`.
 - CI workflow hardening added: `cargo audit` (warnings tolerated) plus new `security-agents` job with `pip-audit` artifact upload.
 - Agent security artifact generated locally via containerized `pip-audit` with no known vulnerabilities (`docs/pip-audit-report.json`).
-- CI security gate remains pending only for remote confirmation on default branch (cannot be finalized from local runner).
-- Remote CI check (GitHub Actions run `25962622969`) is currently failed on legacy pipeline steps (`Install Rust` and frontend Playwright E2E) from an older commit; a fresh run after pushing current fixes is required for definitive gate closure.
+- CI security gate confirmed on default branch via dedicated workflow `Security Gate`.
+- Evidence run: GitHub Actions run `26676718227` (master) with all jobs green:
+	- `NPM Audit High-Severity Gate`: success
+	- `Cargo Audit Vulnerability Gate`: success
+	- `Pip Audit Agents Gate`: success
