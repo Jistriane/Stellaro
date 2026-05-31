@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { StellarWallet } from './stellar-wallet';
 
@@ -21,17 +22,52 @@ export function getBackendConfig(): BackendConfig {
 }
 
 export async function getToken(): Promise<string | null> {
-  return await SecureStore.getItemAsync(TOKEN_KEY);
+  try {
+    return await SecureStore.getItemAsync(TOKEN_KEY);
+  } catch {
+    if (
+      Platform.OS === 'web' &&
+      typeof window !== 'undefined' &&
+      typeof window.localStorage !== 'undefined'
+    ) {
+      return window.localStorage.getItem(TOKEN_KEY);
+    }
+    throw new Error('Falha ao acessar o armazenamento seguro do token.');
+  }
 }
 
 export async function setToken(token: string): Promise<void> {
-  await SecureStore.setItemAsync(TOKEN_KEY, token, {
-    keychainService: 'stellaro_vault',
-  });
+  try {
+    await SecureStore.setItemAsync(TOKEN_KEY, token, {
+      keychainService: 'stellaro_vault',
+    });
+  } catch {
+    if (
+      Platform.OS === 'web' &&
+      typeof window !== 'undefined' &&
+      typeof window.localStorage !== 'undefined'
+    ) {
+      window.localStorage.setItem(TOKEN_KEY, token);
+      return;
+    }
+    throw new Error('Falha ao acessar o armazenamento seguro do token.');
+  }
 }
 
 export async function clearToken(): Promise<void> {
-  await SecureStore.deleteItemAsync(TOKEN_KEY, { keychainService: 'stellaro_vault' });
+  try {
+    await SecureStore.deleteItemAsync(TOKEN_KEY, { keychainService: 'stellaro_vault' });
+  } catch {
+    if (
+      Platform.OS === 'web' &&
+      typeof window !== 'undefined' &&
+      typeof window.localStorage !== 'undefined'
+    ) {
+      window.localStorage.removeItem(TOKEN_KEY);
+      return;
+    }
+    throw new Error('Falha ao acessar o armazenamento seguro do token.');
+  }
 }
 
 async function backendFetch(
