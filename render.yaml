@@ -3,7 +3,7 @@ services:
     name: stellaro-backend
     runtime: node
     plan: free
-    branch: master
+    branch: main
     buildCommand: npm ci && cd apps/backend && npx prisma generate && npm run build
     preDeployCommand: cd apps/backend && npx prisma migrate deploy
     startCommand: cd apps/backend && npm run start:prod
@@ -46,7 +46,7 @@ services:
     name: stellaro-frontend
     runtime: node
     plan: free
-    branch: master
+    branch: main
     buildCommand: npm ci && cd apps/frontend && npm run build
     startCommand: cd apps/frontend && npm run start
     envVars:
