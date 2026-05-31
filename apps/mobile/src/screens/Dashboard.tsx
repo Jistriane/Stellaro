@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [language, setLanguage] = useState<'PT' | 'EN' | 'ES'>('PT');
   const [showCard, setShowCard] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [accountStatus, setAccountStatus] = useState<'unknown' | 'active' | 'unfunded'>('unknown');
 
   const t = {
     PT: { greeting: 'Olá, Investidor', balance: 'Patrimônio Total', privacy: 'Shield' },
@@ -37,7 +38,18 @@ export default function Dashboard() {
       if (pk) {
         const horizonUrl = getHorizonUrl();
         const response = await fetch(`${horizonUrl}/accounts/${pk}`);
+        if (response.status === 404) {
+          setAccountStatus('unfunded');
+          setBalances([]);
+          setBalance(0);
+          setHistory([]);
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Horizon error: ${response.status}`);
+        }
         const account = await response.json();
+        setAccountStatus('active');
         
         if (account.balances) {
           const normalized = (account.balances as any[]).map((b) => ({
@@ -52,9 +64,11 @@ export default function Dashboard() {
 
         // Fetch real history
         const historyRes = await fetch(`${horizonUrl}/accounts/${pk}/payments?limit=5&order=desc`);
-        const historyData = await historyRes.json();
-        if (historyData._embedded) {
-          setHistory(historyData._embedded.records);
+        if (historyRes.ok) {
+          const historyData = await historyRes.json();
+          if (historyData._embedded) {
+            setHistory(historyData._embedded.records);
+          }
         }
       }
     } catch (error) {
@@ -91,6 +105,16 @@ export default function Dashboard() {
         </View>
 
         {/* Balance Card */}
+        {accountStatus === 'unfunded' && publicKey ? (
+          <View style={styles.noticeCard}>
+            <Text style={styles.noticeTitle}>Carteira ainda não ativada</Text>
+            <Text style={styles.noticeBody}>
+              Esta carteira ainda não existe na rede (Mainnet). Envie um pequeno valor de XLM para criar/ativar a conta:
+            </Text>
+            <Text style={styles.noticeAddress}>{publicKey}</Text>
+          </View>
+        ) : null}
+
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>{t.balance}</Text>
           <Text style={styles.balanceValue}>
@@ -206,6 +230,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 30,
+  },
+  noticeCard: {
+    backgroundColor: theme.colors.bg2,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.line,
+  },
+  noticeTitle: {
+    fontSize: 16,
+    color: theme.colors.ink,
+    fontFamily: theme.fonts.sansMedium,
+    marginBottom: 6,
+  },
+  noticeBody: {
+    fontSize: 13,
+    color: theme.colors.inkDim,
+    fontFamily: theme.fonts.sansLight,
+    marginBottom: 10,
+    lineHeight: 18,
+  },
+  noticeAddress: {
+    fontSize: 12,
+    color: theme.colors.ink,
+    fontFamily: theme.fonts.mono,
   },
   greeting: {
     fontSize: 24,
