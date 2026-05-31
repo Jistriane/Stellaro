@@ -46,10 +46,11 @@ export class CacheService {
   }
 
   private initRedis() {
-    const redisUrl = this.configService.get<string>(
-      'REDIS_URL',
-      'redis://localhost:6379',
-    );
+    const directUrl = this.configService.get<string>('REDIS_URL');
+    const host = this.configService.get<string>('REDIS_HOST');
+    const port = this.configService.get<string>('REDIS_PORT');
+    const redisUrl =
+      directUrl ?? (host && port ? `redis://${host}:${port}` : undefined) ?? 'redis://localhost:6379';
 
     this.redis = new Redis(redisUrl, {
       maxRetriesPerRequest: null,

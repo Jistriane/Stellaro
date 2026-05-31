@@ -32,7 +32,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private zkScoreErr = 0;
 
   async onModuleInit() {
-    const url = process.env.REDIS_URL;
+    const host = process.env.REDIS_HOST;
+    const port = process.env.REDIS_PORT;
+    const url =
+      process.env.REDIS_URL ??
+      (host && port ? `redis://${host}:${port}` : undefined);
     if (!url) {
       this.logger.warn(
         'REDIS_URL não configurado. Usando fallback em memória.',

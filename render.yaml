@@ -1,0 +1,71 @@
+services:
+  - type: web
+    name: stellaro-backend
+    runtime: node
+    plan: free
+    branch: master
+    buildCommand: npm ci && cd apps/backend && npx prisma generate && npm run build
+    preDeployCommand: cd apps/backend && npx prisma migrate deploy
+    startCommand: cd apps/backend && npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stellaro-postgres
+          property: connectionString
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: stellaro-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: stellaro-redis
+          property: port
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://stellaro-frontend.onrender.com
+      - key: STELLAR_NETWORK
+        value: mainnet
+      - key: STELLAR_HORIZON
+        value: https://horizon.stellar.org
+      - key: HORIZON_URL
+        value: https://horizon.stellar.org
+      - key: SOROBAN_RPC_URL
+        value: https://rpc.ankr.com/stellar_soroban
+      - key: STELLAR_SECRET_KEY
+        sync: false
+      - key: MASTER_SECRET_KEY
+        sync: false
+
+  - type: web
+    name: stellaro-frontend
+    runtime: node
+    plan: free
+    branch: master
+    buildCommand: npm ci && cd apps/frontend && npm run build
+    startCommand: cd apps/frontend && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://stellaro-backend.onrender.com
+      - key: NEXT_PUBLIC_STELLAR_NETWORK
+        value: mainnet
+      - key: NEXT_PUBLIC_HORIZON_URL
+        value: https://horizon.stellar.org
+
+  - type: keyvalue
+    name: stellaro-redis
+    plan: free
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+
+databases:
+  - name: stellaro-postgres
+    plan: free
