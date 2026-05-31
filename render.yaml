@@ -5,8 +5,7 @@ services:
     plan: free
     branch: main
     buildCommand: npm ci && cd apps/backend && npx prisma generate && npm run build
-    preDeployCommand: cd apps/backend && npx prisma migrate deploy
-    startCommand: cd apps/backend && npm run start:prod
+    startCommand: cd apps/backend && npx prisma migrate deploy && npm run start:prod
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
