@@ -22,6 +22,10 @@ Frontend deployment (GitHub Pages):
 
 - https://jistriane.github.io/Stellaro/
 
+Frontend deployment (Render):
+
+- https://stellaro-frontend-qh1a.onrender.com/
+
 ## Quick Start
 
 ### Prerequisites
