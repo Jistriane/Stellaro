@@ -248,11 +248,11 @@ flowchart LR
   U[Usuário e Operações]
 
   subgraph UX[Camada de Experiência]
-    WEB[Web App<br/>Next.js (App Router)]
-    MOB[Mobile App<br/>Expo / React Native]
+    WEB["Web App\nNext.js (App Router)"]
+    MOB["Mobile App\nExpo / React Native"]
     ADM[Admin / Ops UI]
-    WALLET[Wallets<br/>Freighter / Ledger / Albedo]
-    ZKGEN[ZK Proof (cliente)<br/>SnarkJS + Groth16]
+    WALLET["Wallets\nFreighter / Ledger / Albedo"]
+    ZKGEN["ZK Proof (cliente)\nSnarkJS + Groth16"]
   end
 
   subgraph API[Camada de Aplicação (NestJS)]
@@ -265,9 +265,9 @@ flowchart LR
   end
 
   subgraph Integrations[Integrações Externas]
-    PIX[Celcoin<br/>PIX / BaaS]
-    CARDS[Dock<br/>Cards]
-    KYC[Sumsub<br/>KYC]
+    PIX["Celcoin\nPIX / BaaS"]
+    CARDS["Dock\nCards"]
+    KYC["Sumsub\nKYC"]
     X402[x402 Facilitator]
     EF[Etherfuse API]
   end
@@ -294,7 +294,7 @@ flowchart LR
   end
 
   subgraph Obs[Observabilidade]
-    OTEL[OpenTelemetry<br/>Logs / Metrics / Traces]
+    OTEL["OpenTelemetry\nLogs / Metrics / Traces"]
     SEN[Sentry]
     IDX[Chain Event Ingestor]
     AUD[Compliance / Audit Evidence]
