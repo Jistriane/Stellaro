@@ -18,8 +18,6 @@ Official site:
 
 Welcome to the Stellaro project. This monorepo contains the complete architecture for a DeFi credit infrastructure platform built on Stellar, featuring a Next.js 16 frontend, NestJS backend, AI-powered risk management (ElizaOS), and enterprise-grade integrations for Stellar/Soroban, PIX, Cards, KYC, and Passkeys.
 
-Deployment links below are on Stellar mainnet.
-
 Frontend deployment (GitHub Pages):
 
 - https://jistriane.github.io/Stellaro/
@@ -247,67 +245,69 @@ Expected behavior:
 
 ```mermaid
 flowchart LR
-  U[Usuário e Operações]
+  U["Usuário e Operações"]
 
-  subgraph UX[Camada de Experiência]
-    WEB["Web App\nNext.js (App Router)"]
-    MOB["Mobile App\nExpo / React Native"]
-    ADM[Admin / Ops UI]
-    WALLET["Wallets\nFreighter / Ledger / Albedo"]
-    ZKGEN["ZK Proof (cliente)\nSnarkJS + Groth16"]
+  subgraph UX["Camada de Experiência"]
+    WEB["Web App<br/>Next.js (App Router)"]
+    MOB["Mobile App<br/>Expo / React Native"]
+    ADM["Admin / Ops UI"]
+    WALLET["Wallets<br/>Freighter / Ledger / Albedo"]
+    ZKGEN["ZK Proof (cliente)<br/>SnarkJS + Groth16"]
   end
 
-  subgraph API[Camada de Aplicação (NestJS)]
-    GW[Backend API]
-    AUTH[Auth + Passkeys + Sessions]
-    RISK[Risk + Compliance]
-    PAY[Payments]
-    GOV[Governance]
-    RWA[RWA + SSI]
+  subgraph API["Camada de Aplicação (NestJS)"]
+    GW["Backend API"]
+    AUTH["Auth + Passkeys + Sessions"]
+    RISK["Risk + Compliance"]
+    PAY["Payments"]
+    GOV["Governance"]
+    RWA["RWA + SSI"]
   end
 
-  subgraph Integrations[Integrações Externas]
-    PIX["Celcoin\nPIX / BaaS"]
-    CARDS["Dock\nCards"]
-    KYC["Sumsub\nKYC"]
-    X402[x402 Facilitator]
-    EF[Etherfuse API]
+  subgraph Integrations["Integrações Externas"]
+    PIX["Celcoin<br/>PIX / BaaS"]
+    CARDS["Dock<br/>Cards"]
+    KYC["Sumsub<br/>KYC"]
+    X402["x402 Facilitator"]
+    EF["Etherfuse API"]
   end
 
-  subgraph ChainAccess[Infra de Chain]
-    RPC[Soroban RPC]
-    HZN[Horizon]
+  subgraph ChainAccess["Infra de Chain"]
+    RPC["Soroban RPC"]
+    HZN["Horizon"]
   end
 
-  subgraph Chain[Stellar + Soroban (Contratos)]
-    CST[Stablecoin]
-    CLN[LoansPool]
-    CDAO[DAO Governance]
-    CREC[Recurring Payments]
-    CRWA[RWA Tokenizer / Marketplace]
-    CVC[VC Registry]
-    CMEV[Batch Executor + MEV Guard]
-    CZK[ZK Verifier]
+  subgraph Chain["Stellar + Soroban (Contratos)"]
+    CST["Stablecoin"]
+    CLN["LoansPool"]
+    CDAO["DAO Governance"]
+    CREC["Recurring Payments"]
+    CRWA["RWA Tokenizer / Marketplace"]
+    CVC["VC Registry"]
+    CMEV["Batch Executor + MEV Guard"]
+    CZK["ZK Verifier"]
   end
 
-  subgraph Data[Dados e Operação]
-    PG[(PostgreSQL)]
-    RD[(Redis)]
+  subgraph Data["Dados e Operação"]
+    PG[("PostgreSQL")]
+    RD[("Redis")]
   end
 
-  subgraph Obs[Observabilidade]
-    OTEL["OpenTelemetry\nLogs / Metrics / Traces"]
-    SEN[Sentry]
-    IDX[Chain Event Ingestor]
-    AUD[Compliance / Audit Evidence]
+  subgraph Obs["Observabilidade"]
+    OTEL["OpenTelemetry<br/>Logs / Metrics / Traces"]
+    SEN["Sentry"]
+    IDX["Chain Event Ingestor"]
+    AUD["Compliance / Audit Evidence"]
   end
 
   U --> WEB
   U --> MOB
   U --> ADM
 
-  WEB <--> WALLET
-  MOB <--> WALLET
+  WEB --> WALLET
+  WALLET --> WEB
+  MOB --> WALLET
+  WALLET --> MOB
 
   WEB --> ZKGEN
   MOB --> ZKGEN
