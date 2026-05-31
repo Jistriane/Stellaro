@@ -151,12 +151,23 @@ describe('ActionsService', () => {
     });
 
     it('should fail when LOANS_POOL_CONTRACT_ID not configured', async () => {
+      const originalLoansPool = process.env.LOANS_POOL_CONTRACT_ID;
+      const originalLoansPoolLegacy = process.env.LOANSPOOL_CONTRACT_ID;
+
       delete process.env.LOANS_POOL_CONTRACT_ID;
+      delete process.env.LOANSPOOL_CONTRACT_ID;
 
       const result = await service.partialLiquidation(validLiquidationParams);
 
       expect(result.ok).toBe(false);
       expect(result.error).toContain('not configured');
+
+      if (originalLoansPool !== undefined) {
+        process.env.LOANS_POOL_CONTRACT_ID = originalLoansPool;
+      }
+      if (originalLoansPoolLegacy !== undefined) {
+        process.env.LOANSPOOL_CONTRACT_ID = originalLoansPoolLegacy;
+      }
     });
   });
 

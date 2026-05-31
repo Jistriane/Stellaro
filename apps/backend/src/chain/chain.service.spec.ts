@@ -18,12 +18,19 @@ describe('ChainService', () => {
 
   describe('getConfig', () => {
     it('should return configuration with defaults', () => {
+      const originalNetwork = process.env.STELLAR_NETWORK;
+      delete process.env.STELLAR_NETWORK;
+
       const config = service.getConfig();
 
       expect(config).toHaveProperty('network');
       expect(config).toHaveProperty('sorobanRpcUrl');
       expect(config).toHaveProperty('horizonUrl');
       expect(config.network).toBe('testnet');
+
+      if (originalNetwork !== undefined) {
+        process.env.STELLAR_NETWORK = originalNetwork;
+      }
     });
 
     it('should use testnet as default', () => {

@@ -3,6 +3,21 @@ import { ConfigService } from '@nestjs/config';
 import { X402Service } from './x402.service';
 
 describe('X402Service', () => {
+  let originalNetwork: string | undefined;
+
+  beforeEach(() => {
+    originalNetwork = process.env.STELLAR_NETWORK;
+    process.env.STELLAR_NETWORK = 'testnet';
+  });
+
+  afterEach(() => {
+    if (originalNetwork === undefined) {
+      delete process.env.STELLAR_NETWORK;
+      return;
+    }
+    process.env.STELLAR_NETWORK = originalNetwork;
+  });
+
   function createService(values: Record<string, string | undefined>) {
     const configService = {
       get: jest.fn((key: string) => values[key]),
