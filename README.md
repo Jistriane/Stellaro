@@ -245,116 +245,116 @@ Expected behavior:
 
 ```mermaid
 flowchart LR
-	U[Usuário e Operações]
+  U[Usuário e Operações]
 
-	subgraph UX[Camada de Experiência]
-		WEB[Web App\nNext.js (App Router)]
-		MOB[Mobile App\nExpo / React Native]
-		ADM[Admin / Ops UI]
-		WALLET[Wallets\nFreighter / Ledger / Albedo]
-		ZKGEN[ZK Proof (cliente)\nSnarkJS + Groth16]
-	end
+  subgraph UX[Camada de Experiência]
+    WEB[Web App<br/>Next.js (App Router)]
+    MOB[Mobile App<br/>Expo / React Native]
+    ADM[Admin / Ops UI]
+    WALLET[Wallets<br/>Freighter / Ledger / Albedo]
+    ZKGEN[ZK Proof (cliente)<br/>SnarkJS + Groth16]
+  end
 
-	subgraph API[Camada de Aplicação (NestJS)]
-		GW[Backend API]
-		AUTH[Auth + Passkeys + Sessions]
-		RISK[Risk + Compliance]
-		PAY[Payments]
-		GOV[Governance]
-		RWA[RWA + SSI]
-	end
+  subgraph API[Camada de Aplicação (NestJS)]
+    GW[Backend API]
+    AUTH[Auth + Passkeys + Sessions]
+    RISK[Risk + Compliance]
+    PAY[Payments]
+    GOV[Governance]
+    RWA[RWA + SSI]
+  end
 
-	subgraph Integrations[Integrações Externas]
-		PIX[Celcoin\nPIX / BaaS]
-		CARDS[Dock\nCards]
-		KYC[Sumsub\nKYC]
-		X402[x402 Facilitator]
-		EF[Etherfuse API]
-	end
+  subgraph Integrations[Integrações Externas]
+    PIX[Celcoin<br/>PIX / BaaS]
+    CARDS[Dock<br/>Cards]
+    KYC[Sumsub<br/>KYC]
+    X402[x402 Facilitator]
+    EF[Etherfuse API]
+  end
 
-	subgraph ChainAccess[Infra de Chain]
-		RPC[Soroban RPC]
-		HZN[Horizon]
-	end
+  subgraph ChainAccess[Infra de Chain]
+    RPC[Soroban RPC]
+    HZN[Horizon]
+  end
 
-	subgraph Chain[Stellar + Soroban (Contratos)]
-		CST[Stablecoin]
-		CLN[LoansPool]
-		CDAO[DAO Governance]
-		CREC[Recurring Payments]
-		CRWA[RWA Tokenizer / Marketplace]
-		CVC[VC Registry]
-		CMEV[Batch Executor + MEV Guard]
-		CZK[ZK Verifier]
-	end
+  subgraph Chain[Stellar + Soroban (Contratos)]
+    CST[Stablecoin]
+    CLN[LoansPool]
+    CDAO[DAO Governance]
+    CREC[Recurring Payments]
+    CRWA[RWA Tokenizer / Marketplace]
+    CVC[VC Registry]
+    CMEV[Batch Executor + MEV Guard]
+    CZK[ZK Verifier]
+  end
 
-	subgraph Data[Dados e Operação]
-		PG[(PostgreSQL)]
-		RD[(Redis)]
-	end
+  subgraph Data[Dados e Operação]
+    PG[(PostgreSQL)]
+    RD[(Redis)]
+  end
 
-	subgraph Obs[Observabilidade]
-		OTEL[OpenTelemetry\nLogs / Metrics / Traces]
-		SEN[Sentry]
-		IDX[Chain Event Ingestor]
-		AUD[Compliance / Audit Evidence]
-	end
+  subgraph Obs[Observabilidade]
+    OTEL[OpenTelemetry<br/>Logs / Metrics / Traces]
+    SEN[Sentry]
+    IDX[Chain Event Ingestor]
+    AUD[Compliance / Audit Evidence]
+  end
 
-	U --> WEB
-	U --> MOB
-	U --> ADM
+  U --> WEB
+  U --> MOB
+  U --> ADM
 
-	WEB <--> WALLET
-	MOB <--> WALLET
+  WEB <--> WALLET
+  MOB <--> WALLET
 
-	WEB --> ZKGEN
-	MOB --> ZKGEN
-	ZKGEN --> GW
+  WEB --> ZKGEN
+  MOB --> ZKGEN
+  ZKGEN --> GW
 
-	WEB --> GW
-	MOB --> GW
-	ADM --> GW
+  WEB --> GW
+  MOB --> GW
+  ADM --> GW
 
-	GW --> AUTH
-	GW --> RISK
-	GW --> PAY
-	GW --> GOV
-	GW --> RWA
+  GW --> AUTH
+  GW --> RISK
+  GW --> PAY
+  GW --> GOV
+  GW --> RWA
 
-	PAY --> PIX
-	PAY --> CARDS
-	PAY --> X402
-	PAY --> EF
-	RISK --> KYC
+  PAY --> PIX
+  PAY --> CARDS
+  PAY --> X402
+  PAY --> EF
+  RISK --> KYC
 
-	GW --> PG
-	GW --> RD
+  GW --> PG
+  GW --> RD
 
-	WALLET --> RPC
-	GW --> RPC
-	GW --> HZN
+  WALLET --> RPC
+  GW --> RPC
+  GW --> HZN
 
-	RPC --> CST
-	RPC --> CLN
-	RPC --> CDAO
-	RPC --> CREC
-	RPC --> CRWA
-	RPC --> CVC
-	RPC --> CMEV
-	RPC --> CZK
+  RPC --> CST
+  RPC --> CLN
+  RPC --> CDAO
+  RPC --> CREC
+  RPC --> CRWA
+  RPC --> CVC
+  RPC --> CMEV
+  RPC --> CZK
 
-	HZN --> IDX
-	RPC --> IDX
-	IDX --> PG
+  HZN --> IDX
+  RPC --> IDX
+  IDX --> PG
 
-	RISK --> OTEL
-	PAY --> OTEL
-	AUTH --> OTEL
-	GW --> OTEL
-	GW --> SEN
+  RISK --> OTEL
+  PAY --> OTEL
+  AUTH --> OTEL
+  GW --> OTEL
+  GW --> SEN
 
-	PG --> AUD
-	OTEL --> AUD
+  PG --> AUD
+  OTEL --> AUD
 ```
 
 ## Deployment Registry and Explorer Links
