@@ -6,7 +6,7 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "build:pages": "DEPLOY_TARGET=github-pages next build --webpack && node tools/fix-pages-asset-paths.mjs",
-    "start": "next start --webpack",
+    "start": "next start -p ${PORT:-3000}",
     "lint": "eslint",
     "test": "vitest run"
   },
