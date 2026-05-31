@@ -15,7 +15,9 @@ export class StablecoinService {
     private webhooks: WebhookService,
   ) {
     this.STLT_CONTRACT_ID = this.configService.get<string>('STABLECOIN_CONTRACT_ID');
-    this.MASTER_SECRET = this.configService.get<string>('MASTER_SECRET_KEY');
+    this.MASTER_SECRET =
+      this.configService.get<string>('MASTER_SECRET_KEY') ??
+      this.configService.get<string>('STELLAR_SECRET_KEY');
   }
 
   /**

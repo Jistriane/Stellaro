@@ -17,9 +17,11 @@ interface SorobanRpcNS {
 type SdkWithSorobanRpc = typeof import("@stellar/stellar-sdk") & { SorobanRpc?: SorobanRpcNS };
 
 export function getRpcUrl(network: SorobanNetwork): string {
+  const override = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL;
+  if (override) return override;
   return network === "testnet"
     ? "https://soroban-testnet.stellar.org"
-    : "https://soroban-rpc.mainnet.stellar.network";
+    : "https://rpc.ankr.com/stellar_soroban";
 }
 
 export function getNetworkPassphrase(network: SorobanNetwork): string {

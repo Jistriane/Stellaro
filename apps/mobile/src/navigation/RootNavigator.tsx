@@ -5,6 +5,7 @@ import Dashboard from '../screens/Dashboard';
 import Lending from '../screens/Lending';
 import Marketplace from '../screens/Marketplace';
 import DAO from '../screens/DAO';
+import { theme } from '../lib/theme';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,13 +15,20 @@ export default function RootNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#1e293b',
-          borderTopWidth: 0,
+          backgroundColor: theme.colors.bg2,
+          borderTopWidth: 1,
+          borderTopColor: theme.colors.rule,
           paddingBottom: 8,
           height: 60,
         },
-        tabBarActiveTintColor: '#10b981',
-        tabBarInactiveTintColor: '#94a3b8',
+        tabBarActiveTintColor: theme.colors.gold,
+        tabBarInactiveTintColor: theme.colors.inkDim,
+        tabBarLabelStyle: {
+          fontFamily: theme.fonts.mono,
+          fontSize: 10,
+          letterSpacing: 1.2,
+          textTransform: 'uppercase',
+        },
       }}
     >
       <Tab.Screen 

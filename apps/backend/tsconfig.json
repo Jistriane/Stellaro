@@ -22,8 +22,9 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "resolvePackageJsonExports": true
+    "resolvePackageJsonExports": true,
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["dist/**/*", "src/**/*.spec.ts", "test/**/*"]
+  "exclude": ["dist/**/*", "test/**/*"]
 }

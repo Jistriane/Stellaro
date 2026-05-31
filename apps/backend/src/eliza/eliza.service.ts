@@ -70,10 +70,10 @@ export class ElizaService implements OnModuleInit {
         this.logger.error('Eliza tick failed', e as Error),
       );
     }, intervalMs);
-    
+
     // Prevent timer from blocking process exit in tests
     this.timer.unref();
-    
+
     this.logger.log(`Eliza agent started. Tick interval: ${intervalMs}ms`);
     return { started: true };
   }
@@ -143,11 +143,8 @@ export class ElizaService implements OnModuleInit {
 
       return response.data;
     } catch (error) {
-      this.logger.error(
-        `Failed to trigger ${agent}.${action}`,
-        error as Error,
-      );
-      
+      this.logger.error(`Failed to trigger ${agent}.${action}`, error as Error);
+
       // Fallback to mock response for development
       if (process.env.NODE_ENV === 'development') {
         this.logger.warn(`Using mock response for ${agent}.${action}`);
@@ -161,16 +158,16 @@ export class ElizaService implements OnModuleInit {
             payload,
           },
         };
-        
+
         await this.memory.logEvent('multi-agent', `${agent}.${action}`, {
           payload,
           result: mockResponse.result,
           mock: true,
         });
-        
+
         return mockResponse;
       }
-      
+
       throw error;
     }
   }
@@ -205,11 +202,11 @@ export class ElizaService implements OnModuleInit {
       return response.data;
     } catch (error) {
       this.logger.error(`Workflow ${workflow} failed`, error as Error);
-      
+
       // Fallback to mock workflow execution for development
       if (process.env.NODE_ENV === 'development') {
         this.logger.warn(`Using mock workflow for ${workflow}`);
-        
+
         let workflowResult;
         switch (workflow) {
           case 'safe_optimization':
@@ -243,7 +240,7 @@ export class ElizaService implements OnModuleInit {
           result: workflowResult,
         };
       }
-      
+
       throw error;
     }
   }

@@ -4,6 +4,7 @@
 
 GitHub Pages is enabled and deploying via GitHub Actions.
 
+- Official site: https://www.stellaro.com.br/
 - **Site URL**: https://jistriane.github.io/Stellaro/
 - **Latest successful deploy**: Run #17 (April 20, 2026)
 - **Run link**: https://github.com/Jistriane/Stellaro/actions/runs/24685608906

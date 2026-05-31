@@ -33,7 +33,11 @@ describe('HistoryController', () => {
 
     const result = await controller.listHistory('addr-1', undefined, 10);
 
-    expect(horizon.listOperations).toHaveBeenCalledWith('addr-1', undefined, 10);
+    expect(horizon.listOperations).toHaveBeenCalledWith(
+      'addr-1',
+      undefined,
+      10,
+    );
     expect(result).toEqual({
       address: 'addr-1',
       cursor: 'abc123',
@@ -61,7 +65,11 @@ describe('HistoryController', () => {
 
     const result = await controller.listHistory('addr-2');
 
-    expect(horizon.listOperations).toHaveBeenCalledWith('addr-2', undefined, 20);
+    expect(horizon.listOperations).toHaveBeenCalledWith(
+      'addr-2',
+      undefined,
+      20,
+    );
     expect(result).toEqual({ address: 'addr-2', cursor: undefined, items: [] });
   });
 });

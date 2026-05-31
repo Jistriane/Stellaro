@@ -32,15 +32,11 @@ import { SecurityModule } from './security/security.module';
 import { ZkModule } from './zk/zk.module';
 import { RedisModule } from './redis/redis.module';
 import { InsuranceModule } from './insurance/insurance.module';
+import { ReflectorModule } from './reflector/reflector.module';
 // ReflectorModule optionally loaded in non-test env to avoid optional deps during E2E
 
 const isTest = process.env.NODE_ENV === 'test';
-let optionalReflectorModules: any[] = [];
-if (!isTest) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { ReflectorModule } = require('./reflector/reflector.module');
-  optionalReflectorModules = [ReflectorModule];
-}
+const optionalReflectorModules = isTest ? [] : [ReflectorModule];
 
 @Module({
   imports: [

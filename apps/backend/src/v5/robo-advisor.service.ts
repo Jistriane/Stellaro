@@ -180,8 +180,10 @@ export class RoboAdvisorService {
   }
 
   private async executeLiquidation(userId: string) {
-    const loansPoolId = process.env.LOANS_POOL_CONTRACT_ID;
-    const adminSecret = process.env.MASTER_SECRET_KEY;
+    const loansPoolId =
+      process.env.LOANSPOOL_CONTRACT_ID ?? process.env.LOANS_POOL_CONTRACT_ID;
+    const adminSecret =
+      process.env.MASTER_SECRET_KEY ?? process.env.STELLAR_SECRET_KEY;
 
     await this.sorobanService.executeContractCall(
       loansPoolId,

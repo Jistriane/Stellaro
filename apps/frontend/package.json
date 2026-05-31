@@ -8,7 +8,7 @@
     "build:pages": "DEPLOY_TARGET=github-pages next build && node tools/fix-pages-asset-paths.mjs",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@blend-capital/blend-sdk": "^3.2.1",
@@ -32,6 +32,7 @@
     "react-dom": "19.1.0",
     "react-is": "^19.2.1",
     "recharts": "^3.1.2",
+    "snarkjs": "^0.7.6",
     "tailwind-merge": "^3.3.1",
     "viem": "^2.21.19",
     "zustand": "^5.0.8"

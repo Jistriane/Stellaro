@@ -1,13 +1,62 @@
 # MAINNET DEPLOYMENT CHECKLIST - STELLARO
 
-**Date**: December 9, 2025  
+Official site: https://www.stellaro.com.br/
+
+**Date**: May 30, 2026  
 **Purpose**: Pre-deployment verification for Stellar mainnet  
-**Status**: Ready for verification  
-**Go/No-Go Decision**: To be completed before deployment  
+**Status**: DEPLOYED (Mainnet)  
+**Go/No-Go Decision**: GO - DEPLOYMENT COMPLETED
 
 ---
 
-## PRE-DEPLOYMENT VERIFICATION
+## FINAL MAINNET VERIFICATION STATUS (v4.0.0)
+
+### Mainnet Contract IDs (LIVE)
+
+Canonical registry:
+- `mainnet_deployment_registry.json` (generated output; ignored by git)
+
+| Module | Contract ID | Stellar Expert |
+| :--- | :--- | :--- |
+| portfolio | CDW75QCGLFDFSE326JYJSJG4R2YYPTDSLDWGZFXYLKZBQKSBUV5B5VF6 | https://stellar.expert/explorer/public/contract/CDW75QCGLFDFSE326JYJSJG4R2YYPTDSLDWGZFXYLKZBQKSBUV5B5VF6 |
+| stablecoin | CCW7JVVL5JKESJHTMECOXCHPIFV7N4K3HDKSN67QUNB35B2HFLDI5AXL | https://stellar.expert/explorer/public/contract/CCW7JVVL5JKESJHTMECOXCHPIFV7N4K3HDKSN67QUNB35B2HFLDI5AXL |
+| risklock | CCEGNQ7RS5UB4PDTSHRZJRA26UNVROCRSEN6IV4US5W4LQHNDTALL4C3 | https://stellar.expert/explorer/public/contract/CCEGNQ7RS5UB4PDTSHRZJRA26UNVROCRSEN6IV4US5W4LQHNDTALL4C3 |
+| loans_pool | CAWB5URQB6AL6YV5ASI7WHHMPDC6SGWYBY5X656PIPXT5OECAYSGPTUI | https://stellar.expert/explorer/public/contract/CAWB5URQB6AL6YV5ASI7WHHMPDC6SGWYBY5X656PIPXT5OECAYSGPTUI |
+| governance | CBB3FGR6CJAAXPDHQDJOW54RAEQ35SWMULMDFV4KO73ZTJMWZ2M6YAWH | https://stellar.expert/explorer/public/contract/CBB3FGR6CJAAXPDHQDJOW54RAEQ35SWMULMDFV4KO73ZTJMWZ2M6YAWH |
+| zk_verifier | CCX7LH2BQUV35ALSGQPP3N7ZNLZVJQJVXSAPJELHOPWWAQ3DZ3XP4HIQ | https://stellar.expert/explorer/public/contract/CCX7LH2BQUV35ALSGQPP3N7ZNLZVJQJVXSAPJELHOPWWAQ3DZ3XP4HIQ |
+| batch_executor | CC6CREAKIXSX24DHY3LSNYGO322XJHP5BOUFYGLKKJEDFCO2LDZCZ747 | https://stellar.expert/explorer/public/contract/CC6CREAKIXSX24DHY3LSNYGO322XJHP5BOUFYGLKKJEDFCO2LDZCZ747 |
+| mev_guard | CBCB3CH6V6UUN6SID374CP3VHHFV5M55R5F6H6WTRFH3X3EVT6HIMIHZ | https://stellar.expert/explorer/public/contract/CBCB3CH6V6UUN6SID374CP3VHHFV5M55R5F6H6WTRFH3X3EVT6HIMIHZ |
+| vc_registry | CAQBZTC53L4CO7LQQ72XLQG7NYYG5JWMH6BER4IFVKAWUM5IYNB7IJSN | https://stellar.expert/explorer/public/contract/CAQBZTC53L4CO7LQQ72XLQG7NYYG5JWMH6BER4IFVKAWUM5IYNB7IJSN |
+| rwa_tokenizer | CD37GRKZCESRVUFDSTMMQZGUUJ2HWBWLR52AR4MRJFJQPFQ5IL7MRCFN | https://stellar.expert/explorer/public/contract/CD37GRKZCESRVUFDSTMMQZGUUJ2HWBWLR52AR4MRJFJQPFQ5IL7MRCFN |
+| dao_governance | CDOVGJQOQ22YOAUMK5DBELHJXJEN5MO4LVAQUDJULSHE7OI63HNEEGOH | https://stellar.expert/explorer/public/contract/CDOVGJQOQ22YOAUMK5DBELHJXJEN5MO4LVAQUDJULSHE7OI63HNEEGOH |
+| recurring_payments | CDESEWHWPTTEDWF7PNYW23RKNBV4NTW3U6456OICDLD3FCRL7Y33LGBB | https://stellar.expert/explorer/public/contract/CDESEWHWPTTEDWF7PNYW23RKNBV4NTW3U6456OICDLD3FCRL7Y33LGBB |
+| insurance_pool | CCSNWO2PZFZ6OUMTGRRBT23X5BOW22JU32E6VYJFHLJHWLQLZPH7YUPZ | https://stellar.expert/explorer/public/contract/CCSNWO2PZFZ6OUMTGRRBT23X5BOW22JU32E6VYJFHLJHWLQLZPH7YUPZ |
+| bridge_adapter | CDWIGKW2VVA7YZUCTRDSGCZ3AI2XNKMLFBRWT65OWHUXMF5BVSBRPDOB | https://stellar.expert/explorer/public/contract/CDWIGKW2VVA7YZUCTRDSGCZ3AI2XNKMLFBRWT65OWHUXMF5BVSBRPDOB |
+| rwa_marketplace | CBRCT3YLI47EUSOGLORVO5NZVBRVEHMVDFY4ORGABKAUOWFJHYOI45YQ | https://stellar.expert/explorer/public/contract/CBRCT3YLI47EUSOGLORVO5NZVBRVEHMVDFY4ORGABKAUOWFJHYOI45YQ |
+| institutional_vault | CDA4EO7THZDQGKEVNTVID4EOLBYWUWXFF7IOOWCYGWATUUPJHCSHNSB2 | https://stellar.expert/explorer/public/contract/CDA4EO7THZDQGKEVNTVID4EOLBYWUWXFF7IOOWCYGWATUUPJHCSHNSB2 |
+| liquid_staking | CBXIENCX2GW7N76HXW7YWLU4NHHBVATPPAIBINV5EY7NNA7NT4JYAY4N | https://stellar.expert/explorer/public/contract/CBXIENCX2GW7N76HXW7YWLU4NHHBVATPPAIBINV5EY7NNA7NT4JYAY4N |
+| multisig_adapter | CCL3OD6EMUFBET7V6SBAFY7QAAXS2NZDSZBJJXATXROGCONRJKPMT7JW | https://stellar.expert/explorer/public/contract/CCL3OD6EMUFBET7V6SBAFY7QAAXS2NZDSZBJJXATXROGCONRJKPMT7JW |
+| referral_system | CCJ3KSRDCBKE5MURRJTB4AD7657WNQK4YIJDDXAQJXLH5VTJ65ZYYN72 | https://stellar.expert/explorer/public/contract/CCJ3KSRDCBKE5MURRJTB4AD7657WNQK4YIJDDXAQJXLH5VTJ65ZYYN72 |
+
+### Phase 1: Smart Contract Integrity (DONE)
+- [x] **Upgradeability Pattern**: All contracts implemented with `fn upgrade` and `UpgradeEvent`.
+- [x] **Event Standardization**: Migrated to modern `#[contractevent]` SDK 23.0 pattern.
+- [x] **Security Audit**: Static analysis with `cargo clippy` and `cargo audit` passing 100%.
+- [x] **Compliance Gating**: KYC/SSI checks integrated into all financial primitives (Loans, RWA, DAO).
+
+### Phase 2: Backend Production Orchestration (DONE)
+- [x] **Webhook Persistence**: Persistent DB storage for external event subscriptions (Prisma).
+- [x] **Network Dynamicity**: Multi-network support via `STELLAR_NETWORK_PASSPHRASE` environment variable.
+- [x] **Stablecoin Service**: Production-ready Mint/Redeem flows prepared for BaaS integration.
+
+### Phase 3: Web & Mobile Experience (DONE)
+- [x] **ZK Proof Real Integration**: Client-side proof generation using `snarkjs` and Groth16 circuits.
+- [x] **Mobile Parity**: Dashboard, DAO, and SSI features synchronized between Web and Expo Mobile.
+- [x] **Production Envs**: `.env-prod` consolidated with all necessary mainnet parameters.
+
+---
+
+## PRE-DEPLOYMENT VERIFICATION GUIDE
 
 Complete all items before proceeding with mainnet deployment.
 
@@ -140,10 +189,8 @@ curl -I https://api.stellaro.io/health
 
 **Verification commands**:
 ```bash
-cd contracts
-cargo build --release
-soroban contract build
-ls -lh target/wasm32-unknown-unknown/release/*.wasm
+stellar contract build --manifest-path contracts/Cargo.toml --profile release
+ls -lh contracts/target/wasm32v1-none/release/*.wasm
 ```
 
 #### Contract Testing

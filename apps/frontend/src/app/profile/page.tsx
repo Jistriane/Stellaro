@@ -264,7 +264,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image
         src="/capa.png"
         alt="Stellaro background"
@@ -273,63 +273,63 @@ export default function ProfilePage() {
         sizes="100vw"
         className="object-cover object-center opacity-25"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(96,165,250,0.14),transparent_28%),radial-gradient(circle_at_82%_80%,rgba(16,185,129,0.10),transparent_24%)]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(var(--stellaro-accent-rgb),0.14),transparent_28%),radial-gradient(circle_at_82%_80%,rgba(197,135,230,0.10),transparent_24%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8">
         {authRequired ? (
-          <div className="flex flex-col gap-3 rounded-2xl border border-amber-500/40 bg-amber-950/30 px-4 py-3 text-sm text-amber-100 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-secondary/20 px-4 py-3 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between">
             <span>You are not signed in. Sign in to load your profile, KYC status, and submission history.</span>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-full border border-amber-300/50 bg-amber-200/90 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-amber-950 transition hover:bg-amber-100"
+              className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary-foreground transition hover:bg-primary/90"
             >
               Sign in now
             </Link>
           </div>
         ) : null}
 
-        <header className="grid gap-6 rounded-[2rem] border border-slate-800/70 bg-slate-950/55 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-md lg:grid-cols-[1.05fr_0.95fr] lg:p-8">
+        <header className="grid gap-6 rounded-[2rem] border border-border/60 bg-card/50 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:grid-cols-[1.05fr_0.95fr] lg:p-8">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-950/60 px-4 py-2 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-3 rounded-full border border-border/70 bg-card/40 px-4 py-2 backdrop-blur-sm">
               <Image src="/logo.png" alt="Stellaro logo" width={48} height={48} className="h-10 w-10 rounded-md object-contain" />
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Profile</p>
-                <p className="text-sm text-slate-200">Identity and compliance workspace</p>
+                <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted-foreground">Profile</p>
+                <p className="text-sm text-foreground">Identity and compliance workspace</p>
               </div>
             </div>
 
             <div className="max-w-3xl space-y-3">
-              <h1 className="text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl">Profile and KYC</h1>
-              <p className="max-w-2xl text-base leading-7 text-slate-200/85 sm:text-lg">
+              <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">Profile and KYC</h1>
+              <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
                 Submit your identity, address, and income documentation to complete compliance verification.
               </p>
             </div>
           </div>
 
-          <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/60 p-6 backdrop-blur-md">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Compliance Status</p>
-            <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-              <div className="text-xs text-slate-500">Current status</div>
-              <div className="mt-2 text-slate-100">{loadingOverview ? "Loading..." : kycOverview.status}</div>
+          <div className="rounded-[1.75rem] border border-border/40 bg-card/40 p-6 backdrop-blur-md">
+            <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted-foreground">Compliance Status</p>
+            <div className="mt-4 rounded-2xl border border-border/60 bg-secondary/20 p-4">
+              <div className="text-xs text-muted-foreground">Current status</div>
+              <div className="mt-2 text-foreground">{loadingOverview ? "Loading..." : kycOverview.status}</div>
               <div className="mt-3"><Progress value={kycOverview.progressPct} className="mt-1" /></div>
-              <div className="mt-2 text-xs text-slate-500">{kycOverview.progressPct}% • Next step: {kycOverview.nextStep}</div>
+              <div className="mt-2 text-xs text-muted-foreground">{kycOverview.progressPct}% • Next step: {kycOverview.nextStep}</div>
             </div>
-            <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm">
-              <div className="text-slate-400 text-xs">Verification level</div>
-              <div className="mt-2 text-slate-100">{kycOverview.level || "Basic"}</div>
+            <div className="mt-4 rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm">
+              <div className="text-muted-foreground text-xs">Verification level</div>
+              <div className="mt-2 text-foreground">{kycOverview.level || "Basic"}</div>
             </div>
           </div>
         </header>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>Identity information</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 overflow-hidden">
+                <div className="w-14 h-14 rounded-full bg-secondary/20 border border-border/60 flex items-center justify-center text-muted-foreground overflow-hidden">
                   {user?.avatarUrl ? (
                     <img src={user.avatarUrl} alt="Avatar" className="w-14 h-14 rounded-full object-cover" />
                   ) : (
@@ -337,115 +337,115 @@ export default function ProfilePage() {
                   )}
                 </div>
                 <div>
-                  <div className="text-slate-200 font-medium">{user?.name ?? "Not available"}</div>
-                  <div className="text-xs text-slate-500">Nickname: {user?.nickname ?? "Not available"}</div>
+                  <div className="text-foreground font-medium">{user?.name ?? "Not available"}</div>
+                  <div className="text-xs text-muted-foreground">Nickname: {user?.nickname ?? "Not available"}</div>
                 </div>
               </div>
               <div className="space-y-1 text-sm">
-                <div className="text-slate-400">Email</div>
-                <div className="rounded-xl bg-slate-900/80 px-3 py-2 border border-slate-800">{user?.email ?? "Not available"}</div>
-                <div className="text-slate-400 mt-2">Phone</div>
-                <div className="rounded-xl bg-slate-900/80 px-3 py-2 border border-slate-800">{user?.phone ?? "Not available"}</div>
+                <div className="text-muted-foreground">Email</div>
+                <div className="rounded-xl bg-secondary/20 px-3 py-2 border border-border/60 text-foreground">{user?.email ?? "Not available"}</div>
+                <div className="text-muted-foreground mt-2">Phone</div>
+                <div className="rounded-xl bg-secondary/20 px-3 py-2 border border-border/60 text-foreground">{user?.phone ?? "Not available"}</div>
               </div>
               <div className="space-y-1 text-sm">
-                <div className="text-slate-400">Date of birth</div>
-                <div className="rounded-xl bg-slate-900/80 px-3 py-2 border border-slate-800">{user?.dob ?? "Not available"}</div>
-                <div className="text-slate-400 mt-2">Stellar public key</div>
-                <div className="rounded-xl bg-slate-900/80 px-3 py-2 border border-slate-800 text-xs break-all">{user?.publicKey ?? "Not available"}</div>
+                <div className="text-muted-foreground">Date of birth</div>
+                <div className="rounded-xl bg-secondary/20 px-3 py-2 border border-border/60 text-foreground">{user?.dob ?? "Not available"}</div>
+                <div className="text-muted-foreground mt-2">Stellar public key</div>
+                <div className="rounded-xl bg-secondary/20 px-3 py-2 border border-border/60 text-xs break-all text-foreground">{user?.publicKey ?? "Not available"}</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>KYC application form</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleKycSubmit} className="space-y-5">
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-muted-foreground">
                 Provide all requested personal and financial information and upload every required file.
               </div>
 
               {submitError ? (
-                <div className="rounded-xl border border-rose-600/40 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">
+                <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                   {submitError}
                 </div>
               ) : null}
 
               {submitMessage ? (
-                <div className="rounded-xl border border-emerald-600/40 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-200">
+                <div className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-foreground">
                   {submitMessage}
                 </div>
               ) : null}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <label className="space-y-2">
-                  <span className="text-slate-300">Full name</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.fullName} onChange={(e) => handleKycField("fullName", e.target.value)} required />
+                  <span className="text-muted-foreground">Full name</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.fullName} onChange={(e) => handleKycField("fullName", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Email</span>
-                  <input type="email" className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.email} onChange={(e) => handleKycField("email", e.target.value)} required />
+                  <span className="text-muted-foreground">Email</span>
+                  <input type="email" className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.email} onChange={(e) => handleKycField("email", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Phone</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.phone} onChange={(e) => handleKycField("phone", e.target.value)} required />
+                  <span className="text-muted-foreground">Phone</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.phone} onChange={(e) => handleKycField("phone", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Date of birth</span>
-                  <input type="date" className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.dob} onChange={(e) => handleKycField("dob", e.target.value)} required />
+                  <span className="text-muted-foreground">Date of birth</span>
+                  <input type="date" className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.dob} onChange={(e) => handleKycField("dob", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Document (CPF or CNPJ)</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.document} onChange={(e) => handleKycField("document", e.target.value)} required />
+                  <span className="text-muted-foreground">Document (CPF or CNPJ)</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.document} onChange={(e) => handleKycField("document", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Stellar wallet public key</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.publicKey} onChange={(e) => handleKycField("publicKey", e.target.value)} required />
+                  <span className="text-muted-foreground">Stellar wallet public key</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.publicKey} onChange={(e) => handleKycField("publicKey", e.target.value)} required />
                 </label>
                 <label className="space-y-2 md:col-span-2">
-                  <span className="text-slate-300">Full address</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.addressLine1} onChange={(e) => handleKycField("addressLine1", e.target.value)} required />
+                  <span className="text-muted-foreground">Full address</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.addressLine1} onChange={(e) => handleKycField("addressLine1", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">City</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.city} onChange={(e) => handleKycField("city", e.target.value)} required />
+                  <span className="text-muted-foreground">City</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.city} onChange={(e) => handleKycField("city", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">State</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.state} onChange={(e) => handleKycField("state", e.target.value)} required />
+                  <span className="text-muted-foreground">State</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.state} onChange={(e) => handleKycField("state", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Postal code</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.postalCode} onChange={(e) => handleKycField("postalCode", e.target.value)} required />
+                  <span className="text-muted-foreground">Postal code</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.postalCode} onChange={(e) => handleKycField("postalCode", e.target.value)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Country</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.country} onChange={(e) => handleKycField("country", e.target.value)} required />
+                  <span className="text-muted-foreground">Country</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.country} onChange={(e) => handleKycField("country", e.target.value)} required />
                 </label>
                 <label className="space-y-2 md:col-span-2">
-                  <span className="text-slate-300">Monthly revenue</span>
-                  <input className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-100" value={kycForm.revenue} onChange={(e) => handleKycField("revenue", e.target.value)} required />
+                  <span className="text-muted-foreground">Monthly revenue</span>
+                  <input className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60" value={kycForm.revenue} onChange={(e) => handleKycField("revenue", e.target.value)} required />
                 </label>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <label className="space-y-2">
-                  <span className="text-slate-300">Upload ID document</span>
-                  <input type="file" accept="image/*,.pdf" className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-200" onChange={(e) => setIdDocumentFile(e.target.files?.[0] ?? null)} required />
+                  <span className="text-muted-foreground">Upload ID document</span>
+                  <input type="file" accept="image/*,.pdf" className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground" onChange={(e) => setIdDocumentFile(e.target.files?.[0] ?? null)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Upload selfie</span>
-                  <input type="file" accept="image/*" className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-200" onChange={(e) => setSelfieFile(e.target.files?.[0] ?? null)} required />
+                  <span className="text-muted-foreground">Upload selfie</span>
+                  <input type="file" accept="image/*" className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground" onChange={(e) => setSelfieFile(e.target.files?.[0] ?? null)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Upload address proof</span>
-                  <input type="file" accept="image/*,.pdf" className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-200" onChange={(e) => setAddressProofFile(e.target.files?.[0] ?? null)} required />
+                  <span className="text-muted-foreground">Upload address proof</span>
+                  <input type="file" accept="image/*,.pdf" className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground" onChange={(e) => setAddressProofFile(e.target.files?.[0] ?? null)} required />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-slate-300">Upload revenue proof</span>
-                  <input type="file" accept="image/*,.pdf" className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-slate-200" onChange={(e) => setRevenueProofFile(e.target.files?.[0] ?? null)} required />
+                  <span className="text-muted-foreground">Upload revenue proof</span>
+                  <input type="file" accept="image/*,.pdf" className="w-full rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground" onChange={(e) => setRevenueProofFile(e.target.files?.[0] ?? null)} required />
                 </label>
               </div>
 
@@ -453,7 +453,7 @@ export default function ProfilePage() {
                 <button
                   type="submit"
                   disabled={submittingKyc}
-                  className="rounded-full bg-emerald-400 px-6 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-70"
+                  className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-wait disabled:opacity-70"
                 >
                   {submittingKyc ? "Submitting KYC..." : "Submit profile and documents"}
                 </button>
@@ -462,21 +462,21 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>Documents status</CardTitle>
           </CardHeader>
           <CardContent>
             {loadingOverview ? (
-              <div className="text-sm text-slate-400">Loading document status...</div>
+              <div className="text-sm text-muted-foreground">Loading document status...</div>
             ) : (kycOverview.documents?.length ?? 0) === 0 ? (
-              <div className="text-sm text-slate-400">No documents submitted yet.</div>
+              <div className="text-sm text-muted-foreground">No documents submitted yet.</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 {(kycOverview.documents ?? []).map((d) => (
-                  <div key={d.key} className="bg-slate-900/70 rounded-2xl p-3 text-sm border border-slate-800">
-                    <div className="text-slate-300 font-medium">{d.label}</div>
-                    <div className="text-xs text-slate-500 mt-1">Status: {d.status}</div>
+                  <div key={d.key} className="bg-secondary/20 rounded-2xl p-3 text-sm border border-border/60">
+                    <div className="text-foreground font-medium">{d.label}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Status: {d.status}</div>
                   </div>
                 ))}
               </div>
@@ -484,23 +484,23 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>KYC submission history</CardTitle>
           </CardHeader>
           <CardContent>
             {loadingHistory ? (
-              <div className="text-sm text-slate-400">Loading KYC history...</div>
+              <div className="text-sm text-muted-foreground">Loading KYC history...</div>
             ) : kycHistory.length === 0 ? (
-              <div className="text-sm text-slate-400">No KYC submissions found.</div>
+              <div className="text-sm text-muted-foreground">No KYC submissions found.</div>
             ) : (
               <div className="space-y-2 text-sm">
                 {kycHistory.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between bg-slate-900/70 rounded-xl px-3 py-2 border border-slate-800">
-                    <div className="text-slate-300">
+                  <div key={item.id} className="flex items-center justify-between bg-secondary/20 rounded-xl px-3 py-2 border border-border/60">
+                    <div className="text-foreground">
                       {new Date(item.createdAt).toLocaleString("en-US")} • {item.provider}
                     </div>
-                    <div className="text-xs text-slate-400">{item.status}</div>
+                    <div className="text-xs text-muted-foreground">{item.status}</div>
                   </div>
                 ))}
               </div>
@@ -508,17 +508,17 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>Privacy and support</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-300">
+            <div className="text-sm text-muted-foreground">
               Your uploaded files are used for compliance verification and secure account operations.
             </div>
             <div className="mt-3 flex flex-wrap gap-2 text-sm">
-              <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80">Documentation</Link>
-              <Link href="/help" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80">Support</Link>
+              <Link href="/docs" className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground">Documentation</Link>
+              <Link href="/help" className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground">Support</Link>
             </div>
           </CardContent>
         </Card>

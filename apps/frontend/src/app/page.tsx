@@ -13,9 +13,9 @@ export default function Home() {
   const t = useTranslations("home");
   const lc: "pt" | "en" = locale === "en" ? "en" : "pt";
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 font-sans flex flex-col gap-10 min-h-screen w-full">
         <div className="w-full max-w-6xl mx-auto">
           <HomeHero />
@@ -24,9 +24,9 @@ export default function Home() {
         <main className="flex flex-col gap-8 items-center w-full max-w-6xl mx-auto">
         <WalletPanel />
 
-        <Card className="w-full border-slate-700/60 bg-slate-950/50 backdrop-blur shadow-lg">
+        <Card className="w-full border-border/60 bg-card/50 backdrop-blur-xl shadow-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-slate-100">Real-time Market</CardTitle>
+            <CardTitle className="text-lg text-foreground">Real-time Market</CardTitle>
           </CardHeader>
           <CardContent>
             <TradingView symbols={[["XLM", "USD"], ["BTC", "USD"]]} height={480} theme="dark" locale={lc} />
@@ -37,12 +37,12 @@ export default function Home() {
           <BalanceChart />
         </div>
 
-        <Card className="w-full border-emerald-400/20 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 backdrop-blur shadow-lg">
+        <Card className="w-full border-primary/20 bg-gradient-to-br from-card/60 via-card/40 to-primary/5 backdrop-blur-xl shadow-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-slate-100">Stellaro v4.0 Launchpad</CardTitle>
+            <CardTitle className="text-lg text-foreground">Stellaro v4.0 Launchpad</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-slate-300 max-w-3xl">
+            <p className="text-sm text-muted-foreground max-w-3xl">
               The next layer of the project connects RWA tokenization, verifiable credentials, recurring payments, and DAO governance into a single product surface.
             </p>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -55,17 +55,17 @@ export default function Home() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 transition-all hover:border-emerald-400/40 hover:bg-slate-900"
+                  className="rounded-xl border border-border/60 bg-secondary/20 p-4 transition-all hover:border-primary/40 hover:bg-secondary/40"
                 >
-                  <div className="text-sm font-medium text-slate-100">{item.title}</div>
-                  <div className="mt-2 text-xs leading-5 text-slate-400">{item.text}</div>
+                  <div className="text-sm font-medium text-foreground">{item.title}</div>
+                  <div className="mt-2 text-xs leading-5 text-muted-foreground">{item.text}</div>
                 </Link>
               ))}
             </div>
           </CardContent>
         </Card>
         </main>
-        <footer className="flex gap-6 flex-wrap items-center justify-center text-slate-500 py-6">
+        <footer className="flex gap-6 flex-wrap items-center justify-center text-muted-foreground py-6">
           <span className="text-xs">{t("footer.brand")}</span>
         </footer>
       </div>

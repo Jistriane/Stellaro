@@ -27,7 +27,9 @@ describe('ElizaGuard', () => {
     const guard = new ElizaGuard();
     const ctx: any = mockContext({});
 
-    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 
   it('falha quando o header é inválido', async () => {
@@ -35,6 +37,8 @@ describe('ElizaGuard', () => {
     const guard = new ElizaGuard();
     const ctx: any = mockContext({ 'x-eliza-secret': 'wrong' });
 
-    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 });

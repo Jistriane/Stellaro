@@ -1,0 +1,30 @@
+export const theme = {
+  colors: {
+    bg: "#050608",
+    bg2: "#0a0c10",
+    bg3: "#0f1218",
+    ink: "#f4ecdc",
+    inkDim: "#b9b1a0",
+    inkFaint: "#6a6558",
+    gold: "#d4a86a",
+    goldSoft: "#c9a877",
+    nebula: "#c587e6",
+    aurora: "#8fd4b3",
+    green: "#6fcf97",
+    rule: "rgba(244,236,220,0.07)",
+    line: "rgba(212,168,106,0.28)",
+    danger: "#ef4444",
+  },
+  radius: {
+    card: 20,
+    cardLg: 24,
+    pill: 999,
+  },
+  fonts: {
+    sansLight: "Jost_300Light",
+    sansRegular: "Jost_400Regular",
+    sansMedium: "Jost_500Medium",
+    serifItalic: "CormorantGaramond_300Light_Italic",
+    mono: "JetBrainsMono_400Regular",
+  },
+} as const;

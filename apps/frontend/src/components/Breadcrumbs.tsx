@@ -34,19 +34,19 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <nav aria-label="Breadcrumb" className="w-full border-b border-slate-800 bg-slate-950/60 backdrop-blur supports-[backdrop-filter]:bg-slate-950/40">
+    <nav aria-label="Breadcrumb" className="w-full border-b border-border/60 bg-background/50 backdrop-blur-xl supports-[backdrop-filter]:bg-background/30">
       <div className="px-6 py-3 flex items-center justify-start gap-4">
-        <ol className="flex items-center gap-2 text-sm text-slate-400">
+        <ol className="flex items-center gap-2 text-sm text-muted-foreground">
           {crumbs.map((href, idx) => {
             const isLast = idx === crumbs.length - 1;
             const seg = idx === 0 ? "" : segments[idx - 1];
             return (
               <li key={href} className="flex items-center gap-2">
-                {idx > 0 && <span className="text-slate-600">/</span>}
+                {idx > 0 && <span className="text-muted-foreground/70">/</span>}
                 {isLast ? (
-                  <span className="text-slate-200 font-medium">{labelFromSegment(seg)}</span>
+                  <span className="text-foreground font-medium">{labelFromSegment(seg)}</span>
                 ) : (
-                  <Link href={href} className="hover:text-slate-200 transition-colors">
+                  <Link href={href} className="hover:text-foreground transition-colors">
                     {idx === 0 ? (t("home") as string) : labelFromSegment(seg)}
                   </Link>
                 )}

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Plus, Minus, BarChart3, TrendingUp } from "lucide-react";
+import { Plus, Minus, TrendingUp } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -94,19 +94,20 @@ export default function LiquidityPoolsPage() {
     { day: "Day 90", loss: 7.8 },
   ];
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_15%,rgba(var(--stellaro-accent-rgb),0.14),transparent_60%),radial-gradient(900px_circle_at_80%_10%,rgba(197,135,230,0.10),transparent_55%)]" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-semibold mb-1">{t("pools.title")}</h1>
-            <p className="text-xs text-slate-500">{t("pools.subtitle")}</p>
+            <p className="text-xs text-muted-foreground">{t("pools.subtitle")}</p>
           </div>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
             Add Liquidity
           </Button>
@@ -116,47 +117,47 @@ export default function LiquidityPoolsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Total Liquidity</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Total Liquidity</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">
                 ${(pools.reduce((sum, p) => sum + p.yourLiquidity, 0) / 1000).toFixed(0)}K
               </p>
-              <p className="text-xs text-green-600 mt-1">+12.5% this week</p>
+              <p className="text-xs text-primary mt-1">+12.5% this week</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Total Volume (24h)</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Total Volume (24h)</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">
                 ${(pools.reduce((sum, p) => sum + p.volume24h, 0) / 1000).toFixed(0)}K
               </p>
-              <p className="text-xs text-blue-600 mt-1">All your pools</p>
+              <p className="text-xs text-muted-foreground mt-1">All your pools</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Average APY</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Average APY</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">
                 {(pools.reduce((sum, p) => sum + p.apy, 0) / pools.length).toFixed(1)}%
               </p>
-              <p className="text-xs text-green-600 mt-1">Farm rewards included</p>
+              <p className="text-xs text-muted-foreground mt-1">Farm rewards included</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Total Pools</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Total Pools</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{pools.length}</p>
-              <p className="text-xs text-slate-500 mt-1">Active positions</p>
+              <p className="text-xs text-muted-foreground mt-1">Active positions</p>
             </CardContent>
           </Card>
         </div>
@@ -169,8 +170,8 @@ export default function LiquidityPoolsPage() {
               onClick={() => setSelectedPool(pool.id)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 selectedPool === pool.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-700 text-gray-300 hover:bg-slate-600"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary/30 border border-border/60 text-muted-foreground hover:text-foreground"
               }`}
             >
               {pool.pair}
@@ -184,23 +185,23 @@ export default function LiquidityPoolsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xs text-slate-500">Pool TVL</CardTitle>
+                  <CardTitle className="text-xs text-muted-foreground">Pool TVL</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">
                     ${(currentPool.tvl / 1000000).toFixed(1)}M
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">Total Locked Value</p>
+                  <p className="text-xs text-muted-foreground mt-1">Total Locked Value</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xs text-slate-500">Your Share</CardTitle>
+                  <CardTitle className="text-xs text-muted-foreground">Your Share</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">{currentPool.share.toFixed(2)}%</p>
-                  <p className="text-xs text-green-600 mt-1">
+                  <p className="text-xs text-primary mt-1">
                     ${(currentPool.yourLiquidity / 1000).toFixed(0)}K value
                   </p>
                 </CardContent>
@@ -208,13 +209,13 @@ export default function LiquidityPoolsPage() {
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xs text-slate-500">APY</CardTitle>
+                  <CardTitle className="text-xs text-muted-foreground">APY</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-3xl font-bold text-primary">
                     {currentPool.apy.toFixed(1)}%
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">Fee {currentPool.fee}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Fee {currentPool.fee}</p>
                 </CardContent>
               </Card>
             </div>
@@ -229,12 +230,12 @@ export default function LiquidityPoolsPage() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <span>{currentPool.token0.symbol}</span>
-                      <span className="text-sm text-slate-500">50%</span>
+                      <span className="text-sm text-muted-foreground">50%</span>
                     </div>
-                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                      <div className="h-full w-1/2 bg-blue-600" />
+                    <div className="h-2 bg-secondary/40 rounded-full overflow-hidden">
+                      <div className="h-full w-1/2 bg-primary" />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {currentPool.token0.amount.toLocaleString()} {currentPool.token0.symbol}
                       {" "}
                       @ ${currentPool.token0.price}
@@ -244,12 +245,12 @@ export default function LiquidityPoolsPage() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <span>{currentPool.token1.symbol}</span>
-                      <span className="text-sm text-slate-500">50%</span>
+                      <span className="text-sm text-muted-foreground">50%</span>
                     </div>
-                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                      <div className="h-full w-1/2 bg-green-600" />
+                    <div className="h-2 bg-secondary/40 rounded-full overflow-hidden">
+                      <div className="h-full w-1/2 bg-primary/70" />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {currentPool.token1.amount.toLocaleString()} {currentPool.token1.symbol}
                       {" "}
                       @ ${currentPool.token1.price}
@@ -270,27 +271,31 @@ export default function LiquidityPoolsPage() {
                     <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="tvlGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.7} />
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="time" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }}
+                      contentStyle={{
+                        backgroundColor: "rgba(10, 12, 16, 0.85)",
+                        border: "1px solid rgba(255,255,255,0.10)",
+                        backdropFilter: "blur(12px)",
+                      }}
                     />
                     <Area
                       type="monotone"
                       dataKey="tvl"
-                      stroke="#3b82f6"
+                      stroke="hsl(var(--primary))"
                       fillOpacity={1}
                       fill="url(#tvlGradient)"
                     />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-[300px] rounded-lg border border-dashed border-slate-700/60" />
+                  <div className="h-[300px] rounded-lg border border-dashed border-border/60" />
                 )}
               </CardContent>
             </Card>
@@ -307,22 +312,26 @@ export default function LiquidityPoolsPage() {
                 {isMounted ? (
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={impermanentLossData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="day" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }}
+                      contentStyle={{
+                        backgroundColor: "rgba(10, 12, 16, 0.85)",
+                        border: "1px solid rgba(255,255,255,0.10)",
+                        backdropFilter: "blur(12px)",
+                      }}
                     />
                     <Bar
                       dataKey="loss"
-                      fill="#ef4444"
+                      fill="hsl(var(--destructive))"
                       name="IL Risk %"
                       radius={[8, 8, 0, 0]}
                     />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-[250px] rounded-lg border border-dashed border-slate-700/60" />
+                  <div className="h-[250px] rounded-lg border border-dashed border-border/60" />
                 )}
               </CardContent>
             </Card>
@@ -331,7 +340,7 @@ export default function LiquidityPoolsPage() {
             <div className="flex gap-4">
               <Button
                 size="lg"
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Liquidity

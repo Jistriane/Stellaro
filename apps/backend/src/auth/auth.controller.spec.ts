@@ -93,6 +93,7 @@ describe('AuthController', () => {
         pubkey: 'GC...',
         signature: 'sig123',
         message: 'msg',
+        nonce: 'nonce-123',
       };
       const mockResult = {
         token: 'jwt-token',
@@ -104,9 +105,18 @@ describe('AuthController', () => {
       const res = mockResponse();
       const result = await controller.verify(dto, res);
 
-      expect(result).toEqual({ ok: true, userId: 'user-1', pubkey: 'GC...' });
+      expect(result).toEqual({
+        ok: true,
+        token: 'jwt-token',
+        userId: 'user-1',
+        pubkey: 'GC...',
+      });
       expect(authStub.verifyWalletSignature).toHaveBeenCalledWith(dto);
-      expect(res.cookie).toHaveBeenCalledWith('token', 'jwt-token', expect.any(Object));
+      expect(res.cookie).toHaveBeenCalledWith(
+        'token',
+        'jwt-token',
+        expect.any(Object),
+      );
     });
   });
 
@@ -133,7 +143,9 @@ describe('AuthController', () => {
       const result = await controller.me(req);
 
       expect(result).toEqual({ authenticated: true, user: mockUser });
-      expect(authStub.meFromToken).toHaveBeenCalledWith('jwt-token-from-header');
+      expect(authStub.meFromToken).toHaveBeenCalledWith(
+        'jwt-token-from-header',
+      );
     });
 
     it('should return unauthenticated payload when token is missing', async () => {
@@ -165,10 +177,14 @@ describe('AuthController', () => {
       const mockChallenge = { challenge: 'abc123', options: {} };
       authStub.passkeyRegisterInit.mockResolvedValue(mockChallenge);
 
-      const result = await controller.passkeyRegisterInit({ email: 'test@test.com' });
+      const result = await controller.passkeyRegisterInit({
+        email: 'test@test.com',
+      });
 
       expect(result).toEqual(mockChallenge);
-      expect(authStub.passkeyRegisterInit).toHaveBeenCalledWith('test@test.com');
+      expect(authStub.passkeyRegisterInit).toHaveBeenCalledWith(
+        'test@test.com',
+      );
     });
   });
 
@@ -191,7 +207,11 @@ describe('AuthController', () => {
         passkeyToken: 'pk-token',
       });
       expect(authStub.passkeyLoginVerify).toHaveBeenCalledWith(body);
-      expect(res.cookie).toHaveBeenCalledWith('token', 'jwt-token', expect.any(Object));
+      expect(res.cookie).toHaveBeenCalledWith(
+        'token',
+        'jwt-token',
+        expect.any(Object),
+      );
     });
   });
 
@@ -204,9 +224,20 @@ describe('AuthController', () => {
       const body = { email: 'test@test.com', code: '123456' };
       const result = await controller.emailVerify(body, res);
 
-      expect(result).toEqual({ ok: true, token: 'jwt-token', userId: 'user-1' });
-      expect(authStub.emailVerify).toHaveBeenCalledWith('test@test.com', '123456');
-      expect(res.cookie).toHaveBeenCalledWith('token', 'jwt-token', expect.any(Object));
+      expect(result).toEqual({
+        ok: true,
+        token: 'jwt-token',
+        userId: 'user-1',
+      });
+      expect(authStub.emailVerify).toHaveBeenCalledWith(
+        'test@test.com',
+        '123456',
+      );
+      expect(res.cookie).toHaveBeenCalledWith(
+        'token',
+        'jwt-token',
+        expect.any(Object),
+      );
     });
   });
 });

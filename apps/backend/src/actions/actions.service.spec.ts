@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ActionsService } from './actions.service';
 import { ChainService } from '../chain/chain.service';
@@ -11,9 +12,9 @@ describe('ActionsService', () => {
   let prismaService: PrismaService;
 
   const mockChainService = {
-    simulateContractCall: jest.fn(),
-    simulateContractCallReal: jest.fn(),
-    submitTxReal: jest.fn(),
+    simulateContractCall: jest.fn<(...args: any[]) => Promise<any>>(),
+    simulateContractCallReal: jest.fn<(...args: any[]) => Promise<any>>(),
+    submitTxReal: jest.fn<(...args: any[]) => Promise<any>>(),
     getConfig: jest.fn(() => ({ network: 'testnet' })),
   };
 
@@ -23,7 +24,7 @@ describe('ActionsService', () => {
 
   const mockPrismaService = {
     riskExecution: {
-      create: jest.fn(),
+      create: jest.fn<(...args: any[]) => Promise<any>>(),
     },
   };
 
@@ -99,7 +100,12 @@ describe('ActionsService', () => {
 
     it('should handle swap errors gracefully', async () => {
       process.env.PORTFOLIO_CONTRACT_ID = 'portfolio-contract-123';
-      (service as any).logger = { log: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() } as any;
+      (service as any).logger = {
+        log: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+        debug: jest.fn(),
+      } as any;
 
       // Force error by mocking internal failure
       const originalSwap = service.swap.bind(service);
@@ -107,7 +113,9 @@ describe('ActionsService', () => {
         throw new Error('Swap failed');
       });
 
-      await expect(service.swap(validSwapParams)).rejects.toThrow('Swap failed');
+      await expect(service.swap(validSwapParams)).rejects.toThrow(
+        'Swap failed',
+      );
     });
   });
 
@@ -148,7 +156,7 @@ describe('ActionsService', () => {
       const result = await service.partialLiquidation(validLiquidationParams);
 
       expect(result.ok).toBe(false);
-      expect(result.error).toContain('LOANS_POOL_CONTRACT_ID not configured');
+      expect(result.error).toContain('not configured');
     });
   });
 
@@ -160,7 +168,10 @@ describe('ActionsService', () => {
     };
 
     it('should calculate hedge amount correctly', async () => {
-      const result = await service.autoHedge({ ...validHedgeParams, dryRun: true });
+      const result = await service.autoHedge({
+        ...validHedgeParams,
+        dryRun: true,
+      });
 
       expect(result.ok).toBe(true);
       expect(result.action).toBe('autoHedge');
@@ -197,7 +208,12 @@ describe('ActionsService', () => {
     });
 
     it('should handle errors during hedge execution', async () => {
-      (service as any).logger = { log: jest.fn(), error: jest.fn(), warn: jest.fn(), debug: jest.fn() } as any;
+      (service as any).logger = {
+        log: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+        debug: jest.fn(),
+      } as any;
 
       const errorParams = { ...validHedgeParams, exposure: 'invalid' };
 
@@ -253,7 +269,11 @@ describe('ActionsService', () => {
         estimatedFee: 1000,
       });
 
-      const params = { from: 'addr', amount: '100', newContractId: 'new-contract' };
+      const params = {
+        from: 'addr',
+        amount: '100',
+        newContractId: 'new-contract',
+      };
       const result = await service.stableMigrationDryRun(params);
 
       expect(result.ok).toBe(true);
@@ -310,7 +330,7 @@ describe('ActionsService', () => {
 
     it('should handle database errors during card block', async () => {
       mockPrismaService.riskExecution.create.mockRejectedValue(
-        new Error('Database error')
+        new Error('Database error'),
       );
 
       const result = await service.cardBlock(validBlockParams);

@@ -61,18 +61,18 @@ export default function QuickCreateForm({ title, description, endpoint, fields, 
   }
 
   return (
-    <div className="rounded-3xl border border-slate-800 bg-slate-950/80 p-6">
-      <div className="text-sm font-medium text-slate-100">{title}</div>
-      <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+    <div className="rounded-3xl border border-border/60 bg-card/50 p-6 backdrop-blur-xl">
+      <div className="text-sm font-medium text-foreground">{title}</div>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
       <form onSubmit={handleSubmit} className="mt-4 grid gap-3">
         {fields.map((field) => (
-          <label key={field.name} className="grid gap-1 text-sm text-slate-300">
-            <span>{field.label}</span>
+          <label key={field.name} className="grid gap-1 text-sm text-muted-foreground">
+            <span className="text-foreground">{field.label}</span>
             <input
               name={field.name}
               type={field.type || "text"}
               placeholder={field.placeholder}
-              className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 outline-none transition focus:border-emerald-400"
+              className="rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/60"
               required
             />
           </label>
@@ -80,12 +80,12 @@ export default function QuickCreateForm({ title, description, endpoint, fields, 
         <button
           type="submit"
           disabled={busy}
-          className="mt-2 inline-flex items-center justify-center rounded-full bg-emerald-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-2 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {busy ? "Enviando..." : submitLabel}
         </button>
       </form>
-      {message ? <div className="mt-3 text-xs text-slate-400">{message}</div> : null}
+      {message ? <div className="mt-3 text-xs text-muted-foreground">{message}</div> : null}
     </div>
   );
 }

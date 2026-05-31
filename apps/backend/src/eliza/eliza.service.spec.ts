@@ -79,7 +79,11 @@ describe('ElizaService', () => {
       action: 'status',
       result: { success: true },
     } as any);
-    const res = await service.triggerAgentAction('treasury_manager', 'status', {});
+    const res = await service.triggerAgentAction(
+      'treasury_manager',
+      'status',
+      {},
+    );
     expect(res.agent).toBe('treasury_manager');
     expect(res.result.success).toBe(true);
   });
@@ -136,7 +140,9 @@ describe('ElizaService', () => {
   });
 
   it('should throw error for unknown workflow', async () => {
-    jest.spyOn(service, 'orchestrateWorkflow').mockRejectedValueOnce(new Error('Unknown workflow: invalid_workflow'));
+    jest
+      .spyOn(service, 'orchestrateWorkflow')
+      .mockRejectedValueOnce(new Error('Unknown workflow: invalid_workflow'));
     await expect(
       service.orchestrateWorkflow('invalid_workflow' as any, {}),
     ).rejects.toThrow('Unknown workflow: invalid_workflow');

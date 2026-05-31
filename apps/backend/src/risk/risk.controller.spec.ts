@@ -27,7 +27,11 @@ describe('RiskController', () => {
   });
 
   it('returns summary for user', () => {
-    const summary = { userId: 'user-1', exposure: { eventsCount: 2 }, riskLevel: 'neutral' };
+    const summary = {
+      userId: 'user-1',
+      exposure: { eventsCount: 2 },
+      riskLevel: 'neutral',
+    };
     service.getSummary.mockReturnValue(summary as any);
 
     const result = controller.getSummary('user-1');

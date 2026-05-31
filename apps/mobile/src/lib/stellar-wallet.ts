@@ -17,7 +17,6 @@ export class StellarWallet {
         seed = keypair.secret();
         await SecureStore.setItemAsync(this.SEED_KEY, seed, {
           keychainService: 'stellaro_vault',
-          copyToClipboard: false,
         });
       }
       
@@ -28,10 +27,19 @@ export class StellarWallet {
     }
   }
 
+  static async getSecretSeed(): Promise<string> {
+    const seed = await SecureStore.getItemAsync(this.SEED_KEY);
+    if (!seed) {
+      const kp = await this.getOrCreateWallet();
+      return kp.secret();
+    }
+    return seed;
+  }
+
   /**
    * Assina uma transação XDR.
    */
-  static async signTransaction(xdr: string, network: string = 'TESTNET'): Promise<string> {
+  static async signTransaction(xdr: string, network: 'MAINNET' | 'TESTNET' = 'MAINNET'): Promise<string> {
     const keypair = await this.getOrCreateWallet();
     const passphrase = network === 'MAINNET' 
       ? StellarSdk.Networks.PUBLIC 

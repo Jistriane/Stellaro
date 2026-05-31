@@ -1,20 +1,28 @@
 import type { Metadata } from "next";
-// import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, JetBrains_Mono, Jost } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { LayoutClient } from "./layout-client";
 import enMessages from "../../messages/en.json";
 
-// Geist fonts commented for build compatibility
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
+const jost = Jost({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500"],
+  variable: "--font-sans",
+});
 
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["italic", "normal"],
+  variable: "--font-serif",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "Stellaro",
@@ -37,7 +45,12 @@ export default async function RootLayout({
   const locale = "en";
 
   return (
-    <html lang={locale} className="dark notranslate" suppressHydrationWarning translate="no">
+    <html
+      lang={locale}
+      className={`${jost.variable} ${cormorant.variable} ${jetbrains.variable} dark notranslate`}
+      suppressHydrationWarning
+      translate="no"
+    >
       <body className="antialiased notranslate" translate="no">
         <NextIntlClientProvider locale={locale} messages={enMessages}>
           <LayoutClient>{children}</LayoutClient>

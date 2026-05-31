@@ -26,7 +26,12 @@ export function useBiometrics() {
       disableDeviceFallback: false,
     });
 
-    return { success: result.success, error: result.error };
+    const error = result.success
+      ? undefined
+      : 'error' in result
+        ? (result as any).error
+        : 'Autenticação falhou';
+    return { success: result.success, error };
   }, [checkSupport]);
 
   return {

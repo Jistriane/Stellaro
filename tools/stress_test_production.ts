@@ -1,12 +1,19 @@
 import * as StellarSdk from '@stellar/stellar-sdk';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: 'apps/backend/.env' });
+dotenv.config({ path: '.env-prod' });
 
 const rpcNamespace = (StellarSdk as any).rpc ?? (StellarSdk as any).SorobanRpc;
-const RPC_URL = process.env.SOROBAN_RPC || 'https://soroban-testnet.stellar.org';
+const RPC_URL =
+  process.env.SOROBAN_RPC_URL ||
+  process.env.SOROBAN_RPC ||
+  'https://rpc.ankr.com/stellar_soroban';
 const server = new rpcNamespace.Server(RPC_URL);
-const networkPassphrase = StellarSdk.Networks.TESTNET;
+const networkPassphrase =
+  process.env.STELLAR_NETWORK_PASSPHRASE ||
+  (process.env.STELLAR_NETWORK === 'mainnet'
+    ? StellarSdk.Networks.PUBLIC
+    : StellarSdk.Networks.TESTNET);
 
 const CONTRACT_IDS = [
   process.env.STABLECOIN_CONTRACT_ID,
@@ -22,9 +29,12 @@ const CONTRACT_IDS = [
   process.env.DAO_GOVERNANCE_ID,
   process.env.RECURRING_PAYMENTS_ID,
   process.env.INSURANCE_POOL_ID,
-  // v5 IDs if they were added (simulated)
-  'CAX4BRIDGE_ADAPTER_TESTNET',
-  'CBX2RWA_MARKETPLACE_TESTNET'
+  process.env.BRIDGE_ADAPTER_ID,
+  process.env.RWA_MARKETPLACE_ID,
+  process.env.INSTITUTIONAL_VAULT_ID,
+  process.env.LIQUID_STAKING_ID,
+  process.env.MULTISIG_ADAPTER_ID,
+  process.env.REFERRAL_SYSTEM_ID,
 ].filter(id => id && id.length > 10);
 
 async function stressTest() {

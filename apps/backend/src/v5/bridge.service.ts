@@ -71,7 +71,7 @@ export class BridgeService {
     this.logger.log(`Processing Inbound Message: ${msgHash}`);
     
     // Call BridgeAdapter.deliver_message on Soroban
-    const adminSecret = process.env.MASTER_SECRET_KEY;
+    const adminSecret = process.env.MASTER_SECRET_KEY ?? process.env.STELLAR_SECRET_KEY;
     const args = [
       // Mocked ScVals for the payload
     ];

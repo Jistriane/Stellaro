@@ -31,14 +31,14 @@ export class AuthService {
       create: { email: data.email, name: data.name ?? null },
       update: { name: data.name ?? null },
     });
-    
+
     // Inicializar registro WebAuthn usando PasskeyService
     const passkeyOptions = await this.passkeyService.initRegistration(
       user.id,
       user.email,
     );
-    
-    return { 
+
+    return {
       user,
       passkeyOptions, // challenge, rpId, user info para WebAuthn
     };
@@ -56,17 +56,16 @@ export class AuthService {
   /**
    * Verifica attestation WebAuthn e armazena credential
    */
-  async webauthnAttestation(payload: {
-    challenge: string;
-    credential: any;
-  }) {
+  async webauthnAttestation(payload: { challenge: string; credential: any }) {
     const result = await this.passkeyService.verifyRegistration(payload);
-    
+
     if (!result.ok) {
-      throw new UnauthorizedException(result.error || 'Registration verification failed');
+      throw new UnauthorizedException(
+        result.error || 'Registration verification failed',
+      );
     }
-    
-    return { 
+
+    return {
       ok: true,
       message: 'Passkey registered successfully',
     };
@@ -75,31 +74,28 @@ export class AuthService {
   /**
    * Verifica assertion WebAuthn e emite session/JWT
    */
-  async webauthnAssertion(payload: {
-    challenge: string;
-    assertion: any;
-  }) {
+  async webauthnAssertion(payload: { challenge: string; assertion: any }) {
     const result = await this.passkeyService.verifyLogin(payload);
-    
+
     if (!result.ok) {
       throw new UnauthorizedException(result.error || 'Authentication failed');
     }
-    
+
     // Emitir JWT padrão da aplicação
     const user = await this.prisma.user.findUnique({
       where: { id: result.userId },
     });
-    
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
-    const appToken = await this.jwt.signAsync({ 
-      sub: user.id, 
+
+    const appToken = await this.jwt.signAsync({
+      sub: user.id,
       email: user.email,
     });
-    
-    return { 
+
+    return {
       ok: true,
       token: appToken,
       passkeyToken: result.token, // Session token do passkey
@@ -250,20 +246,20 @@ export class AuthService {
   // ==============================
   // Passkey (WebAuthn) - Production-ready flow
   // ==============================
-  
+
   /**
    * Inicializa registro de passkey
    */
   async passkeyRegisterInit(email: string) {
     if (!email) throw new UnauthorizedException('Missing email');
-    
+
     // Criar ou buscar usuário
     const user = await this.prisma.user.upsert({
       where: { email },
       create: { email },
       update: {},
     });
-    
+
     // Delegar ao PasskeyService
     const options = await this.passkeyService.initRegistration(user.id, email);
     return options;
@@ -272,20 +268,17 @@ export class AuthService {
   /**
    * Verifica e completa registro de passkey
    */
-  async passkeyRegisterVerify(payload: {
-    challenge: string;
-    credential: any;
-  }) {
+  async passkeyRegisterVerify(payload: { challenge: string; credential: any }) {
     const result = await this.passkeyService.verifyRegistration(payload);
-    
+
     if (!result.ok) {
       throw new UnauthorizedException(result.error || 'Registration failed');
     }
-    
+
     // Buscar usuário associado ao challenge (via Redis)
     // Como o PasskeyService já salvou o passkey, podemos emitir token
     // Nota: idealmente pegamos userId do cache do challenge
-    return { 
+    return {
       ok: true,
       message: 'Passkey registered successfully',
     };
@@ -296,13 +289,13 @@ export class AuthService {
    */
   async passkeyLoginInit(email: string) {
     if (!email) throw new UnauthorizedException('Missing email');
-    
+
     const result = await this.passkeyService.initLogin(email);
-    
+
     if (!result.ok) {
       throw new NotFoundException(result.error || 'User not found');
     }
-    
+
     return {
       ok: true,
       challenge: result.challenge,
@@ -313,32 +306,29 @@ export class AuthService {
   /**
    * Verifica assertion e emite token
    */
-  async passkeyLoginVerify(payload: {
-    challenge: string;
-    assertion: any;
-  }) {
+  async passkeyLoginVerify(payload: { challenge: string; assertion: any }) {
     const result = await this.passkeyService.verifyLogin(payload);
-    
+
     if (!result.ok) {
       throw new UnauthorizedException(result.error || 'Login failed');
     }
-    
+
     // Buscar usuário
     const user = await this.prisma.user.findUnique({
       where: { id: result.userId },
     });
-    
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     // Emitir JWT padrão da aplicação
-    const appToken = await this.jwt.signAsync({ 
-      sub: user.id, 
+    const appToken = await this.jwt.signAsync({
+      sub: user.id,
       email: user.email,
     });
-    
-    return { 
+
+    return {
       ok: true,
       token: appToken,
       userId: user.id,
@@ -358,9 +348,11 @@ export class AuthService {
   }
 
   async emailVerify(email: string, code: string) {
-    if (!email || !code) throw new UnauthorizedException('Missing email or code');
+    if (!email || !code)
+      throw new UnauthorizedException('Missing email or code');
     const entry = this.emailCodes.get(email.toLowerCase());
-    if (!entry || entry.code !== code) throw new UnauthorizedException('Invalid code');
+    if (!entry || entry.code !== code)
+      throw new UnauthorizedException('Invalid code');
     this.emailCodes.delete(email.toLowerCase());
     const user = await this.prisma.user.upsert({
       where: { email },

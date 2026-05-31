@@ -51,31 +51,8 @@ echo ""
 echo "🏗️  Building contratos Soroban..."
 cd contracts
 
-# Contratos já deployados (apenas rebuild para validar)
-echo "   - Stablecoin ✅"
-cd stablecoin && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-echo "   - RiskLock ✅"
-cd risklock && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-echo "   - LoansPool ✅"
-cd loans_pool && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-echo "   - Portfolio ✅"
-cd portfolio && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-echo "   - Governance ✅"
-cd governance && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-echo "   - ZK Verifier ✅"
-cd zk_verifier && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-# Contratos pendentes de integração
-echo "   - Batch Executor ⏳ (aguarda integração)"
-cd batch_executor && cargo build --target wasm32-unknown-unknown --release && cd ..
-
-echo "   - MEV Guard ⏳ (aguarda integração)"
-cd mev_guard && cargo build --target wasm32-unknown-unknown --release && cd ..
+echo "   - Workspace Soroban (wasm32v1-none)"
+cargo build --manifest-path Cargo.toml --target wasm32v1-none --release
 
 cd ..
 
@@ -120,9 +97,8 @@ echo "=================================================="
 echo ""
 echo "📊 Resumo:"
 echo "   ✅ Dependências atualizadas (Turbo 2.3, Stellar SDK 14.4, Prisma 6.15)"
-echo "   ✅ 8/8 contratos Soroban compilados"
-echo "   ✅ 6/8 contratos deployados na Testnet"
-echo "   ⏳ 2/8 contratos aguardam integração (Batch Executor, MEV Guard)"
+echo "   ✅ Contratos Soroban compilados (workspace)"
+echo "   ✅ Deploy Mainnet (v4) concluído e registrado em mainnet_deployment_registry.json"
 echo ""
 echo "📚 Próximos passos:"
 echo "   1. Revisar UPDATE_REPORT_2025.md"

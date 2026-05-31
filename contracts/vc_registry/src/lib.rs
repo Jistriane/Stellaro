@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, BytesN};
+use soroban_sdk::{contract, contractimpl, contracttype, contractevent, Address, Env, BytesN};
 
 #[contracttype]
 #[derive(Clone)]
@@ -8,6 +8,11 @@ enum DataKey {
     Issuer(Address),
     Vc(BytesN<32>),       // Status da VC (true/false)
     UserVc(Address),      // Mapeamento Usuário -> Hash da VC
+}
+
+#[contractevent]
+pub struct UpgradeEvent {
+    pub new_wasm_hash: BytesN<32>,
 }
 
 #[contract]
@@ -71,6 +76,15 @@ impl VcRegistry {
             return env.storage().persistent().get::<DataKey, bool>(&DataKey::Vc(vc_hash)).unwrap_or(false);
         }
         false
+    }
+
+    pub fn upgrade(env: Env, caller: Address, new_wasm_hash: BytesN<32>) {
+        let admin = Self::get_admin(&env);
+        caller.require_auth();
+        assert!(caller == admin, "unauthorized");
+        
+        env.deployer().update_current_contract_wasm(new_wasm_hash.clone());
+        env.events().publish_event(&UpgradeEvent { new_wasm_hash });
     }
 }
 

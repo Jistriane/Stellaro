@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 export interface ChainConfig {
   network: string;
@@ -13,23 +14,35 @@ export class ChainService {
   private readonly logger = new Logger(ChainService.name);
 
   getConfig(): ChainConfig {
+    const network = process.env.STELLAR_NETWORK ?? 'testnet';
+    const isMainnet = network === 'mainnet' || network === 'public';
+
     return {
-      network: process.env.STELLAR_NETWORK ?? 'testnet',
+      network,
       sorobanRpcUrl:
-        process.env.SOROBAN_RPC_URL ?? 'https://soroban-testnet.stellar.org',
+        process.env.SOROBAN_RPC_URL ??
+        (isMainnet
+          ? 'https://rpc.ankr.com/stellar_soroban'
+          : 'https://soroban-testnet.stellar.org'),
       horizonUrl:
-        process.env.HORIZON_URL ?? 'https://horizon-testnet.stellar.org',
-      passphrase: process.env.SOROBAN_NETWORK_PASSPHRASE,
-      secretKey: process.env.WALLET_SECRET_DEV,
+        process.env.STELLAR_HORIZON ??
+        process.env.HORIZON_URL ??
+        (isMainnet
+          ? 'https://horizon.stellar.org'
+          : 'https://horizon-testnet.stellar.org'),
+      passphrase:
+        process.env.STELLAR_NETWORK_PASSPHRASE ??
+        process.env.SOROBAN_NETWORK_PASSPHRASE,
+      secretKey:
+        process.env.STELLAR_SECRET_KEY ??
+        process.env.MASTER_SECRET_KEY ??
+        process.env.WALLET_SECRET_DEV,
     };
   }
 
   // Utilitários de encode de argumentos para Soroban
   private async encodeArgs(rawArgs: unknown[]): Promise<any[]> {
-    // Import dinâmico para evitar erro em ambientes sem SDK
-
-    const StellarSdk = require('@stellar/stellar-sdk');
-    const scval = StellarSdk.scVal;
+    const scval = (StellarSdk as any).scVal;
 
     const toScVal = (v: any): any => {
       if (typeof v === 'boolean') return scval.bool(v);
@@ -38,7 +51,7 @@ export class ChainService {
         try {
           const addr = new StellarSdk.Address(v);
           return addr.toScVal();
-        } catch (_) {
+        } catch {
           // Fallback como string
           return scval.string(v);
         }
@@ -74,6 +87,7 @@ export class ChainService {
     method: string;
     args: unknown[];
   }): Promise<{ estimatedFee: number; ok: boolean }> {
+    void _input;
     return { ok: true, estimatedFee: 100_000 };
   }
 
@@ -84,9 +98,8 @@ export class ChainService {
     args: unknown[];
   }): Promise<{ ok: boolean; estimatedFee: number }> {
     try {
-      const StellarSdk = require('@stellar/stellar-sdk');
       const cfg = this.getConfig();
-      const rpc = StellarSdk.rpc ?? StellarSdk.SorobanRpc;
+      const rpc = (StellarSdk as any).rpc ?? (StellarSdk as any).SorobanRpc;
       if (!rpc || typeof rpc.Server !== 'function') {
         throw new Error('Soroban RPC SDK unavailable');
       }
@@ -129,12 +142,14 @@ export class ChainService {
     args: unknown[];
   }): Promise<{ ok: boolean; txHash?: string; error?: string }> {
     try {
-      const StellarSdk = require('@stellar/stellar-sdk');
       const cfg = this.getConfig();
       if (!cfg.secretKey) {
-        return { ok: false, error: 'missing WALLET_SECRET_DEV' };
+        return {
+          ok: false,
+          error: 'missing STELLAR_SECRET_KEY (or MASTER_SECRET_KEY)',
+        };
       }
-      const rpc = StellarSdk.rpc ?? StellarSdk.SorobanRpc;
+      const rpc = (StellarSdk as any).rpc ?? (StellarSdk as any).SorobanRpc;
       if (!rpc || typeof rpc.Server !== 'function') {
         return { ok: false, error: 'Soroban RPC SDK unavailable' };
       }

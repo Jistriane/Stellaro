@@ -57,22 +57,15 @@ describe('BlendPositionsController', () => {
   it('delegates position lookup to the service', async () => {
     positionsService.getPositions.mockResolvedValue({
       address: validAddress,
-      positions: [
-        { asset: 'XLM', balance: '100', valueUSD: 100, apy: 15 },
-      ],
+      positions: [{ asset: 'XLM', balance: '100', valueUSD: 100, apy: 15 }],
       totalUSD: 100,
     });
 
-    const result = await controller.getPositions(
-      validAddress,
-      'USD',
-    );
+    const result = await controller.getPositions(validAddress, 'USD');
 
     expect(result).toEqual({
       address: validAddress,
-      positions: [
-        { asset: 'XLM', balance: '100', valueUSD: 100, apy: 15 },
-      ],
+      positions: [{ asset: 'XLM', balance: '100', valueUSD: 100, apy: 15 }],
       totalUSD: 100,
     });
     expect(positionsService.getPositions).toHaveBeenCalledWith(
@@ -82,9 +75,9 @@ describe('BlendPositionsController', () => {
   });
 
   it('rejects invalid stellar addresses', async () => {
-    await expect(controller.getPositions('invalid-address')).rejects.toBeInstanceOf(
-      BadRequestException,
-    );
+    await expect(
+      controller.getPositions('invalid-address'),
+    ).rejects.toBeInstanceOf(BadRequestException);
     expect(positionsService.getPositions).not.toHaveBeenCalled();
   });
 });

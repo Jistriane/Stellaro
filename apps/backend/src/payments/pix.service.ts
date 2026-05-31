@@ -33,7 +33,7 @@ export interface PixPayment {
 /**
  * PIX Integration Service
  * Handles Brazilian instant payments for STLT mint/burn
- * 
+ *
  * Flow:
  * 1. User deposits BRL via PIX → generates QR code
  * 2. Webhook confirms payment → mints STLT tokens
@@ -63,9 +63,7 @@ export class PixService {
       process.env.PIX_WEBHOOK_SECRET ||
       '';
     const modeRaw =
-      this.configService.get<string>('PIX_MODE') ||
-      process.env.PIX_MODE ||
-      '';
+      this.configService.get<string>('PIX_MODE') || process.env.PIX_MODE || '';
     this.enabled = !!apiKey && !!apiUrl;
     const configuredMode = String(modeRaw).toLowerCase();
 
@@ -81,7 +79,8 @@ export class PixService {
       } else {
         this.mode = 'disabled';
         this.stubMode = false;
-        this.fallbackReason = 'PIX_MODE=live but PIX_API_KEY/PIX_API_URL is missing';
+        this.fallbackReason =
+          'PIX_MODE=live but PIX_API_KEY/PIX_API_URL is missing';
       }
     } else if (configuredMode === 'stub') {
       this.mode = 'stub';
@@ -249,7 +248,9 @@ export class PixService {
         },
       });
 
-      this.logger.log(`PIX charge generated: ${txId} for ${params.amountBRL} BRL`);
+      this.logger.log(
+        `PIX charge generated: ${txId} for ${params.amountBRL} BRL`,
+      );
 
       return {
         ok: true,
@@ -396,12 +397,16 @@ export class PixService {
       const key = params.pixKey || '';
       const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(key);
       const isPhone = /^\+?\d{10,15}$/.test(key);
-      const isRandom = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[ab89][a-f0-9]{3}-[a-f0-9]{12}$/.test(key);
+      const isRandom =
+        /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[ab89][a-f0-9]{3}-[a-f0-9]{12}$/.test(
+          key,
+        );
       const isCpf = /^\d{11}$/.test(key.replace(/\D/g, ''));
-      const validKey = (params.pixKeyType === 'email' && isEmail)
-        || (params.pixKeyType === 'phone' && isPhone)
-        || (params.pixKeyType === 'random' && isRandom)
-        || (params.pixKeyType === 'cpf' && isCpf);
+      const validKey =
+        (params.pixKeyType === 'email' && isEmail) ||
+        (params.pixKeyType === 'phone' && isPhone) ||
+        (params.pixKeyType === 'random' && isRandom) ||
+        (params.pixKeyType === 'cpf' && isCpf);
       if (!validKey) {
         return { ok: false, error: 'Invalid PIX key' };
       }
@@ -414,7 +419,10 @@ export class PixService {
         );
         // STUB: simular falha de burn com endereço inválido ou valor extremo
         const amountNum = Number(params.amountSTLT);
-        if (params.stellarAddress === 'INVALID_ADDRESS' || amountNum > 1000000) {
+        if (
+          params.stellarAddress === 'INVALID_ADDRESS' ||
+          amountNum > 1000000
+        ) {
           return { ok: false, error: 'Burn failed: invalid address or amount' };
         }
         // STUB: registrar saque sem burn real
@@ -472,7 +480,9 @@ export class PixService {
         },
       });
 
-      this.logger.log(`PIX withdrawal initiated: ${transferId} for ${amountBRL} BRL`);
+      this.logger.log(
+        `PIX withdrawal initiated: ${transferId} for ${amountBRL} BRL`,
+      );
 
       return {
         ok: true,

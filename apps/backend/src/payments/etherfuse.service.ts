@@ -84,14 +84,21 @@ export class EtherfuseService {
   constructor(private readonly configService: ConfigService) {}
 
   getStatus(): EtherfuseStatus {
-    const configuredMode = this.getString('ETHERFUSE_MODE')?.toLowerCase() ?? null;
+    const configuredMode =
+      this.getString('ETHERFUSE_MODE')?.toLowerCase() ?? null;
     const resolved = this.resolveMode();
     const mode = resolved.mode;
-    const apiBaseUrl = this.getString('ETHERFUSE_API_BASE_URL') ?? 'https://api.sand.etherfuse.com';
+    const apiBaseUrl =
+      this.getString('ETHERFUSE_API_BASE_URL') ??
+      'https://api.sand.etherfuse.com';
     const blockchain = this.getBlockchain();
-    const defaultQuoteType = this.getQuoteType('ETHERFUSE_DEFAULT_QUOTE_TYPE') ?? 'onramp';
-    const defaultSourceAsset = this.getString('ETHERFUSE_SOURCE_ASSET') ?? 'MXN';
-    const defaultTargetAsset = this.getString('ETHERFUSE_TARGET_ASSET') ?? 'USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN';
+    const defaultQuoteType =
+      this.getQuoteType('ETHERFUSE_DEFAULT_QUOTE_TYPE') ?? 'onramp';
+    const defaultSourceAsset =
+      this.getString('ETHERFUSE_SOURCE_ASSET') ?? 'MXN';
+    const defaultTargetAsset =
+      this.getString('ETHERFUSE_TARGET_ASSET') ??
+      'USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN';
 
     return {
       enabled: mode !== 'disabled',
@@ -110,7 +117,9 @@ export class EtherfuseService {
     };
   }
 
-  async createQuote(params: EtherfuseQuoteRequest): Promise<EtherfuseQuoteResponse> {
+  async createQuote(
+    params: EtherfuseQuoteRequest,
+  ): Promise<EtherfuseQuoteResponse> {
     const amount = Number(params.amount);
     if (!Number.isFinite(amount) || amount <= 0) {
       throw new BadRequestException('Invalid amount');
@@ -132,7 +141,9 @@ export class EtherfuseService {
     return this.createStubQuote(params, status);
   }
 
-  async createOrder(params: EtherfuseOrderRequest): Promise<EtherfuseOrderResponse> {
+  async createOrder(
+    params: EtherfuseOrderRequest,
+  ): Promise<EtherfuseOrderResponse> {
     const quoteId = params.quoteId?.trim();
     if (!quoteId) {
       throw new BadRequestException('quoteId is required');
@@ -159,11 +170,15 @@ export class EtherfuseService {
     status: EtherfuseStatus,
   ): Promise<EtherfuseQuoteResponse> {
     const apiKey = this.getString('ETHERFUSE_API_KEY');
-    const customerId = params.customerId ?? this.getString('ETHERFUSE_CUSTOMER_ID');
-    const walletAddress = params.walletAddress ?? this.getString('ETHERFUSE_WALLET_ADDRESS');
+    const customerId =
+      params.customerId ?? this.getString('ETHERFUSE_CUSTOMER_ID');
+    const walletAddress =
+      params.walletAddress ?? this.getString('ETHERFUSE_WALLET_ADDRESS');
 
     if (!apiKey || !customerId) {
-      throw new BadRequestException('Etherfuse live mode requires ETHERFUSE_API_KEY and ETHERFUSE_CUSTOMER_ID');
+      throw new BadRequestException(
+        'Etherfuse live mode requires ETHERFUSE_API_KEY and ETHERFUSE_CUSTOMER_ID',
+      );
     }
 
     const quoteId = randomUUID();
@@ -184,18 +199,23 @@ export class EtherfuseService {
       walletAddress: walletAddress ?? undefined,
     };
 
-    const response = await fetch(`${status.apiBaseUrl.replace(/\/$/, '')}/ramp/quote`, {
-      method: 'POST',
-      headers: {
-        Authorization: apiKey,
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${status.apiBaseUrl.replace(/\/$/, '')}/ramp/quote`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    });
+    );
 
     if (!response.ok) {
       const errorBody = await response.text();
-      this.logger.error(`Etherfuse quote failed (${response.status}): ${errorBody}`);
+      this.logger.error(
+        `Etherfuse quote failed (${response.status}): ${errorBody}`,
+      );
       throw new BadRequestException('Could not create Etherfuse quote');
     }
 
@@ -214,7 +234,9 @@ export class EtherfuseService {
         destinationAmount: this.asString(liveQuote.destinationAmount) ?? '0',
         exchangeRate: this.asString(liveQuote.exchangeRate) ?? '0',
         feeBps: this.asString(liveQuote.feeBps),
-        expiresAt: this.asString(liveQuote.expiresAt) ?? new Date(Date.now() + 10 * 60_000).toISOString(),
+        expiresAt:
+          this.asString(liveQuote.expiresAt) ??
+          new Date(Date.now() + 10 * 60_000).toISOString(),
         provider: {
           apiBaseUrl: status.apiBaseUrl,
           apiKeyConfigured: true,
@@ -226,7 +248,10 @@ export class EtherfuseService {
     };
   }
 
-  private createStubQuote(params: EtherfuseQuoteRequest, status: EtherfuseStatus): EtherfuseQuoteResponse {
+  private createStubQuote(
+    params: EtherfuseQuoteRequest,
+    status: EtherfuseStatus,
+  ): EtherfuseQuoteResponse {
     const quoteType = params.quoteType ?? status.defaultQuoteType;
     const sourceAsset = params.sourceAsset ?? status.defaultSourceAsset;
     const targetAsset = params.targetAsset ?? status.defaultTargetAsset;
@@ -276,16 +301,23 @@ export class EtherfuseService {
     status: EtherfuseStatus,
   ): Promise<EtherfuseOrderResponse> {
     const apiKey = this.getString('ETHERFUSE_API_KEY');
-    const customerId = params.customerId ?? this.getString('ETHERFUSE_CUSTOMER_ID');
-    const bankAccountId = params.bankAccountId ?? this.getString('ETHERFUSE_BANK_ACCOUNT_ID');
-    const publicKey = params.walletAddress ?? this.getString('ETHERFUSE_WALLET_ADDRESS');
+    const customerId =
+      params.customerId ?? this.getString('ETHERFUSE_CUSTOMER_ID');
+    const bankAccountId =
+      params.bankAccountId ?? this.getString('ETHERFUSE_BANK_ACCOUNT_ID');
+    const publicKey =
+      params.walletAddress ?? this.getString('ETHERFUSE_WALLET_ADDRESS');
 
     if (!apiKey || !customerId) {
-      throw new BadRequestException('Etherfuse live mode requires ETHERFUSE_API_KEY and ETHERFUSE_CUSTOMER_ID');
+      throw new BadRequestException(
+        'Etherfuse live mode requires ETHERFUSE_API_KEY and ETHERFUSE_CUSTOMER_ID',
+      );
     }
 
     if (!bankAccountId) {
-      throw new BadRequestException('bankAccountId is required in live mode (or set ETHERFUSE_BANK_ACCOUNT_ID)');
+      throw new BadRequestException(
+        'bankAccountId is required in live mode (or set ETHERFUSE_BANK_ACCOUNT_ID)',
+      );
     }
 
     const orderId = randomUUID();
@@ -298,18 +330,23 @@ export class EtherfuseService {
       useAnchor: false,
     };
 
-    const response = await fetch(`${status.apiBaseUrl.replace(/\/$/, '')}/ramp/order`, {
-      method: 'POST',
-      headers: {
-        Authorization: apiKey,
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${status.apiBaseUrl.replace(/\/$/, '')}/ramp/order`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    });
+    );
 
     if (!response.ok) {
       const errorBody = await response.text();
-      this.logger.error(`Etherfuse order failed (${response.status}): ${errorBody}`);
+      this.logger.error(
+        `Etherfuse order failed (${response.status}): ${errorBody}`,
+      );
       throw new BadRequestException('Could not create Etherfuse order');
     }
 
@@ -320,12 +357,15 @@ export class EtherfuseService {
     const direction: 'onramp' | 'offramp' | 'swap' | 'unknown' = onramp
       ? 'onramp'
       : offramp
-      ? 'offramp'
-      : swap
-      ? 'swap'
-      : 'unknown';
+        ? 'offramp'
+        : swap
+          ? 'swap'
+          : 'unknown';
 
-    const nestedId = this.asString(onramp?.orderId) ?? this.asString(offramp?.orderId) ?? this.asString(swap?.orderId);
+    const nestedId =
+      this.asString(onramp?.orderId) ??
+      this.asString(offramp?.orderId) ??
+      this.asString(swap?.orderId);
 
     return {
       ok: true,
@@ -346,7 +386,10 @@ export class EtherfuseService {
     };
   }
 
-  private createStubOrder(params: EtherfuseOrderRequest, status: EtherfuseStatus): EtherfuseOrderResponse {
+  private createStubOrder(
+    params: EtherfuseOrderRequest,
+    status: EtherfuseStatus,
+  ): EtherfuseOrderResponse {
     return {
       ok: true,
       order: {
@@ -384,10 +427,13 @@ export class EtherfuseService {
 
     if (configuredMode === 'live') {
       if (!liveReady) {
-        this.logger.warn('Etherfuse live mode requested but ETHERFUSE_API_BASE_URL or ETHERFUSE_API_KEY is missing');
+        this.logger.warn(
+          'Etherfuse live mode requested but ETHERFUSE_API_BASE_URL or ETHERFUSE_API_KEY is missing',
+        );
         return {
           mode: 'disabled',
-          reason: 'ETHERFUSE_MODE=live but ETHERFUSE_API_BASE_URL or ETHERFUSE_API_KEY is missing',
+          reason:
+            'ETHERFUSE_MODE=live but ETHERFUSE_API_BASE_URL or ETHERFUSE_API_KEY is missing',
         };
       }
       return { mode: 'live', reason: null };
@@ -403,7 +449,8 @@ export class EtherfuseService {
 
     return {
       mode: 'stub',
-      reason: 'ETHERFUSE credentials not fully configured; using implicit stub mode',
+      reason:
+        'ETHERFUSE credentials not fully configured; using implicit stub mode',
     };
   }
 
@@ -427,9 +474,7 @@ export class EtherfuseService {
     return Number.isFinite(parsed) ? parsed : undefined;
   }
 
-  private getQuoteType(
-    key: string,
-  ): 'onramp' | 'offramp' | 'swap' | undefined {
+  private getQuoteType(key: string): 'onramp' | 'offramp' | 'swap' | undefined {
     const value = this.getString(key)?.toLowerCase();
     if (value === 'onramp' || value === 'offramp' || value === 'swap') {
       return value;
@@ -439,7 +484,13 @@ export class EtherfuseService {
 
   private getBlockchain(): 'stellar' | 'solana' | 'base' | 'polygon' | 'monad' {
     const value = this.getString('ETHERFUSE_BLOCKCHAIN')?.toLowerCase();
-    if (value === 'stellar' || value === 'solana' || value === 'base' || value === 'polygon' || value === 'monad') {
+    if (
+      value === 'stellar' ||
+      value === 'solana' ||
+      value === 'base' ||
+      value === 'polygon' ||
+      value === 'monad'
+    ) {
       return value;
     }
     return 'stellar';

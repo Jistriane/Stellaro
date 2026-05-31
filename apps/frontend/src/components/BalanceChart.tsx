@@ -65,38 +65,39 @@ export default function BalanceChart() {
       </CardHeader>
       <CardContent>
         {latest && (
-          <div className="mb-3 text-sm text-slate-300">Latest price: ${latest.toFixed(4)} USD</div>
+          <div className="mb-3 text-sm text-muted-foreground">Latest price: ${latest.toFixed(4)} USD</div>
         )}
         <div className="w-full min-h-[320px]">
           {isMounted ? (
             <ResponsiveContainer width="100%" height={320} minWidth={280} minHeight={320}>
               <LineChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="t" stroke="currentColor" fontSize={11} minTickGap={24} hide={data.length > 40} />
-                <YAxis stroke="currentColor" fontSize={12} domain={["dataMin", "dataMax"]} tickFormatter={(v) => `$${v.toFixed(3)}`} />
+                <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" opacity={0.15} />
+                <XAxis dataKey="t" stroke="hsl(var(--muted-foreground))" fontSize={11} minTickGap={24} hide={data.length > 40} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} domain={["dataMin", "dataMax"]} tickFormatter={(v) => `$${v.toFixed(3)}`} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "rgba(0, 0, 0, 0.85)",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    borderRadius: "6px",
+                    backgroundColor: "rgba(10, 12, 16, 0.85)",
+                    border: "1px solid rgba(244, 236, 220, 0.10)",
+                    borderRadius: "14px",
                     fontSize: "13px",
+                    backdropFilter: "blur(12px)",
                   }}
-                  labelStyle={{ color: "#cbd5e1", marginBottom: "4px" }}
-                  itemStyle={{ color: "#38bdf8" }}
+                  labelStyle={{ color: "rgb(244, 236, 220)", marginBottom: "4px" }}
+                  itemStyle={{ color: "hsl(var(--primary))" }}
                   formatter={(value: number) => [`$${value.toFixed(4)}`, "Price"]}
                 />
                 <Line
                   type="monotone"
                   dataKey="v"
-                  stroke="#38bdf8"
+                  stroke="hsl(var(--primary))"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 5, fill: "#38bdf8" }}
+                  activeDot={{ r: 5, fill: "hsl(var(--primary))" }}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-slate-700/60 text-sm text-slate-500">
+            <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-border/60 text-sm text-muted-foreground">
               Chart loading...
             </div>
           )}

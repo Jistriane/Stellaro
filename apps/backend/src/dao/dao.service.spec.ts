@@ -33,7 +33,11 @@ describe('DaoService', () => {
   });
 
   it('supports filtering and pagination', async () => {
-    const filtered = await service.listProposals({ status: 'draft', page: 1, pageSize: 1 });
+    const filtered = await service.listProposals({
+      status: 'draft',
+      page: 1,
+      pageSize: 1,
+    });
 
     expect(filtered.page).toBe(1);
     expect(filtered.pageSize).toBe(1);

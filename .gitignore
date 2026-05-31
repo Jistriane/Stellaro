@@ -39,6 +39,12 @@ contracts/*/test_snapshots/
 # Turborepo daemon logs/cache
 .turbo/
 
+# TypeScript build info
+*.tsbuildinfo
+
+# Workspace lockfiles (npm workspaces use the root lockfile)
+apps/*/package-lock.json
+
 # Python virtual env for agents
 agents/.venv/
 agents/__pycache__/
@@ -54,6 +60,8 @@ agents/venv/
 # Rust/Emacs flycheck temp files
 contracts/target/flycheck0/
 .env*.local
+MAINNET_KEYS_REQUIRED.env
+mainnet_deployment_registry.json
 
 # Stellaro Private Docs
 STELLARO ARQUITETURA TÉCNICA COMPLETA.md

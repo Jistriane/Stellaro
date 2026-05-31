@@ -1,6 +1,6 @@
 # Contract Deployment Guide
 
-Version: 2026-05-11
+Version: 2026-05-30
 Status: Repository-aligned
 
 This guide documents the actual deployment flow currently implemented in this repository.
@@ -12,6 +12,7 @@ Canonical registry reference:
 
 Primary script:
 - deploy-testnet.sh
+- tools/deploy_v4.sh (mainnet)
 
 Secondary script:
 - infra/deploy_soroban.sh
@@ -169,7 +170,21 @@ Suggested keys:
 ## 7) Known script gaps
 
 1. ZK verifier may require additional manual key material setup depending on runtime flow.
-2. Mainnet deployment procedure is not finalized in these scripts.
+2. RPC providers may be unstable under load; retry/backoff is required and multiple providers may be needed.
+
+## 8) Mainnet deployment (confirmed snapshot 2026-05-30)
+
+Canonical mainnet deployment registry:
+- `mainnet_deployment_registry.json`
+
+Canonical contract ID registry (English docs):
+- `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md` (Section 0)
+
+Deployment script:
+- `tools/deploy_v4.sh`
+
+Network:
+- Stellar mainnet (Public Global Stellar Network ; September 2015)
 
 
 ## 8) Safe extension plan for automation

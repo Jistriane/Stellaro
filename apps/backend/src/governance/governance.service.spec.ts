@@ -48,8 +48,8 @@ describe('GovernanceService', () => {
     }).compile();
 
     service = module.get<GovernanceService>(GovernanceService);
-    chain = module.get(ChainService) as jest.Mocked<ChainService>;
-    prisma = module.get(PrismaService) as jest.Mocked<PrismaService>;
+    chain = module.get(ChainService);
+    prisma = module.get(PrismaService);
   });
 
   it('should be defined', () => {

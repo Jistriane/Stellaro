@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as StellarSdk from '@stellar/stellar-sdk';
 
@@ -34,11 +39,12 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private configService: ConfigService) {
     const useStub = this.configService.get('ORACLE_MODE') === 'stub';
-    
+
     this.config = {
       reflectorUrl: useStub
         ? 'stub'
-        : (this.configService.get('REFLECTOR_URL') || 'https://api.reflector.network'),
+        : this.configService.get('REFLECTOR_URL') ||
+          'https://api.reflector.network',
       stellarHorizon:
         this.configService.get('STELLAR_HORIZON') ||
         'https://horizon.stellar.org',
@@ -48,7 +54,7 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
     };
 
     this.server = new StellarSdk.Horizon.Server(this.config.stellarHorizon);
-    
+
     if (useStub) {
       this.logger.log('Running in STUB mode - returning fixed prices');
     }
@@ -150,7 +156,7 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
         'BTC/USD': 45000,
         'ETH/USD': 2800,
       };
-      
+
       const key = `${asset}/${quote}`;
       if (stubPrices[key]) {
         return {
@@ -211,40 +217,36 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
     asset: string,
     quote: string,
   ): Promise<PriceData | null> {
-    try {
-      // Mapeia assets para Stellar codes
-      const baseAsset = this.mapToStellarAsset(asset);
-      const quoteAsset = this.mapToStellarAsset(quote);
+    // Mapeia assets para Stellar codes
+    const baseAsset = this.mapToStellarAsset(asset);
+    const quoteAsset = this.mapToStellarAsset(quote);
 
-      if (!baseAsset || !quoteAsset) {
-        return null;
-      }
-
-      const orderbook = await this.server
-        .orderbook(baseAsset, quoteAsset)
-        .limit(10)
-        .call();
-
-      if (!orderbook.bids || orderbook.bids.length === 0) {
-        return null;
-      }
-
-      // Usa median dos top 5 bids
-      const prices = orderbook.bids
-        .slice(0, 5)
-        .map((bid) => parseFloat(bid.price));
-      const medianPrice = this.calculateMedian(prices);
-
-      return {
-        asset,
-        price: medianPrice,
-        timestamp: Date.now(),
-        source: 'stellar_dex',
-        confidence: 80, // Menor confidence que Reflector
-      };
-    } catch (error) {
-      throw error;
+    if (!baseAsset || !quoteAsset) {
+      return null;
     }
+
+    const orderbook = await this.server
+      .orderbook(baseAsset, quoteAsset)
+      .limit(10)
+      .call();
+
+    if (!orderbook.bids || orderbook.bids.length === 0) {
+      return null;
+    }
+
+    // Usa median dos top 5 bids
+    const prices = orderbook.bids
+      .slice(0, 5)
+      .map((bid) => parseFloat(bid.price));
+    const medianPrice = this.calculateMedian(prices);
+
+    return {
+      asset,
+      price: medianPrice,
+      timestamp: Date.now(),
+      source: 'stellar_dex',
+      confidence: 80, // Menor confidence que Reflector
+    };
   }
 
   /**
@@ -254,6 +256,8 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
     asset: string,
     quote: string,
   ): Promise<PriceData | null> {
+    void asset;
+    void quote;
     // TODO: Implementar integração Chainlink quando necessário
     this.logger.warn('Chainlink integration not implemented yet');
     return null;
@@ -342,20 +346,15 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
       clearInterval(this.cacheWarmerTimer);
     }
 
-    this.cacheWarmerTimer = setInterval(
-      async () => {
-        for (const asset of popularAssets) {
-          try {
-            await this.getPrice(asset, 'USD');
-          } catch (error) {
-            this.logger.debug(
-              `Cache warm failed for ${asset}: ${error.message}`,
-            );
-          }
+    this.cacheWarmerTimer = setInterval(async () => {
+      for (const asset of popularAssets) {
+        try {
+          await this.getPrice(asset, 'USD');
+        } catch (error) {
+          this.logger.debug(`Cache warm failed for ${asset}: ${error.message}`);
         }
-      },
-      this.config.cacheTimeout / 2,
-    ); // Refresh a cada 2.5s
+      }
+    }, this.config.cacheTimeout / 2); // Refresh a cada 2.5s
 
     // Evita bloquear o encerramento do processo de testes.
     this.cacheWarmerTimer.unref();

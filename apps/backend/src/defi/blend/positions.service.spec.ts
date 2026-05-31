@@ -29,6 +29,8 @@ describe('BlendPositionsService', () => {
 
     const service = new BlendPositionsService(horizon, soroban, redis);
 
-    await expect(service.getPositions('GABC')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.getPositions('GABC')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 });

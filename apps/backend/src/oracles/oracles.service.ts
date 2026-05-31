@@ -58,11 +58,11 @@ export class OraclesService {
     try {
       // Tenta Reflector Network primeiro
       const reflectorPrice = await this.fetchReflectorPrice(base, quote);
-      
+
       // Cache e retorna
       await this.redis.set(cacheKey, reflectorPrice, this.cacheTTL);
       return reflectorPrice;
-    } catch (error) {
+    } catch {
       this.logger.warn(
         `Reflector Network failed for ${base}/${quote}, using fallback`,
       );
@@ -139,7 +139,7 @@ export class OraclesService {
         ]);
 
         const prices: PriceData[] = [];
-        
+
         if (reflector.status === 'fulfilled') {
           prices.push(reflector.value);
         }
@@ -196,9 +196,7 @@ export class OraclesService {
     return {
       anomalyDetected: isAnomalous,
       volatility: priceData.volatility || 0,
-      recommendation: isAnomalous
-        ? 'HALT_TRADING'
-        : 'CONTINUE_MONITORING',
+      recommendation: isAnomalous ? 'HALT_TRADING' : 'CONTINUE_MONITORING',
     };
   }
 
@@ -206,6 +204,7 @@ export class OraclesService {
    * Obtém sentimento do mercado baseado em fontes externas (Santiment, LunarCrush)
    */
   async getMarketSentiment(_asset: string): Promise<number> {
+    void _asset;
     // Integração com fontes de sentimento real via API keys em produção
     return Promise.resolve(0.75); // Valor padrão neutro/positivo para fins de demonstração
   }

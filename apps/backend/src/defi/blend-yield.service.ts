@@ -97,7 +97,9 @@ export class BlendYieldService {
   }
 
   getOverview(): BlendOverview {
-    const supportedAssets = [...new Set(this.MOCK_POOLS.map((pool) => pool.asset))];
+    const supportedAssets = [
+      ...new Set(this.MOCK_POOLS.map((pool) => pool.asset)),
+    ];
 
     return {
       status: this.rpcUrl ? 'ready' : 'mock',
@@ -221,19 +223,13 @@ export class BlendYieldService {
     this.logger.log(`Rebalancing portfolio for ${userAddress}...`);
 
     const currentPositions = await this.getUserPositions(userAddress);
-    const totalValue = currentPositions.reduce(
-      (sum, p) => sum + p.valueUSD,
-      0,
-    );
+    const totalValue = currentPositions.reduce((sum, p) => sum + p.valueUSD, 0);
 
     const rebalanceOps: any[] = [];
     let estimatedGain = 0;
 
     for (const [asset, targetPercent] of targetAllocation) {
-      const currentPercent = this.getCurrentAllocation(
-        currentPositions,
-        asset,
-      );
+      const currentPercent = this.getCurrentAllocation(currentPositions, asset);
       const diff = targetPercent - currentPercent;
 
       if (Math.abs(diff) > 0.05) {
@@ -274,9 +270,7 @@ export class BlendYieldService {
    */
   private async getUserPositions(userAddress: string): Promise<Position[]> {
     // Cache check
-    const cached = await this.redis.get<Position[]>(
-      `positions:${userAddress}`,
-    );
+    const cached = await this.redis.get<Position[]>(`positions:${userAddress}`);
     if (cached) return cached;
 
     // Em produção: buscar do Blend SDK
@@ -315,9 +309,7 @@ export class BlendYieldService {
     const dailyRate = position.apy / 365 / 100;
     const rewards = position.amount * dailyRate * daysSinceLastClaim;
 
-    this.logger.log(
-      `Claimed ${rewards} ${position.asset} from pool ${poolId}`,
-    );
+    this.logger.log(`Claimed ${rewards} ${position.asset} from pool ${poolId}`);
     return rewards;
   }
 
@@ -346,10 +338,7 @@ export class BlendYieldService {
   /**
    * Calcula alocação atual de um asset
    */
-  private getCurrentAllocation(
-    positions: Position[],
-    asset: string,
-  ): number {
+  private getCurrentAllocation(positions: Position[], asset: string): number {
     const totalValue = positions.reduce((sum, p) => sum + p.valueUSD, 0);
     const assetValue =
       positions

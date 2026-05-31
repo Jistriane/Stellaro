@@ -22,7 +22,9 @@ describe('ComplianceController', () => {
   });
 
   it('valida campos obrigatorios no KYC', async () => {
-    await expect(controller.kyc({} as any, { document: '', name: '' } as any, {} as any)).rejects.toBeInstanceOf(HttpException);
+    await expect(
+      controller.kyc({} as any, { document: '', name: '' } as any, {} as any),
+    ).rejects.toBeInstanceOf(HttpException);
   });
 
   it('envia submissao KYC completa quando payload expandido estiver presente', async () => {
@@ -47,7 +49,10 @@ describe('ComplianceController', () => {
 
     const res = await controller.kyc(req, body as any, files);
 
-    expect(service.submitKycApplication).toHaveBeenCalledWith({ ...body, userId: 'u-1' }, files);
+    expect(service.submitKycApplication).toHaveBeenCalledWith(
+      { ...body, userId: 'u-1' },
+      files,
+    );
     expect(res).toEqual({ ok: true });
   });
 

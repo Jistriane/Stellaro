@@ -2,12 +2,12 @@ name: Backend Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: '20'
 
 jobs:
   test-backend:

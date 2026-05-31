@@ -33,9 +33,10 @@ export class HealthController {
     const pix = this.pixService.getStatus();
     const x402 = this.x402Service.getStatus();
     const etherfuse = this.etherfuseService.getStatus();
-    const requireLive = String(
-      process.env.FINANCIAL_INTEGRATIONS_REQUIRE_LIVE || '',
-    ).toLowerCase() === 'true';
+    const requireLive =
+      String(
+        process.env.FINANCIAL_INTEGRATIONS_REQUIRE_LIVE || '',
+      ).toLowerCase() === 'true';
 
     const checks: IntegrationCheck[] = [];
 
@@ -45,7 +46,8 @@ export class HealthController {
         ok: false,
         level: 'error',
         code: 'PIX_MODE_NOT_LIVE',
-        message: 'PIX must be in live mode when FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true',
+        message:
+          'PIX must be in live mode when FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true',
       });
     }
 
@@ -55,7 +57,8 @@ export class HealthController {
         ok: false,
         level: 'error',
         code: 'X402_MODE_NOT_LIVE',
-        message: 'x402 must be in live mode when FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true',
+        message:
+          'x402 must be in live mode when FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true',
       });
     }
 
@@ -65,11 +68,15 @@ export class HealthController {
         ok: false,
         level: 'error',
         code: 'ETHERFUSE_MODE_NOT_LIVE',
-        message: 'Etherfuse must be in live mode when FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true',
+        message:
+          'Etherfuse must be in live mode when FINANCIAL_INTEGRATIONS_REQUIRE_LIVE=true',
       });
     }
 
-    if (pix.mode === 'live' && (!pix.apiKeyConfigured || !pix.apiUrlConfigured)) {
+    if (
+      pix.mode === 'live' &&
+      (!pix.apiKeyConfigured || !pix.apiUrlConfigured)
+    ) {
       checks.push({
         rail: 'pix',
         ok: false,
@@ -81,7 +88,9 @@ export class HealthController {
 
     if (
       x402.mode === 'live' &&
-      (!x402.apiKeyConfigured || !x402.facilitatorUrl || !x402.providerContractId)
+      (!x402.apiKeyConfigured ||
+        !x402.facilitatorUrl ||
+        !x402.providerContractId)
     ) {
       checks.push({
         rail: 'x402',
@@ -133,7 +142,8 @@ export class HealthController {
         ok: true,
         level: 'warn',
         code: 'ETHERFUSE_NON_LIVE_MODE',
-        message: etherfuse.fallbackReason ?? 'Etherfuse is operating in non-live mode',
+        message:
+          etherfuse.fallbackReason ?? 'Etherfuse is operating in non-live mode',
       });
     }
 

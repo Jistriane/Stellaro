@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomBytes, createHash } from 'crypto';
+import { Keypair, StrKey } from '@stellar/stellar-sdk';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 
@@ -190,12 +191,9 @@ export class PasskeyService {
       return { ok: false, error: 'nonce_invalid' };
 
     try {
-      // Import dinâmico do Stellar SDK
-
-      const Stellar = require('@stellar/stellar-sdk');
-      if (!Stellar.StrKey.isValidEd25519PublicKey(publicKey))
+      if (!StrKey.isValidEd25519PublicKey(publicKey))
         return { ok: false, error: 'pubkey_invalid' };
-      const kp = Stellar.Keypair.fromPublicKey(publicKey);
+      const kp = Keypair.fromPublicKey(publicKey);
       const msg = Buffer.from(nonce);
       const sigBuf = Buffer.from(signature, 'base64');
       const verified = kp.verify(msg, sigBuf);

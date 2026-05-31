@@ -25,14 +25,21 @@ describe('ComplianceGuard (Payments)', () => {
     const guard = new ComplianceGuard(compliance);
     const ctx: any = mockContext({}, {});
 
-    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 
   it('falha quando compliance bloqueia', async () => {
-    compliance.canRoutePixOrCard.mockResolvedValue({ ok: true, allowed: false });
+    compliance.canRoutePixOrCard.mockResolvedValue({
+      ok: true,
+      allowed: false,
+    });
     const guard = new ComplianceGuard(compliance);
     const ctx: any = mockContext({}, { userId: 'user-2' });
 
-    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 });

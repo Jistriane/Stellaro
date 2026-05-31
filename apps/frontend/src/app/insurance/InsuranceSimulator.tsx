@@ -41,26 +41,26 @@ export default function InsuranceSimulator() {
   return (
     <div className="space-y-4">
       {feedback && (
-        <div role="status" className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-emerald-700 text-sm">{feedback}</div>
+        <div role="status" className="rounded-md border border-primary/25 bg-primary/10 p-3 text-primary text-sm">{feedback}</div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-400">Desired coverage amount (BRL)</span>
+          <span className="text-sm text-muted-foreground">Desired coverage amount (BRL)</span>
           <input
             type="number"
             min={500}
             step={100}
             value={amount}
             onChange={(e) => setAmount(Math.max(500, Number(e.target.value)))}
-            className="rounded bg-slate-900/50 border border-slate-800 p-2 text-slate-100"
+            className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground"
           />
         </label>
         <div className="flex flex-col gap-1">
-          <span className="text-sm text-slate-400">Coverages</span>
+          <span className="text-sm text-muted-foreground">Coverages</span>
           <div className="grid grid-cols-2 gap-2">
             {Object.entries(COVERAGES).map(([key, cfg]) => (
-              <label key={key} className="flex items-center gap-2 bg-slate-900/50 border border-slate-800 rounded p-2 text-sm">
+              <label key={key} className="flex items-center gap-2 bg-secondary/20 border border-border/60 rounded p-2 text-sm">
                 <input type="checkbox" checked={selected[key as CoverageKey]} onChange={() => toggle(key as CoverageKey)} />
                 <span>{cfg.label}</span>
               </label>
@@ -75,25 +75,25 @@ export default function InsuranceSimulator() {
 
       <div className="grid gap-4 sm:grid-cols-3 text-sm">
         <div>
-          <div className="text-slate-400">Estimated {yearly ? 'annual' : 'monthly'} premium</div>
-          <div className="text-slate-200">{premium.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+          <div className="text-muted-foreground">Estimated {yearly ? 'annual' : 'monthly'} premium</div>
+          <div className="text-foreground">{premium.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
         </div>
         <div>
-          <div className="text-slate-400">Selected coverage</div>
-          <div className="text-slate-200">{Object.entries(selected).filter(([, v]) => v).map(([k]) => COVERAGES[k as CoverageKey].label).join(', ') || 'None'}</div>
+          <div className="text-muted-foreground">Selected coverage</div>
+          <div className="text-foreground">{Object.entries(selected).filter(([, v]) => v).map(([k]) => COVERAGES[k as CoverageKey].label).join(', ') || 'None'}</div>
         </div>
         <div>
-          <div className="text-slate-400">Deductible (mock)</div>
-          <div className="text-slate-200">{(amount * 0.05).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+          <div className="text-muted-foreground">Deductible (mock)</div>
+          <div className="text-foreground">{(amount * 0.05).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button className="px-4 py-2 rounded bg-slate-800 text-slate-100 text-sm" onClick={() => notify('Simulation updated.')}>Simulate</button>
-        <button className="px-4 py-2 rounded bg-emerald-600 text-white text-sm" onClick={() => notify('Proposal submitted (mock).')}>Purchase</button>
+        <button className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm" onClick={() => notify('Simulation updated.')}>Simulate</button>
+        <button className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm" onClick={() => notify('Proposal submitted (mock).')}>Purchase</button>
       </div>
 
-      <div className="text-xs text-slate-500">Illustrative values. Read the general conditions before contracting.</div>
+      <div className="text-xs text-muted-foreground">Illustrative values. Read the general conditions before contracting.</div>
     </div>
   );
 }

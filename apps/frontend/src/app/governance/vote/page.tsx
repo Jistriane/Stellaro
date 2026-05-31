@@ -75,23 +75,24 @@ export default function GovernanceVotePage() {
     );
   };
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_15%,rgba(var(--stellaro-accent-rgb),0.14),transparent_60%),radial-gradient(900px_circle_at_80%_10%,rgba(197,135,230,0.10),transparent_55%)]" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-2xl font-semibold mb-1">{t("title")}</h1>
-          <p className="text-xs text-slate-500">{t("subtitle")}</p>
+          <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {/* Voting Power Card */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <Users className="w-5 h-5" />
               {t("voting_power")}
             </CardTitle>
@@ -99,20 +100,20 @@ export default function GovernanceVotePage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">{t("voting_tokens")}</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">100 STLT</p>
+                <p className="text-muted-foreground text-sm">{t("voting_tokens")}</p>
+                <p className="text-3xl font-bold text-foreground">100 STLT</p>
               </div>
               <div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">{t("voting_power_label")}</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">0.33%</p>
+                <p className="text-muted-foreground text-sm">{t("voting_power_label")}</p>
+                <p className="text-3xl font-bold text-foreground">0.33%</p>
               </div>
               <div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">{t("proposals_voted")}</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">1 of 3</p>
+                <p className="text-muted-foreground text-sm">{t("proposals_voted")}</p>
+                <p className="text-3xl font-bold text-foreground">1 of 3</p>
               </div>
               <div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm">{t("voting_status")}</p>
-                <p className="text-xl font-bold text-green-600 dark:text-green-400">{t("active")} ✓</p>
+                <p className="text-muted-foreground text-sm">{t("voting_status")}</p>
+                <p className="text-xl font-bold text-primary">{t("active")} ✓</p>
               </div>
             </div>
           </CardContent>
@@ -129,10 +130,10 @@ export default function GovernanceVotePage() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <CardTitle className="text-xl mb-2 text-slate-900 dark:text-white">
+                      <CardTitle className="text-xl mb-2 text-foreground">
                         {proposal.title}
                       </CardTitle>
-                      <p className="text-slate-500 dark:text-slate-400 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         {proposal.description}
                       </p>
                     </div>
@@ -140,8 +141,8 @@ export default function GovernanceVotePage() {
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           proposal.status === "Active"
-                            ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
-                            : "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                            ? "bg-primary/10 border border-primary/25 text-primary"
+                            : "bg-secondary/30 border border-border/60 text-foreground"
                         }`}
                       >
                         {proposal.status}
@@ -155,11 +156,11 @@ export default function GovernanceVotePage() {
                   <div className="space-y-3">
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="flex items-center gap-2 text-green-600 dark:text-green-500">
+                        <span className="flex items-center gap-2 text-primary">
                           <ThumbsUp className="w-4 h-4" />
                           {t("for")}
                         </span>
-                        <span className="text-sm text-slate-900 dark:text-white">
+                        <span className="text-sm text-foreground">
                           {proposal.votesFor.toLocaleString()} ({forPercent.toFixed(1)}%)
                         </span>
                       </div>
@@ -168,11 +169,11 @@ export default function GovernanceVotePage() {
 
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="flex items-center gap-2 text-red-600 dark:text-red-500">
+                        <span className="flex items-center gap-2 text-destructive">
                           <ThumbsDown className="w-4 h-4" />
                           {t("against")}
                         </span>
-                        <span className="text-sm text-slate-900 dark:text-white">
+                        <span className="text-sm text-foreground">
                           {proposal.votesAgainst.toLocaleString()} (
                           {againstPercent.toFixed(1)}%)
                         </span>
@@ -184,10 +185,10 @@ export default function GovernanceVotePage() {
                   {/* Quorum */}
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-slate-500 dark:text-slate-400 text-sm">
+                      <span className="text-muted-foreground text-sm">
                         {t("quorum")} ({proposal.quorum}%)
                       </span>
-                      <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                      <span className="text-sm font-semibold text-foreground">
                         {((proposal.totalVotes / 5000) * 100).toFixed(1)}%
                       </span>
                     </div>
@@ -195,7 +196,7 @@ export default function GovernanceVotePage() {
                   </div>
 
                   {/* Voting Time */}
-                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Clock className="w-4 h-4" />
                     {proposal.daysRemaining} {t("days_remaining")}
                   </div>
@@ -203,7 +204,7 @@ export default function GovernanceVotePage() {
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-4">
                     {proposal.votedYes ? (
-                      <div className="flex items-center gap-2 text-green-600 dark:text-green-500 flex-1">
+                      <div className="flex items-center gap-2 text-primary flex-1">
                         <CheckCircle className="w-5 h-5" />
                         <span className="font-semibold">{t("you_voted_for")}</span>
                       </div>
@@ -211,7 +212,7 @@ export default function GovernanceVotePage() {
                       <>
                         <Button
                           onClick={() => handleVote(proposal.id, true)}
-                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                           {t("vote_for")}
                         </Button>
@@ -227,7 +228,7 @@ export default function GovernanceVotePage() {
                       <>
                         <Button
                           disabled
-                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                           {t("vote_for")}
                         </Button>
@@ -250,7 +251,7 @@ export default function GovernanceVotePage() {
         {/* Voting History */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-slate-900 dark:text-white">{t("voting_history")}</CardTitle>
+            <CardTitle className="text-foreground">{t("voting_history")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -263,13 +264,13 @@ export default function GovernanceVotePage() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+                  className="flex justify-between items-center p-3 bg-card/50 rounded-lg border border-border/60"
                 >
                   <div>
-                    <p className="font-semibold text-slate-900 dark:text-white">{item.title}</p>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{item.date}</p>
+                    <p className="font-semibold text-foreground">{item.title}</p>
+                    <p className="text-sm text-muted-foreground">{item.date}</p>
                   </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 border border-primary/25 text-primary">
                     {item.vote}
                   </span>
                 </div>

@@ -48,9 +48,10 @@ export function ConnectWallet() {
   const { connect, connectors } = useConnect()
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_15%,rgba(var(--stellaro-accent-rgb),0.14),transparent_60%),radial-gradient(900px_circle_at_80%_10%,rgba(197,135,230,0.10),transparent_55%)]" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div>
       {address ? (
@@ -265,7 +266,12 @@ export function MonitorEvents() {
   };
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+      <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_15%,rgba(var(--stellaro-accent-rgb),0.14),transparent_60%),radial-gradient(900px_circle_at_80%_10%,rgba(197,135,230,0.10),transparent_55%)]" />
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="space-y-4 mb-12">
@@ -340,7 +346,7 @@ export function MonitorEvents() {
             <Card key={example.id} className="flex flex-col">
               <CardHeader>
                 <div className="flex items-start justify-between mb-3">
-                  <div className="p-2 rounded-lg bg-secondary">
+                  <div className="p-2 rounded-lg bg-secondary/30 border border-border/60">
                     {example.icon}
                   </div>
                   <span className="text-xs font-mono px-2 py-1 rounded bg-secondary text-muted-foreground">
@@ -353,7 +359,7 @@ export function MonitorEvents() {
                 </p>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
-                <div className="bg-secondary rounded-lg p-4 mb-4 overflow-x-auto flex-1">
+                <div className="bg-secondary/20 border border-border/60 rounded-lg p-4 mb-4 overflow-x-auto flex-1">
                   <pre className="text-xs text-muted-foreground font-mono leading-relaxed">
                     <code>{example.code}</code>
                   </pre>
@@ -382,7 +388,7 @@ export function MonitorEvents() {
         </div>
 
         {/* Resources */}
-        <div className="mt-12 p-6 rounded-lg bg-secondary">
+        <div className="mt-12 p-6 rounded-lg bg-card/50 border border-border/60">
           <h2 className="text-xl font-bold mb-4">{t("resources.title")}</h2>
           <p className="text-muted-foreground mb-4">
             {t("resources.description")}
@@ -403,6 +409,7 @@ export function MonitorEvents() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

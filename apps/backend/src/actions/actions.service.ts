@@ -99,10 +99,11 @@ export class ActionsService {
     error?: string;
   }> {
     try {
-      const loansPoolId = process.env.LOANS_POOL_CONTRACT_ID;
+      const loansPoolId =
+        process.env.LOANSPOOL_CONTRACT_ID ?? process.env.LOANS_POOL_CONTRACT_ID;
 
       if (!loansPoolId) {
-        throw new Error('LOANS_POOL_CONTRACT_ID not configured');
+        throw new Error('LOANSPOOL_CONTRACT_ID not configured');
       }
 
       if (params.dryRun) {

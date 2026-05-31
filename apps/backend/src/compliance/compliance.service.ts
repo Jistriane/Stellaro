@@ -26,10 +26,30 @@ type KycSubmissionBody = {
 };
 
 type KycFiles = {
-  idDocument?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
-  selfie?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
-  addressProof?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
-  revenueProof?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
+  idDocument?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
+  selfie?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
+  addressProof?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
+  revenueProof?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
 };
 
 @Injectable()
@@ -38,7 +58,7 @@ export class ComplianceService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly sorobanService: SorobanService
+    private readonly sorobanService: SorobanService,
   ) {}
 
   kycCheck(document: string, name: string): Promise<KycResult> {
@@ -187,16 +207,41 @@ export class ComplianceService {
     const rawData = (latest.data ?? {}) as any;
     const attachments = rawData.attachments ?? {};
     const docs = [
-      { key: 'idDocument', label: 'ID (front/back)', file: attachments.idDocument ?? null },
-      { key: 'selfie', label: 'Selfie holding ID', file: attachments.selfie ?? null },
-      { key: 'addressProof', label: 'Proof of address', file: attachments.addressProof ?? null },
-      { key: 'revenueProof', label: 'Revenue proof', file: attachments.revenueProof ?? null },
+      {
+        key: 'idDocument',
+        label: 'ID (front/back)',
+        file: attachments.idDocument ?? null,
+      },
+      {
+        key: 'selfie',
+        label: 'Selfie holding ID',
+        file: attachments.selfie ?? null,
+      },
+      {
+        key: 'addressProof',
+        label: 'Proof of address',
+        file: attachments.addressProof ?? null,
+      },
+      {
+        key: 'revenueProof',
+        label: 'Revenue proof',
+        file: attachments.revenueProof ?? null,
+      },
     ].map((item) => ({
       ...item,
-      status: item.file ? (latest.status === 'APPROVED' ? 'Approved' : latest.status === 'REJECTED' ? 'Rejected' : 'Under review') : 'Pending',
+      status: item.file
+        ? latest.status === 'APPROVED'
+          ? 'Approved'
+          : latest.status === 'REJECTED'
+            ? 'Rejected'
+            : 'Under review'
+        : 'Pending',
     }));
 
-    const progressPct = docs.reduce((acc, item) => acc + (item.file ? 25 : 0), 0);
+    const progressPct = docs.reduce(
+      (acc, item) => acc + (item.file ? 25 : 0),
+      0,
+    );
     const nextPending = docs.find((item) => !item.file);
 
     return {
@@ -209,7 +254,9 @@ export class ComplianceService {
             ? 'Rejected'
             : 'Waiting for validation',
       progressPct,
-      nextStep: nextPending ? `Upload ${nextPending.label}` : 'Awaiting compliance validation',
+      nextStep: nextPending
+        ? `Upload ${nextPending.label}`
+        : 'Awaiting compliance validation',
       level: latest.status === 'APPROVED' ? 'Enhanced' : 'Basic',
       documents: docs,
       updatedAt: latest.updatedAt,
@@ -244,13 +291,18 @@ export class ComplianceService {
    */
   async issueOnChainVC(userId: string, userAddress: string) {
     this.logger.log(`Issuing On-Chain VC for user ${userId} at ${userAddress}`);
-    
+
     try {
-      const adminSecret = process.env.MASTER_SECRET_KEY;
-      const registryContractId = process.env.VC_REGISTRY_CONTRACT_ID || process.env.VC_REGISTRY_ID;
+      const adminSecret =
+        process.env.MASTER_SECRET_KEY ?? process.env.STELLAR_SECRET_KEY;
+      const registryContractId =
+        process.env.VC_REGISTRY_CONTRACT_ID || process.env.VC_REGISTRY_ID;
 
       if (!registryContractId) {
         throw new Error('VC Registry contract ID not configured');
+      }
+      if (!adminSecret) {
+        throw new Error('Admin secret key not configured');
       }
 
       await this.sorobanService.executeContractCall(
@@ -258,9 +310,9 @@ export class ComplianceService {
         'issue_vc',
         [
           StellarSdk.Address.fromString(userAddress).toScVal(),
-          StellarSdk.xdr.ScVal.scvString('KYC-PASSPORT')
+          StellarSdk.xdr.ScVal.scvString('KYC-PASSPORT'),
         ],
-        adminSecret
+        adminSecret,
       );
 
       this.logger.log(`Successfully issued VC for ${userAddress}`);

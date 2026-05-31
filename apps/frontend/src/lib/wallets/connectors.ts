@@ -772,10 +772,10 @@ export const XBullConnector: WalletConnector = {
 
       const tabsApi = chromeApi?.tabs;
       if (tabsApi) {
-        tabsApi.query({ active: true, currentWindow: true }, (tabs) => {
+        tabsApi?.query({ active: true, currentWindow: true }, (tabs) => {
           const tabId = tabs[0]?.id;
           if (typeof tabId !== 'number') return;
-          tabsApi.sendMessage(tabId, {
+          tabsApi?.sendMessage(tabId, {
             action: 'ACTIVATE_XBULL'
           });
         });

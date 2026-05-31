@@ -82,34 +82,24 @@ export default function TransactionHistoryPage() {
     setLoading(false);
   }, [filter]);
 
-  const getTypeColor = (type: string) => {
+  const getTypeBadge = (type: string): { variant: "default" | "secondary" | "outline" | "destructive"; className?: string } => {
     switch (type) {
-      case "Borrow":
-        return "bg-red-900 text-red-200";
-      case "Deposit":
-      case "Add Liquidity":
-        return "bg-green-900 text-green-200";
-      case "Withdraw":
-      case "Repay":
-        return "bg-orange-900 text-orange-200";
-      case "Swap":
-        return "bg-blue-900 text-blue-200";
       default:
-        return "bg-gray-900 text-gray-200";
+        return { variant: "secondary", className: "text-primary" };
     }
   };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-semibold mb-1">{t("history.title")}</h1>
-            <p className="text-xs text-slate-500">{t("history.subtitle")}</p>
+            <p className="text-xs text-muted-foreground">{t("history.subtitle")}</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
@@ -128,11 +118,11 @@ export default function TransactionHistoryPage() {
           <CardContent className="pt-6">
             <div className="flex gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+                <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search transaction ID or hash..."
-                  className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-secondary/30 border border-border/60 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
             </div>
@@ -170,7 +160,7 @@ export default function TransactionHistoryPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="border-b border-slate-200 dark:border-slate-700">
+                <thead className="border-b border-border/60">
                   <tr>
                     <th className="text-left py-2 px-2">ID</th>
                     <th className="text-left py-2 px-2">Type</th>
@@ -182,11 +172,13 @@ export default function TransactionHistoryPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  {transactions.map((tx) => {
+                    const typeBadge = getTypeBadge(tx.type);
+                    return (
+                    <tr key={tx.id} className="border-b border-border/60 hover:bg-secondary/20">
                       <td className="font-mono text-xs py-2 px-2">{tx.id}</td>
                       <td className="py-2 px-2">
-                        <Badge className={getTypeColor(tx.type)}>
+                        <Badge variant={typeBadge.variant} className={typeBadge.className}>
                           {tx.type}
                         </Badge>
                       </td>
@@ -194,19 +186,20 @@ export default function TransactionHistoryPage() {
                       <td className="font-bold py-2 px-2">
                         {tx.amount.toLocaleString()}
                       </td>
-                      <td className="text-xs text-slate-500 py-2 px-2">
+                      <td className="text-xs text-muted-foreground py-2 px-2">
                         {tx.date} {tx.time}
                       </td>
                       <td className="py-2 px-2">
-                        <Badge variant="outline" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                        <Badge variant="secondary" className="text-primary">
                           ✓ {tx.status}
                         </Badge>
                       </td>
-                      <td className="font-mono text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer py-2 px-2">
+                      <td className="font-mono text-xs text-muted-foreground hover:text-foreground cursor-pointer py-2 px-2">
                         {tx.hash}
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -217,33 +210,33 @@ export default function TransactionHistoryPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Total Transactions</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Total Transactions</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">{transactions.length}</p>
-              <p className="text-xs text-slate-500 mt-1">Last 30 days</p>
+              <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Total Volume</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Total Volume</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold">
                 ${transactions.reduce((sum, tx) => sum + tx.amount, 0).toLocaleString()}
               </p>
-              <p className="text-xs text-slate-500 mt-1">Moved this month</p>
+              <p className="text-xs text-muted-foreground mt-1">Moved this month</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-slate-500">Success Rate</CardTitle>
+              <CardTitle className="text-xs text-muted-foreground">Success Rate</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-green-600">100%</p>
-              <p className="text-xs text-slate-500 mt-1">All transactions succeeded</p>
+              <p className="text-3xl font-bold text-primary">100%</p>
+              <p className="text-xs text-muted-foreground mt-1">All transactions succeeded</p>
             </CardContent>
           </Card>
         </div>

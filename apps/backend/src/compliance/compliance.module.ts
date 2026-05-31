@@ -7,9 +7,16 @@ import { OraclesModule } from '../oracles/oracles.module';
 import { ChainModule } from '../chain/chain.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [OraclesModule, ChainModule, PrismaModule, NotificationsModule],
+  imports: [
+    OraclesModule,
+    ChainModule,
+    PrismaModule,
+    NotificationsModule,
+    AuthModule,
+  ],
   providers: [ComplianceService, ReserveManagerService],
   controllers: [ComplianceController, ReservesController],
   exports: [ComplianceService, ReserveManagerService],

@@ -60,11 +60,9 @@ export class ElizaController {
   @Post('agents/treasury-optimize/:address')
   @ApiOperation({ summary: 'Trigger TreasuryManager optimization' })
   async triggerTreasuryOptimization(@Param('address') address: string) {
-    return this.eliza.triggerAgentAction(
-      'treasury_manager',
-      'optimize_yield',
-      { treasuryAddress: address },
-    );
+    return this.eliza.triggerAgentAction('treasury_manager', 'optimize_yield', {
+      treasuryAddress: address,
+    });
   }
 
   @Post('agents/compliance-check')

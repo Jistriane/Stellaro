@@ -27,8 +27,16 @@ describe('ReflectorService', () => {
   it('usa cache expirado como fallback se a chamada falhar', async () => {
     const service = new ReflectorService(httpService, configService);
     const cacheKey = 'XLM:native';
-    const cached = { symbol: 'XLM', price: 5, timestamp: 111, source: 'reflector' };
-    (service as any).cache.set(cacheKey, { data: cached, expiresAt: Date.now() - 1 });
+    const cached = {
+      symbol: 'XLM',
+      price: 5,
+      timestamp: 111,
+      source: 'reflector',
+    };
+    (service as any).cache.set(cacheKey, {
+      data: cached,
+      expiresAt: Date.now() - 1,
+    });
 
     httpService.get.mockImplementation(() => {
       throw new Error('network down');

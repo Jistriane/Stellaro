@@ -54,79 +54,79 @@ export default function RiskAnalysisPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="max-w-6xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-50 mb-2">{t("analysis.title")}</h1>
-          <p className="text-slate-400 text-sm">{t("analysis.subtitle")}</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("analysis.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("analysis.subtitle")}</p>
         </div>
 
         {/* Alerts */}
         {analysis.alerts.map((alert: Record<string, string>, idx: number) => (
-          <div key={idx} className="bg-blue-900/30 border border-blue-800 p-4 rounded-lg text-blue-200">
+          <div key={idx} className="bg-secondary/20 border border-border/60 p-4 rounded-lg text-foreground">
             {alert.title}: {alert.message}
           </div>
         ))}
 
         {/* Main KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+          <Card className="border-border/60 bg-card/50">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-400">Credit Score</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Credit Score</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-50">{analysis.creditScore}</div>
+              <div className="text-3xl font-bold text-foreground">{analysis.creditScore}</div>
               <Badge className="mt-2" variant="outline">
                 {analysis.scoreRange}
               </Badge>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+          <Card className="border-border/60 bg-card/50">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-400">Risk Level</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Risk Level</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-6 h-6 text-green-400" />
-                <span className="text-2xl font-bold text-green-400">
+                <CheckCircle className="w-6 h-6 text-primary" />
+                <span className="text-2xl font-bold text-primary">
                   {analysis.riskLevel}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 {analysis.riskPercent}% estimated risk
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+          <Card className="border-border/60 bg-card/50">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-400">
+              <CardTitle className="text-sm text-muted-foreground">
                 Collateral Ratio
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-50">{analysis.collateralRatio}%</div>
-              <p className="text-xs text-green-400 mt-2">
+              <div className="text-3xl font-bold text-foreground">{analysis.collateralRatio}%</div>
+              <p className="text-xs text-primary mt-2">
                 Required: {analysis.minRequired}%
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+          <Card className="border-border/60 bg-card/50">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-400">
+              <CardTitle className="text-sm text-muted-foreground">
                 Liquidation Price
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-50">
+              <div className="text-3xl font-bold text-foreground">
                 ${analysis.liquidationPrice.toFixed(2)}
               </div>
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 Current: ${analysis.currentPrice.toFixed(2)}
               </p>
             </CardContent>
@@ -135,82 +135,85 @@ export default function RiskAnalysisPage() {
 
         {/* Risk Factors Radar */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+          <Card className="border-border/60 bg-card/50">
             <CardHeader>
-              <CardTitle className="text-slate-50">Risk Factors Assessment</CardTitle>
+              <CardTitle className="text-foreground">Risk Factors Assessment</CardTitle>
             </CardHeader>
             <CardContent>
               {isMounted ? (
                 <ResponsiveContainer width="100%" height={300}>
                   <RadarChart data={analysis.factors}>
-                  <PolarGrid stroke="#475569" />
-                  <PolarAngleAxis dataKey="name" stroke="#94a3b8" />
-                  <PolarRadiusAxis stroke="#94a3b8" />
+                  <PolarGrid stroke="hsl(var(--border))" />
+                  <PolarAngleAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+                  <PolarRadiusAxis stroke="hsl(var(--muted-foreground))" />
                   <Radar
                     name="Score"
                     dataKey="value"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
+                    stroke="hsl(var(--primary))"
+                    fill="hsl(var(--primary))"
                     fillOpacity={0.6}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1e293b",
-                      border: "1px solid #475569",
+                      backgroundColor: "rgba(10, 12, 16, 0.85)",
+                      border: "1px solid rgba(244, 236, 220, 0.10)",
+                      borderRadius: 14,
+                      color: "rgb(244, 236, 220)",
+                      backdropFilter: "blur(12px)",
                     }}
                   />
                   </RadarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-[300px] rounded-lg border border-dashed border-slate-700/60" />
+                <div className="h-[300px] rounded-lg border border-dashed border-border/60" />
               )}
             </CardContent>
           </Card>
 
-          <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+          <Card className="border-border/60 bg-card/50">
             <CardHeader>
-              <CardTitle className="text-slate-50">Risk Metrics Breakdown</CardTitle>
+              <CardTitle className="text-foreground">Risk Metrics Breakdown</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-400">Portfolio Health</span>
+                  <span className="text-sm text-muted-foreground">Portfolio Health</span>
                   <span className="font-bold">95%</span>
                 </div>
-                <div className="w-full bg-slate-700 rounded-full h-2">
-                  <div className="bg-emerald-500 h-2 rounded-full w-11/12" />
+                <div className="w-full bg-secondary/40 rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full w-11/12" />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-400">Volatility Risk</span>
+                  <span className="text-sm text-muted-foreground">Volatility Risk</span>
                   <span className="font-bold">25%</span>
                 </div>
-                <div className="w-full bg-slate-700 rounded-full h-2">
-                  <div className="bg-amber-500 h-2 rounded-full w-1/4" />
+                <div className="w-full bg-secondary/40 rounded-full h-2">
+                  <div className="bg-primary/60 h-2 rounded-full w-1/4" />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-muted-foreground">
                     Liquidation Risk
                   </span>
                   <span className="font-bold">5%</span>
                 </div>
-                <div className="w-full bg-slate-700 rounded-full h-2">
-                  <div className="bg-emerald-500 h-2 rounded-full w-1/20" />
+                <div className="w-full bg-secondary/40 rounded-full h-2">
+                  <div className="bg-destructive h-2 rounded-full w-1/20" />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-400">Market Risk</span>
+                  <span className="text-sm text-muted-foreground">Market Risk</span>
                   <span className="font-bold">35%</span>
                 </div>
-                <div className="w-full bg-slate-700 rounded-full h-2">
-                  <div className="bg-orange-500 h-2 rounded-full w-1/3" />
+                <div className="w-full bg-secondary/40 rounded-full h-2">
+                  <div className="bg-primary/60 h-2 rounded-full w-1/3" />
                 </div>
               </div>
             </CardContent>
@@ -218,9 +221,9 @@ export default function RiskAnalysisPage() {
         </div>
 
         {/* Recommendations */}
-        <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+        <Card className="border-border/60 bg-card/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-50">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               <TrendingDown className="w-5 h-5" />
               Risk Management Recommendations
             </CardTitle>
@@ -229,8 +232,8 @@ export default function RiskAnalysisPage() {
             <div className="space-y-3">
               {analysis.recommendations.map((rec: string, idx: number) => (
                 <div key={idx} className="flex gap-3 items-start">
-                  <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-300">{rec}</span>
+                  <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">{rec}</span>
                 </div>
               ))}
             </div>
@@ -238,9 +241,9 @@ export default function RiskAnalysisPage() {
         </Card>
 
         {/* Historical Risk */}
-        <Card className="border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800/50">
+        <Card className="border-border/60 bg-card/50">
           <CardHeader>
-            <CardTitle className="text-slate-50">Risk Score History</CardTitle>
+            <CardTitle className="text-foreground">Risk Score History</CardTitle>
           </CardHeader>
           <CardContent>
             {isMounted ? (
@@ -254,20 +257,23 @@ export default function RiskAnalysisPage() {
                   { date: "29 Dec", score: 720 },
                 ]}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-                <XAxis dataKey="date" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1e293b",
-                    border: "1px solid #475569",
+                    backgroundColor: "rgba(10, 12, 16, 0.85)",
+                    border: "1px solid rgba(244, 236, 220, 0.10)",
+                    borderRadius: 14,
+                    color: "rgb(244, 236, 220)",
+                    backdropFilter: "blur(12px)",
                   }}
                 />
-                <Bar dataKey="score" fill="#10b981" />
+                <Bar dataKey="score" fill="hsl(var(--primary))" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[250px] rounded-lg border border-dashed border-slate-700/60" />
+              <div className="h-[250px] rounded-lg border border-dashed border-border/60" />
             )}
           </CardContent>
         </Card>

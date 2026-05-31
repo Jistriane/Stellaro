@@ -34,8 +34,8 @@ describe('AnalyticsService', () => {
     }).compile();
 
     service = module.get<AnalyticsService>(AnalyticsService);
-    prisma = module.get(PrismaService) as jest.Mocked<PrismaService>;
-    cache = module.get(RedisService) as jest.Mocked<RedisService>;
+    prisma = module.get(PrismaService);
+    cache = module.get(RedisService);
   });
 
   it('should be defined', () => {
@@ -44,7 +44,11 @@ describe('AnalyticsService', () => {
 
   describe('getOverview', () => {
     it('should return cached overview if available', async () => {
-      const cachedData = { tvl: '1000000', volume24h: '500000', mintBurnRatio: 0.95 };
+      const cachedData = {
+        tvl: '1000000',
+        volume24h: '500000',
+        mintBurnRatio: 0.95,
+      };
       cache.get.mockResolvedValueOnce(cachedData);
 
       const result = await service.getOverview();
@@ -68,7 +72,11 @@ describe('AnalyticsService', () => {
       expect(result.tvl).toBe('2000000');
       expect(result.volume24h).toBe('600000');
       expect(result.mintBurnRatio).toBe(0.98);
-      expect(cache.set).toHaveBeenCalledWith('dash:overview', expect.any(Object), 15);
+      expect(cache.set).toHaveBeenCalledWith(
+        'dash:overview',
+        expect.any(Object),
+        15,
+      );
     });
 
     it('should handle missing snapshot keys gracefully', async () => {

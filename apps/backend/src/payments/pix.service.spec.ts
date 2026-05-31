@@ -158,7 +158,7 @@ describe('PixService', () => {
           data: expect.objectContaining({
             cpf: '123.456.789-01',
           }),
-        })
+        }),
       );
     });
 
@@ -168,7 +168,8 @@ describe('PixService', () => {
 
       await service.generatePixCharge(validParams);
 
-      const createCall = (prisma.pixPayment.create as jest.Mock).mock.calls[0][0];
+      const createCall = (prisma.pixPayment.create as jest.Mock).mock
+        .calls[0][0];
       const expiresAt = new Date(createCall.data.expiresAt);
       const expectedExpiry = beforeTime + 3600000; // 1 hour
 
@@ -191,7 +192,9 @@ describe('PixService', () => {
     });
 
     it('should process confirmed payment and mint STLT', async () => {
-      jest.spyOn(prisma.pixPayment, 'findUnique').mockResolvedValue(mockPixPayment);
+      jest
+        .spyOn(prisma.pixPayment, 'findUnique')
+        .mockResolvedValue(mockPixPayment);
       jest.spyOn(prisma.pixPayment, 'update').mockResolvedValue({
         ...mockPixPayment,
         status: 'confirmed',
@@ -228,7 +231,9 @@ describe('PixService', () => {
 
     it('should be idempotent - skip already confirmed payment', async () => {
       const confirmedPayment = { ...mockPixPayment, status: 'confirmed' };
-      jest.spyOn(prisma.pixPayment, 'findUnique').mockResolvedValue(confirmedPayment as any);
+      jest
+        .spyOn(prisma.pixPayment, 'findUnique')
+        .mockResolvedValue(confirmedPayment as any);
 
       const result = await service.handlePixWebhook(validWebhook);
 
@@ -238,7 +243,9 @@ describe('PixService', () => {
     });
 
     it('should handle mint failure gracefully', async () => {
-      jest.spyOn(prisma.pixPayment, 'findUnique').mockResolvedValue(mockPixPayment);
+      jest
+        .spyOn(prisma.pixPayment, 'findUnique')
+        .mockResolvedValue(mockPixPayment);
       jest.spyOn(prisma.pixPayment, 'update').mockResolvedValue({
         ...mockPixPayment,
         status: 'confirmed',
@@ -257,7 +264,9 @@ describe('PixService', () => {
     });
 
     it('should handle failed payment status', async () => {
-      jest.spyOn(prisma.pixPayment, 'findUnique').mockResolvedValue(mockPixPayment);
+      jest
+        .spyOn(prisma.pixPayment, 'findUnique')
+        .mockResolvedValue(mockPixPayment);
       jest.spyOn(prisma.pixPayment, 'update').mockResolvedValue({
         ...mockPixPayment,
         status: 'failed',
@@ -298,7 +307,9 @@ describe('PixService', () => {
         updatedAt: new Date(),
       };
 
-      jest.spyOn(prisma.pixWithdrawal, 'create').mockResolvedValue(mockWithdrawal as any);
+      jest
+        .spyOn(prisma.pixWithdrawal, 'create')
+        .mockResolvedValue(mockWithdrawal as any);
       jest.spyOn(actionsService, 'stablecoinBurn').mockResolvedValue({
         ok: true,
         method: 'burn',
@@ -331,7 +342,11 @@ describe('PixService', () => {
     });
 
     it('should validate CPF PIX key format', async () => {
-      const cpfKey = { ...validWithdrawal, pixKey: '12345678901', pixKeyType: 'cpf' as const };
+      const cpfKey = {
+        ...validWithdrawal,
+        pixKey: '12345678901',
+        pixKeyType: 'cpf' as const,
+      };
       jest.spyOn(prisma.pixWithdrawal, 'create').mockResolvedValue({
         id: 'withdrawal-123',
         userId: 'user-123',
@@ -352,7 +367,11 @@ describe('PixService', () => {
     });
 
     it('should validate email PIX key format', async () => {
-      const emailKey = { ...validWithdrawal, pixKey: 'user@example.com', pixKeyType: 'email' as const };
+      const emailKey = {
+        ...validWithdrawal,
+        pixKey: 'user@example.com',
+        pixKeyType: 'email' as const,
+      };
       jest.spyOn(prisma.pixWithdrawal, 'create').mockResolvedValue({
         id: 'withdrawal-123',
         userId: 'user-123',
@@ -375,7 +394,9 @@ describe('PixService', () => {
 
   describe('getPaymentStatus', () => {
     it('should return payment status', async () => {
-      jest.spyOn(prisma.pixPayment, 'findUnique').mockResolvedValue(mockPixPayment);
+      jest
+        .spyOn(prisma.pixPayment, 'findUnique')
+        .mockResolvedValue(mockPixPayment);
 
       const result = await service.getPaymentStatus('STLT123456');
 
@@ -409,7 +430,11 @@ describe('PixService', () => {
         }),
       } as unknown as ConfigService;
 
-      const localService = new PixService(localConfigService, prisma, actionsService);
+      const localService = new PixService(
+        localConfigService,
+        prisma,
+        actionsService,
+      );
       const status = localService.getStatus();
 
       expect(status).toMatchObject({

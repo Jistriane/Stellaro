@@ -65,9 +65,15 @@ export class X402Service {
     const resolved = this.resolveMode();
     const mode = resolved.mode;
     const facilitatorUrl = this.getString('X402_FACILITATOR_URL');
-    const providerContractId = this.getString('FACILITATOR_PROVIDER_CONTRACT_ID');
+    const providerContractId = this.getString(
+      'FACILITATOR_PROVIDER_CONTRACT_ID',
+    );
     const recipient = this.getString('X402_RECIPIENT');
-    const network = this.getString('X402_NETWORK') ?? 'stellar:testnet';
+    const network =
+      this.getString('X402_NETWORK') ??
+      (process.env.STELLAR_NETWORK === 'mainnet'
+        ? 'stellar:mainnet'
+        : 'stellar:testnet');
     const acceptedAsset = this.getString('X402_ACCEPTED_ASSET') ?? 'STLT';
     const resource = this.getString('X402_RESOURCE') ?? '/payments/x402/settle';
     const apiKeyConfigured = !!this.getString('FACILITATOR_API_KEY');
@@ -101,17 +107,25 @@ export class X402Service {
 
     const feeBps = this.getNumber('X402_FEE_BPS') ?? 25;
     const ttlSeconds = this.getNumber('X402_TTL_SECONDS') ?? 900;
-    const facilitatorUrl = status.facilitatorUrl ?? 'https://facilitator.stellaro.local';
-    const providerContractId = status.providerContractId ?? 'stub-provider-contract';
-    const recipient = status.recipient ?? 'GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX';
+    const facilitatorUrl =
+      status.facilitatorUrl ?? 'https://facilitator.stellaro.local';
+    const providerContractId =
+      status.providerContractId ?? 'stub-provider-contract';
+    const recipient =
+      status.recipient ??
+      'GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX';
     const asset = (params.asset ?? status.acceptedAsset).trim().toUpperCase();
     const sessionId = randomUUID();
     const total = amount * (1 + feeBps / 10_000);
     const expiresAt = new Date(Date.now() + ttlSeconds * 1000).toISOString();
-    const memo = params.memo?.trim() || `stellaro:${params.intent ?? 'deposit'}:${sessionId.slice(0, 8)}`;
+    const memo =
+      params.memo?.trim() ||
+      `stellaro:${params.intent ?? 'deposit'}:${sessionId.slice(0, 8)}`;
 
     if (status.mode === 'live') {
-      this.logger.log(`Generated live x402 quote ${sessionId} for ${asset} ${amount.toFixed(2)}`);
+      this.logger.log(
+        `Generated live x402 quote ${sessionId} for ${asset} ${amount.toFixed(2)}`,
+      );
     } else {
       this.logger.warn(
         `[X402_FALLBACK] action=create_quote mode=${status.mode} reason="${status.fallbackReason ?? 'non-live mode'}"`,
@@ -157,7 +171,9 @@ export class X402Service {
   private resolveMode(): { mode: X402Mode; reason: string | null } {
     const configuredMode = this.getString('X402_MODE')?.toLowerCase();
     const facilitatorUrl = this.getString('X402_FACILITATOR_URL');
-    const providerContractId = this.getString('FACILITATOR_PROVIDER_CONTRACT_ID');
+    const providerContractId = this.getString(
+      'FACILITATOR_PROVIDER_CONTRACT_ID',
+    );
     const apiKey = this.getString('FACILITATOR_API_KEY');
     const liveReady = !!facilitatorUrl && !!providerContractId && !!apiKey;
 
@@ -167,7 +183,9 @@ export class X402Service {
 
     if (configuredMode === 'live') {
       if (!liveReady) {
-        this.logger.warn('x402 live mode requested but facilitator configuration is incomplete');
+        this.logger.warn(
+          'x402 live mode requested but facilitator configuration is incomplete',
+        );
         return {
           mode: 'disabled',
           reason:

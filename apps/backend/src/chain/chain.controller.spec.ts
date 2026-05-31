@@ -12,9 +12,18 @@ describe('ChainController', () => {
       simulateContractCall: jest.fn(),
     } as unknown as jest.Mocked<ChainService>;
 
-    service.getConfig.mockReturnValue({ network: 'testnet', sorobanRpcUrl: 'rpc' } as any);
-    service.simulateContractCallReal.mockResolvedValue({ ok: true, estimatedFee: 123 } as any);
-    service.simulateContractCall.mockResolvedValue({ ok: true, estimatedFee: 456 } as any);
+    service.getConfig.mockReturnValue({
+      network: 'testnet',
+      sorobanRpcUrl: 'rpc',
+    } as any);
+    service.simulateContractCallReal.mockResolvedValue({
+      ok: true,
+      estimatedFee: 123,
+    } as any);
+    service.simulateContractCall.mockResolvedValue({
+      ok: true,
+      estimatedFee: 456,
+    } as any);
 
     controller = new ChainController(service);
   });

@@ -54,7 +54,8 @@ describe('HealthController', () => {
       apiKeyConfigured: false,
       webhookSecretConfigured: true,
       fallbackActive: true,
-      fallbackReason: 'PIX credentials not configured; using implicit stub mode',
+      fallbackReason:
+        'PIX credentials not configured; using implicit stub mode',
     });
     x402Service.getStatus.mockReturnValue({
       enabled: true,
@@ -83,7 +84,8 @@ describe('HealthController', () => {
       walletAddressConfigured: false,
       apiKeyConfigured: false,
       fallbackActive: true,
-      fallbackReason: 'ETHERFUSE credentials not fully configured; using implicit stub mode',
+      fallbackReason:
+        'ETHERFUSE credentials not fully configured; using implicit stub mode',
     });
 
     const res = controller.getFinancialIntegrationsReadiness();

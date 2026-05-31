@@ -109,7 +109,7 @@ export default function CardsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
-        <div className="text-xs text-slate-500">{t("header.subtitle")}</div>
+        <div className="text-xs text-muted-foreground">{t("header.subtitle")}</div>
       </div>
 
       {/* Cards summary */}
@@ -119,32 +119,32 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2 text-sm">
-            <button onClick={() => requestNewCard("Virtual")} className="px-3 py-2 rounded bg-primary text-black">{t("summary.request_virtual")}</button>
-            <button onClick={() => requestNewCard("Physical")} className="px-3 py-2 rounded bg-slate-800 text-slate-200">{t("summary.request_physical")}</button>
+            <button onClick={() => requestNewCard("Virtual")} className="px-3 py-2 rounded bg-primary text-primary-foreground">{t("summary.request_virtual")}</button>
+            <button onClick={() => requestNewCard("Physical")} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("summary.request_physical")}</button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {cards.map((c) => (
-              <div key={c.id} className="rounded border border-slate-800">
+              <div key={c.id} className="rounded-xl border border-border/60 bg-card/40 backdrop-blur-xl overflow-hidden">
                 {/* Stylized card */}
-                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-t p-4 relative overflow-hidden">
-                  <div className="text-xs text-slate-400">{typeLabel(c.type)} • {statusLabel(c.status)}</div>
+                <div className="bg-gradient-to-br from-secondary/40 to-background/40 p-4 relative overflow-hidden">
+                  <div className="text-xs text-muted-foreground">{typeLabel(c.type)} • {statusLabel(c.status)}</div>
                   <div className="mt-1 text-lg tracking-wider">{c.masked}</div>
-                  <div className="text-xs text-slate-400 mt-1">{c.holder}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{c.holder}</div>
                   <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full opacity-20 bg-primary" />
                 </div>
 
                 {/* Quick actions */}
                 <div className="p-4 space-y-3">
                   <div className="flex flex-wrap gap-2 text-sm">
-                    <button onClick={() => toggleDetails(c.id)} className="px-3 py-2 rounded bg-slate-800 text-slate-200">
+                    <button onClick={() => toggleDetails(c.id)} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">
                       {showDetails[c.id] ? t("card.hide_data") : t("card.show_data")}
                     </button>
-                    <button onClick={() => toggleBlock(c.id)} className="px-3 py-2 rounded bg-slate-800 text-slate-200">
+                    <button onClick={() => toggleBlock(c.id)} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">
                       {c.status === "Blocked" ? t("card.unblock") : t("card.block")}
                     </button>
                     {c.type === "Virtual" && (
-                      <button onClick={() => alert(t("actions.virtual_canceled")) } className="px-3 py-2 rounded bg-rose-900/40 text-rose-200">
+                      <button onClick={() => alert(t("actions.virtual_canceled")) } className="px-3 py-2 rounded bg-destructive/10 border border-destructive/30 text-destructive">
                         {t("card.cancel_virtual")}
                       </button>
                     )}
@@ -154,24 +154,24 @@ export default function CardsPage() {
                   {showDetails[c.id] && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                       <div>
-                        <div className="text-slate-400 text-xs">{t("card.number")}</div>
+                        <div className="text-muted-foreground text-xs">{t("card.number")}</div>
                         <div className="flex items-center gap-2">
                           <span>{c.number}</span>
-                          <button onClick={() => onCopy(c.number)} className="px-2 py-1 rounded bg-slate-800 text-xs">{t("card.copy")}</button>
+                          <button onClick={() => onCopy(c.number)} className="px-2 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground">{t("card.copy")}</button>
                         </div>
                       </div>
                       <div>
-                        <div className="text-slate-400 text-xs">{t("card.expiry")}</div>
+                        <div className="text-muted-foreground text-xs">{t("card.expiry")}</div>
                         <div>{c.expiry}</div>
                       </div>
                       <div>
-                        <div className="text-slate-400 text-xs">{t("card.cvv")}</div>
+                        <div className="text-muted-foreground text-xs">{t("card.cvv")}</div>
                         <div className="flex items-center gap-2">
                           <span>***</span>
-                          <button onClick={() => alert(`${t("card.cvv")}: ${c.cvv} (mock)`)} className="px-2 py-1 rounded bg-slate-800 text-xs">{t("card.show")}</button>
+                          <button onClick={() => alert(`${t("card.cvv")}: ${c.cvv} (mock)`)} className="px-2 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground">{t("card.show")}</button>
                         </div>
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-muted-foreground">
                         {t("card.security_note")}
                       </div>
                     </div>
@@ -197,13 +197,13 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <div className="text-sm text-slate-500">{t("transactions.empty")}</div>
+            <div className="text-sm text-muted-foreground">{t("transactions.empty")}</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
               {transactions.map((tItem, i) => (
-                <div key={i} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
-                  <div className="text-slate-300">{tItem.date} • R$ {tItem.value.toLocaleString("en-US")}</div>
-                  <div className="text-xs text-slate-500">{tItem.merchant} • {tItem.status}{tItem.intl ? ` • ${t("transactions.intl")}` : ""}</div>
+                <div key={i} className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2">
+                  <div className="text-muted-foreground">{tItem.date} • R$ {tItem.value.toLocaleString("en-US")}</div>
+                  <div className="text-xs text-muted-foreground">{tItem.merchant} • {tItem.status}{tItem.intl ? ` • ${t("transactions.intl")}` : ""}</div>
                 </div>
               ))}
             </div>
@@ -218,15 +218,15 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-slate-800 text-slate-200">{t("settings.instant_lock")}</button>
-            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-slate-800 text-slate-200">{t("settings.toggle_international")}</button>
-            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-slate-800 text-slate-200">{t("settings.notifications")}</button>
+            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.instant_lock")}</button>
+            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.toggle_international")}</button>
+            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.notifications")}</button>
           </div>
-          <div className="text-xs text-amber-300">
+          <div className="text-xs text-primary">
             {t("settings.tip")}
           </div>
           <div>
-            <Link href="/docs" className="underline text-slate-300">{t("settings.docs_link")}</Link>
+            <Link href="/docs" className="underline text-primary">{t("settings.docs_link")}</Link>
           </div>
         </CardContent>
       </Card>
@@ -238,7 +238,7 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent className="text-sm space-y-2">
           <div>{t("delivery.steps")}</div>
-          <div className="text-xs text-slate-500">{t("delivery.tracking")}</div>
+          <div className="text-xs text-muted-foreground">{t("delivery.tracking")}</div>
         </CardContent>
       </Card>
 
@@ -249,9 +249,9 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 text-sm">
-            <Link href="/docs" className="px-3 py-2 rounded bg-slate-800">{t("help.how_to_use")}</Link>
-            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.dispute")}</Link>
-            <Link href="/help" className="px-3 py-2 rounded bg-slate-800">{t("help.quick_support")}</Link>
+            <Link href="/docs" className="px-3 py-2 rounded bg-secondary/30 border border-border/60">{t("help.how_to_use")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-secondary/30 border border-border/60">{t("help.dispute")}</Link>
+            <Link href="/help" className="px-3 py-2 rounded bg-secondary/30 border border-border/60">{t("help.quick_support")}</Link>
           </div>
         </CardContent>
       </Card>

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecideDto } from './decide.dto';
 import { ExecuteDto } from './execute.dto';
 
 export class RiskSummaryResponseDto {

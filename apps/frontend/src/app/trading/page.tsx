@@ -50,21 +50,21 @@ export default function TradingPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
       {/* Header and intro */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t('header.title')}</h1>
-        <div className="text-xs text-slate-500">{t('header.platform_normal')}</div>
+        <div className="text-xs text-muted-foreground">{t('header.platform_normal')}</div>
       </div>
       <Card>
         <CardHeader>
           <CardTitle>{t('intro.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-muted-foreground">
             {t('intro.p1')}
           </p>
         </CardContent>
@@ -100,10 +100,10 @@ export default function TradingPage() {
             <CardContent>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <div className="text-slate-400 mb-1">{t('orderbook.asks')}</div>
+                  <div className="text-muted-foreground mb-1">{t('orderbook.asks')}</div>
                   <ul className="space-y-1">
                     {orderBook.asks.map((a, i) => (
-                      <li key={i} className="flex justify-between text-rose-300">
+                      <li key={i} className="flex justify-between text-destructive">
                         <span>{brl(a.price)}</span>
                         <span>{a.qty} BTC</span>
                       </li>
@@ -111,10 +111,10 @@ export default function TradingPage() {
                   </ul>
                 </div>
                 <div>
-                  <div className="text-slate-400 mb-1">{t('orderbook.bids')}</div>
+                  <div className="text-muted-foreground mb-1">{t('orderbook.bids')}</div>
                   <ul className="space-y-1">
                     {orderBook.bids.map((b, i) => (
-                      <li key={i} className="flex justify-between text-emerald-300">
+                      <li key={i} className="flex justify-between text-primary">
                         <span>{brl(b.price)}</span>
                         <span>{b.qty} BTC</span>
                       </li>
@@ -132,9 +132,9 @@ export default function TradingPage() {
               <ul className="text-xs space-y-1">
                 {recentTrades.map((t, i) => (
                   <li key={i} className="flex justify-between">
-                    <span className={t.side === 'buy' ? 'text-emerald-300' : 'text-rose-300'}>{brl(t.price)}</span>
-                    <span className="text-slate-300">{t.qty} BTC</span>
-                    <span className="text-slate-500">{t.time}</span>
+                    <span className={t.side === 'buy' ? 'text-primary' : 'text-destructive'}>{brl(t.price)}</span>
+                    <span className="text-muted-foreground">{t.qty} BTC</span>
+                    <span className="text-muted-foreground">{t.time}</span>
                   </li>
                 ))}
               </ul>
@@ -170,13 +170,13 @@ export default function TradingPage() {
             <CardTitle>{t('balances.title')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-300 space-y-1">
+            <div className="text-sm text-muted-foreground space-y-1">
               <div>{t('balances.btc_label')}: 0.027</div>
               <div>{t('balances.brl_label')}: {brl(1230)}</div>
               <div className="flex gap-2 mt-2">
-                <button className="px-3 py-1 rounded bg-slate-800">{t('balances.deposit')}</button>
-                <button className="px-3 py-1 rounded bg-slate-800">{t('balances.withdraw')}</button>
-                <button className="px-3 py-1 rounded bg-slate-800">{t('balances.transfer')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('balances.deposit')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('balances.withdraw')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('balances.transfer')}</button>
               </div>
             </div>
           </CardContent>
@@ -187,11 +187,11 @@ export default function TradingPage() {
           </CardHeader>
           <CardContent>
             {openOrders.length === 0 ? (
-              <div className="text-sm text-slate-400">{t('open_orders.empty')}</div>
+              <div className="text-sm text-muted-foreground">{t('open_orders.empty')}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="text-slate-400">
+                  <thead className="text-muted-foreground">
                     <tr>
                       <th className="text-left font-medium">{t('open_orders.table.id')}</th>
                       <th className="text-left font-medium">{t('open_orders.table.type')}</th>
@@ -203,7 +203,7 @@ export default function TradingPage() {
                   </thead>
                   <tbody>
                     {openOrders.map((o) => (
-                      <tr key={o.id} className="border-t border-slate-800">
+                      <tr key={o.id} className="border-t border-border/60">
                         <td>{o.id}</td>
                         <td>{o.type}</td>
                         <td>{o.qty} BTC</td>
@@ -211,8 +211,8 @@ export default function TradingPage() {
                         <td>{t(`open_orders.status.${o.status}`)}</td>
                         <td className="text-right">
                           <div className="flex justify-end gap-2">
-                            <button className="px-2 py-1 rounded bg-slate-800 text-xs">{t('open_orders.actions.edit')}</button>
-                            <button className="px-2 py-1 rounded bg-rose-700 text-white text-xs">{t('open_orders.actions.cancel')}</button>
+                            <button className="px-2 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground">{t('open_orders.actions.edit')}</button>
+                            <button className="px-2 py-1 rounded bg-destructive text-destructive-foreground text-xs">{t('open_orders.actions.cancel')}</button>
                           </div>
                         </td>
                       </tr>
@@ -231,12 +231,12 @@ export default function TradingPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between mb-2 text-sm">
-            <div className="text-slate-400">{t('history.quick_filters')}</div>
-            <button className="px-3 py-1 rounded bg-slate-800 text-xs">{t('history.export_csv')}</button>
+            <div className="text-muted-foreground">{t('history.quick_filters')}</div>
+            <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground">{t('history.export_csv')}</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-slate-400">
+              <thead className="text-muted-foreground">
                 <tr>
                   <th className="text-left font-medium">{t('history.table.id')}</th>
                   <th className="text-left font-medium">{t('history.table.side')}</th>
@@ -248,7 +248,7 @@ export default function TradingPage() {
               </thead>
               <tbody>
                 {history.map((h) => (
-                  <tr key={h.id} className="border-t border-slate-800">
+                  <tr key={h.id} className="border-t border-border/60">
                     <td>{h.id}</td>
                     <td>{h.side}</td>
                     <td>{h.pair}</td>
@@ -271,30 +271,29 @@ export default function TradingPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <div className="text-slate-400">{t('info.fees')}</div>
-              <div className="text-slate-300">{t('info.fees_line')}</div>
-              <Link className="text-indigo-300 underline text-xs" href="/docs">{t('info.fees_link')}</Link>
+              <div className="text-muted-foreground">{t('info.fees')}</div>
+              <div className="text-foreground">{t('info.fees_line')}</div>
+              <Link className="text-primary underline text-xs" href="/docs">{t('info.fees_link')}</Link>
             </div>
             <div>
-              <div className="text-slate-400">{t('info.market')}</div>
-              <div className="text-slate-300">{t('info.market_24h', { vol: brl(12000000), max: brl(275000), min: brl(265000) })}</div>
-              <div className="text-slate-500 text-xs">{t('info.depth_soon')}</div>
+              <div className="text-muted-foreground">{t('info.market')}</div>
+              <div className="text-foreground">{t('info.market_24h', { vol: brl(12000000), max: brl(275000), min: brl(265000) })}</div>
+              <div className="text-muted-foreground text-xs">{t('info.depth_soon')}</div>
             </div>
             <div>
-              <div className="text-slate-400">{t('info.shortcuts')}</div>
+              <div className="text-muted-foreground">{t('info.shortcuts')}</div>
               <div className="flex flex-wrap gap-2 mt-1">
-                <button className="px-3 py-1 rounded bg-slate-800">{t('info.shortcuts_news')}</button>
-                <button className="px-3 py-1 rounded bg-slate-800">{t('info.shortcuts_view_fees')}</button>
-                <button className="px-3 py-1 rounded bg-slate-800">{t('info.shortcuts_support')}</button>
-                <button className="px-3 py-1 rounded bg-slate-800">{t('info.shortcuts_dark_mode')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('info.shortcuts_news')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('info.shortcuts_view_fees')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('info.shortcuts_support')}</button>
+                <button className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t('info.shortcuts_dark_mode')}</button>
               </div>
             </div>
           </div>
-          <div className="mt-3 text-xs text-slate-500">{t('info.tips')}</div>
+          <div className="mt-3 text-xs text-muted-foreground">{t('info.tips')}</div>
         </CardContent>
       </Card>
       </div>
     </div>
   );
 }
-

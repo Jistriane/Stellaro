@@ -37,7 +37,8 @@ describe('ZkService', () => {
               const config = {
                 SOROBAN_RPC_URL: 'https://soroban-testnet.stellar.org',
                 STELLAR_NETWORK: 'testnet',
-                ZK_VERIFIER_CONTRACT_ID: 'CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L',
+                ZK_VERIFIER_CONTRACT_ID:
+                  'CDJX3YLVANLTRRMMWDJO6NG7ADKJIHPL3WJAZNMNL6BQU6S6D5QXBT3L',
               };
               return config[key] || defaultValue;
             }),
@@ -129,7 +130,8 @@ describe('ZkService', () => {
       // Mock sem contract ID mas com RPC URL
       const mockConfig = {
         get: jest.fn((key: string, defaultValue?: any) => {
-          if (key === 'SOROBAN_RPC_URL') return 'https://soroban-testnet.stellar.org';
+          if (key === 'SOROBAN_RPC_URL')
+            return 'https://soroban-testnet.stellar.org';
           if (key === 'STELLAR_NETWORK') return 'testnet';
           if (key === 'ZK_VERIFIER_CONTRACT_ID') return undefined;
           return defaultValue;
@@ -143,16 +145,26 @@ describe('ZkService', () => {
         incZkScore: jest.fn(),
       };
       const chainStub = {
-        submitTxReal: jest.fn().mockResolvedValue({ ok: true, txHash: 'tx-123' }),
+        submitTxReal: jest
+          .fn()
+          .mockResolvedValue({ ok: true, txHash: 'tx-123' }),
       };
-      const newService = new ZkService(mockConfig as any, redisStub as any, chainStub as any);
+      const newService = new ZkService(
+        mockConfig as any,
+        redisStub as any,
+        chainStub as any,
+      );
 
-      const result = await newService.getScore('GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD');
+      const result = await newService.getScore(
+        'GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD',
+      );
       expect(result.error).toBe('missing-contract-id');
     });
 
     it('should handle valid address format', async () => {
-      const result = await service.getScore('GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD');
+      const result = await service.getScore(
+        'GDHIZHAWV7TC6RKI2KXQ23XVRQ23UPJWSODCQHIRZQO22ANVGH7BM4ZD',
+      );
 
       // Aceita score undefined (sem score) ou presença de erro
       expect(result).toBeDefined();

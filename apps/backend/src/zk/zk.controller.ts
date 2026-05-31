@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ZkService } from './zk.service';
 import { VerifyZkDto } from './dto/verify-zk.dto';
@@ -10,9 +18,11 @@ export class ZkController {
 
   @Post('verify')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Verifica prova ZK Groth16 e armazena score on-chain' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({
+    summary: 'Verifica prova ZK Groth16 e armazena score on-chain',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Resultado da verificação',
     schema: {
       type: 'object',
@@ -28,8 +38,13 @@ export class ZkController {
 
   @Get('score/:address')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Recupera credit score de um usuário do contrato ZK Verifier' })
-  @ApiParam({ name: 'address', description: 'Endereço Stellar do usuário (G...)' })
+  @ApiOperation({
+    summary: 'Recupera credit score de um usuário do contrato ZK Verifier',
+  })
+  @ApiParam({
+    name: 'address',
+    description: 'Endereço Stellar do usuário (G...)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Score do usuário ou erro',

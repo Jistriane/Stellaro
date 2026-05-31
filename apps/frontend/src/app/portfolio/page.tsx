@@ -78,7 +78,7 @@ export default function PortfolioPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Loading...</div>
+          <div className="text-muted-foreground">Loading...</div>
         </div>
       </div>
     );
@@ -87,14 +87,15 @@ export default function PortfolioPage() {
   const ids = getContractIds();
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_15%,rgba(var(--stellaro-accent-rgb),0.14),transparent_60%),radial-gradient(900px_circle_at_80%_10%,rgba(197,135,230,0.10),transparent_55%)]" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("header.title")}</h1>
-        <div className="text-xs text-slate-500">{t("header.updated", { when: new Date().toLocaleString() })}</div>
+        <div className="text-xs text-muted-foreground">{t("header.updated", { when: new Date().toLocaleString() })}</div>
       </div>
 
       {/* Resumo Global */}
@@ -104,19 +105,19 @@ export default function PortfolioPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-slate-900 rounded p-3">
-              <div className="text-xs text-slate-400">{t("summary.total_brl")}</div>
+            <div className="bg-card/50 border border-border/60 rounded p-3">
+              <div className="text-xs text-muted-foreground">{t("summary.total_brl")}</div>
               <div className="text-2xl font-semibold">R$ {totalBRL.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}</div>
-              <div className="text-xs text-slate-500">{t("summary.estimate")}</div>
+              <div className="text-xs text-muted-foreground">{t("summary.estimate")}</div>
             </div>
-            <div className="bg-slate-900 rounded p-3">
-              <div className="text-xs text-slate-400">{t("summary.total_usd")}</div>
+            <div className="bg-card/50 border border-border/60 rounded p-3">
+              <div className="text-xs text-muted-foreground">{t("summary.total_usd")}</div>
               <div className="text-2xl font-semibold">$ {totalUSD.toLocaleString("en-US", { maximumFractionDigits: 2 })}</div>
-              <div className="text-xs text-slate-500">{t("summary.estimate")}</div>
+              <div className="text-xs text-muted-foreground">{t("summary.estimate")}</div>
             </div>
-            <div className="bg-slate-900 rounded p-3">
-              <div className="text-xs text-slate-400">{t("summary.contract")}</div>
-              <div className="truncate text-sm text-slate-200">{ids.PORTFOLIO_CONTRACT_ID || "—"}</div>
+            <div className="bg-card/50 border border-border/60 rounded p-3">
+              <div className="text-xs text-muted-foreground">{t("summary.contract")}</div>
+              <div className="truncate text-sm text-foreground">{ids.PORTFOLIO_CONTRACT_ID || "—"}</div>
             </div>
           </div>
         </CardContent>
@@ -128,18 +129,18 @@ export default function PortfolioPage() {
           <CardTitle>{t("distribution.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-slate-500 mb-2">{t("distribution.composition_label")}</div>
+          <div className="text-xs text-muted-foreground mb-2">{t("distribution.composition_label")}</div>
           <div className="space-y-2">
             {assets.map((a) => {
               const pct = totalBRL > 0 ? (a.valueBRL / totalBRL) * 100 : 0;
               return (
                 <Link key={a.key} href={a.href} className="block">
                   <div className="flex items-center justify-between text-sm">
-                    <div className="text-slate-200">{a.name}</div>
-                    <div className="text-slate-400">{pct.toFixed(1)}%</div>
+                    <div className="text-foreground">{a.name}</div>
+                    <div className="text-muted-foreground">{pct.toFixed(1)}%</div>
                   </div>
                   <Progress value={pct} className="mt-1" />
-                  <div className="text-xs text-slate-500 mt-1">
+                  <div className="text-xs text-muted-foreground mt-1">
                     {t("distribution.qty_label", { qty: a.qty.toLocaleString("pt-BR", { maximumFractionDigits: 4 }), brl: a.valueBRL.toLocaleString("pt-BR", { maximumFractionDigits: 2 }), usd: a.valueUSD.toLocaleString("en-US", { maximumFractionDigits: 2 }) })}
                   </div>
                 </Link>
@@ -149,12 +150,12 @@ export default function PortfolioPage() {
 
           {/* Allocation contract reference (mock from protocol) */}
           <div className="mt-4">
-            <div className="text-xs text-slate-500">{t("distribution.protocol_ref_title")}</div>
+            <div className="text-xs text-muted-foreground">{t("distribution.protocol_ref_title")}</div>
             <ul className="text-xs grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
               {(portfolio.allocation as PortfolioAllocation[]).map((a) => (
-                <li key={a.asset} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
-                  <span className="text-slate-300">{a.asset}</span>
-                  <span className="text-slate-200"><b>{(a.pct_bps/100).toFixed(1)}%</b></span>
+                <li key={a.asset} className="flex items-center justify-between bg-card/50 border border-border/60 rounded px-3 py-2">
+                  <span className="text-muted-foreground">{a.asset}</span>
+                  <span className="text-foreground"><b>{(a.pct_bps/100).toFixed(1)}%</b></span>
                 </li>
               ))}
             </ul>
@@ -168,10 +169,10 @@ export default function PortfolioPage() {
           <CardTitle>{t("history.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-slate-500">{t("history.last30")}</div>
-          <div className="mt-2 h-24 w-full rounded bg-[linear-gradient(180deg,rgba(16,185,129,0.25),rgba(16,185,129,0.05))] border border-slate-800" />
+          <div className="text-xs text-muted-foreground">{t("history.last30")}</div>
+          <div className="mt-2 h-24 w-full rounded bg-[linear-gradient(180deg,rgba(var(--stellaro-accent-rgb),0.22),rgba(var(--stellaro-accent-rgb),0.06))] border border-border/60" />
           <div className="mt-2 text-sm">{t("history.performance", { value: "+R$ 1.200", pct: "+6,3%" })}</div>
-          <div className="mt-1 text-xs text-slate-500">{t("history.note_filters")}</div>
+          <div className="mt-1 text-xs text-muted-foreground">{t("history.note_filters")}</div>
         </CardContent>
       </Card>
 
@@ -182,9 +183,9 @@ export default function PortfolioPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 text-sm">
-            <Link href="/wallet" className="px-3 py-2 rounded bg-slate-800">{t("reports.view_full")}</Link>
-            <button disabled className="px-3 py-2 rounded bg-slate-800 text-slate-400 cursor-not-allowed" title={tc("soon")}>{t("reports.download_csv")}</button>
-            <button disabled className="px-3 py-2 rounded bg-slate-800 text-slate-400 cursor-not-allowed" title={tc("soon")}>{t("reports.download_pdf")}</button>
+            <Link href="/wallet" className="px-3 py-2 rounded bg-secondary/30 border border-border/60">{t("reports.view_full")}</Link>
+            <button disabled className="px-3 py-2 rounded bg-secondary/20 border border-border/60 text-muted-foreground cursor-not-allowed" title={tc("soon")}>{t("reports.download_csv")}</button>
+            <button disabled className="px-3 py-2 rounded bg-secondary/20 border border-border/60 text-muted-foreground cursor-not-allowed" title={tc("soon")}>{t("reports.download_pdf")}</button>
           </div>
         </CardContent>
       </Card>
@@ -195,7 +196,7 @@ export default function PortfolioPage() {
           <CardTitle>{t("notices.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="list-disc pl-5 text-sm space-y-1 text-amber-300">
+          <ul className="list-disc pl-5 text-sm space-y-1 text-primary">
             <li>{t("notices.n1")}</li>
             <li>{t("notices.n2")}</li>
             <li>{t("notices.n3")}</li>

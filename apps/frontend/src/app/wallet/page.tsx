@@ -42,9 +42,9 @@ export default function WalletPage() {
   }, [publicKey, setBalances]);
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
       
@@ -57,23 +57,23 @@ export default function WalletPage() {
         </CardHeader>
         <CardContent>
           {!loggedIn ? (
-            <div className="text-slate-400">{t("login_to_view")}</div>
+            <div className="text-muted-foreground">{t("login_to_view")}</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <div className="text-sm text-slate-400">{t("public_key")}</div>
-                <div className="truncate text-slate-200">{publicKey}</div>
+                <div className="text-sm text-muted-foreground">{t("public_key")}</div>
+                <div className="truncate text-foreground">{publicKey}</div>
               </div>
               <div>
-                <div className="text-sm text-slate-400">{t("xlm_balance")}</div>
+                <div className="text-sm text-muted-foreground">{t("xlm_balance")}</div>
                 <div className="text-xl font-semibold">{loading ? "…" : balances.xlm ?? "0"}</div>
               </div>
               <div>
-                <div className="text-sm text-slate-400">{t("stlt_balance")}</div>
+                <div className="text-sm text-muted-foreground">{t("stlt_balance")}</div>
                 <div className="text-xl font-semibold">{loading ? "…" : balances.stlt ?? "0"}</div>
               </div>
               {error && (
-                <div className="col-span-full text-sm text-red-400">{t("error_balances")}</div>
+                <div className="col-span-full text-sm text-destructive">{t("error_balances")}</div>
               )}
             </div>
           )}

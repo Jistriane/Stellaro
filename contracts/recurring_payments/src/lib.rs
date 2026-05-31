@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, token, IntoVal};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, token, IntoVal};
 
 #[contracttype]
 #[derive(Clone, Debug)]
@@ -37,7 +37,7 @@ impl RecurringPayments {
         let registry_addr: Address = env.storage().instance().get(&DataKey::VcRegistry).expect("vc registry not set");
         let is_valid: bool = env.invoke_contract(
             &registry_addr,
-            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            &soroban_sdk::Symbol::new(env, "has_valid_vc"),
             soroban_sdk::vec![env, user.clone().into_val(env)]
         );
         if !is_valid {

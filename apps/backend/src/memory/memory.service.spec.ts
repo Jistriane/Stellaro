@@ -47,7 +47,9 @@ describe('MemoryService', () => {
   describe('logEvent', () => {
     it('should log SIGNAL_INGEST event successfully', async () => {
       prisma.riskEvent.create.mockResolvedValueOnce({ id: 1 });
-      const result = await service.logEvent('user1', 'SIGNAL_INGEST', { price: 100 });
+      const result = await service.logEvent('user1', 'SIGNAL_INGEST', {
+        price: 100,
+      });
       expect(result).toEqual({ ok: true, id: 1 });
       expect(prisma.riskEvent.create).toHaveBeenCalledWith({
         data: {
@@ -60,20 +62,26 @@ describe('MemoryService', () => {
 
     it('should log DECISION_MADE event successfully', async () => {
       prisma.riskEvent.create.mockResolvedValueOnce({ id: 2 });
-      const result = await service.logEvent('user2', 'DECISION_MADE', { action: 'swap' });
+      const result = await service.logEvent('user2', 'DECISION_MADE', {
+        action: 'swap',
+      });
       expect(result.ok).toBe(true);
       expect(result.id).toBe(2);
     });
 
     it('should log ACTION_EXECUTED event successfully', async () => {
       prisma.riskEvent.create.mockResolvedValueOnce({ id: 3 });
-      const result = await service.logEvent('user3', 'ACTION_EXECUTED', { success: true });
+      const result = await service.logEvent('user3', 'ACTION_EXECUTED', {
+        success: true,
+      });
       expect(result).toEqual({ ok: true, id: 3 });
     });
 
     it('should handle custom event types', async () => {
       prisma.riskEvent.create.mockResolvedValueOnce({ id: 4 });
-      const result = await service.logEvent('user4', 'CUSTOM_EVENT', { data: 'test' });
+      const result = await service.logEvent('user4', 'CUSTOM_EVENT', {
+        data: 'test',
+      });
       expect(result.ok).toBe(true);
       expect(prisma.riskEvent.create).toHaveBeenCalledWith({
         data: {
@@ -123,7 +131,11 @@ describe('MemoryService', () => {
 
     it('should return ok:false on database error', async () => {
       prisma.riskProposal.create.mockRejectedValueOnce(new Error('DB error'));
-      const proposal = { proposalId: 'prop-fail', confidence: 0.9, actions: [] };
+      const proposal = {
+        proposalId: 'prop-fail',
+        confidence: 0.9,
+        actions: [],
+      };
       const result = await service.recordProposal('user12', proposal);
       expect(result).toEqual({ ok: false });
     });

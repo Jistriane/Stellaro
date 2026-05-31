@@ -130,9 +130,9 @@ describe('MetricsService', () => {
       service.setRedisConnected(true);
       service.incCacheHit();
       service.incZkVerify(true);
-      
+
       const metrics = await service.getMetrics();
-      
+
       expect(typeof metrics).toBe('string');
       expect(metrics).toContain('# HELP');
       expect(metrics).toContain('# TYPE');
@@ -147,9 +147,9 @@ describe('MetricsService', () => {
       service.incZkVerify(true);
       service.incZkScore(false);
       service.observeZkVerifyDuration(0.1);
-      
+
       const metrics = await service.getMetrics();
-      
+
       expect(metrics).toContain('redis_connected');
       expect(metrics).toContain('redis_cache_hits_total');
       expect(metrics).toContain('redis_cache_misses_total');

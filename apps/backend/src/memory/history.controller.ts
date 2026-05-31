@@ -11,8 +11,14 @@ export class HistoryController {
     @Query('cursor') cursor?: string,
     @Query('limit') limit = 20,
   ): Promise<{ address: string; cursor?: string; items: any[] }> {
-    const ops = await this.horizon.listOperations(address, cursor, Number(limit));
-    const records = Array.isArray(ops?._embedded?.records) ? ops._embedded.records : [];
+    const ops = await this.horizon.listOperations(
+      address,
+      cursor,
+      Number(limit),
+    );
+    const records = Array.isArray(ops?._embedded?.records)
+      ? ops._embedded.records
+      : [];
     const items = records.map((r: any) => ({
       id: r.id,
       type: r.type,
@@ -21,7 +27,9 @@ export class HistoryController {
       transaction_hash: r.transaction_hash,
       details: r,
     }));
-    const nextCursor = ops?._links?.next?.href ? new URL(ops._links.next.href).searchParams.get('cursor') ?? undefined : undefined;
+    const nextCursor = ops?._links?.next?.href
+      ? (new URL(ops._links.next.href).searchParams.get('cursor') ?? undefined)
+      : undefined;
     return { address, cursor: nextCursor, items };
   }
 }

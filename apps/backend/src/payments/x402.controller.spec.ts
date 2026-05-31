@@ -42,9 +42,15 @@ describe('X402Controller', () => {
 
   it('should create x402 quote', () => {
     const dto = { amount: '50.00', asset: 'STLT', intent: 'deposit' };
-    x402Service.createQuote.mockReturnValue({ ok: true, quote: { sessionId: 'session-1' } });
+    x402Service.createQuote.mockReturnValue({
+      ok: true,
+      quote: { sessionId: 'session-1' },
+    });
 
-    expect(controller.createQuote(dto)).toEqual({ ok: true, quote: { sessionId: 'session-1' } });
+    expect(controller.createQuote(dto)).toEqual({
+      ok: true,
+      quote: { sessionId: 'session-1' },
+    });
     expect(x402Service.createQuote).toHaveBeenCalledWith(dto);
   });
 });

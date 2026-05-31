@@ -59,7 +59,9 @@ describe('X402Service', () => {
   it('should expose fallback reason when implicit stub is used', () => {
     const service = createService({});
 
-    expect(service.getStatus().fallbackReason).toContain('Facilitator config missing');
+    expect(service.getStatus().fallbackReason).toContain(
+      'Facilitator config missing',
+    );
   });
 
   it('should create a quote with settlement details', () => {
@@ -90,6 +92,8 @@ describe('X402Service', () => {
   it('should reject invalid amounts', () => {
     const service = createService({});
 
-    expect(() => service.createQuote({ amount: '0' })).toThrow(BadRequestException);
+    expect(() => service.createQuote({ amount: '0' })).toThrow(
+      BadRequestException,
+    );
   });
 });

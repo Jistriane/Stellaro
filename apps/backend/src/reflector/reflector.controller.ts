@@ -1,5 +1,19 @@
-import { Controller, Get, Param, Query, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Delete,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ReflectorService, ReflectorPrice } from './reflector.service';
 
 @ApiTags('reflector')
@@ -8,9 +22,15 @@ export class ReflectorController {
   constructor(private readonly reflectorService: ReflectorService) {}
 
   @Get('price/:asset')
-  @ApiOperation({ summary: 'Get current price for an asset from Reflector Network' })
+  @ApiOperation({
+    summary: 'Get current price for an asset from Reflector Network',
+  })
   @ApiParam({ name: 'asset', description: 'Asset code (e.g., USDC, XLM, BTC)' })
-  @ApiQuery({ name: 'issuer', required: false, description: 'Asset issuer address' })
+  @ApiQuery({
+    name: 'issuer',
+    required: false,
+    description: 'Asset issuer address',
+  })
   @ApiResponse({ status: 200, description: 'Current asset price' })
   @ApiResponse({ status: 404, description: 'Asset not found' })
   async getPrice(
@@ -22,17 +42,22 @@ export class ReflectorController {
 
   @Get('prices')
   @ApiOperation({ summary: 'Get prices for multiple assets' })
-  @ApiQuery({ name: 'assets', description: 'Comma-separated list of asset codes' })
+  @ApiQuery({
+    name: 'assets',
+    description: 'Comma-separated list of asset codes',
+  })
   @ApiResponse({ status: 200, description: 'Map of asset prices' })
-  async getPrices(@Query('assets') assets: string): Promise<Record<string, ReflectorPrice>> {
+  async getPrices(
+    @Query('assets') assets: string,
+  ): Promise<Record<string, ReflectorPrice>> {
     const assetArray = assets.split(',').map((a) => a.trim());
     const priceMap = await this.reflectorService.getPrices(assetArray);
-    
+
     const result: Record<string, ReflectorPrice> = {};
     priceMap.forEach((price, symbol) => {
       result[symbol] = price;
     });
-    
+
     return result;
   }
 
@@ -40,7 +65,11 @@ export class ReflectorController {
   @ApiOperation({ summary: 'Calculate USD value of an asset amount' })
   @ApiParam({ name: 'asset', description: 'Asset code' })
   @ApiParam({ name: 'amount', description: 'Amount of the asset' })
-  @ApiQuery({ name: 'issuer', required: false, description: 'Asset issuer address' })
+  @ApiQuery({
+    name: 'issuer',
+    required: false,
+    description: 'Asset issuer address',
+  })
   @ApiResponse({ status: 200, description: 'USD value of the asset amount' })
   async getUsdValue(
     @Param('asset') asset: string,
@@ -48,8 +77,12 @@ export class ReflectorController {
     @Query('issuer') issuer?: string,
   ): Promise<{ asset: string; amount: number; usdValue: number }> {
     const numAmount = parseFloat(amount);
-    const usdValue = await this.reflectorService.getUsdValue(asset, numAmount, issuer);
-    
+    const usdValue = await this.reflectorService.getUsdValue(
+      asset,
+      numAmount,
+      issuer,
+    );
+
     return {
       asset,
       amount: numAmount,
@@ -70,8 +103,12 @@ export class ReflectorController {
   ): Promise<ReflectorPrice[]> {
     const fromTimestamp = parseInt(from, 10);
     const toTimestamp = parseInt(to, 10);
-    
-    return this.reflectorService.getHistoricalPrices(asset, fromTimestamp, toTimestamp);
+
+    return this.reflectorService.getHistoricalPrices(
+      asset,
+      fromTimestamp,
+      toTimestamp,
+    );
   }
 
   @Delete('cache')

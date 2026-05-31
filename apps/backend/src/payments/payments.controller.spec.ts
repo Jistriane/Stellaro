@@ -24,7 +24,10 @@ describe('PaymentsController', () => {
       cpf: '12345678901',
       name: 'User One',
     };
-    pixService.generatePixCharge.mockResolvedValue({ ok: true, payment: { txId: 'TX1' } });
+    pixService.generatePixCharge.mockResolvedValue({
+      ok: true,
+      payment: { txId: 'TX1' },
+    });
 
     const result = await controller.mintWithPix(body);
 
@@ -41,7 +44,10 @@ describe('PaymentsController', () => {
       expiryYear: '2030',
       cvv: '123',
     };
-    cardService.tokenizeCard.mockResolvedValue({ ok: true, token: { id: 'card_tok_1' } });
+    cardService.tokenizeCard.mockResolvedValue({
+      ok: true,
+      token: { id: 'card_tok_1' },
+    });
 
     const result = await controller.tokenizeCard(body);
 

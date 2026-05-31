@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { ReserveManagerService, ReserveSnapshot, CollateralizationAlert } from './reserve-manager.service';
+import {
+  ReserveManagerService,
+  ReserveSnapshot,
+  CollateralizationAlert,
+} from './reserve-manager.service';
 import * as StellarSdk from '@stellar/stellar-sdk';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReflectorOracleService } from '../oracles/reflector-oracle.service';
@@ -83,8 +87,12 @@ describe('ReserveManagerService', () => {
     configService = module.get<ConfigService>(ConfigService);
 
     // Mock Horizon Server
-    jest.spyOn(service['server'], 'loadAccount').mockImplementation(mockHorizonServer.loadAccount);
-    jest.spyOn(service['server'], 'submitTransaction').mockImplementation(mockHorizonServer.submitTransaction);
+    jest
+      .spyOn(service['server'], 'loadAccount')
+      .mockImplementation(mockHorizonServer.loadAccount);
+    jest
+      .spyOn(service['server'], 'submitTransaction')
+      .mockImplementation(mockHorizonServer.submitTransaction);
   });
 
   afterEach(() => {
@@ -128,8 +136,12 @@ describe('ReserveManagerService', () => {
         timestamp: new Date(),
       });
 
-      const freezeMintingSpy = jest.spyOn(service as any, 'freezeMinting').mockResolvedValue(undefined);
-      const notifyAdminsSpy = jest.spyOn(service as any, 'notifyAdmins').mockResolvedValue(undefined);
+      const freezeMintingSpy = jest
+        .spyOn(service as any, 'freezeMinting')
+        .mockResolvedValue(undefined);
+      const notifyAdminsSpy = jest
+        .spyOn(service as any, 'notifyAdmins')
+        .mockResolvedValue(undefined);
 
       const result = await service.checkCollateralization();
 
@@ -153,7 +165,9 @@ describe('ReserveManagerService', () => {
         timestamp: new Date(),
       });
 
-      const sendWarningAlertSpy = jest.spyOn(service as any, 'sendWarningAlert').mockResolvedValue(undefined);
+      const sendWarningAlertSpy = jest
+        .spyOn(service as any, 'sendWarningAlert')
+        .mockResolvedValue(undefined);
 
       const result = await service.checkCollateralization();
 
@@ -165,19 +179,47 @@ describe('ReserveManagerService', () => {
 
   describe('getCurrentSnapshot', () => {
     it('should generate complete snapshot with multiple assets', async () => {
-      jest.spyOn(sorobanService, 'getStablecoinSupply').mockResolvedValue(10000);
+      jest
+        .spyOn(sorobanService, 'getStablecoinSupply')
+        .mockResolvedValue(10000);
       mockHorizonServer.loadAccount.mockResolvedValue({
         balances: [
           { asset_type: 'native', balance: '5000' }, // XLM
-          { asset_type: 'credit_alphanum4', asset_code: 'USDC', asset_issuer: 'GUSDC...', balance: '7000' },
-          { asset_type: 'credit_alphanum4', asset_code: 'BTC', asset_issuer: 'GBT...', balance: '0.5' },
+          {
+            asset_type: 'credit_alphanum4',
+            asset_code: 'USDC',
+            asset_issuer: 'GUSDC...',
+            balance: '7000',
+          },
+          {
+            asset_type: 'credit_alphanum4',
+            asset_code: 'BTC',
+            asset_issuer: 'GBT...',
+            balance: '0.5',
+          },
         ],
       });
 
-      jest.spyOn(oracleService, 'getPrice')
-        .mockResolvedValueOnce({ source: 'reflector', asset: 'XLM', price: 0.1, timestamp: new Date() })
-        .mockResolvedValueOnce({ source: 'reflector', asset: 'USDC', price: 1.0, timestamp: new Date() })
-        .mockResolvedValueOnce({ source: 'reflector', asset: 'BTC', price: 50000, timestamp: new Date() });
+      jest
+        .spyOn(oracleService, 'getPrice')
+        .mockResolvedValueOnce({
+          source: 'reflector',
+          asset: 'XLM',
+          price: 0.1,
+          timestamp: new Date(),
+        })
+        .mockResolvedValueOnce({
+          source: 'reflector',
+          asset: 'USDC',
+          price: 1.0,
+          timestamp: new Date(),
+        })
+        .mockResolvedValueOnce({
+          source: 'reflector',
+          asset: 'BTC',
+          price: 50000,
+          timestamp: new Date(),
+        });
 
       const snapshot = await service.getCurrentSnapshot();
 
@@ -365,7 +407,7 @@ describe('ReserveManagerService', () => {
           memo: expect.objectContaining({
             _value: expect.stringContaining('PoR:150%'),
           }),
-        })
+        }),
       );
     });
   });
@@ -377,7 +419,7 @@ describe('ReserveManagerService', () => {
       expect(sorobanService.setMintingEnabled).toHaveBeenCalledWith(
         'CSTLT123',
         false,
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -389,12 +431,16 @@ describe('ReserveManagerService', () => {
     });
 
     it('should log errors without throwing', async () => {
-      jest.spyOn(sorobanService, 'setMintingEnabled').mockRejectedValue(new Error('Network error'));
+      jest
+        .spyOn(sorobanService, 'setMintingEnabled')
+        .mockRejectedValue(new Error('Network error'));
       const loggerSpy = jest.spyOn(service['logger'], 'error');
 
       await service['freezeMinting']();
 
-      expect(loggerSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to freeze minting'));
+      expect(loggerSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to freeze minting'),
+      );
     });
   });
 
@@ -413,7 +459,7 @@ describe('ReserveManagerService', () => {
       expect(notificationService.sendWarningAlert).toHaveBeenCalledWith(
         122,
         125,
-        { action: 'MONITOR' }
+        { action: 'MONITOR' },
       );
     });
 
@@ -428,11 +474,9 @@ describe('ReserveManagerService', () => {
 
       await service['notifyAdmins'](alert);
 
-      expect(notificationService.sendUndercollateralizationAlert).toHaveBeenCalledWith(
-        110,
-        120,
-        { action: 'FREEZE_MINTING' }
-      );
+      expect(
+        notificationService.sendUndercollateralizationAlert,
+      ).toHaveBeenCalledWith(110, 120, { action: 'FREEZE_MINTING' });
     });
 
     it('should send emergency alert for CRITICAL severity', async () => {
@@ -446,11 +490,9 @@ describe('ReserveManagerService', () => {
 
       await service['notifyAdmins'](alert);
 
-      expect(notificationService.sendUndercollateralizationAlert).toHaveBeenCalledWith(
-        115,
-        120,
-        { action: 'FREEZE_MINTING' }
-      );
+      expect(
+        notificationService.sendUndercollateralizationAlert,
+      ).toHaveBeenCalledWith(115, 120, { action: 'FREEZE_MINTING' });
     });
   });
 
@@ -464,8 +506,12 @@ describe('ReserveManagerService', () => {
         assets: [],
       };
 
-      const freezeMintingSpy = jest.spyOn(service as any, 'freezeMinting').mockResolvedValue(undefined);
-      const notifyAdminsSpy = jest.spyOn(service as any, 'notifyAdmins').mockResolvedValue(undefined);
+      const freezeMintingSpy = jest
+        .spyOn(service as any, 'freezeMinting')
+        .mockResolvedValue(undefined);
+      const notifyAdminsSpy = jest
+        .spyOn(service as any, 'notifyAdmins')
+        .mockResolvedValue(undefined);
 
       await service['handleUndercollateralization'](snapshot);
 
@@ -475,7 +521,7 @@ describe('ReserveManagerService', () => {
           severity: 'EMERGENCY',
           ratio: 110,
           action: 'FREEZE_MINTING',
-        })
+        }),
       );
       expect(prisma.auditLog.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -538,7 +584,9 @@ describe('ReserveManagerService', () => {
       const supply = await service['getStablecoinSupply']();
 
       expect(supply).toBe(5000);
-      expect(sorobanService.getStablecoinSupply).toHaveBeenCalledWith('CSTLT123');
+      expect(sorobanService.getStablecoinSupply).toHaveBeenCalledWith(
+        'CSTLT123',
+      );
     });
 
     it('should return 0 when contract ID is missing', async () => {
@@ -550,7 +598,9 @@ describe('ReserveManagerService', () => {
     });
 
     it('should return 0 on error', async () => {
-      jest.spyOn(sorobanService, 'getStablecoinSupply').mockRejectedValue(new Error('RPC error'));
+      jest
+        .spyOn(sorobanService, 'getStablecoinSupply')
+        .mockRejectedValue(new Error('RPC error'));
 
       const supply = await service['getStablecoinSupply']();
 
@@ -563,19 +613,34 @@ describe('ReserveManagerService', () => {
       mockHorizonServer.loadAccount.mockResolvedValue({
         balances: [
           { asset_type: 'native', balance: '1000' },
-          { asset_type: 'credit_alphanum4', asset_code: 'USDC', asset_issuer: 'GUSDC', balance: '500' },
+          {
+            asset_type: 'credit_alphanum4',
+            asset_code: 'USDC',
+            asset_issuer: 'GUSDC',
+            balance: '500',
+          },
         ],
       });
 
       const balances = await service['getReserveBalances']();
 
       expect(balances).toHaveLength(2);
-      expect(balances[0]).toEqual({ code: 'XLM', issuer: undefined, amount: 1000 });
-      expect(balances[1]).toEqual({ code: 'USDC', issuer: 'GUSDC', amount: 500 });
+      expect(balances[0]).toEqual({
+        code: 'XLM',
+        issuer: undefined,
+        amount: 1000,
+      });
+      expect(balances[1]).toEqual({
+        code: 'USDC',
+        issuer: 'GUSDC',
+        amount: 500,
+      });
     });
 
     it('should return empty array on error', async () => {
-      mockHorizonServer.loadAccount.mockRejectedValue(new Error('Account not found'));
+      mockHorizonServer.loadAccount.mockRejectedValue(
+        new Error('Account not found'),
+      );
 
       const balances = await service['getReserveBalances']();
 
@@ -598,14 +663,20 @@ describe('ReserveManagerService', () => {
 
       await service.checkCollateralization();
 
-      expect(sorobanService.setMintingEnabled).toHaveBeenCalledWith('CSTLT123', false, expect.any(String));
-      expect(notificationService.sendUndercollateralizationAlert).toHaveBeenCalled();
+      expect(sorobanService.setMintingEnabled).toHaveBeenCalledWith(
+        'CSTLT123',
+        false,
+        expect.any(String),
+      );
+      expect(
+        notificationService.sendUndercollateralizationAlert,
+      ).toHaveBeenCalled();
       expect(prisma.auditLog.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
             action: 'UNDERCOLLATERALIZATION_DETECTED',
           }),
-        })
+        }),
       );
     });
   });

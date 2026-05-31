@@ -19,7 +19,9 @@ describe('NotificationService', () => {
 
     prisma = {
       notification: {
-        create: jest.fn().mockResolvedValue({ id: '1', userId: 'U1', message: 'test' }),
+        create: jest
+          .fn()
+          .mockResolvedValue({ id: '1', userId: 'U1', message: 'test' }),
         findMany: jest.fn().mockResolvedValue([{ id: '1', message: 'test' }]),
         update: jest.fn().mockResolvedValue({ id: '1', read: true }),
       },

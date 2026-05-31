@@ -25,7 +25,7 @@ Available scripts:
 - `contracts/scripts/testnet_generate_evidence_report.sh`
 
 Operational checklist:
-- `docs/TESTNET_UPGRADE_CHECKLIST.md`
+- `docs/CONTRACT_DEPLOYMENT_GUIDE.md`
 
 ## Missing Methods on Current Deployment
 

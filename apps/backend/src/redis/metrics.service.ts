@@ -4,10 +4,10 @@ import { Counter, Histogram, Registry, Gauge } from 'prom-client';
 @Injectable()
 export class MetricsService {
   private readonly registry: Registry;
-  
+
   // Gauge
   private readonly redisConnected: Gauge<string>;
-  
+
   // Counters
   private readonly cacheHits: Counter<string>;
   private readonly cacheMisses: Counter<string>;
@@ -16,7 +16,7 @@ export class MetricsService {
   private readonly zkVerifyErr: Counter<string>;
   private readonly zkScoreOk: Counter<string>;
   private readonly zkScoreErr: Counter<string>;
-  
+
   // Histograms
   private readonly zkVerifyDuration: Histogram<string>;
   private readonly zkScoreDuration: Histogram<string>;

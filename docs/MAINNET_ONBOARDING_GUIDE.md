@@ -1,5 +1,7 @@
 # Mainnet Onboarding Guide
 
+Official site: https://www.stellaro.com.br/
+
 ## Purpose
 
 This guide defines the minimum onboarding flow for engineers and operators working on Stellaro mainnet procedures.
@@ -15,7 +17,9 @@ This guide defines the minimum onboarding flow for engineers and operators worki
 
 1. Confirm active release version and deployment window.
 2. Validate environment variables and network passphrase.
-3. Validate contract IDs and API endpoints for mainnet profile.
+3. Validate contract IDs and API endpoints for mainnet profile:
+   - `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`
+   - `mainnet_deployment_registry.json` (generated output; ignored by git)
 4. Run smoke checks in read-only mode before any mutation.
 
 ## Operational Checklist

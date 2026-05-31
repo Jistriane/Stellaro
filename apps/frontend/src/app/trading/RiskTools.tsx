@@ -24,39 +24,39 @@ export default function RiskTools({ priceRef = 270000, base = 'BTC', quote = 'BR
     <div className="space-y-3 text-sm">
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <span className="text-slate-400">Entry ({quote})</span>
-          <input type="number" step={1} value={entry} onChange={(e) => setEntry(Number(e.target.value))} className="rounded bg-slate-900/50 border border-slate-800 p-2" />
+          <span className="text-muted-foreground">Entry ({quote})</span>
+          <input type="number" step={1} value={entry} onChange={(e) => setEntry(Number(e.target.value))} className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-slate-400">Qty ({base})</span>
-          <input type="number" step={0.0001} value={qty} onChange={(e) => setQty(Number(e.target.value))} className="rounded bg-slate-900/50 border border-slate-800 p-2" />
+          <span className="text-muted-foreground">Qty ({base})</span>
+          <input type="number" step={0.0001} value={qty} onChange={(e) => setQty(Number(e.target.value))} className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-slate-400">Stop loss ({quote})</span>
-          <input type="number" step={1} value={stop} onChange={(e) => setStop(Number(e.target.value))} className="rounded bg-slate-900/50 border border-slate-800 p-2" />
+          <span className="text-muted-foreground">Stop loss ({quote})</span>
+          <input type="number" step={1} value={stop} onChange={(e) => setStop(Number(e.target.value))} className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-slate-400">Take profit ({quote})</span>
-          <input type="number" step={1} value={take} onChange={(e) => setTake(Number(e.target.value))} className="rounded bg-slate-900/50 border border-slate-800 p-2" />
+          <span className="text-muted-foreground">Take profit ({quote})</span>
+          <input type="number" step={1} value={take} onChange={(e) => setTake(Number(e.target.value))} className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground" />
         </label>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         <div>
-          <div className="text-slate-400">Risk</div>
-          <div className="text-slate-200">{fmt(Math.max(0, riskBRL))}</div>
+          <div className="text-muted-foreground">Risk</div>
+          <div className="text-foreground">{fmt(Math.max(0, riskBRL))}</div>
         </div>
         <div>
-          <div className="text-slate-400">Reward</div>
-          <div className="text-slate-200">{fmt(Math.max(0, rewardBRL))}</div>
+          <div className="text-muted-foreground">Reward</div>
+          <div className="text-foreground">{fmt(Math.max(0, rewardBRL))}</div>
         </div>
         <div>
-          <div className="text-slate-400">Risk/Reward</div>
-          <div className="text-slate-200">{rr}</div>
+          <div className="text-muted-foreground">Risk/Reward</div>
+          <div className="text-foreground">{rr}</div>
         </div>
       </div>
 
-      <div className="text-xs text-slate-500">Tip: keep RR ≥ 1.5:1. Set stop and take directly when sending the order.</div>
+      <div className="text-xs text-muted-foreground">Tip: keep RR ≥ 1.5:1. Set stop and take directly when sending the order.</div>
     </div>
   );
 }

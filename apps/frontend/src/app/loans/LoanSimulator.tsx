@@ -54,27 +54,27 @@ export default function LoanSimulator({ ltvBps, interestAprBps, wallet }: LoanSi
   return (
     <div className="space-y-4">
       {feedback && (
-        <div role="status" className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-emerald-700">{feedback}</div>
+        <div role="status" className="rounded-md border border-primary/30 bg-primary/10 p-3 text-primary">{feedback}</div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-400">Desired amount (BRL)</span>
+          <span className="text-sm text-muted-foreground">Desired amount (BRL)</span>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(Math.max(100, Number(e.target.value)))}
-            className="rounded bg-slate-900/50 border border-slate-800 p-2 text-slate-100"
+            className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground"
             min={100}
             step={50}
           />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-400">Term</span>
+          <span className="text-sm text-muted-foreground">Term</span>
           <select
             value={termMonths}
             onChange={(e) => setTermMonths(Number(e.target.value))}
-            className="rounded bg-slate-900/50 border border-slate-800 p-2 text-slate-100"
+            className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground"
           >
             {[3, 6, 9, 12, 18, 24].map((m) => (
               <option key={m} value={m}>{m} months</option>
@@ -82,11 +82,11 @@ export default function LoanSimulator({ ltvBps, interestAprBps, wallet }: LoanSi
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-slate-400">Collateral</span>
+          <span className="text-sm text-muted-foreground">Collateral</span>
           <select
             value={collateralType}
             onChange={(e) => setCollateralType(e.target.value as 'XLM' | 'STLT')}
-            className="rounded bg-slate-900/50 border border-slate-800 p-2 text-slate-100"
+            className="rounded bg-secondary/30 border border-border/60 p-2 text-foreground"
           >
             <option value="XLM">XLM</option>
             <option value="STLT">STLT</option>
@@ -96,51 +96,51 @@ export default function LoanSimulator({ ltvBps, interestAprBps, wallet }: LoanSi
 
       <div className="grid gap-4 sm:grid-cols-4 text-sm">
         <div>
-          <div className="text-slate-400">Monthly interest (CET)</div>
-          <div className="text-slate-200">{(monthlyRate * 100).toFixed(2)}%</div>
+          <div className="text-muted-foreground">Monthly interest (CET)</div>
+          <div className="text-foreground">{(monthlyRate * 100).toFixed(2)}%</div>
         </div>
         <div>
-          <div className="text-slate-400">Annual interest (APR)</div>
-          <div className="text-slate-200">{apr.toFixed(2)}%</div>
+          <div className="text-muted-foreground">Annual interest (APR)</div>
+          <div className="text-foreground">{apr.toFixed(2)}%</div>
         </div>
         <div>
-          <div className="text-slate-400">Estimated installment</div>
-          <div className="text-slate-200">{currencyBRL(monthlyPayment)}</div>
+          <div className="text-muted-foreground">Estimated installment</div>
+          <div className="text-foreground">{currencyBRL(monthlyPayment)}</div>
         </div>
         <div>
-          <div className="text-slate-400">Total to pay</div>
-          <div className="text-slate-200">{currencyBRL(totalToPay)}</div>
+          <div className="text-muted-foreground">Total to pay</div>
+          <div className="text-foreground">{currencyBRL(totalToPay)}</div>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 text-sm">
         <div>
-          <div className="text-slate-400">Required collateral</div>
-          <div className="text-slate-200">{collateralNeededUnits.toFixed(2)} {collateralType}</div>
-          <div className="text-xs text-slate-500">Mock price: {currencyBRL(prices[collateralType])} / {collateralType}</div>
+          <div className="text-muted-foreground">Required collateral</div>
+          <div className="text-foreground">{collateralNeededUnits.toFixed(2)} {collateralType}</div>
+          <div className="text-xs text-muted-foreground">Mock price: {currencyBRL(prices[collateralType])} / {collateralType}</div>
         </div>
         <div>
-          <div className="text-slate-400">Your balance</div>
-          <div className="text-slate-200">{walletAvailable.toLocaleString('en-US')} {collateralType}</div>
+          <div className="text-muted-foreground">Your balance</div>
+          <div className="text-foreground">{walletAvailable.toLocaleString('en-US')} {collateralType}</div>
         </div>
         <div>
-          <div className="text-slate-400">Total cost</div>
-          <div className="text-slate-200">{currencyBRL(totalCost)}</div>
+          <div className="text-muted-foreground">Total cost</div>
+          <div className="text-foreground">{currencyBRL(totalCost)}</div>
         </div>
       </div>
 
       <div className="space-y-2">
-        <div className={`rounded border p-3 text-sm ${!hasCollateral ? 'border-rose-300 bg-rose-50 text-rose-800' : 'border-amber-300 bg-amber-50 text-amber-800'}`}>
+        <div className={`rounded border p-3 text-sm ${!hasCollateral ? 'border-destructive/30 bg-destructive/10 text-destructive' : 'border-primary/30 bg-primary/10 text-primary'}`}>
           {!hasCollateral
             ? 'You do not have enough collateral balance (mock). Consider reducing the amount or changing the asset.'
             : 'Warning: If the collateral value falls due to market conditions, the loan may be automatically liquidated.'}
         </div>
         {nearLimit && (
-          <div className="rounded border border-amber-300 bg-amber-50 p-3 text-amber-800 text-sm">
+          <div className="rounded border border-primary/30 bg-primary/10 p-3 text-primary text-sm">
             You are close to the maximum supported by your collateral. Consider reducing the amount to avoid liquidation risk.
           </div>
         )}
-        <div className="text-sm text-indigo-400 underline cursor-pointer" onClick={() => setFeedback('Opening LTV explanation (mock)...')}>
+        <div className="text-sm text-primary underline cursor-pointer" onClick={() => setFeedback('Opening LTV explanation (mock)...')}>
           Learn more about liquidation risk
         </div>
       </div>
@@ -148,14 +148,14 @@ export default function LoanSimulator({ ltvBps, interestAprBps, wallet }: LoanSi
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setFeedback('Simulation updated.')}
-          className="px-4 py-2 rounded bg-slate-800 text-slate-100 text-sm"
+          className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm"
         >
           Simulate
         </button>
         <button
           onClick={handleHire}
           disabled={!hasCollateral}
-          className={`px-4 py-2 rounded text-sm ${hasCollateral ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400 cursor-not-allowed'}`}
+          className={`px-4 py-2 rounded text-sm ${hasCollateral ? 'bg-primary text-primary-foreground' : 'bg-secondary/20 border border-border/60 text-muted-foreground cursor-not-allowed'}`}
           title={hasCollateral ? 'Start loan' : 'Insufficient collateral balance'}
         >
           Start Loan

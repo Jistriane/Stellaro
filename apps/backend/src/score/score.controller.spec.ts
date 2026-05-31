@@ -52,7 +52,11 @@ describe('ScoreController', () => {
     });
 
     it('should pass userId parameter correctly', () => {
-      scoreService.getUserScore.mockReturnValueOnce({ userId: 'test', score: 700, factors: {} });
+      scoreService.getUserScore.mockReturnValueOnce({
+        userId: 'test',
+        score: 700,
+        factors: {},
+      });
 
       controller.getUserScore('test');
 

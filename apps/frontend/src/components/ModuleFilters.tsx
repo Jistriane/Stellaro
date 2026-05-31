@@ -24,7 +24,7 @@ export default function ModuleFilters({ basePath, fields, values, pageSize }: Mo
     <form
       action={basePath}
       method="get"
-      className="mt-4 grid gap-3 rounded-2xl border border-slate-800 bg-slate-950/80 p-4 md:grid-cols-2 lg:grid-cols-4"
+      className="mt-4 grid gap-3 rounded-2xl border border-border/60 bg-card/50 p-4 backdrop-blur-xl md:grid-cols-2 lg:grid-cols-4"
     >
       <input type="hidden" name="page" value="1" />
       <input type="hidden" name="pageSize" value={String(pageSize)} />
@@ -34,12 +34,12 @@ export default function ModuleFilters({ basePath, fields, values, pageSize }: Mo
 
         if (field.options) {
           return (
-            <label key={field.name} className="grid gap-1 text-sm text-slate-300">
-              <span>{field.label}</span>
+            <label key={field.name} className="grid gap-1 text-sm text-muted-foreground">
+              <span className="text-foreground">{field.label}</span>
               <select
                 name={field.name}
                 defaultValue={value}
-                className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 outline-none transition focus:border-emerald-400"
+                className="rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground outline-none transition focus:border-primary/60"
               >
                 <option value="">Todos</option>
                 {field.options.map((option) => (
@@ -53,13 +53,13 @@ export default function ModuleFilters({ basePath, fields, values, pageSize }: Mo
         }
 
         return (
-          <label key={field.name} className="grid gap-1 text-sm text-slate-300">
-            <span>{field.label}</span>
+          <label key={field.name} className="grid gap-1 text-sm text-muted-foreground">
+            <span className="text-foreground">{field.label}</span>
             <input
               name={field.name}
               defaultValue={value}
               placeholder={field.placeholder}
-              className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 outline-none transition focus:border-emerald-400"
+              className="rounded-xl border border-border/60 bg-secondary/30 px-3 py-2 text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/60"
             />
           </label>
         );
@@ -68,13 +68,13 @@ export default function ModuleFilters({ basePath, fields, values, pageSize }: Mo
       <div className="flex items-end gap-2 md:col-span-2 lg:col-span-4">
         <button
           type="submit"
-          className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-emerald-300"
+          className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
         >
           Aplicar filtros
         </button>
         <Link
           href={`${basePath}?page=1&pageSize=${pageSize}`}
-          className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-200 transition hover:border-slate-500 hover:bg-slate-900"
+          className="rounded-full border border-border/60 bg-secondary/20 px-4 py-2 text-sm text-foreground transition hover:bg-secondary/40"
         >
           Limpar
         </Link>

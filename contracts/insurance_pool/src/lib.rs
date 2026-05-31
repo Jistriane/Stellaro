@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, Address, Env, Symbol, token, IntoVal};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, token, IntoVal};
 
 #[contracttype]
 #[derive(Clone, Debug)]
@@ -43,7 +43,7 @@ impl InsurancePool {
         let registry_addr: Address = env.storage().instance().get(&DataKey::VcRegistry).expect("vc registry not set");
         let is_valid: bool = env.invoke_contract(
             &registry_addr,
-            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            &soroban_sdk::Symbol::new(env, "has_valid_vc"),
             soroban_sdk::vec![env, user.clone().into_val(env)]
         );
         if !is_valid {
@@ -57,8 +57,8 @@ impl InsurancePool {
         
         let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
         let client = token::Client::new(&env, &token_addr);
-        client.transfer(&user, &env.current_contract_address(), &amount);
-
+        client.transfer(&user, env.current_contract_address(), &amount);
+        
         let mut total_shares: i128 = env.storage().instance().get(&DataKey::TotalShares).unwrap_or(0);
         let mut user_shares: i128 = env.storage().persistent().get(&DataKey::UserShares(user.clone())).unwrap_or(0);
         
@@ -77,7 +77,11 @@ impl InsurancePool {
         let client = token::Client::new(&env, &token_addr);
         
         // Pagar prêmio ao pool
-        client.transfer(&holder, &env.current_contract_address(), &premium);
+        client.transfer(&holder, env.current_contract_address(), &premium);
+
+        let mut total_shares: i128 = env.storage().instance().get(&DataKey::TotalShares).unwrap_or(0);
+        total_shares += premium;
+        env.storage().instance().set(&DataKey::TotalShares, &total_shares);
 
         let mut count: u32 = env.storage().instance().get(&DataKey::PoliciesCount).unwrap_or(0);
         count += 1;

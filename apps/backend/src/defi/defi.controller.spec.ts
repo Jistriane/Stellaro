@@ -36,7 +36,9 @@ describe('DefiController', () => {
   });
 
   it('delegates blend autoCompound and findOptimalPool', async () => {
-    blend.autoCompound.mockResolvedValue([{ poolId: 'p', status: 'SUCCESS' }] as any);
+    blend.autoCompound.mockResolvedValue([
+      { poolId: 'p', status: 'SUCCESS' },
+    ] as any);
     blend.findOptimalPool.mockResolvedValue({ poolId: 'p', apy: 1 } as any);
 
     const ac = await controller.autoCompound({ userAddress: 'G1' } as any);

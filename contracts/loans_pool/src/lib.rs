@@ -22,6 +22,11 @@ pub struct WithdrawEvent {
     pub event: bool,
 }
 
+#[contractevent]
+pub struct UpgradeEvent {
+    pub new_wasm_hash: soroban_sdk::BytesN<32>,
+}
+
 #[derive(Clone)]
 #[contracttype]
 enum DataKey {
@@ -103,7 +108,7 @@ impl LoansPoolContract {
         let registry_addr: Address = env.storage().persistent().get(&DataKey::VcRegistry).expect("vc registry not set");
         let is_valid: bool = env.invoke_contract(
             &registry_addr,
-            &soroban_sdk::Symbol::new(&env, "has_valid_vc"),
+            &soroban_sdk::Symbol::new(env, "has_valid_vc"),
             soroban_sdk::vec![env, user.clone().into_val(env)]
         );
         if !is_valid {
@@ -217,6 +222,15 @@ impl LoansPoolContract {
 
     pub fn lender_position(env: Env, lender: Address) -> u128 {
         read_u128(&env, &DataKey::LenderPosition(lender))
+    }
+
+    pub fn upgrade(env: Env, caller: Address, new_wasm_hash: soroban_sdk::BytesN<32>) {
+        let admin: Address = env.storage().persistent().get(&DataKey::Admin).expect("not initialized");
+        caller.require_auth();
+        assert!(caller == admin, "unauthorized");
+        
+        env.deployer().update_current_contract_wasm(new_wasm_hash.clone());
+        env.events().publish_event(&UpgradeEvent { new_wasm_hash });
     }
 }
 

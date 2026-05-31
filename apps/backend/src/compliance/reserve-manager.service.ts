@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { createHash } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReflectorOracleService } from '../oracles/reflector-oracle.service';
 import { SorobanService } from '../chain/soroban.service';
@@ -105,13 +106,12 @@ export class ReserveManagerService implements OnModuleInit {
       };
     }
 
-    const healthy = snapshot.collateralizationRatio >= this.MIN_COLLATERAL_RATIO;
+    const healthy =
+      snapshot.collateralizationRatio >= this.MIN_COLLATERAL_RATIO;
 
     if (!healthy) {
       await this.handleUndercollateralization(snapshot);
-    } else if (
-      snapshot.collateralizationRatio < this.WARNING_THRESHOLD
-    ) {
+    } else if (snapshot.collateralizationRatio < this.WARNING_THRESHOLD) {
       await this.sendWarningAlert(snapshot);
     }
 
@@ -154,9 +154,7 @@ export class ReserveManagerService implements OnModuleInit {
     );
 
     const collateralizationRatio =
-      stablecoinSupply > 0
-        ? (totalReserveValue / stablecoinSupply) * 100
-        : 0;
+      stablecoinSupply > 0 ? (totalReserveValue / stablecoinSupply) * 100 : 0;
 
     const snapshot: ReserveSnapshot = {
       timestamp: new Date(),
@@ -182,8 +180,14 @@ export class ReserveManagerService implements OnModuleInit {
   }> {
     // Permite desabilitar publicação de PoR em dev/test via flag
     const publishDisabled = this.configService.get('RESERVES_PUBLISH_DISABLED');
-    if (publishDisabled && publishDisabled !== '0' && publishDisabled !== 'false') {
-      this.logger.warn('RESERVES_PUBLISH_DISABLED set; skipping PoR on-chain publish');
+    if (
+      publishDisabled &&
+      publishDisabled !== '0' &&
+      publishDisabled !== 'false'
+    ) {
+      this.logger.warn(
+        'RESERVES_PUBLISH_DISABLED set; skipping PoR on-chain publish',
+      );
       const snapshot = await this.getCurrentSnapshot();
       const hash = this.hashSnapshot(snapshot);
       return {
@@ -196,7 +200,9 @@ export class ReserveManagerService implements OnModuleInit {
     // Guardar execução quando variáveis críticas estão ausentes (ambiente de dev/test)
     const signerSecret = this.configService.get('STELLAR_SECRET_KEY');
     if (!signerSecret) {
-      this.logger.error('Missing STELLAR_SECRET_KEY: skipping PoR publish in dev/test');
+      this.logger.error(
+        'Missing STELLAR_SECRET_KEY: skipping PoR publish in dev/test',
+      );
       const snapshot = await this.getCurrentSnapshot();
       const hash = this.hashSnapshot(snapshot);
       return {
@@ -257,8 +263,7 @@ export class ReserveManagerService implements OnModuleInit {
       return account.balances
         .filter((b) => b.asset_type !== 'liquidity_pool_shares')
         .map((balance: any) => ({
-          code:
-            balance.asset_type === 'native' ? 'XLM' : balance.asset_code,
+          code: balance.asset_type === 'native' ? 'XLM' : balance.asset_code,
           issuer:
             balance.asset_type === 'native' ? undefined : balance.asset_issuer,
           amount: parseFloat(balance.balance),
@@ -358,14 +363,22 @@ export class ReserveManagerService implements OnModuleInit {
     try {
       const contractId = this.configService.get('STABLECOIN_CONTRACT_ID');
       const signerSecret = this.configService.get('STELLAR_SECRET_KEY');
-      
+
       if (!contractId || !signerSecret) {
-        this.logger.error('Missing STABLECOIN_CONTRACT_ID or STELLAR_SECRET_KEY');
+        this.logger.error(
+          'Missing STABLECOIN_CONTRACT_ID or STELLAR_SECRET_KEY',
+        );
         return;
       }
 
-      await this.sorobanService.setMintingEnabled(contractId, false, signerSecret);
-      this.logger.log('✅ Minting frozen via Soroban contract due to undercollateralization');
+      await this.sorobanService.setMintingEnabled(
+        contractId,
+        false,
+        signerSecret,
+      );
+      this.logger.log(
+        '✅ Minting frozen via Soroban contract due to undercollateralization',
+      );
     } catch (error) {
       this.logger.error(`Failed to freeze minting: ${error.message}`);
     }
@@ -381,14 +394,17 @@ export class ReserveManagerService implements OnModuleInit {
         alert.threshold,
         { action: alert.action },
       );
-    } else if (alert.severity === 'EMERGENCY' || alert.severity === 'CRITICAL') {
+    } else if (
+      alert.severity === 'EMERGENCY' ||
+      alert.severity === 'CRITICAL'
+    ) {
       await this.notificationService.sendUndercollateralizationAlert(
         alert.ratio,
         alert.threshold,
         { action: alert.action },
       );
     }
-    
+
     this.logger.log(
       `Admin notification sent: ${alert.severity} - Ratio ${alert.ratio.toFixed(2)}%`,
     );
@@ -398,7 +414,6 @@ export class ReserveManagerService implements OnModuleInit {
    * Gera hash do snapshot para attestation
    */
   private hashSnapshot(snapshot: ReserveSnapshot): string {
-    const crypto = require('crypto');
     const data = JSON.stringify({
       timestamp: snapshot.timestamp.toISOString(),
       supply: snapshot.stablecoinSupply,
@@ -411,7 +426,7 @@ export class ReserveManagerService implements OnModuleInit {
       })),
     });
 
-    return crypto.createHash('sha256').update(data).digest('hex');
+    return createHash('sha256').update(data).digest('hex');
   }
 
   /**
@@ -430,7 +445,10 @@ export class ReserveManagerService implements OnModuleInit {
         sourceKeypair.publicKey(),
       );
 
-      const network = this.configService.get<string>('STELLAR_NETWORK', 'testnet');
+      const network = this.configService.get<string>(
+        'STELLAR_NETWORK',
+        'testnet',
+      );
       const networkPassphrase =
         network === 'testnet'
           ? StellarSdk.Networks.TESTNET
@@ -484,9 +502,17 @@ export class ReserveManagerService implements OnModuleInit {
     setInterval(
       async () => {
         try {
-          const publishDisabled = this.configService.get('RESERVES_PUBLISH_DISABLED');
-          if (publishDisabled && publishDisabled !== '0' && publishDisabled !== 'false') {
-            this.logger.log('PoR publish disabled by env; generating local snapshot only');
+          const publishDisabled = this.configService.get(
+            'RESERVES_PUBLISH_DISABLED',
+          );
+          if (
+            publishDisabled &&
+            publishDisabled !== '0' &&
+            publishDisabled !== 'false'
+          ) {
+            this.logger.log(
+              'PoR publish disabled by env; generating local snapshot only',
+            );
             // Ainda gera snapshot e salva no banco para monitoramento
             const snapshot = await this.getCurrentSnapshot();
             const hash = this.hashSnapshot(snapshot);

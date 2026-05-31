@@ -25,7 +25,9 @@ describe('MfaGuard', () => {
     const guard = new MfaGuard(redis);
     const ctx: any = mockContext({});
 
-    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 
   it('falha quando não há flag de MFA', async () => {
@@ -33,6 +35,8 @@ describe('MfaGuard', () => {
     const guard = new MfaGuard(redis);
     const ctx: any = mockContext({ user: { id: 'u1' } });
 
-    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(guard.canActivate(ctx)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 });

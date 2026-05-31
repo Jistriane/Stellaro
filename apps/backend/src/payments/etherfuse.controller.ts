@@ -55,7 +55,9 @@ export class EtherfuseController {
   constructor(private readonly etherfuseService: EtherfuseService) {}
 
   @Get('status')
-  @ApiOperation({ summary: 'Returns Etherfuse rail status and runtime configuration' })
+  @ApiOperation({
+    summary: 'Returns Etherfuse rail status and runtime configuration',
+  })
   getStatus() {
     return this.etherfuseService.getStatus();
   }
@@ -67,7 +69,9 @@ export class EtherfuseController {
   }
 
   @Post('order')
-  @ApiOperation({ summary: 'Creates an Etherfuse order from a quoteId (stub or live)' })
+  @ApiOperation({
+    summary: 'Creates an Etherfuse order from a quoteId (stub or live)',
+  })
   async createOrder(@Body() dto: CreateEtherfuseOrderDto) {
     return this.etherfuseService.createOrder(dto);
   }

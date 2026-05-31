@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShieldCheck, UserCheck, Key, RefreshCcw, Plus, Activity, Clock, BadgeCheck } from "lucide-react";
+import { ShieldCheck, UserCheck, Key, RefreshCcw, Plus, Activity, Clock, BadgeCheck, FileText } from "lucide-react";
 import { useWalletStore } from "@/state/wallet";
+import { buildInvokeTransaction, submitSignedXdr } from "@/lib/soroban/invoke";
 
 type Credential = {
   id: string;
@@ -10,6 +11,7 @@ type Credential = {
   issuer: string;
   status: string;
   issuedAt: string;
+  onChainProof?: string;
 };
 
 type IssuanceStatus = {
@@ -95,15 +97,29 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
         issuer: string;
         status: string;
         createdAt?: string;
+        txHash?: string;
       };
 
-      const newCred = {
+      const newCred: {
+        id: string;
+        type: string;
+        issuer: string;
+        status: string;
+        issuedAt: string;
+        onChainProof?: string;
+      } = {
         id: created.id,
         type: created.type,
         issuer: created.issuer,
         status: created.status,
         issuedAt: created.createdAt || new Date().toISOString(),
+        onChainProof: created.txHash,
       };
+
+      if (created.txHash) {
+        console.log("On-chain registration confirmed with txHash:", created.txHash);
+      }
+
       setCredentials(prev => [newCred, ...prev]);
       setShowKycForm(false);
     } catch (err) {
@@ -116,26 +132,26 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white p-6 md:p-12 font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-transparent text-foreground p-6 md:p-12 font-sans selection:bg-primary/20">
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header Section */}
-        <header className="relative p-8 rounded-3xl overflow-hidden border border-slate-800/60 bg-slate-900/40 backdrop-blur-xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-sky-500/10" />
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px]" />
+        <header className="relative p-8 rounded-3xl overflow-hidden border border-border/60 bg-card/50 backdrop-blur-xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-[rgba(197,135,230,0.10)]" />
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/15 rounded-full blur-[80px]" />
           
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-medium tracking-wide text-sm uppercase">
+              <div className="flex items-center gap-2 text-primary font-medium tracking-wide text-sm uppercase">
                 <ShieldCheck className="w-5 h-5" />
                 <span>Decentralized Identity</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-muted-foreground">
                 SSI Wallet
               </h1>
-              <p className="text-slate-400 max-w-xl text-lg">
+              <p className="text-muted-foreground max-w-xl text-lg">
                 Your identity, your control. Issue and manage verifiable credentials (VCs) to interact with the Stellaro ecosystem and access RWA with full compliance.
               </p>
-              <div className="text-sm text-slate-400">
+              <div className="text-sm text-muted-foreground">
                 {walletAddress ? `Connected wallet: ${walletAddress}` : "No Stellar wallet connected."}
               </div>
             </div>
@@ -143,7 +159,7 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
             <button 
               onClick={() => setShowKycForm(!showKycForm)}
               disabled={issuanceStatus ? !issuanceStatus.available : false}
-              className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white transition-all duration-300 bg-emerald-500/10 border border-emerald-500/30 rounded-full hover:bg-emerald-500 hover:text-slate-950 hover:shadow-[0_0_2rem_-0.5rem_#10b981]"
+              className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-foreground transition-all duration-300 bg-primary/10 border border-primary/30 rounded-full hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_2rem_-0.5rem_rgba(212,168,106,0.55)]"
             >
               <Plus className="w-5 h-5 transition-transform group-hover:rotate-90" />
               <span>New Credential</span>
@@ -152,37 +168,37 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
         </header>
 
         {issuanceStatus && !issuanceStatus.available ? (
-          <div className="rounded-2xl border border-amber-500/40 bg-amber-950/30 px-5 py-4 text-amber-100">
-            <p className="text-sm font-semibold uppercase tracking-wide text-amber-300">SSI issuance status: degraded</p>
+          <div className="rounded-2xl border border-primary/30 bg-secondary/20 px-5 py-4 text-foreground">
+            <p className="text-sm font-semibold uppercase tracking-wide text-primary">SSI issuance status: degraded</p>
             <p className="mt-1 text-sm">{issuanceStatus.reason || "SSI issuance is temporarily unavailable."}</p>
           </div>
         ) : null}
 
         {/* Dynamic KYC Form */}
         {showKycForm && (
-          <div className="p-8 rounded-3xl border border-emerald-500/20 bg-slate-900/50 backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="p-8 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-emerald-500/20 rounded-lg">
-                <UserCheck className="w-6 h-6 text-emerald-400" />
+              <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
+                <UserCheck className="w-6 h-6 text-primary" />
               </div>
               <h2 className="text-2xl font-semibold">Start KYC Process</h2>
             </div>
             
             <form onSubmit={handleKycSubmit} className="space-y-6">
               {mintError ? (
-                <div className="rounded-xl border border-rose-500/30 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">
+                <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                   {mintError}
                 </div>
               ) : null}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Credential Type</label>
+                  <label className="text-sm font-medium text-foreground">Credential Type</label>
                   <select 
                     name="type" 
                     title="KYC credential type"
                     aria-label="Credential type"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all appearance-none"
+                    className="w-full bg-secondary/30 border border-border/60 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all appearance-none"
                     required
                   >
                     <option value="KYCVerified">KYC Verified (Level 1)</option>
@@ -191,31 +207,31 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Connected Wallet</label>
+                  <label className="text-sm font-medium text-foreground">Connected Wallet</label>
                   <input
                     type="text"
                     disabled
                     value={walletAddress || "Connect a wallet to continue"}
                     title="Connected wallet address"
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-400 cursor-not-allowed"
+                    className="w-full bg-secondary/20 border border-border/60 rounded-xl px-4 py-3 text-muted-foreground cursor-not-allowed"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-300">Authorized Issuer</label>
+                  <label className="text-sm font-medium text-foreground">Authorized Issuer</label>
                   <input 
                     type="text" 
                     disabled 
                     value="Stellaro Identity Oracle"
                     title="Authorized issuer"
                     placeholder="Stellaro Identity Oracle"
-                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-400 cursor-not-allowed"
+                    className="w-full bg-secondary/20 border border-border/60 rounded-xl px-4 py-3 text-muted-foreground cursor-not-allowed"
                   />
                 </div>
               </div>
 
-              <div className="p-4 bg-emerald-950/30 border border-emerald-500/20 rounded-xl flex items-start gap-3">
-                <Key className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                <p className="text-sm text-emerald-200/80 leading-relaxed">
+              <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl flex items-start gap-3">
+                <Key className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   When issuing this credential, a cryptographic proof will be recorded on the Soroban blockchain.
                   Your personal data stays secure off-chain, ensuring LGPD compliance using selective disclosure.
                 </p>
@@ -225,7 +241,7 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
                 <button 
                   type="button" 
                   onClick={() => setShowKycForm(false)}
-                  className="px-6 py-2.5 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="px-6 py-2.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
                 >
                   Cancel
                 </button>
@@ -238,7 +254,7 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
                     walletNetwork !== "testnet" ||
                     (issuanceStatus ? !issuanceStatus.available : false)
                   }
-                  className="relative inline-flex items-center justify-center gap-2 px-8 py-2.5 font-semibold text-slate-950 bg-emerald-400 rounded-full hover:bg-emerald-300 transition-all disabled:opacity-70 disabled:cursor-wait"
+                  className="relative inline-flex items-center justify-center gap-2 px-8 py-2.5 font-semibold text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all disabled:opacity-70 disabled:cursor-wait"
                 >
                   {isMinting ? (
                     <>
@@ -258,11 +274,11 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <BadgeCheck className="w-6 h-6 text-blue-400" />
+              <BadgeCheck className="w-6 h-6 text-primary" />
               Your Credentials
             </h2>
-            <div className="flex items-center gap-2 text-sm text-slate-400 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
-              <Activity className="w-4 h-4 text-emerald-400" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/20 px-3 py-1.5 rounded-full border border-border/60">
+              <Activity className="w-4 h-4 text-primary" />
               <span>{credentials.length} Active</span>
             </div>
           </div>
@@ -271,38 +287,38 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
             {credentials.map((cred) => (
               <div 
                 key={cred.id}
-                className="group relative bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 overflow-hidden hover:border-emerald-500/50 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(16,185,129,0.1)] backdrop-blur-sm"
+                className="group relative bg-card/40 border border-border/60 rounded-2xl p-6 overflow-hidden hover:border-primary/40 transition-all duration-500 hover:shadow-[0_8px_30px_rgba(212,168,106,0.12)] backdrop-blur-xl"
               >
                 {/* Decoration */}
-                <div className="absolute -right-12 -top-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-colors duration-500" />
+                <div className="absolute -right-12 -top-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors duration-500" />
                 
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="flex justify-between items-start mb-6">
-                    <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 group-hover:border-emerald-500/30 transition-colors">
-                      {cred.type.includes('KYC') ? <UserCheck className="w-6 h-6 text-emerald-400" /> : 
-                       cred.type.includes('Address') ? <ShieldCheck className="w-6 h-6 text-sky-400" /> : 
-                       <BadgeCheck className="w-6 h-6 text-purple-400" />}
+                    <div className="p-3 bg-secondary/20 rounded-xl border border-border/60 group-hover:border-primary/30 transition-colors">
+                      {cred.type.includes('KYC') ? <UserCheck className="w-6 h-6 text-primary" /> : 
+                       cred.type.includes('Address') ? <ShieldCheck className="w-6 h-6 text-primary" /> : 
+                       <BadgeCheck className="w-6 h-6 text-primary" />}
                     </div>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       {cred.status.toUpperCase()}
                     </span>
                   </div>
                   
                   <div className="mb-4 flex-grow">
-                    <h3 className="text-xl font-semibold mb-1 text-slate-100 group-hover:text-white transition-colors">{cred.type}</h3>
-                    <p className="text-sm text-slate-500 flex items-center gap-1.5">
+                    <h3 className="text-xl font-semibold mb-1 text-foreground transition-colors">{cred.type}</h3>
+                    <p className="text-sm text-muted-foreground flex items-center gap-1.5">
                       <Key className="w-3.5 h-3.5" />
                       Issuer: {cred.issuer}
                     </p>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+                  <div className="pt-4 mt-4 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
                       <span>Issued on {new Date(cred.issuedAt).toLocaleDateString()}</span>
                     </div>
-                    <button className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                    <button className="text-primary hover:text-primary/90 transition-colors font-medium">
                       View On-chain Proof
                     </button>
                   </div>
@@ -311,12 +327,12 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
             ))}
 
             {credentials.length === 0 && (
-              <div className="col-span-full py-12 flex flex-col items-center justify-center text-center bg-slate-900/20 border border-slate-800/50 rounded-3xl border-dashed">
-                <div className="p-4 bg-slate-800/50 rounded-full mb-4">
-                  <ShieldCheck className="w-8 h-8 text-slate-500" />
+              <div className="col-span-full py-12 flex flex-col items-center justify-center text-center bg-secondary/10 border border-border/60 rounded-3xl border-dashed">
+                <div className="p-4 bg-secondary/20 rounded-full mb-4 border border-border/60">
+                  <ShieldCheck className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-300 mb-1">No credentials found</h3>
-                <p className="text-slate-500 text-sm max-w-sm">You have not issued any verifiable credentials yet. Start the KYC process to begin.</p>
+                <h3 className="text-lg font-medium text-foreground mb-1">No credentials found</h3>
+                <p className="text-muted-foreground text-sm max-w-sm">You have not issued any verifiable credentials yet. Start the KYC process to begin.</p>
               </div>
             )}
           </div>

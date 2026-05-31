@@ -35,8 +35,8 @@ export default function Toasts() {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
       {visible.map((code) => (
-        <div key={code} className="min-w-64 max-w-96 rounded border border-slate-700 bg-slate-900/90 shadow px-3 py-2 text-sm">
-          <div className="text-slate-200">{t(code, { default: code })}</div>
+        <div key={code} className="min-w-64 max-w-96 rounded-xl border border-border/60 bg-card/70 shadow px-3 py-2 text-sm backdrop-blur-xl">
+          <div className="text-foreground">{t(code, { default: code })}</div>
         </div>
       ))}
     </div>

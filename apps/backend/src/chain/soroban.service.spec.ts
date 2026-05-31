@@ -6,10 +6,13 @@ describe('SorobanService', () => {
   let service: SorobanService;
 
   beforeEach(async () => {
-    process.env.SOROBAN_RPC_URL = process.env.SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
-    process.env.LOANSPOOL_INTEREST_BPS = process.env.LOANSPOOL_INTEREST_BPS || '500';
+    process.env.SOROBAN_RPC_URL =
+      process.env.SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
+    process.env.LOANSPOOL_INTEREST_BPS =
+      process.env.LOANSPOOL_INTEREST_BPS || '500';
     process.env.LOANSPOOL_LTV_BPS = process.env.LOANSPOOL_LTV_BPS || '7000';
-    process.env.LOANSPOOL_MAX_LOAN = process.env.LOANSPOOL_MAX_LOAN || '1000000';
+    process.env.LOANSPOOL_MAX_LOAN =
+      process.env.LOANSPOOL_MAX_LOAN || '1000000';
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [SorobanService],
@@ -45,7 +48,9 @@ describe('SorobanService', () => {
         const res = await degraded.invokeContract('C_NOPE', 'get_value', []);
         expect(res).toBeNull();
       } else {
-        await expect(service.invokeContract('C_NOPE', 'get_value', [])).rejects.toBeDefined();
+        await expect(
+          service.invokeContract('C_NOPE', 'get_value', []),
+        ).rejects.toBeDefined();
       }
     });
 
@@ -54,7 +59,11 @@ describe('SorobanService', () => {
       delete (process.env as any).SOROBAN_RPC_URL;
       const degradedService = new SorobanService();
 
-      const result = await degradedService.invokeContract('CTEST123', 'get_value', []);
+      const result = await degradedService.invokeContract(
+        'CTEST123',
+        'get_value',
+        [],
+      );
       expect(result).toBeNull();
       process.env.SOROBAN_RPC_URL = prev;
     });
@@ -64,14 +73,18 @@ describe('SorobanService', () => {
         StellarSdk.nativeToScVal('test', { type: 'string' }),
         StellarSdk.nativeToScVal(100, { type: 'u64' }),
       ];
-      await expect(service.invokeContract('C_NOPE', 'set_value', args)).rejects.toBeDefined();
+      await expect(
+        service.invokeContract('C_NOPE', 'set_value', args),
+      ).rejects.toBeDefined();
     });
   });
 
   describe('getLoansPoolParams', () => {
     it('should fallback to env variables when RPC is unavailable or invalid', async () => {
       const params = await service.getLoansPoolParams('C_NOPE');
-      expect(params.interest_bps).toBe(Number(process.env.LOANSPOOL_INTEREST_BPS));
+      expect(params.interest_bps).toBe(
+        Number(process.env.LOANSPOOL_INTEREST_BPS),
+      );
       expect(params.ltv_bps).toBe(Number(process.env.LOANSPOOL_LTV_BPS));
       expect(params.max_loan_amount).toBe(process.env.LOANSPOOL_MAX_LOAN);
     });
@@ -106,14 +119,19 @@ describe('SorobanService', () => {
     it('should report unavailable when master secret is missing or invalid', () => {
       const prevVcRegistryId = process.env.VC_REGISTRY_ID;
       const prevMasterSecret = process.env.MASTER_SECRET_KEY;
-      process.env.VC_REGISTRY_ID = 'CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z';
+      process.env.VC_REGISTRY_ID =
+        'CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z';
       process.env.MASTER_SECRET_KEY = 'invalid-secret';
-      const validitySpy = jest.spyOn(StellarSdk.StrKey, 'isValidEd25519SecretSeed').mockReturnValue(false);
+      const validitySpy = jest
+        .spyOn(StellarSdk.StrKey, 'isValidEd25519SecretSeed')
+        .mockReturnValue(false);
 
       const status = service.getVcIssuanceStatus();
 
       expect(status.available).toBe(false);
-      expect(status.reason).toContain('MASTER_SECRET_KEY is missing or invalid');
+      expect(status.reason).toContain(
+        'MASTER_SECRET_KEY is missing or invalid',
+      );
       expect(status.checks.vcRegistryConfigured).toBe(true);
       expect(status.checks.masterSecretConfigured).toBe(true);
       expect(status.checks.masterSecretValid).toBe(false);
@@ -128,9 +146,13 @@ describe('SorobanService', () => {
     it('should report available when registry and master secret are configured', () => {
       const prevVcRegistryId = process.env.VC_REGISTRY_ID;
       const prevMasterSecret = process.env.MASTER_SECRET_KEY;
-      process.env.VC_REGISTRY_ID = 'CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z';
-      process.env.MASTER_SECRET_KEY = 'SCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-      const validitySpy = jest.spyOn(StellarSdk.StrKey, 'isValidEd25519SecretSeed').mockReturnValue(true);
+      process.env.VC_REGISTRY_ID =
+        'CD3IEVYYTYUYPLM7WT335SM4AO7FX4VMWR5DWXEL3D7CFTDT5NPNRV3Z';
+      process.env.MASTER_SECRET_KEY =
+        'SCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const validitySpy = jest
+        .spyOn(StellarSdk.StrKey, 'isValidEd25519SecretSeed')
+        .mockReturnValue(true);
 
       const status = service.getVcIssuanceStatus();
 
@@ -153,7 +175,9 @@ describe('SorobanService', () => {
       const secret = process.env.SOROBAN_ADMIN_SECRET;
       const contract = process.env.STABLECOIN_CONTRACT_ID;
       if (!secret || !contract) return; // skip sem configuração e2e
-      await expect(service.setMintingEnabled(contract, true, secret)).resolves.toBeDefined();
+      await expect(
+        service.setMintingEnabled(contract, true, secret),
+      ).resolves.toBeDefined();
     });
 
     it('should fail in degraded mode', async () => {
@@ -161,7 +185,11 @@ describe('SorobanService', () => {
       delete (process.env as any).SOROBAN_RPC_URL;
       const degradedService = new SorobanService();
       await expect(
-        degradedService.setMintingEnabled('C_INVALID', true, 'SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+        degradedService.setMintingEnabled(
+          'C_INVALID',
+          true,
+          'SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        ),
       ).rejects.toBeDefined();
       process.env.SOROBAN_RPC_URL = prev;
     });
@@ -174,7 +202,9 @@ describe('SorobanService', () => {
       if (!secret || !contract) return;
       const supply = await service.getStablecoinSupply(contract);
       expect(typeof supply).toBe('number');
-      await expect(service.setMintingEnabled(contract, false, secret)).resolves.toBeDefined();
+      await expect(
+        service.setMintingEnabled(contract, false, secret),
+      ).resolves.toBeDefined();
     });
   });
 });

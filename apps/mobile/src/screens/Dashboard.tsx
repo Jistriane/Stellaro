@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
-import { ArrowUpRight, Wallet, ShieldCheck, ArrowDownLeft, TrendingUp } from 'lucide-react-native';
+import { ArrowUpRight, Wallet, ShieldCheck, ArrowDownLeft } from 'lucide-react-native';
 import { StellarWallet } from '../lib/stellar-wallet';
+import { getHorizonUrl } from '../lib/stellar';
+import { theme } from '../lib/theme';
 
 // Removed hardcoded TEST_PUBLIC_KEY
 
 export default function Dashboard() {
   const [balance, setBalance] = useState<number>(0);
-  const [balances, setBalances] = useState<any[]>([]);
+  const [balances, setBalances] = useState<Array<{ code: string; issuer?: string; balance: string }>>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const [language, setLanguage] = useState<'PT' | 'EN' | 'ES'>('PT');
@@ -33,19 +35,23 @@ export default function Dashboard() {
       setPublicKey(pk);
       
       if (pk) {
-        // Fetch real balances from Horizon
-        const response = await fetch(`https://horizon-testnet.stellar.org/accounts/${pk}`);
+        const horizonUrl = getHorizonUrl();
+        const response = await fetch(`${horizonUrl}/accounts/${pk}`);
         const account = await response.json();
         
         if (account.balances) {
-          setBalances(account.balances);
-          // Set primary balance (XLM)
-          const xlm = account.balances.find((b: any) => b.asset_type === 'native');
+          const normalized = (account.balances as any[]).map((b) => ({
+            code: b.asset_type === 'native' ? 'XLM' : b.asset_code,
+            issuer: b.asset_issuer,
+            balance: b.balance,
+          }));
+          setBalances(normalized);
+          const xlm = normalized.find((b) => b.code === 'XLM');
           setBalance(xlm ? parseFloat(xlm.balance) : 0);
         }
 
         // Fetch real history
-        const historyRes = await fetch(`https://horizon-testnet.stellar.org/accounts/${pk}/payments?limit=5&order=desc`);
+        const historyRes = await fetch(`${horizonUrl}/accounts/${pk}/payments?limit=5&order=desc`);
         const historyData = await historyRes.json();
         if (historyData._embedded) {
           setHistory(historyData._embedded.records);
@@ -88,39 +94,33 @@ export default function Dashboard() {
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>{t.balance}</Text>
           <Text style={styles.balanceValue}>
-            {isPrivate ? `ZK: Protected (> $${(balance * 0.9).toFixed(0)})` : `R$ ${balance.toLocaleString()}`}
+            {isPrivate ? '••••' : `${balance.toFixed(2)} XLM`}
           </Text>
-          {isPrivate && <Text style={styles.zkHint}>Prova de Solvência Verificada ✓</Text>}
-          <View style={styles.balanceChange}>
-            <TrendingUp size={16} color="#10b981" />
-            <Text style={styles.changeText}>+2.4% hoje</Text>
-          </View>
         </View>
 
         {/* Quick Actions */}
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.actionItem}>
             <View style={styles.actionIconContainer}>
-              <ArrowUpRight size={24} color="#fff" />
+              <ArrowUpRight size={24} color={theme.colors.bg} />
             </View>
             <Text style={styles.actionText}>Enviar</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionItem}>
-            <View style={[styles.actionIconContainer, { backgroundColor: '#3b82f6' }]}>
-              <Wallet size={24} color="#fff" />
+            <View style={[styles.actionIconContainer, { backgroundColor: theme.colors.aurora }]}>
+              <Wallet size={24} color={theme.colors.bg} />
             </View>
             <Text style={styles.actionText}>Receber</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionItem}>
-            <View style={[styles.actionIconContainer, { backgroundColor: '#a855f7' }]}>
-              <ShieldCheck size={24} color="#fff" />
+            <View style={[styles.actionIconContainer, { backgroundColor: theme.colors.nebula }]}>
+              <ShieldCheck size={24} color={theme.colors.bg} />
             </View>
             <Text style={styles.actionText}>Seguro</Text>
           </TouchableOpacity>
         </View>
 
         {/* Assets List */}
-        {/* Virtual Card Section */}
         <View style={styles.cardSection}>
           <Text style={styles.sectionTitle}>Cartão Virtual Stellaro</Text>
           <TouchableOpacity 
@@ -130,14 +130,14 @@ export default function Dashboard() {
             <View style={styles.cardInfo}>
               <Text style={styles.cardBrand}>STELLARO PLATINUM</Text>
               <Text style={styles.cardNumber}>
-                {showCard ? '4532 8876 1234 9908' : '•••• •••• •••• 9908'}
+                {showCard ? '—' : '•••• •••• •••• ••••'}
               </Text>
-              <Text style={styles.cardHolder}>INVESTIDOR STELLARO</Text>
+              <Text style={styles.cardHolder}>{publicKey ? `WALLET ${publicKey.slice(0, 6)}...${publicKey.slice(-4)}` : 'WALLET'}</Text>
             </View>
             <View style={styles.cardChip} />
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.walletButton}>
+          <TouchableOpacity style={styles.walletButton} disabled>
             <Text style={styles.walletButtonText}>Add to Apple Wallet </Text>
           </TouchableOpacity>
         </View>
@@ -160,23 +160,22 @@ export default function Dashboard() {
             </View>
             <View style={styles.assetValues}>
               <Text style={styles.assetBalance}>{asset.balance}</Text>
-              <Text style={styles.assetFiat}>R$ {(parseFloat(asset.balance) * 5.2).toFixed(2)}</Text>
             </View>
           </View>
         ))}
 
         {/* Transaction History */}
-        <View style={[styles.sectionHeader, { marginTop: 30 }]}>
+        <View style={styles.sectionHeaderActivity}>
           <Text style={styles.sectionTitle}>Atividade Recente</Text>
         </View>
 
         {history.length === 0 ? (
-          <Text style={{ color: '#94a3b8', fontSize: 14 }}>Nenhuma transação recente encontrada.</Text>
+          <Text style={styles.noHistoryText}>Nenhuma transação recente encontrada.</Text>
         ) : (
           history.map((item, index) => (
             <View key={index} style={styles.historyItem}>
               <View style={styles.historyIcon}>
-                <ArrowDownLeft size={20} color="#94a3b8" />
+                <ArrowDownLeft size={20} color={theme.colors.inkDim} />
               </View>
               <View style={styles.historyInfo}>
                 <Text style={styles.historyType}>{item.type === 'payment' ? 'Pagamento' : 'Operação'}</Text>
@@ -197,7 +196,7 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
+    backgroundColor: theme.colors.bg,
   },
   scrollContent: {
     padding: 20,
@@ -210,54 +209,58 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: theme.colors.ink,
+    fontFamily: theme.fonts.sansMedium,
   },
   subGreeting: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: theme.colors.inkDim,
     marginTop: 4,
+    fontFamily: theme.fonts.sansLight,
   },
   profileButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#1e293b',
+    backgroundColor: theme.colors.bg2,
     padding: 2,
   },
   profilePlaceholder: {
     flex: 1,
     borderRadius: 18,
-    backgroundColor: '#334155',
+    backgroundColor: theme.colors.bg3,
   },
   balanceCard: {
-    backgroundColor: '#1e293b',
-    borderRadius: 24,
+    backgroundColor: theme.colors.bg2,
+    borderRadius: theme.radius.cardLg,
     padding: 24,
     marginBottom: 30,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: theme.colors.rule,
   },
   balanceLabel: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: theme.colors.inkDim,
     marginBottom: 8,
+    fontFamily: theme.fonts.mono,
+    textTransform: 'uppercase',
+    letterSpacing: 1.6,
   },
   balanceValue: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: theme.colors.ink,
     marginBottom: 12,
+    fontFamily: theme.fonts.sansMedium,
   },
   balanceChange: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   changeText: {
-    color: '#10b981',
+    color: theme.colors.green,
     marginLeft: 4,
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: theme.fonts.sansMedium,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -271,15 +274,15 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#10b981',
+    backgroundColor: theme.colors.gold,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
   actionText: {
-    color: '#fff',
+    color: theme.colors.ink,
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: theme.fonts.sansMedium,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -287,62 +290,197 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  sectionHeaderActivity: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 30,
+  },
+  headerText: {
+    flex: 1,
+  },
+  langSelector: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  langText: {
+    color: theme.colors.inkDim,
+    fontSize: 12,
+    fontFamily: theme.fonts.mono,
+    letterSpacing: 1.2,
+  },
+  langActive: {
+    color: theme.colors.gold,
+    fontFamily: theme.fonts.mono,
+  },
+  privacyToggle: {
+    backgroundColor: theme.colors.bg2,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.rule,
+  },
+  privacyText: {
+    color: theme.colors.inkDim,
+    fontSize: 12,
+    fontFamily: theme.fonts.mono,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  zkHint: {
+    color: theme.colors.green,
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 12,
+    fontFamily: theme.fonts.sansLight,
+  },
+  v4StatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+    gap: 12,
+  },
+  v4Stat: {
+    flex: 1,
+    backgroundColor: theme.colors.bg2,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.rule,
+  },
+  v4StatLabel: {
+    color: theme.colors.inkDim,
+    fontSize: 12,
+    marginBottom: 4,
+    fontFamily: theme.fonts.mono,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+  },
+  v4StatValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontFamily: theme.fonts.sansMedium,
+  },
+  cardSection: {
+    marginBottom: 30,
+  },
+  virtualCard: {
+    backgroundColor: theme.colors.bg3,
+    padding: 24,
+    borderRadius: 20,
+    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: theme.colors.line,
+  },
+  cardInfo: {
+    flex: 1,
+  },
+  cardBrand: {
+    color: theme.colors.inkDim,
+    fontSize: 10,
+    marginBottom: 20,
+    fontFamily: theme.fonts.mono,
+    textTransform: 'uppercase',
+    letterSpacing: 1.6,
+  },
+  cardNumber: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    letterSpacing: 2,
+    marginBottom: 20,
+    fontFamily: theme.fonts.mono,
+  },
+  cardHolder: {
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontFamily: theme.fonts.sansRegular,
+  },
+  cardChip: {
+    width: 40,
+    height: 30,
+    backgroundColor: theme.colors.goldSoft,
+    borderRadius: 4,
+  },
+  walletButton: {
+    marginTop: 12,
+    backgroundColor: theme.colors.gold,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  walletButtonText: {
+    color: theme.colors.bg,
+    fontSize: 14,
+    fontFamily: theme.fonts.sansMedium,
+  },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: theme.colors.ink,
+    fontFamily: theme.fonts.sansMedium,
   },
   seeAll: {
-    color: '#3b82f6',
+    color: theme.colors.gold,
     fontSize: 14,
+    fontFamily: theme.fonts.sansRegular,
   },
   assetItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1e293b',
+    backgroundColor: theme.colors.bg2,
     padding: 16,
     borderRadius: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.rule,
   },
   assetIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#334155',
+    backgroundColor: theme.colors.bg3,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.rule,
   },
   assetIconText: {
-    color: '#fff',
+    color: theme.colors.ink,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: theme.fonts.sansMedium,
   },
   assetInfo: {
     flex: 1,
   },
   assetCode: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: theme.colors.ink,
+    fontFamily: theme.fonts.sansMedium,
   },
   assetName: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: theme.colors.inkDim,
     marginTop: 2,
+    fontFamily: theme.fonts.sansLight,
   },
   assetValues: {
     alignItems: 'flex-end',
   },
   assetBalance: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
+    color: theme.colors.ink,
+    fontFamily: theme.fonts.sansMedium,
   },
   assetFiat: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: theme.colors.inkDim,
     marginTop: 2,
+    fontFamily: theme.fonts.sansLight,
   },
   historyItem: {
     flexDirection: 'row',
@@ -353,27 +491,35 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#1e293b',
+    backgroundColor: theme.colors.bg2,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.rule,
   },
   historyInfo: {
     flex: 1,
   },
   historyType: {
-    color: '#fff',
+    color: theme.colors.ink,
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: theme.fonts.sansMedium,
   },
   historyDate: {
-    color: '#94a3b8',
+    color: theme.colors.inkDim,
     fontSize: 12,
     marginTop: 2,
+    fontFamily: theme.fonts.sansLight,
   },
   historyAmount: {
-    color: '#fff',
+    color: theme.colors.ink,
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: theme.fonts.sansMedium,
+  },
+  noHistoryText: {
+    color: theme.colors.inkDim,
+    fontSize: 14,
+    fontFamily: theme.fonts.sansLight,
   },
 });

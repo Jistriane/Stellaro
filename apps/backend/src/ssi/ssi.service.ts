@@ -1,4 +1,9 @@
-import { Injectable, Optional, Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Optional,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SorobanService } from '../chain/soroban.service';
 import * as crypto from 'crypto';
@@ -25,8 +30,24 @@ export class SsiService {
   };
   // Fallback in-memory store used in unit tests when PrismaService is not provided
   private inMemoryCreds: Array<any> = [
-    { id: 'vc-001', publicId: 'vc-001', type: 'KYCVerified', issuer: 'stub', status: 'active', disclosure: JSON.stringify({ subject: null, vcHash: null, txHash: null }), createdAt: new Date().toISOString() },
-    { id: 'vc-002', publicId: 'vc-002', type: 'ProofOfAddress', issuer: 'stub', status: 'active', disclosure: JSON.stringify({ subject: null, vcHash: null, txHash: null }), createdAt: new Date().toISOString() },
+    {
+      id: 'vc-001',
+      publicId: 'vc-001',
+      type: 'KYCVerified',
+      issuer: 'stub',
+      status: 'active',
+      disclosure: JSON.stringify({ subject: null, vcHash: null, txHash: null }),
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 'vc-002',
+      publicId: 'vc-002',
+      type: 'ProofOfAddress',
+      issuer: 'stub',
+      status: 'active',
+      disclosure: JSON.stringify({ subject: null, vcHash: null, txHash: null }),
+      createdAt: new Date().toISOString(),
+    },
   ];
 
   constructor(
@@ -48,17 +69,23 @@ export class SsiService {
           masterSecretValid: false,
         },
       };
-      this.logger.warn('SSI issuance preflight running without SorobanService; test/in-memory mode enabled.');
+      this.logger.warn(
+        'SSI issuance preflight running without SorobanService; test/in-memory mode enabled.',
+      );
       return;
     }
 
     this.issuanceStatus = this.sorobanService.getVcIssuanceStatus();
     if (this.issuanceStatus.available) {
-      this.logger.log('SSI issuance preflight passed. VC issuance is operational.');
+      this.logger.log(
+        'SSI issuance preflight passed. VC issuance is operational.',
+      );
       return;
     }
 
-    this.logger.warn(`SSI issuance preflight failed: ${this.issuanceStatus.reason}`);
+    this.logger.warn(
+      `SSI issuance preflight failed: ${this.issuanceStatus.reason}`,
+    );
   }
 
   getIssuanceStatus() {
@@ -72,6 +99,7 @@ export class SsiService {
   }
 
   async getOverview(query: SsiListQuery = {}) {
+    void query;
     const credentials = this.prisma?.ssiCredential?.findMany
       ? await this.prisma.ssiCredential.findMany({
           take: 5,
@@ -98,29 +126,45 @@ export class SsiService {
     return { did: `did:web:stellaro:${userId}` };
   }
 
-  async issueCredential(body: { userAddress: string; type: string; issuer: string; vcHash?: string }) {
+  async issueCredential(body: {
+    userAddress: string;
+    type: string;
+    issuer: string;
+    vcHash?: string;
+  }) {
     const issuance = this.getIssuanceStatus();
     if (!issuance.available) {
-      throw new ServiceUnavailableException(issuance.reason || 'SSI issuance is currently unavailable');
+      throw new ServiceUnavailableException(
+        issuance.reason || 'SSI issuance is currently unavailable',
+      );
     }
 
     this.logger.log(`Issuing VC for ${body.userAddress}`);
     const id = `vc-${String(Math.floor(Date.now() % 1000)).padStart(3, '0')}`;
-    const vcHash = body.vcHash ?? crypto
-      .createHash('sha256')
-      .update(JSON.stringify({
-        userAddress: body.userAddress,
-        type: body.type,
-        issuer: body.issuer,
-      }))
-      .digest('hex');
+    const vcHash =
+      body.vcHash ??
+      crypto
+        .createHash('sha256')
+        .update(
+          JSON.stringify({
+            userAddress: body.userAddress,
+            type: body.type,
+            issuer: body.issuer,
+          }),
+        )
+        .digest('hex');
 
     let txHash: string | null = null;
     if (this.sorobanService) {
       try {
-        txHash = await this.sorobanService.registerUserVc(body.userAddress, vcHash);
+        txHash = await this.sorobanService.registerUserVc(
+          body.userAddress,
+          vcHash,
+        );
       } catch (error) {
-        this.logger.error(`Failed to anchor VC on-chain for ${body.userAddress}: ${error.message}`);
+        this.logger.error(
+          `Failed to anchor VC on-chain for ${body.userAddress}: ${error.message}`,
+        );
         throw new ServiceUnavailableException(error.message);
       }
     }

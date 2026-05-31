@@ -54,7 +54,7 @@ export default function DashboardPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Loading...</div>
+          <div className="text-muted-foreground">Loading...</div>
         </div>
       </div>
     );
@@ -64,7 +64,7 @@ export default function DashboardPage() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center">
-          <div className="text-slate-400">Error loading data</div>
+          <div className="text-muted-foreground">Error loading data</div>
         </div>
       </div>
     );
@@ -117,20 +117,20 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
       {/* Branding + Greeting */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-primary font-bold">S</div>
+          <div className="w-10 h-10 rounded-full bg-secondary/20 border border-border/60 flex items-center justify-center text-primary font-bold">S</div>
           <div>
             <h1 className="text-2xl font-semibold">{t("greeting.welcome_back")}</h1>
-            <div className="text-xs text-slate-400">{t("greeting.stellar_key")} {truncatePubKey(ids.STELLAR_PUBLIC_KEY)}</div>
+            <div className="text-xs text-muted-foreground">{t("greeting.stellar_key")} {truncatePubKey(ids.STELLAR_PUBLIC_KEY)}</div>
           </div>
         </div>
-        <div className="text-xs text-slate-500">{t("greeting.updated_now")}</div>
+        <div className="text-xs text-muted-foreground">{t("greeting.updated_now")}</div>
       </div>
 
       {/* Balances */}
@@ -141,7 +141,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">R$ {stltBRL.toLocaleString("en-US", { maximumFractionDigits: 2 })}</div>
-            <div className="text-xs text-slate-500">{t("balances.estimated_stlt_balance", { amount: stlt.toLocaleString("en-US", { maximumFractionDigits: 4 }) })}</div>
+            <div className="text-xs text-muted-foreground">{t("balances.estimated_stlt_balance", { amount: stlt.toLocaleString("en-US", { maximumFractionDigits: 4 }) })}</div>
           </CardContent>
         </Card>
         <Card>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">$ {stltUSD.toLocaleString("en-US", { maximumFractionDigits: 2 })}</div>
-            <div className="text-xs text-slate-500">{t("balances.estimated_mock")}</div>
+            <div className="text-xs text-muted-foreground">{t("balances.estimated_mock")}</div>
           </CardContent>
         </Card>
         <Card>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold">{xlm.toLocaleString("en-US", { maximumFractionDigits: 4 })}</div>
-            <div className="text-xs text-slate-500">{t("balances.available")}</div>
+            <div className="text-xs text-muted-foreground">{t("balances.available")}</div>
           </CardContent>
         </Card>
       </div>
@@ -171,11 +171,11 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            <Link className="px-3 py-2 rounded bg-primary text-slate-900 text-sm" href="/pix">{t("quick_access.deposit_pix")}</Link>
-            <Link className="px-3 py-2 rounded bg-slate-800 text-sm" href="/stablecoin">{t("quick_access.swap_stablecoins")}</Link>
-            <Link className="px-3 py-2 rounded bg-slate-800 text-sm" href="/loans">{t("quick_access.request_loan")}</Link>
-            <Link className="px-3 py-2 rounded bg-slate-800 text-sm" href="/governance">{t("quick_access.governance")}</Link>
-            <Link className="px-3 py-2 rounded bg-slate-800 text-sm" href="/profile">{t("quick_access.profile_kyc")}</Link>
+            <Link className="px-3 py-2 rounded bg-primary text-primary-foreground text-sm" href="/pix">{t("quick_access.deposit_pix")}</Link>
+            <Link className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm" href="/stablecoin">{t("quick_access.swap_stablecoins")}</Link>
+            <Link className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm" href="/loans">{t("quick_access.request_loan")}</Link>
+            <Link className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm" href="/governance">{t("quick_access.governance")}</Link>
+            <Link className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm" href="/profile">{t("quick_access.profile_kyc")}</Link>
           </div>
         </CardContent>
       </Card>
@@ -189,17 +189,17 @@ export default function DashboardPage() {
           <CardContent>
             <ul className="space-y-2">
               {recentActivities.map((a) => (
-                <li key={a.date + a.desc} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2 text-sm">
+                <li key={a.date + a.desc} className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2 text-sm">
                   <div>
-                    <div className="text-slate-200">{a.desc}</div>
-                    <div className="text-xs text-slate-500">{a.date} • {a.status}</div>
+                    <div className="text-foreground">{a.desc}</div>
+                    <div className="text-xs text-muted-foreground">{a.date} • {a.status}</div>
                   </div>
-                  <div className="text-slate-300">{a.amount}</div>
+                  <div className="text-muted-foreground">{a.amount}</div>
                 </li>
               ))}
             </ul>
             <div className="mt-3">
-              <Link className="text-sm underline text-slate-200" href="/wallet">{t("recent.view_all")}</Link>
+              <Link className="text-sm underline text-primary" href="/wallet">{t("recent.view_all")}</Link>
             </div>
           </CardContent>
         </Card>
@@ -210,12 +210,12 @@ export default function DashboardPage() {
           <CardContent>
             <ul className="space-y-2">
               {notifications.map((n, i) => (
-                <li key={i} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2 text-sm">
+                <li key={i} className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400" />
+                    <span className="inline-block w-2 h-2 rounded-full bg-primary" />
                     <span>{n.text}</span>
                   </div>
-                  <Link className="text-xs underline text-slate-300" href={n.kind === "kyc" ? "/profile" : n.kind === "governance" ? "/governance" : "/risk"}>{t("notifications.view")}</Link>
+                  <Link className="text-xs underline text-primary" href={n.kind === "kyc" ? "/profile" : n.kind === "governance" ? "/governance" : "/risk"}>{t("notifications.view")}</Link>
                 </li>
               ))}
             </ul>
@@ -229,19 +229,19 @@ export default function DashboardPage() {
           <CardTitle>{t("loans.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-slate-500 mb-2">{t("loans.pool_ltv_interest", { ltv: loans.ltv_bps ?? 0, interest: loans.interest_bps ?? 0 })}</div>
+          <div className="text-xs text-muted-foreground mb-2">{t("loans.pool_ltv_interest", { ltv: loans.ltv_bps ?? 0, interest: loans.interest_bps ?? 0 })}</div>
           <ul className="space-y-2">
             {loansActive.map((l) => (
-              <li key={l.id} className="bg-slate-900 rounded p-3 text-sm">
+              <li key={l.id} className="bg-secondary/20 border border-border/60 rounded p-3 text-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="font-medium">{l.principal.toLocaleString("pt-BR")} {l.asset}</div>
-                  <div className="text-xs text-slate-500">{t("loans.status")}: <b className="text-slate-300">{l.status}</b></div>
+                  <div className="text-xs text-muted-foreground">{t("loans.status")}: <b className="text-foreground">{l.status}</b></div>
                 </div>
-                <div className="text-xs text-slate-500">{t("loans.collateral_due", { collateral: l.collateral, due: l.due })}</div>
+                <div className="text-xs text-muted-foreground">{t("loans.collateral_due", { collateral: l.collateral, due: l.due })}</div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  <Link className="px-3 py-1 rounded bg-slate-800 text-xs" href={`/loans/${l.id}`}>{t("loans.view_details")}</Link>
-                  <Link className="px-3 py-1 rounded bg-slate-800 text-xs" href={`/loans/${l.id}?action=renegotiate`}>{t("loans.renegotiate")}</Link>
-                  <Link className="px-3 py-1 rounded bg-slate-800 text-xs" href={`/loans/${l.id}?action=prepay`}>{t("loans.prepay")}</Link>
+                  <Link className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground" href={`/loans/${l.id}`}>{t("loans.view_details")}</Link>
+                  <Link className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground" href={`/loans/${l.id}?action=renegotiate`}>{t("loans.renegotiate")}</Link>
+                  <Link className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground" href={`/loans/${l.id}?action=prepay`}>{t("loans.prepay")}</Link>
                 </div>
               </li>
             ))}
@@ -255,19 +255,19 @@ export default function DashboardPage() {
           <CardTitle>{t("portfolio.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-slate-500 mb-2">{t("portfolio.contract")}: <span className="text-slate-300">{ids.PORTFOLIO_CONTRACT_ID || "—"}</span></div>
+          <div className="text-xs text-muted-foreground mb-2">{t("portfolio.contract")}: <span className="text-foreground">{ids.PORTFOLIO_CONTRACT_ID || "—"}</span></div>
           <ul className="space-y-2">
             {(portfolio.allocation as PortfolioAllocation[]).map((a) => (
               <li key={a.asset} className="text-sm">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-slate-300">{a.asset}</span>
-                  <span className="text-slate-400">{(a.pct_bps/100).toFixed(2)}%</span>
+                  <span className="text-foreground">{a.asset}</span>
+                  <span className="text-muted-foreground">{(a.pct_bps/100).toFixed(2)}%</span>
                 </div>
                 <Progress value={a.pct_bps / 100} className="mt-1" />
               </li>
             ))}
           </ul>
-          <div className="text-xs text-slate-500 mt-2">{t("portfolio.history_mock")}</div>
+          <div className="text-xs text-muted-foreground mt-2">{t("portfolio.history_mock")}</div>
         </CardContent>
       </Card>
 
@@ -278,9 +278,9 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="text-sm mb-2">{t("governance.open_proposals", { count: gov.proposals_open ?? 0 })}</div>
-          <div className="text-xs text-slate-500">Admin: <span className="text-slate-300">{gov.admin}</span></div>
+          <div className="text-xs text-muted-foreground">Admin: <span className="text-foreground">{gov.admin}</span></div>
           <div className="mt-3">
-            <Link className="px-3 py-2 rounded bg-slate-800 text-sm" href="/governance">{t("governance.view_proposals")}</Link>
+            <Link className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-sm text-foreground" href="/governance">{t("governance.view_proposals")}</Link>
           </div>
         </CardContent>
       </Card>
@@ -292,14 +292,14 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">👤</div>
+            <div className="w-10 h-10 rounded-full bg-secondary/20 border border-border/60 flex items-center justify-center">👤</div>
             <div>
               <div className="text-sm">{t("profile.user")}</div>
-              <div className="text-xs text-slate-500">KYC: <b className="text-amber-400">{t("profile.kyc_pending")}</b></div>
+              <div className="text-xs text-muted-foreground">KYC: <b className="text-primary">{t("profile.kyc_pending")}</b></div>
             </div>
           </div>
           <div className="mt-3">
-            <Link className="px-3 py-2 rounded bg-primary text-slate-900 text-sm" href="/profile">{t("profile.complete_kyc")}</Link>
+            <Link className="px-3 py-2 rounded bg-primary text-primary-foreground text-sm" href="/profile">{t("profile.complete_kyc")}</Link>
           </div>
         </CardContent>
       </Card>

@@ -27,7 +27,12 @@ export class SsiController {
   @Post()
   issueCredential(
     @Body()
-    body: { userAddress: string; type: string; issuer: string; vcHash?: string },
+    body: {
+      userAddress: string;
+      type: string;
+      issuer: string;
+      vcHash?: string;
+    },
   ) {
     return this.service.issueCredential(body);
   }

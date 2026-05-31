@@ -19,7 +19,11 @@ describe('OraclesController', () => {
   });
 
   it('returns price for base/quote', async () => {
-    service.getPrice.mockResolvedValue({ base: 'USD', quote: 'BRL', value: 5.2 } as any);
+    service.getPrice.mockResolvedValue({
+      base: 'USD',
+      quote: 'BRL',
+      value: 5.2,
+    } as any);
 
     const result = await controller.price('USD', 'BRL');
 
@@ -28,7 +32,11 @@ describe('OraclesController', () => {
   });
 
   it('splits pair on fx endpoint and reuses price lookup', async () => {
-    service.getPrice.mockResolvedValue({ base: 'EUR', quote: 'USD', value: 1.1 } as any);
+    service.getPrice.mockResolvedValue({
+      base: 'EUR',
+      quote: 'USD',
+      value: 1.1,
+    } as any);
 
     const result = await controller.fx('EUR/USD');
 

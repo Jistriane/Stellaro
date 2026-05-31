@@ -16,11 +16,21 @@ export class V4Service {
   ) {}
 
   async getOverview() {
-    const rwa = this.rwa?.getOverview ? await Promise.resolve(this.rwa.getOverview()) : { status: 'unknown', readiness: 0, nextSteps: [], items: [] };
-    const ssi = this.ssi?.getOverview ? await Promise.resolve(this.ssi.getOverview()) : { status: 'unknown', readiness: 0, nextSteps: [], credentials: [] };
-    const subscription = this.subscription?.getOverview ? await Promise.resolve(this.subscription.getOverview()) : { status: 'unknown', readiness: 0, nextSteps: [], plans: [] };
-    const dao = this.dao?.getOverview ? await Promise.resolve(this.dao.getOverview()) : { status: 'unknown', readiness: 0, nextSteps: [], proposals: [] };
-    const insurance = this.insurance?.getOverview ? await Promise.resolve(this.insurance.getOverview()) : { status: 'unknown', readiness: 0, nextSteps: [], items: [] };
+    const rwa = this.rwa?.getOverview
+      ? await Promise.resolve(this.rwa.getOverview())
+      : { status: 'unknown', readiness: 0, nextSteps: [], items: [] };
+    const ssi = this.ssi?.getOverview
+      ? await Promise.resolve(this.ssi.getOverview())
+      : { status: 'unknown', readiness: 0, nextSteps: [], credentials: [] };
+    const subscription = this.subscription?.getOverview
+      ? await Promise.resolve(this.subscription.getOverview())
+      : { status: 'unknown', readiness: 0, nextSteps: [], plans: [] };
+    const dao = this.dao?.getOverview
+      ? await Promise.resolve(this.dao.getOverview())
+      : { status: 'unknown', readiness: 0, nextSteps: [], proposals: [] };
+    const insurance = this.insurance?.getOverview
+      ? await Promise.resolve(this.insurance.getOverview())
+      : { status: 'unknown', readiness: 0, nextSteps: [], items: [] };
 
     const modules = [
       {
@@ -66,9 +76,13 @@ export class V4Service {
     ];
 
     // If the insurance service is not present, tests expect only 4 modules
-    const modulesToReturn = this.insurance ? modules : modules.filter((m) => m.id !== 'insurance');
+    const modulesToReturn = this.insurance
+      ? modules
+      : modules.filter((m) => m.id !== 'insurance');
 
-    const readiness = modulesToReturn.reduce((sum, module) => sum + module.readiness, 0) / modulesToReturn.length;
+    const readiness =
+      modulesToReturn.reduce((sum, module) => sum + module.readiness, 0) /
+      modulesToReturn.length;
 
     const nextSteps = [
       ...rwa.nextSteps,

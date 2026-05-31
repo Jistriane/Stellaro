@@ -25,8 +25,13 @@ export class AuthController {
   }
 
   @Post('webauthn/attestation')
-  @ApiOperation({ summary: 'Verificar attestation WebAuthn e registrar credential' })
-  @ApiResponse({ status: 200, description: 'Credential registrado com sucesso' })
+  @ApiOperation({
+    summary: 'Verificar attestation WebAuthn e registrar credential',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Credential registrado com sucesso',
+  })
   async attestation(@Body() body: WebAuthnAttestationDto) {
     return this.authService.webauthnAttestation(body);
   }
@@ -63,7 +68,7 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
-    return { ok: true, userId, pubkey };
+    return { ok: true, token, userId, pubkey };
   }
 
   // ==============================
@@ -75,7 +80,7 @@ export class AuthController {
     let token: string | undefined = cookies?.token;
     // Suporte a Authorization: Bearer <token>
     if (!token && req.headers?.authorization) {
-      const auth = req.headers.authorization as string;
+      const auth = req.headers.authorization;
       if (auth.toLowerCase().startsWith('bearer ')) {
         token = auth.substring(7);
       }
@@ -106,7 +111,7 @@ export class AuthController {
     const cookies = req.cookies as Record<string, string> | undefined;
     let token: string | undefined = cookies?.token;
     if (!token && req.headers?.authorization) {
-      const auth = req.headers.authorization as string;
+      const auth = req.headers.authorization;
       if (auth.toLowerCase().startsWith('bearer ')) {
         token = auth.substring(7);
       }
@@ -121,7 +126,7 @@ export class AuthController {
   // ==============================
   // Passkey (WebAuthn) - Production-ready
   // ==============================
-  
+
   @Post('passkey/register/init')
   @ApiOperation({ summary: 'Inicializar registro de passkey' })
   @ApiResponse({ status: 200, description: 'Challenge e opções WebAuthn' })
@@ -137,7 +142,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.passkeyRegisterVerify(body);
-    
+
     // Se houver token, definir cookie
     if ('token' in result && result.token) {
       const isProd = process.env.NODE_ENV === 'production';
@@ -149,13 +154,16 @@ export class AuthController {
         path: '/',
       });
     }
-    
+
     return result;
   }
 
   @Post('passkey/login/init')
   @ApiOperation({ summary: 'Inicializar login com passkey' })
-  @ApiResponse({ status: 200, description: 'Challenge e opções de autenticação' })
+  @ApiResponse({
+    status: 200,
+    description: 'Challenge e opções de autenticação',
+  })
   passkeyLoginInit(@Body() body: { email: string }) {
     return this.authService.passkeyLoginInit(body.email);
   }
@@ -167,8 +175,9 @@ export class AuthController {
     @Body() body: { challenge: string; assertion: any },
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { token, userId, passkeyToken } = await this.authService.passkeyLoginVerify(body);
-    
+    const { token, userId, passkeyToken } =
+      await this.authService.passkeyLoginVerify(body);
+
     const isProd = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
       httpOnly: true,
@@ -177,7 +186,7 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
-    
+
     return { ok: true, userId, passkeyToken };
   }
 

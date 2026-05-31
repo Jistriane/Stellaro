@@ -22,7 +22,13 @@ export class SubscriptionController {
   @Post('authorize')
   authorize(
     @Body()
-    body: { userSecret: string; merchant: string; token: string; amount: string; frequencyLedgers: number },
+    body: {
+      userSecret: string;
+      merchant: string;
+      token: string;
+      amount: string;
+      frequencyLedgers: number;
+    },
   ) {
     return this.service.authorizeSubscription(body);
   }
@@ -30,7 +36,12 @@ export class SubscriptionController {
   @Post()
   createPlan(
     @Body()
-    body: { name: string; cadence: string; amount: string; currency: string },
+    body: {
+      name: string;
+      cadence: string;
+      amount: string;
+      currency: string;
+    },
   ) {
     return this.service.createPlan(body);
   }

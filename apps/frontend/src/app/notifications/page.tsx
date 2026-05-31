@@ -36,7 +36,7 @@ export default function NotificationsPage() {
         read: false,
         severity: "critical",
         icon: AlertTriangle,
-        color: "text-red-400",
+        color: "text-destructive",
       },
       {
         id: "n2",
@@ -47,7 +47,7 @@ export default function NotificationsPage() {
         read: false,
         severity: "info",
         icon: TrendingUp,
-        color: "text-green-400",
+        color: "text-primary",
       },
       {
         id: "n3",
@@ -58,7 +58,7 @@ export default function NotificationsPage() {
         read: false,
         severity: "warning",
         icon: Bell,
-        color: "text-yellow-400",
+        color: "text-primary",
       },
       {
         id: "n4",
@@ -69,7 +69,7 @@ export default function NotificationsPage() {
         read: true,
         severity: "success",
         icon: CheckCircle,
-        color: "text-green-400",
+        color: "text-primary",
       },
       {
         id: "n5",
@@ -80,7 +80,7 @@ export default function NotificationsPage() {
         read: true,
         severity: "info",
         icon: Zap,
-        color: "text-blue-400",
+        color: "text-primary",
       },
       {
         id: "n6",
@@ -91,7 +91,7 @@ export default function NotificationsPage() {
         read: true,
         severity: "warning",
         icon: Lock,
-        color: "text-orange-400",
+        color: "text-primary",
       },
     ];
 
@@ -132,9 +132,9 @@ export default function NotificationsPage() {
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
@@ -146,7 +146,7 @@ export default function NotificationsPage() {
           <div className="relative">
             <Bell className="w-8 h-8 text-muted-foreground" />
             {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {unreadCount}
               </span>
             )}
@@ -170,7 +170,7 @@ export default function NotificationsPage() {
               <CardTitle className="text-sm text-muted-foreground">{t("unread")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-yellow-500">{unreadCount}</p>
+              <p className="text-3xl font-bold text-primary">{unreadCount}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("need_attention")}</p>
             </CardContent>
           </Card>
@@ -180,7 +180,7 @@ export default function NotificationsPage() {
               <CardTitle className="text-sm text-muted-foreground">{t("critical")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-red-500">
+              <p className="text-3xl font-bold text-destructive">
                 {notifications.filter((n) => n.severity === "critical").length}
               </p>
               <p className="text-xs text-muted-foreground mt-1">{t("require_action")}</p>
@@ -234,7 +234,7 @@ export default function NotificationsPage() {
             variant="outline"
             size="sm"
             onClick={handleMarkAllAsRead}
-            className="text-blue-400"
+            className="text-primary"
           >
             {t("mark_all_read")}
           </Button>
@@ -249,7 +249,7 @@ export default function NotificationsPage() {
                 <Card
                   key={notif.id}
                   className={`transition-all ${
-                    notif.read ? "opacity-75" : "border-l-4 border-l-blue-500"
+                    notif.read ? "opacity-75" : "border-l-4 border-l-primary"
                   }`}
                 >
                   <CardContent className="pt-6">
@@ -266,7 +266,7 @@ export default function NotificationsPage() {
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium text-lg">{notif.title}</h3>
                               {!notif.read && (
-                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                <span className="w-2 h-2 bg-primary rounded-full"></span>
                               )}
                             </div>
                             <p className="text-muted-foreground text-sm mt-1">{notif.message}</p>
@@ -276,18 +276,16 @@ export default function NotificationsPage() {
                           {/* Severity Badge */}
                           <div className="flex-shrink-0">
                             {notif.severity === "critical" && (
-                              <Badge className="bg-red-900 text-red-200">Critical</Badge>
+                              <Badge variant="destructive">Critical</Badge>
                             )}
                             {notif.severity === "warning" && (
-                              <Badge className="bg-yellow-900 text-yellow-200">Warning</Badge>
+                              <Badge variant="outline" className="text-primary">Warning</Badge>
                             )}
                             {notif.severity === "info" && (
-                              <Badge variant="outline" className="bg-blue-900 text-blue-200">
-                                Info
-                              </Badge>
+                              <Badge variant="outline" className="text-primary">Info</Badge>
                             )}
                             {notif.severity === "success" && (
-                              <Badge className="bg-green-900 text-green-200">Success</Badge>
+                              <Badge variant="secondary" className="text-primary">Success</Badge>
                             )}
                           </div>
                         </div>
@@ -299,7 +297,7 @@ export default function NotificationsPage() {
                               size="sm"
                               variant="ghost"
                               onClick={() => handleMarkAsRead(notif.id)}
-                              className="text-blue-400 hover:text-blue-300"
+                              className="text-primary hover:text-primary/90"
                             >
                               <Check className="w-4 h-4 mr-1" />
                               {t("mark_as_read")}
@@ -309,7 +307,7 @@ export default function NotificationsPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => handleDelete(notif.id)}
-                            className="text-muted-foreground hover:text-red-500"
+                            className="text-muted-foreground hover:text-destructive"
                           >
                             <X className="w-4 h-4 mr-1" />
                             {t("dismiss")}

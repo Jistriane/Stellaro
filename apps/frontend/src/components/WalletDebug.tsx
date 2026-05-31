@@ -32,26 +32,26 @@ export default function WalletDebug() {
   }, []);
 
   return (
-    <div className="p-6 bg-gray-100 dark:bg-gray-900 rounded-lg border">
+    <div className="p-6 bg-card/50 rounded-lg border border-border/60 backdrop-blur-xl text-foreground">
       <h3 className="text-lg font-semibold mb-4">🔧 Wallet Detection Debug</h3>
       
       <div className="mb-4 flex gap-2 flex-wrap">
         <button 
           onClick={updateWallets}
-          className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+          className="px-3 py-1 bg-secondary/30 text-foreground border border-border/60 rounded text-sm hover:bg-secondary/50"
         >
           Refresh
         </button>
         <button 
           onClick={forceDetection}
           disabled={isDetecting}
-          className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50"
+          className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 disabled:opacity-50"
         >
           {isDetecting ? 'Detecting...' : 'Force Detection'}
         </button>
         <button 
           onClick={debugXBullDetection}
-          className="px-3 py-1 bg-orange-500 text-white rounded text-sm hover:bg-orange-600"
+          className="px-3 py-1 bg-secondary/30 text-foreground border border-border/60 rounded text-sm hover:bg-secondary/50"
         >
           Debug xBull
         </button>
@@ -71,7 +71,7 @@ export default function WalletDebug() {
               });
             }
           }}
-          className="px-3 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+          className="px-3 py-1 bg-secondary/30 text-foreground border border-border/60 rounded text-sm hover:bg-secondary/50"
         >
           Debug Window
         </button>
@@ -93,14 +93,14 @@ export default function WalletDebug() {
               updateWallets();
             }
           }}
-          className="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600"
+          className="px-3 py-1 bg-secondary/30 text-foreground border border-border/60 rounded text-sm hover:bg-secondary/50"
         >
           Simulate xBull
         </button>
       </div>
 
       {lastUpdate && (
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-muted-foreground mb-3">
           Last update: {lastUpdate.toLocaleTimeString()}
         </p>
       )}
@@ -111,25 +111,25 @@ export default function WalletDebug() {
             key={wallet.id}
             className={`p-3 rounded border-l-4 ${
               wallet.available 
-                ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
-                : 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                ? 'border-primary bg-primary/10' 
+                : 'border-destructive bg-destructive/10'
             }`}
           >
             <div className="flex justify-between items-center">
               <span className="font-medium">{wallet.name}</span>
-              <span className={`px-2 py-1 rounded text-xs ${
+              <span className={`px-2 py-1 rounded border text-xs ${
                 wallet.available 
-                  ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' 
-                  : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                  ? 'bg-primary/10 border-primary/25 text-primary' 
+                  : 'bg-destructive/10 border-destructive/25 text-destructive'
               }`}>
                 {wallet.available ? '✅ Available' : '❌ Not Found'}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               ID: {wallet.id}
             </p>
             {wallet.providerHint && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Hint: {wallet.providerHint}
               </p>
             )}
@@ -137,7 +137,7 @@ export default function WalletDebug() {
         ))}
       </div>
 
-      <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs">
+      <div className="mt-4 p-3 bg-secondary/20 border border-border/60 rounded text-xs text-muted-foreground">
         <p><strong>Debug Tips:</strong></p>
         <ul className="list-disc list-inside mt-1 space-y-1">
           <li>Open browser console to see detailed detection logs</li>

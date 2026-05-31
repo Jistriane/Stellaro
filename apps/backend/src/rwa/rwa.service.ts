@@ -63,7 +63,10 @@ export class RwaService {
 
   private parsePagination(query: RwaListQuery) {
     const page = Math.max(1, Number(query.page ?? 1) || 1);
-    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize ?? 20) || 20));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(query.pageSize ?? 20) || 20),
+    );
     return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };
   }
 
@@ -100,12 +103,19 @@ export class RwaService {
     });
   }
 
-  async createAsset(input: { name: string; assetClass: string; annualYieldBps: number; documentPayload?: Record<string, any> }) {
+  async createAsset(input: {
+    name: string;
+    assetClass: string;
+    annualYieldBps: number;
+    documentPayload?: Record<string, any>;
+  }) {
     let documentHash = undefined;
 
     // 1. Ancora o documento legal off-chain no IPFS
     if (this.ipfsService && input.documentPayload) {
-      documentHash = await this.ipfsService.uploadLegalDocument(input.documentPayload);
+      documentHash = await this.ipfsService.uploadLegalDocument(
+        input.documentPayload,
+      );
     }
 
     if (this.prisma) {
@@ -171,7 +181,12 @@ export class RwaService {
           }),
         ]);
 
-        return { items: rows.map((row) => this.toView(row)), total, page, pageSize };
+        return {
+          items: rows.map((row) => this.toView(row)),
+          total,
+          page,
+          pageSize,
+        };
       } catch {
         // Continue to in-memory fallback when DB is unavailable.
       }
@@ -180,7 +195,8 @@ export class RwaService {
     const search = query.search?.toLowerCase().trim();
     const filtered = this.items.filter((item) => {
       if (query.status && item.status !== query.status) return false;
-      if (query.assetClass && item.assetClass !== query.assetClass) return false;
+      if (query.assetClass && item.assetClass !== query.assetClass)
+        return false;
       if (search) {
         const haystack = `${item.id} ${item.name}`.toLowerCase();
         if (!haystack.includes(search)) return false;
@@ -220,10 +236,16 @@ export class RwaService {
     if (this.ssiService) {
       const hasKyc = await this.ssiService.verifyOnChain(userAddress);
       if (!hasKyc) {
-        this.logger.warn(`Compliance Gate blocked RWA minting for ${userAddress}: Missing KYCVerified VC`);
-        throw new ForbiddenException('Usuário não possui a Credencial Verificável de KYC requerida para interagir com Real World Assets.');
+        this.logger.warn(
+          `Compliance Gate blocked RWA minting for ${userAddress}: Missing KYCVerified VC`,
+        );
+        throw new ForbiddenException(
+          'Usuário não possui a Credencial Verificável de KYC requerida para interagir com Real World Assets.',
+        );
       }
-      this.logger.log(`Compliance Gate passed for ${userAddress}. Executing mint.`);
+      this.logger.log(
+        `Compliance Gate passed for ${userAddress}. Executing mint.`,
+      );
     }
 
     if (this.soroban) {
@@ -232,9 +254,21 @@ export class RwaService {
     throw new Error('Soroban service not available');
   }
 
-  async startAuction(sellerSecret: string, assetToken: string, amount: string, minBid: string, duration: number) {
+  async startAuction(
+    sellerSecret: string,
+    assetToken: string,
+    amount: string,
+    minBid: string,
+    duration: number,
+  ) {
     if (this.soroban) {
-      return this.soroban.startAuction(sellerSecret, assetToken, amount, minBid, duration);
+      return this.soroban.startAuction(
+        sellerSecret,
+        assetToken,
+        amount,
+        minBid,
+        duration,
+      );
     }
     throw new Error('Soroban service not available');
   }

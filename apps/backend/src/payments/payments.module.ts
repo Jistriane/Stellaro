@@ -15,8 +15,20 @@ import { ComplianceGuard } from './payments.guard';
 
 @Module({
   imports: [ConfigModule, ComplianceModule, ActionsModule],
-  controllers: [PaymentsController, PixController, X402Controller, EtherfuseController],
-  providers: [ComplianceGuard, PixService, PrismaService, CardService, X402Service, EtherfuseService],
+  controllers: [
+    PaymentsController,
+    PixController,
+    X402Controller,
+    EtherfuseController,
+  ],
+  providers: [
+    ComplianceGuard,
+    PixService,
+    PrismaService,
+    CardService,
+    X402Service,
+    EtherfuseService,
+  ],
   exports: [PixService, CardService, X402Service, EtherfuseService],
 })
 export class PaymentsModule {}

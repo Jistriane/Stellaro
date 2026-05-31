@@ -37,7 +37,10 @@ describe('ReflectorController', () => {
     const res = await controller.getPrices('XLM,USDC');
 
     expect(service.getPrices).toHaveBeenCalledWith(['XLM', 'USDC']);
-    expect(res).toEqual({ XLM: { asset: 'XLM', price: 0.1 }, USDC: { asset: 'USDC', price: 1 } });
+    expect(res).toEqual({
+      XLM: { asset: 'XLM', price: 0.1 },
+      USDC: { asset: 'USDC', price: 1 },
+    });
   });
 
   it('retorna historico e limpa cache', async () => {

@@ -33,32 +33,32 @@ export default function ModulePagination({ basePath, page, pageSize, total, quer
   const hasNext = page < totalPages;
 
   return (
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-3 text-sm text-slate-300">
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/50 px-4 py-3 text-sm text-muted-foreground backdrop-blur-xl">
       <div>
-        Página <span className="font-medium text-slate-100">{page}</span> de <span className="font-medium text-slate-100">{totalPages}</span>
-        <span className="ml-2 text-slate-500">({total} itens)</span>
+        Página <span className="font-medium text-foreground">{page}</span> de <span className="font-medium text-foreground">{totalPages}</span>
+        <span className="ml-2 text-muted-foreground">({total} itens)</span>
       </div>
       <div className="flex items-center gap-2">
         {hasPrev ? (
           <Link
             href={buildHref(basePath, page - 1, pageSize, query)}
-            className="rounded-full border border-slate-700 px-3 py-1.5 text-slate-200 transition hover:border-emerald-400/40 hover:bg-slate-900"
+            className="rounded-full border border-border/60 bg-secondary/20 px-3 py-1.5 text-foreground transition hover:border-primary/40 hover:bg-secondary/40"
           >
             Anterior
           </Link>
         ) : (
-          <span className="rounded-full border border-slate-800 px-3 py-1.5 text-slate-600">Anterior</span>
+          <span className="rounded-full border border-border/40 bg-secondary/10 px-3 py-1.5 text-muted-foreground">Anterior</span>
         )}
 
         {hasNext ? (
           <Link
             href={buildHref(basePath, page + 1, pageSize, query)}
-            className="rounded-full border border-slate-700 px-3 py-1.5 text-slate-200 transition hover:border-emerald-400/40 hover:bg-slate-900"
+            className="rounded-full border border-border/60 bg-secondary/20 px-3 py-1.5 text-foreground transition hover:border-primary/40 hover:bg-secondary/40"
           >
             Próxima
           </Link>
         ) : (
-          <span className="rounded-full border border-slate-800 px-3 py-1.5 text-slate-600">Próxima</span>
+          <span className="rounded-full border border-border/40 bg-secondary/10 px-3 py-1.5 text-muted-foreground">Próxima</span>
         )}
       </div>
     </div>

@@ -53,7 +53,12 @@ export class SubscriptionService {
     },
   ];
 
-  async createPlan(input: { name: string; cadence: string; amount: string; currency: string }) {
+  async createPlan(input: {
+    name: string;
+    cadence: string;
+    amount: string;
+    currency: string;
+  }) {
     if (this.prisma) {
       try {
         await this.ensureSeeded();
@@ -89,7 +94,10 @@ export class SubscriptionService {
 
   private parsePagination(query: SubscriptionListQuery) {
     const page = Math.max(1, Number(query.page ?? 1) || 1);
-    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize ?? 20) || 20));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(query.pageSize ?? 20) || 20),
+    );
     return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };
   }
 
@@ -126,7 +134,13 @@ export class SubscriptionService {
     });
   }
 
-  async authorizeSubscription(input: { userSecret: string; merchant: string; token: string; amount: string; frequencyLedgers: number }) {
+  async authorizeSubscription(input: {
+    userSecret: string;
+    merchant: string;
+    token: string;
+    amount: string;
+    frequencyLedgers: number;
+  }) {
     if (this.soroban) {
       return this.soroban.authorizeSubscription(
         input.userSecret,
@@ -139,7 +153,9 @@ export class SubscriptionService {
     throw new Error('Soroban service unavailable');
   }
 
-  async listPlans(query: SubscriptionListQuery = {}): Promise<SubscriptionListResult> {
+  async listPlans(
+    query: SubscriptionListQuery = {},
+  ): Promise<SubscriptionListResult> {
     const { page, pageSize, skip, take } = this.parsePagination(query);
 
     if (this.prisma) {
@@ -168,7 +184,12 @@ export class SubscriptionService {
           }),
         ]);
 
-        return { plans: rows.map((row) => this.toView(row)), total, page, pageSize };
+        return {
+          plans: rows.map((row) => this.toView(row)),
+          total,
+          page,
+          pageSize,
+        };
       } catch {
         // Fallback
       }
@@ -216,7 +237,10 @@ export class SubscriptionService {
     const results = [];
     for (const user of userAddresses) {
       try {
-        const txHash = await this.soroban.executeSubscriptionWithdraw(merchantSecret, user);
+        const txHash = await this.soroban.executeSubscriptionWithdraw(
+          merchantSecret,
+          user,
+        );
         results.push({ user, success: true, txHash });
       } catch (error) {
         results.push({ user, success: false, error: error.message });

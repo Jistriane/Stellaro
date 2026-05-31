@@ -12,7 +12,7 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  NODE_VERSION: '24'
+  NODE_VERSION: '20'
 
 jobs:
   test-contracts:
@@ -158,12 +158,11 @@ jobs:
         run: npm ci --legacy-peer-deps
         working-directory: ${{ github.workspace }}
 
-      - name: Type Check
-        continue-on-error: true
-        run: npx tsc --noEmit
-
       - name: Lint
         run: npm run lint
+
+      - name: Unit tests (Vitest)
+        run: npm run test
 
       - name: Build
         run: npm run build
@@ -193,7 +192,7 @@ jobs:
           fetch-depth: 1
 
       - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'fs'
           scan-ref: '.'

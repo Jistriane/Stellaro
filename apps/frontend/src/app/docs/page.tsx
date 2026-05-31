@@ -190,9 +190,9 @@ export default function DocsPage() {
   );
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8">
         <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -264,7 +264,7 @@ export default function DocsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-blue-500 hover:text-blue-600"
+                        className="text-primary hover:text-primary/80"
                       >
                         Read More →
                       </Button>

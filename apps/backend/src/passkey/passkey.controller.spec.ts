@@ -32,13 +32,18 @@ describe('PasskeyController', () => {
     const verifyResult = await controller.verifyReg({ challenge: 'c1' });
 
     expect(service.initRegistration).toHaveBeenCalledWith('u1', 'a@b');
-    expect(service.verifyRegistration).toHaveBeenCalledWith({ challenge: 'c1' });
+    expect(service.verifyRegistration).toHaveBeenCalledWith({
+      challenge: 'c1',
+    });
     expect(initResult).toBe(init);
     expect(verifyResult).toEqual({ ok: true });
   });
 
   it('forwards MFA status and clear', async () => {
-    service.getMfaStatus.mockResolvedValue({ ok: true, remainingMs: 10 } as any);
+    service.getMfaStatus.mockResolvedValue({
+      ok: true,
+      remainingMs: 10,
+    } as any);
     service.clearMfa.mockResolvedValue({ ok: true } as any);
 
     const status = await controller.mfaStatus('u2');

@@ -7,7 +7,8 @@ export class HorizonService {
   private readonly client: AxiosInstance;
 
   constructor() {
-    const baseURL = process.env.HORIZON_URL || 'https://horizon-testnet.stellar.org';
+    const baseURL =
+      process.env.HORIZON_URL || 'https://horizon-testnet.stellar.org';
     this.client = axios.create({ baseURL, timeout: 10000 });
   }
 

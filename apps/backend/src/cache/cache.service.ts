@@ -1,6 +1,6 @@
 /**
  * Redis Caching Service - Stellaro
- * 
+ *
  * Estratégia multi-camada:
  * 1. In-memory cache (rápido)
  * 2. Redis (distribuído)
@@ -12,7 +12,7 @@ import Redis from 'ioredis';
 import { ConfigService } from '@nestjs/config';
 
 export interface CacheConfig {
-  ttl: number;  // seconds
+  ttl: number; // seconds
   key: string;
   tags?: string[];
 }
@@ -28,16 +28,17 @@ export interface CacheStats {
 export class CacheService {
   private readonly logger = new Logger(CacheService.name);
   private redis: Redis;
-  private memoryCache: Map<string, { data: any; expiresAt: number }> = new Map();
+  private memoryCache: Map<string, { data: any; expiresAt: number }> =
+    new Map();
   private stats = { hits: 0, misses: 0 };
 
   // Padrões de cache comum
   private readonly CACHE_TTL = {
-    PRICES: 60,           // 1 minuto (preços mudam frequente)
-    PORTFOLIO: 300,       // 5 minutos
-    ANALYTICS: 3600,      // 1 hora
-    USER_DATA: 1800,      // 30 minutos
-    MARKET_DATA: 120,     // 2 minutos
+    PRICES: 60, // 1 minuto (preços mudam frequente)
+    PORTFOLIO: 300, // 5 minutos
+    ANALYTICS: 3600, // 1 hora
+    USER_DATA: 1800, // 30 minutos
+    MARKET_DATA: 120, // 2 minutos
   };
 
   constructor(private configService: ConfigService) {
@@ -47,7 +48,7 @@ export class CacheService {
   private initRedis() {
     const redisUrl = this.configService.get<string>(
       'REDIS_URL',
-      'redis://localhost:6379'
+      'redis://localhost:6379',
     );
 
     this.redis = new Redis(redisUrl, {
@@ -157,7 +158,7 @@ export class CacheService {
   async remember<T>(
     key: string,
     ttl: number,
-    callback: () => Promise<T>
+    callback: () => Promise<T>,
   ): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached) {
@@ -179,7 +180,7 @@ export class CacheService {
       ttl?: number;
       tags?: string[];
       dependencies?: string[];
-    } = {}
+    } = {},
   ): Promise<T> {
     const key = `query:${Buffer.from(query).toString('base64')}`;
     const ttl = options.ttl || 3600;
@@ -247,7 +248,9 @@ export class CacheService {
 
     keysToDelete.forEach((key) => this.memoryCache.delete(key));
 
-    this.logger.debug(`Cleaned up ${keysToDelete.length} expired keys from memory`);
+    this.logger.debug(
+      `Cleaned up ${keysToDelete.length} expired keys from memory`,
+    );
 
     // Redis limpa automaticamente com SETEX
   }
@@ -303,7 +306,9 @@ export class CacheService {
 
       return {
         redis: true,
-        memory: info.split('\r\n').find((line) => line.includes('used_memory:')) || '',
+        memory:
+          info.split('\r\n').find((line) => line.includes('used_memory:')) ||
+          '',
         connected,
       };
     } catch {
@@ -341,7 +346,7 @@ export class CacheService {
     if (!pattern.includes('*')) return key === pattern;
 
     const regex = new RegExp(
-      `^${pattern.replace(/\*/g, '.*').replace(/\?/g, '.')}$`
+      `^${pattern.replace(/\*/g, '.*').replace(/\?/g, '.')}$`,
     );
     return regex.test(key);
   }
@@ -362,7 +367,7 @@ export class CacheService {
 
   private async setKeyDependencies(
     key: string,
-    dependencies: string[]
+    dependencies: string[],
   ): Promise<void> {
     for (const dep of dependencies) {
       await this.redis.sadd(`deps:${key}`, dep);

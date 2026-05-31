@@ -22,7 +22,11 @@ export class RwaController {
   @Post()
   createAsset(
     @Body()
-    body: { name: string; assetClass: string; annualYieldBps: number },
+    body: {
+      name: string;
+      assetClass: string;
+      annualYieldBps: number;
+    },
   ) {
     return this.service.createAsset(body);
   }
@@ -30,7 +34,11 @@ export class RwaController {
   @Post('mint')
   mintAsset(
     @Body()
-    body: { id: string; userAddress: string; amount: string },
+    body: {
+      id: string;
+      userAddress: string;
+      amount: string;
+    },
   ) {
     return this.service.mintAsset(body.id, body.userAddress, body.amount);
   }

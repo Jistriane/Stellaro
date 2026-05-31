@@ -21,7 +21,13 @@ export class DaoController {
   @Post()
   createProposal(
     @Body()
-    body: { target: string; action: string; description: string; creatorSecret: string; title: string },
+    body: {
+      target: string;
+      action: string;
+      description: string;
+      creatorSecret: string;
+      title: string;
+    },
   ) {
     return this.service.createProposal(body);
   }
@@ -35,10 +41,7 @@ export class DaoController {
   }
 
   @Post(':id/execute')
-  execute(
-    @Param('id') id: string,
-    @Body() body: { signerSecret: string },
-  ) {
+  execute(@Param('id') id: string, @Body() body: { signerSecret: string }) {
     return this.service.execute(Number(id), body.signerSecret);
   }
 }

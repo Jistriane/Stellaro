@@ -9,13 +9,18 @@ describe('WebhooksController', () => {
   let prisma: { webhookEvent: { create: jest.Mock } };
 
   beforeEach(() => {
-    service = { verifySignature: jest.fn() } as unknown as jest.Mocked<WebhooksService>;
+    service = {
+      verifySignature: jest.fn(),
+    } as unknown as jest.Mocked<WebhooksService>;
     prisma = {
       webhookEvent: { create: jest.fn() },
       celcoin: { findFirst: jest.fn() },
       dock: { findFirst: jest.fn() },
     } as any;
-    controller = new WebhooksController(service, prisma as unknown as PrismaService);
+    controller = new WebhooksController(
+      service,
+      prisma as unknown as PrismaService,
+    );
   });
 
   it('processes PIX webhook using raw body and stores event', async () => {
@@ -31,7 +36,10 @@ describe('WebhooksController', () => {
     expect(service.verifySignature).toHaveBeenCalledWith(rawBody, 'sig-123');
     expect(prisma.webhookEvent.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ source: WebhookSource.celcoin, eventId: 'evt-1' }),
+        data: expect.objectContaining({
+          source: WebhookSource.celcoin,
+          eventId: 'evt-1',
+        }),
       }),
     );
     expect(result).toEqual({ received: true });

@@ -1,6 +1,6 @@
 /**
  * Database Query Optimization Service
- * 
+ *
  * Best practices:
  * - Eager loading (relations)
  * - Select apenas colunas necessárias
@@ -60,10 +60,7 @@ export class DatabaseOptimizationService {
   /**
    * Webhook events com paginação cursor
    */
-  async getWebhookEventsPaginated(
-    limit: number = 20,
-    cursor?: string,
-  ) {
+  async getWebhookEventsPaginated(limit: number = 20, cursor?: string) {
     return this.prisma.webhookEvent.findMany({
       take: limit + 1,
       cursor: cursor ? { id: cursor } : undefined,
@@ -134,7 +131,6 @@ export class DatabaseOptimizationService {
     });
   }
 
-
   /**
    * Ensure database indexes for optimal query performance
    */
@@ -145,7 +141,7 @@ export class DatabaseOptimizationService {
       // Primary indexes
       `CREATE INDEX IF NOT EXISTS idx_user_email ON "User"(email)`,
       `CREATE INDEX IF NOT EXISTS idx_user_created ON "User"("createdAt" DESC)`,
-      
+
       // Foreign key indexes
       `CREATE INDEX IF NOT EXISTS idx_passkey_user ON "Passkey"("userId")`,
       `CREATE INDEX IF NOT EXISTS idx_wallet_user ON "Wallet"("userId")`,
@@ -154,7 +150,7 @@ export class DatabaseOptimizationService {
       `CREATE INDEX IF NOT EXISTS idx_webhook_received ON "WebhookEvent"("receivedAt" DESC)`,
       `CREATE INDEX IF NOT EXISTS idx_risk_event_user ON "RiskEvent"("userId")`,
       `CREATE INDEX IF NOT EXISTS idx_risk_proposal_user ON "RiskProposal"("userId")`,
-      
+
       // Composite indexes
       `CREATE INDEX IF NOT EXISTS idx_risk_event_user_created ON "RiskEvent"("userId", "createdAt" DESC)`,
       `CREATE INDEX IF NOT EXISTS idx_risk_proposal_user_created ON "RiskProposal"("userId", "createdAt" DESC)`,

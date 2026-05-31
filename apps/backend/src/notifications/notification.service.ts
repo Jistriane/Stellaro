@@ -19,7 +19,7 @@ export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
   private readonly webhookUrl: string;
   private readonly emailEnabled: boolean;
-  
+
   constructor(private configService: ConfigService) {
     this.webhookUrl = this.configService.get('ALERT_WEBHOOK_URL') || '';
     this.emailEnabled = !!this.configService.get('SMTP_HOST');

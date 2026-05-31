@@ -52,7 +52,11 @@ export class PixController {
     });
     if (!result.ok) {
       // Diferenciar erros de validação (400) de falhas de provider (200 com ok=false)
-      if (result.error && (result.error.includes('Invalid CPF') || result.error.includes('Invalid amount'))) {
+      if (
+        result.error &&
+        (result.error.includes('Invalid CPF') ||
+          result.error.includes('Invalid amount'))
+      ) {
         throw new BadRequestException(result.error);
       }
       return result; // retorna 200 com { ok: false, error }
@@ -61,7 +65,9 @@ export class PixController {
   }
 
   @Post('webhook')
-  @ApiOperation({ summary: 'Webhook para confirmação de pagamento PIX (provider only)' })
+  @ApiOperation({
+    summary: 'Webhook para confirmação de pagamento PIX (provider only)',
+  })
   async handleWebhook(
     @Headers('x-webhook-signature') signature: string,
     @Body() dto: PixWebhookDto,
@@ -91,7 +97,11 @@ export class PixController {
     });
     if (!result.ok) {
       // Erros de validação devem ser 400
-      if (result.error && (result.error.includes('Invalid amount') || result.error.includes('Invalid PIX key'))) {
+      if (
+        result.error &&
+        (result.error.includes('Invalid amount') ||
+          result.error.includes('Invalid PIX key'))
+      ) {
         throw new BadRequestException(result.error);
       }
       return result; // provider/burn falha: 200 com ok=false
@@ -100,7 +110,9 @@ export class PixController {
   }
 
   @Get('status')
-  @ApiOperation({ summary: 'Returns PIX integration mode and fallback telemetry' })
+  @ApiOperation({
+    summary: 'Returns PIX integration mode and fallback telemetry',
+  })
   getStatus() {
     return this.pixService.getStatus();
   }

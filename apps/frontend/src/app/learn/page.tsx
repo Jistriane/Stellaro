@@ -193,31 +193,31 @@ export default function LearnPage() {
   ) => {
     switch (level) {
       case "beginner":
-        return "bg-green-500/20 text-green-700";
+        return "bg-secondary/30 border border-border/60 text-foreground";
       case "intermediate":
-        return "bg-yellow-500/20 text-yellow-700";
+        return "bg-primary/10 border border-primary/25 text-primary";
       case "advanced":
-        return "bg-red-500/20 text-red-700";
+        return "bg-destructive/10 border border-destructive/25 text-destructive";
     }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Easy":
-        return "bg-green-500/20 text-green-700";
+        return "bg-secondary/30 border border-border/60 text-foreground";
       case "Medium":
-        return "bg-yellow-500/20 text-yellow-700";
+        return "bg-primary/10 border border-primary/25 text-primary";
       case "Hard":
-        return "bg-red-500/20 text-red-700";
+        return "bg-destructive/10 border border-destructive/25 text-destructive";
       default:
         return "";
     }
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/92 to-background/75" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -238,7 +238,7 @@ export default function LearnPage() {
               <Card key={course.id} className="hover:border-primary transition-colors">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-3">
-                    <div className="p-2 rounded-lg bg-secondary">
+                    <div className="p-2 rounded-lg bg-secondary/30 border border-border/60">
                       {course.icon}
                     </div>
                     <div
@@ -263,7 +263,7 @@ export default function LearnPage() {
                     <div className="flex items-center justify-between text-muted-foreground">
                       <span>{course.instructor}</span>
                       <span className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+                        <Star className="w-3 h-3 fill-[hsl(var(--primary))] text-primary" />
                         {course.rating}
                       </span>
                     </div>
@@ -356,7 +356,7 @@ export default function LearnPage() {
                           {tutorial.difficulty}
                         </span>
                       </div>
-                      <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-600">
+                      <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
                         Watch Video <ArrowRight className="w-3 h-3 ml-1" />
                       </Button>
                     </div>

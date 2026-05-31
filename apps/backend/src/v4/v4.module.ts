@@ -8,7 +8,13 @@ import { DaoModule } from '../dao/dao.module';
 import { InsuranceModule } from '../insurance/insurance.module';
 
 @Module({
-  imports: [RwaModule, SsiModule, SubscriptionModule, DaoModule, InsuranceModule],
+  imports: [
+    RwaModule,
+    SsiModule,
+    SubscriptionModule,
+    DaoModule,
+    InsuranceModule,
+  ],
   controllers: [V4Controller],
   providers: [V4Service],
 })

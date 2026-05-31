@@ -4,6 +4,7 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
+import IORedis from 'ioredis';
 
 export interface RedisClientLike {
   get(key: string): Promise<string | null>;
@@ -12,7 +13,7 @@ export interface RedisClientLike {
     value: string,
     mode?: string,
     duration?: number,
-  ): Promise<'OK' | null>;
+  ): Promise<string | null>;
   publish(channel: string, message: string): Promise<number>;
   del(key: string): Promise<number>;
 }
@@ -39,9 +40,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       return;
     }
     try {
-      // Import dinâmico para evitar falhas se pacote não estiver instalado
-
-      const IORedis = require('ioredis');
       const cli = new IORedis(url);
       this.client = {
         get: (k: string) => cli.get(k),
@@ -110,11 +108,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   incZkVerify(ok: boolean) {
-    if (ok) this.zkVerifyOk++; else this.zkVerifyErr++;
+    if (ok) this.zkVerifyOk++;
+    else this.zkVerifyErr++;
   }
 
   incZkScore(ok: boolean) {
-    if (ok) this.zkScoreOk++; else this.zkScoreErr++;
+    if (ok) this.zkScoreOk++;
+    else this.zkScoreErr++;
   }
 
   getStats() {

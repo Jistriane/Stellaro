@@ -55,7 +55,7 @@ export default function TradingView({
       hideSymbolLogo: false,
       scalePosition: "right",
       scaleMode: "Normal",
-      fontFamily: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif",
+      fontFamily: "Jost, system-ui, Avenir, Helvetica, Arial, sans-serif",
       fontSize: "12",
       noTimeScale: false,
       valuesTracking: "1",
@@ -71,9 +71,9 @@ export default function TradingView({
 
   if (useDevFallback) {
     return (
-      <div className="w-full rounded-xl border border-slate-700/60 bg-slate-900/60 p-4 text-sm text-slate-300">
-        <p className="font-medium text-slate-100">Real-time Market (dev fallback)</p>
-        <p className="mt-2 text-slate-400">
+      <div className="w-full rounded-xl border border-border/60 bg-card/50 p-4 text-sm text-muted-foreground backdrop-blur-xl">
+        <p className="font-medium text-foreground">Real-time Market (dev fallback)</p>
+        <p className="mt-2 text-muted-foreground">
           Widget externo do TradingView desativado em ambiente de desenvolvimento para evitar warnings de preload e erros de script de terceiros. Defina NEXT_PUBLIC_ENABLE_TRADINGVIEW_DEV=true para habilitar.
         </p>
       </div>
@@ -86,4 +86,3 @@ export default function TradingView({
     </div>
   );
 }
-

@@ -167,12 +167,16 @@ describe('EtherfuseService', () => {
   it('should reject order creation without quoteId', async () => {
     const service = createService({ ETHERFUSE_MODE: 'stub' });
 
-    await expect(service.createOrder({ quoteId: '' })).rejects.toThrow(BadRequestException);
+    await expect(service.createOrder({ quoteId: '' })).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('should reject invalid amounts', async () => {
     const service = createService({});
 
-    await expect(service.createQuote({ amount: '0' })).rejects.toThrow(BadRequestException);
+    await expect(service.createQuote({ amount: '0' })).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

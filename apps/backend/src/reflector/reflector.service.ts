@@ -20,7 +20,10 @@ export interface ReflectorAsset {
 export class ReflectorService {
   private readonly logger = new Logger(ReflectorService.name);
   private readonly reflectorUrl: string;
-  private readonly cache = new Map<string, { data: ReflectorPrice; expiresAt: number }>();
+  private readonly cache = new Map<
+    string,
+    { data: ReflectorPrice; expiresAt: number }
+  >();
   private readonly CACHE_TTL = 60000; // 1 minute
 
   constructor(
@@ -39,7 +42,10 @@ export class ReflectorService {
    * @param assetIssuer Optional asset issuer for non-native assets
    * @returns Current price in USD
    */
-  async getPrice(assetCode: string, assetIssuer?: string): Promise<ReflectorPrice> {
+  async getPrice(
+    assetCode: string,
+    assetIssuer?: string,
+  ): Promise<ReflectorPrice> {
     const cacheKey = `${assetCode}:${assetIssuer || 'native'}`;
     const cached = this.cache.get(cacheKey);
 
@@ -75,8 +81,11 @@ export class ReflectorService {
 
       return price;
     } catch (error) {
-      this.logger.error(`Failed to fetch price for ${assetCode}:`, error.message);
-      
+      this.logger.error(
+        `Failed to fetch price for ${assetCode}:`,
+        error.message,
+      );
+
       // Fallback to cached data if available (even if expired)
       if (cached) {
         this.logger.warn(`Using expired cache for ${cacheKey}`);
@@ -134,7 +143,7 @@ export class ReflectorService {
   ): Promise<ReflectorPrice[]> {
     try {
       const url = `${this.reflectorUrl}/api/v1/history/${assetCode}`;
-      
+
       const response = await firstValueFrom(
         this.httpService.get<ReflectorAsset[]>(url, {
           params: { from, to },
@@ -149,7 +158,10 @@ export class ReflectorService {
         source: 'reflector',
       }));
     } catch (error) {
-      this.logger.error(`Failed to fetch historical prices for ${assetCode}:`, error.message);
+      this.logger.error(
+        `Failed to fetch historical prices for ${assetCode}:`,
+        error.message,
+      );
       throw new Error(`Unable to fetch historical prices for ${assetCode}`);
     }
   }

@@ -329,7 +329,8 @@ describe('PixController', () => {
         apiKeyConfigured: false,
         webhookSecretConfigured: true,
         fallbackActive: true,
-        fallbackReason: 'PIX credentials not configured; using implicit stub mode',
+        fallbackReason:
+          'PIX credentials not configured; using implicit stub mode',
       });
 
       const result = controller.getStatus();

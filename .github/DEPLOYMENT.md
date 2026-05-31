@@ -2,6 +2,10 @@
 
 This document describes the automated deployment workflows for the Stellaro project.
 
+Official site:
+
+- https://www.stellaro.com.br/
+
 ## Overview
 
 Stellaro has two main deployment paths:
@@ -18,7 +22,7 @@ Stellaro has two main deployment paths:
 Pages automatically publishes a static version of the frontend on push to master/main.
 
 - **Branch**: Automatically uses `gh-pages` branch
-- **URL**: `https://jistriane.github.io/Stellaro/`
+- **Preview URL (GitHub Pages)**: `https://jistriane.github.io/Stellaro/`
 - **Trigger paths**: `apps/frontend/**`, `packages/ui/**`
 - **Latest successful run**: `#17` (April 20, 2026)
 - **Latest run link**: `https://github.com/Jistriane/Stellaro/actions/runs/24685608906`

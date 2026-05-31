@@ -13,6 +13,7 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ComplianceService } from './compliance.service';
 import { RedisService } from '../redis/redis.service';
+import { AuthService } from '../auth/auth.service';
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -35,17 +36,46 @@ type KycSubmissionBody = {
 };
 
 type KycFiles = {
-  idDocument?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
-  selfie?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
-  addressProof?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
-  revenueProof?: Array<{ originalname: string; mimetype: string; size: number; path: string }>;
+  idDocument?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
+  selfie?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
+  addressProof?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
+  revenueProof?: Array<{
+    originalname: string;
+    mimetype: string;
+    size: number;
+    path: string;
+  }>;
 };
+
+type MulterFileLike = {
+  originalname: string;
+};
+
+const createDiskStorage = diskStorage as unknown as (
+  options: unknown,
+) => unknown;
 
 @Controller('compliance')
 export class ComplianceController {
   constructor(
     private readonly compliance: ComplianceService,
     private readonly redis: RedisService,
+    private readonly auth: AuthService,
   ) {}
 
   private extractToken(req: Request): string | null {
@@ -53,19 +83,28 @@ export class ComplianceController {
     const cookieToken = cookies?.token;
     if (cookieToken) return cookieToken;
 
-    const auth = req.headers?.authorization as string | undefined;
+    const auth = req.headers?.authorization;
     if (auth?.toLowerCase().startsWith('bearer ')) {
       return auth.substring(7).trim();
     }
     return null;
   }
 
-  private async resolveUserId(req: Request, explicitUserId?: string): Promise<string | null> {
+  private async resolveUserId(
+    req: Request,
+    explicitUserId?: string,
+  ): Promise<string | null> {
     if (explicitUserId) return explicitUserId;
     const token = this.extractToken(req);
     if (!token) return null;
     const session = await this.redis.get<{ userId: string }>(`sess:${token}`);
-    return session?.userId ?? null;
+    if (session?.userId) return session.userId;
+    try {
+      const { user } = await this.auth.meFromToken(token);
+      return user.id;
+    } catch {
+      return null;
+    }
   }
 
   @Get('kyc/me')
@@ -111,13 +150,21 @@ export class ComplianceController {
         { name: 'revenueProof', maxCount: 1 },
       ],
       {
-        storage: diskStorage({
-          destination: (_req, _file, cb) => {
+        storage: createDiskStorage({
+          destination: (
+            _req: Request,
+            _file: MulterFileLike,
+            cb: (error: Error | null, destination: string) => void,
+          ) => {
             const uploadDir = path.resolve(process.cwd(), 'uploads', 'kyc');
             fs.mkdirSync(uploadDir, { recursive: true });
             cb(null, uploadDir);
           },
-          filename: (_req, file, cb) => {
+          filename: (
+            _req: Request,
+            file: MulterFileLike,
+            cb: (error: Error | null, filename: string) => void,
+          ) => {
             const ext = path.extname(file.originalname) || '';
             const safeBase = path
               .basename(file.originalname, ext)
@@ -146,25 +193,50 @@ export class ComplianceController {
     }
 
     const hasExtendedPayload =
-      Boolean(body.addressLine1 || body.revenue || body.email || body.phone || body.publicKey) ||
-      Boolean(files?.idDocument?.length || files?.selfie?.length || files?.addressProof?.length || files?.revenueProof?.length);
+      Boolean(
+        body.addressLine1 ||
+        body.revenue ||
+        body.email ||
+        body.phone ||
+        body.publicKey,
+      ) ||
+      Boolean(
+        files?.idDocument?.length ||
+        files?.selfie?.length ||
+        files?.addressProof?.length ||
+        files?.revenueProof?.length,
+      );
 
     if (!hasExtendedPayload) {
       return this.compliance.kycCheck(bodyWithUser.document, bodyWithUser.name);
     }
 
     if (!bodyWithUser.userId) {
-      throw new HttpException('usuario nao autenticado para submissao completa', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'usuario nao autenticado para submissao completa',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    if (!body.addressLine1 || !body.city || !body.state || !body.postalCode || !body.revenue) {
+    if (
+      !body.addressLine1 ||
+      !body.city ||
+      !body.state ||
+      !body.postalCode ||
+      !body.revenue
+    ) {
       throw new HttpException(
         'addressLine1, city, state, postalCode e revenue são obrigatórios para submissão completa',
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    if (!files?.idDocument?.length || !files?.selfie?.length || !files?.addressProof?.length || !files?.revenueProof?.length) {
+    if (
+      !files?.idDocument?.length ||
+      !files?.selfie?.length ||
+      !files?.addressProof?.length ||
+      !files?.revenueProof?.length
+    ) {
       throw new HttpException(
         'idDocument, selfie, addressProof e revenueProof são obrigatórios',
         HttpStatus.BAD_REQUEST,

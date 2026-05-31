@@ -6,12 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import {
   Settings,
   Lock,
   Eye,
-  Bell,
   Palette,
   Code,
   Shield,
@@ -27,10 +25,7 @@ export default function SettingsAdvancedPage() {
   const [activeTab, setActiveTab] = useState("security");
   const [copied, setCopied] = useState(false);
   const [showPrivateKey, setShowPrivateKey] = useState(false);
-  const [publicAddress, setPublicAddress] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
   const [apiKeys, setApiKeys] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const mockApiKeys = [
@@ -64,7 +59,6 @@ export default function SettingsAdvancedPage() {
     ];
 
     setApiKeys(mockApiKeys);
-    setLoading(false);
   }, []);
 
   const handleCopyKey = (key: string) => {
@@ -80,9 +74,10 @@ export default function SettingsAdvancedPage() {
   const walletAddress = "stellar1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s";
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/92 to-slate-900/78" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/85 to-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(1000px_circle_at_20%_15%,rgba(var(--stellaro-accent-rgb),0.14),transparent_60%),radial-gradient(900px_circle_at_80%_10%,rgba(197,135,230,0.10),transparent_55%)]" />
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8 p-6">
         <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
@@ -132,7 +127,7 @@ export default function SettingsAdvancedPage() {
                     <p className="font-medium">Status</p>
                     <p className="text-sm text-muted-foreground">TOTP/Authenticator app</p>
                   </div>
-                  <Badge className="bg-green-900 text-green-200">✓ Enabled</Badge>
+                  <Badge className="bg-primary/10 border border-primary/25 text-primary">✓ Enabled</Badge>
                 </div>
                 <Button variant="outline" size="sm">
                   Reconfigure
@@ -192,7 +187,7 @@ export default function SettingsAdvancedPage() {
                       <Eye className="w-4 h-4" />
                     </Button>
                   </div>
-                  <p className="text-xs text-yellow-600 mt-2 flex items-center gap-1">
+                  <p className="text-xs text-primary mt-2 flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
                     Never share your private key with anyone
                   </p>
@@ -216,7 +211,7 @@ export default function SettingsAdvancedPage() {
                     <p className="font-medium text-sm">Safari on macOS</p>
                     <p className="text-xs text-muted-foreground">IP: 192.168.1.1 • Last active: now</p>
                   </div>
-                  <Badge variant="outline" className="bg-green-900 text-green-200">
+                  <Badge variant="outline" className="bg-primary/10 border-primary/25 text-primary">
                     Current
                   </Badge>
                 </div>
@@ -225,7 +220,7 @@ export default function SettingsAdvancedPage() {
                     <p className="font-medium text-sm">Chrome on Windows</p>
                     <p className="text-xs text-muted-foreground">IP: 203.0.113.42 • Last active: 2 days ago</p>
                   </div>
-                  <Button size="sm" variant="ghost" className="text-red-600">
+                  <Button size="sm" variant="ghost" className="text-destructive">
                     Logout
                   </Button>
                 </div>
@@ -257,7 +252,7 @@ export default function SettingsAdvancedPage() {
                     </div>
                     <Badge
                       variant={key.status === "active" ? "default" : "outline"}
-                      className={key.status === "active" ? "bg-green-900" : "bg-gray-700"}
+                      className={key.status === "active" ? "bg-primary/10 border border-primary/25 text-primary" : "bg-secondary/30 border border-border/60 text-foreground"}
                     >
                       {key.status === "active" ? "Active" : "Inactive"}
                     </Badge>
@@ -294,7 +289,7 @@ export default function SettingsAdvancedPage() {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleRevokeKey(key.id)}
-                      className="text-red-600"
+                      className="text-destructive"
                     >
                       Revoke
                     </Button>
@@ -380,11 +375,11 @@ export default function SettingsAdvancedPage() {
                 enabled: false,
               },
             ].map((item) => (
-              <Card key={item.title} className="bg-slate-800 border-slate-700">
+              <Card key={item.title} className="bg-card/50 border-border/60">
                 <CardContent className="pt-6 flex items-center justify-between">
                   <div>
                     <p className="font-medium">{item.title}</p>
-                    <p className="text-sm text-gray-400 mt-1">{item.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                   </div>
                   <input
                     type="checkbox"
@@ -403,23 +398,23 @@ export default function SettingsAdvancedPage() {
         {/* Appearance Tab */}
         {activeTab === "appearance" && (
           <div className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
+            <Card className="bg-card/50 border-border/60">
               <CardHeader>
                 <CardTitle>Theme</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { name: "Dark", color: "bg-slate-900" },
-                    { name: "Light", color: "bg-white" },
-                    { name: "System", color: "bg-gradient-to-r from-slate-900 to-white" },
+                    { name: "Dark", color: "bg-background" },
+                    { name: "Light", color: "bg-secondary" },
+                    { name: "System", color: "bg-gradient-to-r from-background to-secondary" },
                   ].map((theme) => (
                     <button
                       key={theme.name}
                       className={`p-4 rounded-lg border-2 transition-colors ${
                         theme.name === "Dark"
-                          ? "border-blue-500"
-                          : "border-slate-600 hover:border-slate-500"
+                          ? "border-primary"
+                          : "border-border/60 hover:border-primary/40"
                       }`}
                     >
                       <div className={`w-full h-20 rounded ${theme.color} mb-2`} />
@@ -430,24 +425,24 @@ export default function SettingsAdvancedPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800 border-slate-700">
+            <Card className="bg-card/50 border-border/60">
               <CardHeader>
                 <CardTitle>Compact Mode</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-400">Reduce spacing and font sizes</p>
+                  <p className="text-sm text-muted-foreground">Reduce spacing and font sizes</p>
                   <input type="checkbox" id="compact-mode" title="Compact mode" aria-label="Reduce spacing and font sizes" className="w-5 h-5" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800 border-slate-700">
+            <Card className="bg-card/50 border-border/60">
               <CardHeader>
                 <CardTitle>Language</CardTitle>
               </CardHeader>
               <CardContent>
-                <select id="language-select" title="Select language" aria-label="Select language" className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white focus:outline-none focus:border-blue-500">
+                <select id="language-select" title="Select language" aria-label="Select language" className="w-full px-3 py-2 bg-secondary/30 border border-border/60 rounded text-foreground focus:outline-none focus:border-primary">
                   <option>English (US)</option>
                   <option>English</option>
                   <option>Español</option>
@@ -458,19 +453,19 @@ export default function SettingsAdvancedPage() {
         )}
 
         {/* Danger Zone */}
-        <Card className="bg-red-950 border-red-900">
+        <Card className="bg-destructive/10 border-destructive/25">
           <CardHeader>
-            <CardTitle className="text-red-400 flex items-center gap-2">
+            <CardTitle className="text-destructive flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               Danger Zone
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full text-red-400 border-red-400 hover:bg-red-950">
+            <Button variant="outline" className="w-full text-destructive border-destructive/40 hover:bg-destructive/10">
               <LogOut className="w-4 h-4 mr-2" />
               Logout All Sessions
             </Button>
-            <Button variant="outline" className="w-full text-red-400 border-red-400 hover:bg-red-950">
+            <Button variant="outline" className="w-full text-destructive border-destructive/40 hover:bg-destructive/10">
               Delete Account & Data
             </Button>
           </CardContent>
@@ -479,7 +474,7 @@ export default function SettingsAdvancedPage() {
         {/* Save Button */}
         <div className="flex gap-2 justify-end">
           <Button variant="outline">Discard</Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Save Changes</Button>
         </div>
       </div>
       </div>

@@ -6,7 +6,6 @@
 // Development: SQLite for simplicity
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // Generator for Prisma Client
@@ -270,6 +269,16 @@ model PixWithdrawal {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+}
+
+// Configurações de Webhook dinâmicas (Off-chain)
+model WebhookSubscription {
+  id        String   @id @default(uuid())
+  url       String   @unique
+  events    String[] // Tipos de eventos assinados
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // =========================

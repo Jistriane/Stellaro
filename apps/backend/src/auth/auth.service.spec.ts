@@ -74,7 +74,9 @@ describe('AuthService', () => {
       const passkeyOptions = { challenge: 'abc123', rpId: 'stellaro.io' };
 
       jest.spyOn(prisma.user, 'upsert').mockResolvedValue(mockUser);
-      jest.spyOn(passkeyService, 'initRegistration').mockResolvedValue(passkeyOptions);
+      jest
+        .spyOn(passkeyService, 'initRegistration')
+        .mockResolvedValue(passkeyOptions);
 
       const result = await service.register(registerDto);
 
@@ -85,13 +87,21 @@ describe('AuthService', () => {
         create: { email: registerDto.email, name: registerDto.name },
         update: { name: registerDto.name },
       });
-      expect(passkeyService.initRegistration).toHaveBeenCalledWith(mockUser.id, mockUser.email);
+      expect(passkeyService.initRegistration).toHaveBeenCalledWith(
+        mockUser.id,
+        mockUser.email,
+      );
     });
 
     it('should update existing user', async () => {
-      const registerDto = { email: 'existing@example.com', name: 'Updated Name' };
+      const registerDto = {
+        email: 'existing@example.com',
+        name: 'Updated Name',
+      };
 
-      jest.spyOn(prisma.user, 'upsert').mockResolvedValue({ ...mockUser, name: 'Updated Name' });
+      jest
+        .spyOn(prisma.user, 'upsert')
+        .mockResolvedValue({ ...mockUser, name: 'Updated Name' });
       jest.spyOn(passkeyService, 'initRegistration').mockResolvedValue({});
 
       const result = await service.register(registerDto);
@@ -112,7 +122,10 @@ describe('AuthService', () => {
 
       expect(result.user).toEqual(mockUser);
       expect(result.token).toBe(token);
-      expect(jwtService.signAsync).toHaveBeenCalledWith({ sub: mockUser.id, email: mockUser.email });
+      expect(jwtService.signAsync).toHaveBeenCalledWith({
+        sub: mockUser.id,
+        email: mockUser.email,
+      });
     });
 
     it('should throw NotFoundException for non-existent user', async () => {
@@ -128,7 +141,9 @@ describe('AuthService', () => {
     it('should verify registration and store credential', async () => {
       const payload = { challenge: 'abc123', credential: {} };
 
-      jest.spyOn(passkeyService, 'verifyRegistration').mockResolvedValue({ ok: true });
+      jest
+        .spyOn(passkeyService, 'verifyRegistration')
+        .mockResolvedValue({ ok: true });
 
       const result = await service.webauthnAttestation(payload);
 
@@ -139,12 +154,14 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException on verification failure', async () => {
       const payload = { challenge: 'abc123', credential: {} };
 
-      jest.spyOn(passkeyService, 'verifyRegistration').mockResolvedValue({ 
-        ok: false, 
-        error: 'Invalid credential' 
+      jest.spyOn(passkeyService, 'verifyRegistration').mockResolvedValue({
+        ok: false,
+        error: 'Invalid credential',
       });
 
-      await expect(service.webauthnAttestation(payload)).rejects.toThrow(UnauthorizedException);
+      await expect(service.webauthnAttestation(payload)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -154,8 +171,8 @@ describe('AuthService', () => {
       const appToken = 'app-token-123';
       const passkeyToken = 'passkey-token-123';
 
-      jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({ 
-        ok: true, 
+      jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({
+        ok: true,
         userId: mockUser.id,
         token: passkeyToken,
       });
@@ -173,25 +190,29 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException on login failure', async () => {
       const payload = { challenge: 'abc123', assertion: {} };
 
-      jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({ 
-        ok: false, 
-        error: 'Invalid assertion' 
+      jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({
+        ok: false,
+        error: 'Invalid assertion',
       });
 
-      await expect(service.webauthnAssertion(payload)).rejects.toThrow(UnauthorizedException);
+      await expect(service.webauthnAssertion(payload)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw NotFoundException if user not found after login', async () => {
       const payload = { challenge: 'abc123', assertion: {} };
 
-      jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({ 
-        ok: true, 
+      jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({
+        ok: true,
         userId: 'unknown-user',
         token: 'token',
       });
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.webauthnAssertion(payload)).rejects.toThrow(NotFoundException);
+      await expect(service.webauthnAssertion(payload)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -207,12 +228,14 @@ describe('AuthService', () => {
       expect(result.nonce).toBe(nonce);
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         { sub: pubkey, kind: 'wallet_nonce' },
-        expect.objectContaining({ expiresIn: '5m' })
+        expect.objectContaining({ expiresIn: '5m' }),
       );
     });
 
     it('should throw UnauthorizedException for missing pubkey', async () => {
-      await expect(service.issueNonce('')).rejects.toThrow(UnauthorizedException);
+      await expect(service.issueNonce('')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -287,14 +310,16 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException for invalid nonce', async () => {
-      jest.spyOn(jwtService, 'verifyAsync').mockRejectedValue(new Error('Invalid token'));
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockRejectedValue(new Error('Invalid token'));
 
       await expect(
         service.verifyWalletSignature({
           pubkey: validPubkey,
           nonce: 'invalid-nonce',
           signature: validSignature,
-        })
+        }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -309,7 +334,7 @@ describe('AuthService', () => {
           pubkey: validPubkey,
           nonce: validNonce,
           signature: validSignature,
-        })
+        }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -322,13 +347,13 @@ describe('AuthService', () => {
           pubkey: validPubkey,
           nonce: validNonce,
           signature: validSignature,
-        })
+        }),
       ).rejects.toThrow('Invalid signature');
     });
 
     it('should handle hex signature format', async () => {
       const hexSignature = Buffer.alloc(64).toString('hex');
-      
+
       jest.spyOn(jwtService, 'signAsync').mockResolvedValue('token');
       jest.spyOn(prisma.wallet, 'findUnique').mockResolvedValue({
         id: 'wallet-1',
@@ -357,7 +382,9 @@ describe('AuthService', () => {
     it('should return user from valid token', async () => {
       const token = 'valid-token-123';
 
-      jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue({ sub: mockUser.id });
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockResolvedValue({ sub: mockUser.id });
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser);
 
       const result = await service.meFromToken(token);
@@ -370,16 +397,24 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException for invalid token', async () => {
-      jest.spyOn(jwtService, 'verifyAsync').mockRejectedValue(new Error('Invalid'));
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockRejectedValue(new Error('Invalid'));
 
-      await expect(service.meFromToken('invalid-token')).rejects.toThrow('Invalid token');
+      await expect(service.meFromToken('invalid-token')).rejects.toThrow(
+        'Invalid token',
+      );
     });
 
     it('should throw NotFoundException for non-existent user', async () => {
-      jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue({ sub: 'unknown-user' });
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockResolvedValue({ sub: 'unknown-user' });
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.meFromToken('token')).rejects.toThrow(NotFoundException);
+      await expect(service.meFromToken('token')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -388,7 +423,9 @@ describe('AuthService', () => {
       const token = 'valid-token';
       const updatedUser = { ...mockUser, name: 'Updated Name' };
 
-      jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue({ sub: mockUser.id });
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockResolvedValue({ sub: mockUser.id });
       jest.spyOn(prisma.user, 'update').mockResolvedValue(updatedUser);
 
       const result = await service.updateMe(token, { name: 'Updated Name' });
@@ -403,8 +440,12 @@ describe('AuthService', () => {
     it('should handle null name', async () => {
       const token = 'valid-token';
 
-      jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue({ sub: mockUser.id });
-      jest.spyOn(prisma.user, 'update').mockResolvedValue({ ...mockUser, name: null });
+      jest
+        .spyOn(jwtService, 'verifyAsync')
+        .mockResolvedValue({ sub: mockUser.id });
+      jest
+        .spyOn(prisma.user, 'update')
+        .mockResolvedValue({ ...mockUser, name: null });
 
       const result = await service.updateMe(token, { name: null });
 
@@ -415,7 +456,9 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException for missing token', async () => {
-      await expect(service.updateMe(undefined, { name: 'Test' })).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.updateMe(undefined, { name: 'Test' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -425,7 +468,9 @@ describe('AuthService', () => {
         const options = { challenge: 'abc123', rpId: 'stellaro.io' };
 
         jest.spyOn(prisma.user, 'upsert').mockResolvedValue(mockUser);
-        jest.spyOn(passkeyService, 'initRegistration').mockResolvedValue(options);
+        jest
+          .spyOn(passkeyService, 'initRegistration')
+          .mockResolvedValue(options);
 
         const result = await service.passkeyRegisterInit('test@example.com');
 
@@ -434,7 +479,9 @@ describe('AuthService', () => {
       });
 
       it('should throw for missing email', async () => {
-        await expect(service.passkeyRegisterInit('')).rejects.toThrow(UnauthorizedException);
+        await expect(service.passkeyRegisterInit('')).rejects.toThrow(
+          UnauthorizedException,
+        );
       });
     });
 
@@ -442,7 +489,9 @@ describe('AuthService', () => {
       it('should verify passkey registration', async () => {
         const payload = { challenge: 'abc123', credential: {} };
 
-        jest.spyOn(passkeyService, 'verifyRegistration').mockResolvedValue({ ok: true });
+        jest
+          .spyOn(passkeyService, 'verifyRegistration')
+          .mockResolvedValue({ ok: true });
 
         const result = await service.passkeyRegisterVerify(payload);
 
@@ -452,21 +501,23 @@ describe('AuthService', () => {
       it('should throw on verification failure', async () => {
         const payload = { challenge: 'abc123', credential: {} };
 
-        jest.spyOn(passkeyService, 'verifyRegistration').mockResolvedValue({ 
-          ok: false, 
-          error: 'Invalid credential' 
+        jest.spyOn(passkeyService, 'verifyRegistration').mockResolvedValue({
+          ok: false,
+          error: 'Invalid credential',
         });
 
-        await expect(service.passkeyRegisterVerify(payload)).rejects.toThrow(UnauthorizedException);
+        await expect(service.passkeyRegisterVerify(payload)).rejects.toThrow(
+          UnauthorizedException,
+        );
       });
     });
 
     describe('passkeyLoginInit', () => {
       it('should init passkey login', async () => {
-        const result = { 
-          ok: true, 
-          challenge: 'abc123', 
-          allowCredentials: [] 
+        const result = {
+          ok: true,
+          challenge: 'abc123',
+          allowCredentials: [],
         };
 
         jest.spyOn(passkeyService, 'initLogin').mockResolvedValue(result);
@@ -478,12 +529,14 @@ describe('AuthService', () => {
       });
 
       it('should throw NotFoundException for non-existent user', async () => {
-        jest.spyOn(passkeyService, 'initLogin').mockResolvedValue({ 
-          ok: false, 
-          error: 'User not found' 
+        jest.spyOn(passkeyService, 'initLogin').mockResolvedValue({
+          ok: false,
+          error: 'User not found',
         });
 
-        await expect(service.passkeyLoginInit('unknown@example.com')).rejects.toThrow(NotFoundException);
+        await expect(
+          service.passkeyLoginInit('unknown@example.com'),
+        ).rejects.toThrow(NotFoundException);
       });
     });
 
@@ -493,8 +546,8 @@ describe('AuthService', () => {
         const appToken = 'app-token';
         const passkeyToken = 'passkey-token';
 
-        jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({ 
-          ok: true, 
+        jest.spyOn(passkeyService, 'verifyLogin').mockResolvedValue({
+          ok: true,
           userId: mockUser.id,
           token: passkeyToken,
         });
@@ -545,11 +598,15 @@ describe('AuthService', () => {
         const email = 'test@example.com';
         service.emailInit(email);
 
-        await expect(service.emailVerify(email, '000000')).rejects.toThrow('Invalid code');
+        await expect(service.emailVerify(email, '000000')).rejects.toThrow(
+          'Invalid code',
+        );
       });
 
       it('should throw for non-existent email', async () => {
-        await expect(service.emailVerify('unknown@example.com', '123456')).rejects.toThrow('Invalid code');
+        await expect(
+          service.emailVerify('unknown@example.com', '123456'),
+        ).rejects.toThrow('Invalid code');
       });
     });
   });

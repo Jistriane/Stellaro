@@ -82,7 +82,9 @@ describe('WebhooksService', () => {
     const noSecretService = new WebhooksService();
     const body = { event: 'test' };
 
-    expect(() => noSecretService.verifySignature(body, undefined)).not.toThrow();
+    expect(() =>
+      noSecretService.verifySignature(body, undefined),
+    ).not.toThrow();
 
     // Restore secret
     process.env.WEBHOOK_HMAC_SECRET = 'test-secret-key';

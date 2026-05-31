@@ -46,10 +46,10 @@ export default function Sidebar() {
   const pathname = usePathname() || "/";
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-60 bg-slate-950 text-slate-200 border-r border-slate-800 flex flex-col">
-      <div className="h-16 px-4 flex items-center gap-3 border-b border-slate-800">
+    <aside className="fixed left-0 top-0 h-screen w-60 border-r border-border bg-background/80 text-foreground backdrop-blur-xl flex flex-col">
+      <div className="h-[68px] px-4 flex items-center gap-3 border-b border-border/70">
         <Image src="/logo.png" alt="Stellaro" width={56} height={56} className="h-14 w-14" />
-        <span className="font-semibold text-xl tracking-tight">Stellaro</span>
+        <span className="text-sm uppercase tracking-[0.32em] text-foreground/90">Stellaro</span>
       </div>
       <nav className="flex-1 overflow-auto py-3">
         <ul className="flex flex-col gap-1 px-2">
@@ -67,8 +67,10 @@ export default function Sidebar() {
               <li key={i.href}>
                 <Link
                   href={i.href}
-                  className={`block px-3 py-2 rounded text-sm transition-colors ${
-                    active ? "bg-slate-800 text-white" : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  className={`block px-3 py-2 rounded-xl text-sm transition-colors ${
+                    active
+                      ? "bg-secondary/70 text-foreground border border-primary/15"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                   }`}
                 >
                   {label}
@@ -78,7 +80,9 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-      <div className="p-3 text-xs text-slate-500 border-t border-slate-800">v0.1.0</div>
+      <div className="p-3 text-[10px] text-muted-foreground border-t border-border/70 font-mono uppercase tracking-[0.12em]">
+        v0.1.0
+      </div>
     </aside>
   );
 }

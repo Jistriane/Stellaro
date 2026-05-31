@@ -498,7 +498,7 @@ export default function LoginPage() {
   }, [apiUrl, email, pendingEmailVerification, pushEvent, setLoggedIn, tLoginErrors]);
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image
         src="/capa.png"
         alt="Stellaro background"
@@ -507,51 +507,51 @@ export default function LoginPage() {
         sizes="100vw"
         className="object-cover object-center opacity-35"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/88 to-slate-900/70" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.16),transparent_28%),radial-gradient(circle_at_80%_75%,rgba(16,185,129,0.10),transparent_26%)]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/88 to-background/70" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(var(--stellaro-accent-rgb),0.14),transparent_28%),radial-gradient(circle_at_80%_75%,rgba(197,135,230,0.10),transparent_26%)]" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:min-h-[calc(100vh-7rem)]">
         <div className="space-y-8 text-left">
-          <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-950/60 px-4 py-2 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-3 rounded-full border border-border/70 bg-card/40 px-4 py-2 backdrop-blur-sm">
             <Image src="/logo.png" alt="Stellaro logo" width={48} height={48} className="h-10 w-10 rounded-md object-contain" />
             <div className="text-left">
-              <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Stellaro</p>
-              <p className="text-sm text-slate-200">Identity, DeFi and compliance on Soroban</p>
+              <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted-foreground">Stellaro</p>
+              <p className="text-sm text-foreground">Identity, DeFi and compliance on Soroban</p>
             </div>
           </div>
 
           <div className="max-w-2xl space-y-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               {t("title")}
             </h1>
-            <p className="max-w-xl text-base leading-7 text-slate-200/85 sm:text-lg">
+            <p className="max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
               {t("subtitle")}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 max-w-3xl">
-            <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4 backdrop-blur-sm">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Passkeys</p>
-              <p className="mt-3 text-sm leading-6 text-slate-200">Passwordless authentication with WebAuthn flow and email recovery.</p>
+            <div className="rounded-2xl border border-border/60 bg-card/35 p-4 backdrop-blur-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Passkeys</p>
+              <p className="mt-3 text-sm leading-6 text-foreground">Passwordless authentication with WebAuthn flow and email recovery.</p>
             </div>
-            <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4 backdrop-blur-sm">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Wallets</p>
-              <p className="mt-3 text-sm leading-6 text-slate-200">Freighter, Albedo, and Ledger with verification and signing in the frontend.</p>
+            <div className="rounded-2xl border border-border/60 bg-card/35 p-4 backdrop-blur-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Wallets</p>
+              <p className="mt-3 text-sm leading-6 text-foreground">Freighter, Albedo, and Ledger with verification and signing in the frontend.</p>
             </div>
-            <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4 backdrop-blur-sm">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">KYC</p>
-              <p className="mt-3 text-sm leading-6 text-slate-200">Verified identity to access regulated features and RWA modules.</p>
+            <div className="rounded-2xl border border-border/60 bg-card/35 p-4 backdrop-blur-sm">
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">KYC</p>
+              <p className="mt-3 text-sm leading-6 text-foreground">Verified identity to access regulated features and RWA modules.</p>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-slate-950/50 p-6 text-sm leading-6 text-slate-300 backdrop-blur-md max-w-2xl">
+          <div className="rounded-3xl border border-border/40 bg-card/40 p-6 text-sm leading-6 text-muted-foreground backdrop-blur-md max-w-2xl">
             {(() => {
               const bannerText = t("kyc_banner");
               const firstWord = bannerText.split(" ")[0];
               const restOfText = bannerText.split(" ").slice(1).join(" ");
               return (
                 <>
-                  <b className="text-slate-50">{firstWord}</b> {restOfText}
+                  <b className="text-foreground">{firstWord}</b> {restOfText}
                 </>
               );
             })()}
@@ -559,11 +559,11 @@ export default function LoginPage() {
         </div>
 
         <div className="relative">
-          <div className="absolute -inset-4 rounded-[2rem] bg-emerald-500/10 blur-3xl" />
-          <Card className="relative overflow-hidden border border-slate-800/70 bg-slate-950/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
-            <CardHeader className="border-b border-slate-800/80 bg-slate-950/60">
-              <CardTitle className="flex items-center gap-3 text-slate-50">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/80">
+          <div className="absolute -inset-4 rounded-[2rem] bg-primary/10 blur-3xl" />
+          <Card className="relative overflow-hidden border border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+            <CardHeader className="border-b border-border/60 bg-card/40">
+              <CardTitle className="flex items-center gap-3 text-foreground">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 bg-secondary/30">
                   <Image src="/logo.png" alt="Stellaro" width={24} height={24} className="h-6 w-6 object-contain" />
                 </span>
                 {t("auth")}
@@ -575,28 +575,28 @@ export default function LoginPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <button
                       onClick={onPasskey}
-                      className="w-full rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-100 transition-colors hover:bg-sky-500/15 disabled:opacity-60"
+                      className="w-full rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-primary/15 disabled:opacity-60"
                       disabled={loadingPasskey}
                     >
                       {loadingPasskey ? t("passkey_login_loading") : t("passkey_login")}
                     </button>
                     <button
                       onClick={onRegisterPasskey}
-                      className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-100 transition-colors hover:bg-emerald-500/15 disabled:opacity-60"
+                      className="w-full rounded-xl border border-border/70 bg-secondary/30 px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary/50 disabled:opacity-60"
                       disabled={loadingPasskeyReg}
                     >
                       {loadingPasskeyReg ? t("passkey_register_loading") : t("passkey_register")}
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500">{t("passkey_hint")}</p>
+                  <p className="text-xs text-muted-foreground">{t("passkey_hint")}</p>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm text-slate-400">{t("wallets_title")}</div>
+                  <div className="text-sm text-muted-foreground">{t("wallets_title")}</div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button
                       onClick={() => onWallet("freighter")}
-                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+                      className="rounded-xl border border-border/60 bg-secondary/30 px-4 py-3 text-sm text-foreground transition-colors hover:bg-secondary/50 disabled:opacity-60"
                       disabled={loadingWallet !== null || !freighterAvailable}
                       title={freighterAvailable ? t("freighter_desc") : tLoginErrors("freighter_not_found")}
                     >
@@ -610,7 +610,7 @@ export default function LoginPage() {
                     </button>
                     <button
                       onClick={() => onWallet("albedo")}
-                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+                      className="rounded-xl border border-border/60 bg-secondary/30 px-4 py-3 text-sm text-foreground transition-colors hover:bg-secondary/50 disabled:opacity-60"
                       disabled={loadingWallet !== null || !albedoAvailable}
                       title={albedoAvailable ? t("albedo_desc") : tLoginErrors("albedo_not_found")}
                     >
@@ -624,7 +624,7 @@ export default function LoginPage() {
                     </button>
                     <button
                       onClick={() => onWallet("ledger")}
-                      className="rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 disabled:opacity-60"
+                      className="rounded-xl border border-border/60 bg-secondary/30 px-4 py-3 text-sm text-foreground transition-colors hover:bg-secondary/50 disabled:opacity-60"
                       disabled={true}
                       title={tLoginErrors("ledger_unsupported")}
                     >
@@ -638,48 +638,48 @@ export default function LoginPage() {
                       </span>
                     </button>
                   </div>
-                  <div className="text-xs text-slate-500">{t("wallets_hint")}</div>
+                  <div className="text-xs text-muted-foreground">{t("wallets_hint")}</div>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs text-slate-500">
-                  <div className="flex-1 h-px bg-slate-800" />
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <div className="flex-1 h-px bg-border/60" />
                   <span>{t("divider_or")}</span>
-                  <div className="flex-1 h-px bg-slate-800" />
+                  <div className="flex-1 h-px bg-border/60" />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <input
                       ref={emailInputRef}
-                      className="flex-1 rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-3 text-sm outline-none transition-colors placeholder:text-slate-600 focus:border-emerald-500/60"
+                      className="flex-1 rounded-xl border border-border/60 bg-secondary/30 px-3 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/60"
                       placeholder={t("email_placeholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                     <button
                       onClick={onEmailLogin}
-                      className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 transition-colors hover:bg-slate-700 disabled:opacity-60"
+                      className="rounded-xl border border-primary/30 bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
                       disabled={loadingEmail}
                     >
                       {loadingEmail ? t("email_loading") : t("email_button")}
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500">{t("email_helper")}</p>
+                  <p className="text-xs text-muted-foreground">{t("email_helper")}</p>
                 </div>
 
-                {displayError && <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">{displayError}</div>}
+                {displayError && <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">{displayError}</div>}
 
-                <div className="text-xs text-slate-400">
-                  {t("help_onboarding")} <Link className="text-slate-100 underline decoration-slate-500 underline-offset-4" href="/help">{t("help_link")}</Link>
+                <div className="text-xs text-muted-foreground">
+                  {t("help_onboarding")} <Link className="text-foreground underline decoration-border/60 underline-offset-4" href="/help">{t("help_link")}</Link>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="mt-6 flex items-center justify-between text-xs text-slate-500">
-            <Link href="/help" className="hover:text-slate-300">{t("footer_help")}</Link>
-            <Link href="#" className="hover:text-slate-300">{t("footer_terms")}</Link>
-            <Link href="#" className="hover:text-slate-300">{t("footer_privacy")}</Link>
+          <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
+            <Link href="/help" className="hover:text-foreground">{t("footer_help")}</Link>
+            <Link href="#" className="hover:text-foreground">{t("footer_terms")}</Link>
+            <Link href="#" className="hover:text-foreground">{t("footer_privacy")}</Link>
           </div>
         </div>
       </div>
@@ -687,24 +687,24 @@ export default function LoginPage() {
       {/* Email Code Verification Modal */}
       {showEmailCodeModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <Card className="w-96 border border-slate-800/70 bg-slate-950/70 backdrop-blur-xl shadow-2xl">
-            <CardHeader className="border-b border-slate-800/80 bg-slate-950/60">
-              <CardTitle className="text-slate-50">{t("email_code_title") || "Enter Verification Code"}</CardTitle>
+          <Card className="w-96 border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl">
+            <CardHeader className="border-b border-border/60 bg-card/40">
+              <CardTitle className="text-foreground">{t("email_code_title") || "Enter Verification Code"}</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   {t("email_code_label") || "Verification Code"}
                 </label>
-                <p className="text-xs text-slate-400 mb-3">{t("email_code_hint") || "Enter the code sent to your email"}</p>
-                {emailCodeHint && <p className="text-xs text-emerald-400 mb-3">{emailCodeHint}</p>}
+                <p className="text-xs text-muted-foreground mb-3">{t("email_code_hint") || "Enter the code sent to your email"}</p>
+                {emailCodeHint && <p className="text-xs text-primary mb-3">{emailCodeHint}</p>}
                 <input
                   type="text"
                   value={emailCodeInput}
                   onChange={(e) => setEmailCodeInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && onEmailCodeSubmit(emailCodeInput)}
                   placeholder="000000"
-                  className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-center text-2xl font-mono outline-none transition-colors placeholder:text-slate-600 focus:border-emerald-500/60"
+                  className="w-full rounded-xl border border-border/60 bg-secondary/30 px-4 py-3 text-center text-2xl font-mono text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/60"
                   disabled={loadingEmail}
                   autoFocus
                 />
@@ -717,21 +717,21 @@ export default function LoginPage() {
                     setEmailCodeInput("");
                     setError("");
                   }}
-                  className="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 transition-colors hover:bg-slate-700 disabled:opacity-60"
+                  className="flex-1 rounded-xl border border-border/70 bg-secondary/30 px-4 py-3 text-sm text-foreground transition-colors hover:bg-secondary/50 disabled:opacity-60"
                   disabled={loadingEmail}
                 >
                   {t("cancel") || "Cancel"}
                 </button>
                 <button
                   onClick={() => onEmailCodeSubmit(emailCodeInput)}
-                  className="flex-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-100 transition-colors hover:bg-emerald-500/15 disabled:opacity-60"
+                  className="flex-1 rounded-xl border border-primary/30 bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
                   disabled={loadingEmail || !emailCodeInput.trim()}
                 >
                   {loadingEmail ? (t("verifying") || "Verifying...") : (t("verify") || "Verify")}
                 </button>
               </div>
               {error && showEmailCodeModal && (
-                <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+                <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
                   {error}
                 </div>
               )}

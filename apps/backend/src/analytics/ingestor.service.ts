@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 @Injectable()
 export class IngestorService implements OnModuleInit {
@@ -49,8 +50,7 @@ export class IngestorService implements OnModuleInit {
     const rpcUrl = process.env.SOROBAN_RPC_URL;
     if (!rpcUrl) return; // disabled
     try {
-      const sdk = require('@stellar/stellar-sdk');
-      const rpc = sdk.rpc ?? sdk.SorobanRpc;
+      const rpc = (StellarSdk as any).rpc ?? (StellarSdk as any).SorobanRpc;
       if (!rpc || typeof rpc.Server !== 'function') {
         throw new Error(
           'SorobanRpc.Server indisponível. Atualize @stellar/stellar-sdk ou verifique compatibilidade.',
@@ -71,7 +71,7 @@ export class IngestorService implements OnModuleInit {
       const contracts = [
         process.env.GOVERNANCE_CONTRACT_ID,
         process.env.STABLECOIN_CONTRACT_ID,
-      ].filter(Boolean) as string[];
+      ].filter(Boolean);
       const filterContracts = contracts.length > 0 ? contracts : undefined;
 
       const resp = await server.getEvents({

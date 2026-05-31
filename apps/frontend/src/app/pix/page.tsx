@@ -322,7 +322,7 @@ export default function PixPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 px-4 py-6 sm:px-6 lg:px-8 notranslate" translate="no">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8 notranslate" translate="no">
       <Image
         src="/capa.png"
         alt="Stellaro background"
@@ -331,70 +331,70 @@ export default function PixPage() {
         sizes="100vw"
         className="object-cover object-center opacity-30"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/90 to-slate-900/75" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(96,165,250,0.15),transparent_28%),radial-gradient(circle_at_82%_82%,rgba(16,185,129,0.10),transparent_24%)]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/75" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(var(--stellaro-accent-rgb),0.14),transparent_28%),radial-gradient(circle_at_82%_82%,rgba(197,135,230,0.10),transparent_24%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl space-y-8">
-        <header className="grid gap-6 rounded-[2rem] border border-slate-800/70 bg-slate-950/55 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-md lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
+        <header className="grid gap-6 rounded-[2rem] border border-border/60 bg-card/50 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-3 rounded-full border border-slate-700/80 bg-slate-950/60 px-4 py-2 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-3 rounded-full border border-border/70 bg-card/40 px-4 py-2 backdrop-blur-sm">
               <Image src="/logo.png" alt="Stellaro logo" width={48} height={48} className="h-10 w-10 rounded-md object-contain" />
               <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">PIX</p>
-                <p className="text-sm text-slate-200">Deposits and withdrawals with a branded fintech shell</p>
+                <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted-foreground">PIX</p>
+                <p className="text-sm text-foreground">Deposits and withdrawals with a branded fintech shell</p>
               </div>
             </div>
 
             <div className="max-w-3xl space-y-3">
-              <h1 className="text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl">{t("header.title")}</h1>
-              <p className="max-w-2xl text-base leading-7 text-slate-200/85 sm:text-lg">{t("header.subtitle")}</p>
+              <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">{t("header.title")}</h1>
+              <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">{t("header.subtitle")}</p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Deposit</p>
-                <p className="mt-3 text-sm leading-6 text-slate-200">Copy your temporary key or generate a QR payload.</p>
+              <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4">
+                <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Deposit</p>
+                <p className="mt-3 text-sm leading-6 text-foreground">Copy your temporary key or generate a QR payload.</p>
               </div>
-              <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Withdraw</p>
-                <p className="mt-3 text-sm leading-6 text-slate-200">Request transfers to PIX keys with transparent limits.</p>
+              <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4">
+                <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Withdraw</p>
+                <p className="mt-3 text-sm leading-6 text-foreground">Request transfers to PIX keys with transparent limits.</p>
               </div>
-              <div className="rounded-2xl border border-slate-800/70 bg-slate-950/45 p-4">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Status</p>
-                <p className="mt-3 text-sm leading-6 text-slate-200">Operational status and recent history at a glance.</p>
+              <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4">
+                <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Status</p>
+                <p className="mt-3 text-sm leading-6 text-foreground">Operational status and recent history at a glance.</p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/60 p-6 backdrop-blur-md">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Service</p>
+          <div className="rounded-[1.75rem] border border-border/40 bg-card/40 p-6 backdrop-blur-md">
+            <p className="font-mono text-xs uppercase tracking-[0.35em] text-muted-foreground">Service</p>
             <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-              <span className={`rounded-full px-3 py-1 text-xs ${service.status === "Available" ? "bg-emerald-900/40 text-emerald-300" : service.status === "Maintenance" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+              <span className={`rounded-full px-3 py-1 text-xs ${service.status === "Available" ? "bg-primary/10 text-primary border border-primary/20" : service.status === "Maintenance" ? "bg-secondary/20 text-muted-foreground border border-border/60" : "bg-destructive/10 text-destructive border border-destructive/30"}`}>
                 {service.status === "Available" ? t("service.available") : service.status === "Maintenance" ? t("service.maintenance") : t("service.unavailable")}
               </span>
-              <span className="text-slate-400">{service.note}</span>
+              <span className="text-muted-foreground">{service.note}</span>
             </div>
-            <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-200">
-              <div className="text-xs uppercase tracking-[0.3em] text-slate-500">Wallet</div>
+            <div className="mt-6 rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-foreground">
+              <div className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Wallet</div>
               <div className="mt-2">R$ {wallet.balanceBRL.toLocaleString("en-US", { maximumFractionDigits: 2 })} available</div>
-              <div className="mt-1 text-xs text-slate-500">XLM: {walletData.xlm} • STLT: {walletData.stlt}</div>
-              <div className="mt-1 text-xs text-slate-500">Daily limit: R$ {wallet.dailyLimitBRL.toLocaleString("en-US")}</div>
-              {walletAddress ? <div className="mt-1 text-[11px] break-all text-slate-500">{walletAddress}</div> : null}
-              {walletLoading ? <div className="mt-1 text-xs text-slate-500">Loading wallet data...</div> : null}
-              {walletError ? <div className="mt-1 text-xs text-rose-300">{walletError}</div> : null}
+              <div className="mt-1 text-xs text-muted-foreground">XLM: {walletData.xlm} • STLT: {walletData.stlt}</div>
+              <div className="mt-1 text-xs text-muted-foreground">Daily limit: R$ {wallet.dailyLimitBRL.toLocaleString("en-US")}</div>
+              {walletAddress ? <div className="mt-1 text-[11px] break-all text-muted-foreground">{walletAddress}</div> : null}
+              {walletLoading ? <div className="mt-1 text-xs text-muted-foreground">Loading wallet data...</div> : null}
+              {walletError ? <div className="mt-1 text-xs text-destructive">{walletError}</div> : null}
             </div>
           </div>
         </header>
 
         {/* Deposit/Withdraw tabs */}
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>{t("ops.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-2 text-sm mb-4 flex-wrap">
-              <button onClick={() => setTab("deposit")} className={`px-3 py-2 rounded-full border ${tab === "deposit" ? "border-sky-500/30 bg-sky-500/10 text-sky-100" : "border-slate-700 bg-slate-900/80 text-slate-300"}`}>{t("ops.deposit")}</button>
-              <button onClick={() => setTab("withdraw")} className={`px-3 py-2 rounded-full border ${tab === "withdraw" ? "border-sky-500/30 bg-sky-500/10 text-sky-100" : "border-slate-700 bg-slate-900/80 text-slate-300"}`}>{t("ops.withdraw")}</button>
+              <button onClick={() => setTab("deposit")} className={`px-3 py-2 rounded-full border ${tab === "deposit" ? "border-primary/30 bg-primary/10 text-foreground" : "border-border/60 bg-secondary/20 text-muted-foreground"}`}>{t("ops.deposit")}</button>
+              <button onClick={() => setTab("withdraw")} className={`px-3 py-2 rounded-full border ${tab === "withdraw" ? "border-primary/30 bg-primary/10 text-foreground" : "border-border/60 bg-secondary/20 text-muted-foreground"}`}>{t("ops.withdraw")}</button>
             </div>
 
             {tab === "deposit" ? (
@@ -404,23 +404,23 @@ export default function PixPage() {
                   value={amountDep}
                   onChange={(e) => setAmountDep(e.target.value)}
                   placeholder={t("deposit.placeholder_amount")}
-                  className="w-full max-w-xs rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
+                  className="w-full max-w-xs rounded-xl bg-secondary/30 px-3 py-2 text-sm outline-none border border-border/60 text-foreground placeholder:text-muted-foreground"
                   inputMode="decimal"
                 />
 
-                <div className="text-xs text-slate-500">{t("deposit.auto_credit")}</div>
+                <div className="text-xs text-muted-foreground">{t("deposit.auto_credit")}</div>
 
                 <div className="space-y-2">
-                  <div className="text-sm text-slate-400">{t("deposit.temp_key")}</div>
+                  <div className="text-sm text-muted-foreground">{t("deposit.temp_key")}</div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="rounded-xl bg-slate-900/90 px-3 py-2 text-sm select-all border border-slate-800">{pixKey || "Connect wallet to generate key"}</div>
-                    <button onClick={onCopy} disabled={!pixKey} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs disabled:opacity-50 disabled:cursor-not-allowed">{copied ? t("deposit.copied") : t("deposit.copy")}</button>
-                    <button onClick={onGenerateQR} disabled={!pixKey} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-xs disabled:opacity-50 disabled:cursor-not-allowed">Generate payload</button>
+                    <div className="rounded-xl bg-secondary/30 px-3 py-2 text-sm select-all border border-border/60 text-foreground">{pixKey || "Connect wallet to generate key"}</div>
+                    <button onClick={onCopy} disabled={!pixKey} className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground text-xs disabled:opacity-50 disabled:cursor-not-allowed">{copied ? t("deposit.copied") : t("deposit.copy")}</button>
+                    <button onClick={onGenerateQR} disabled={!pixKey} className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground text-xs disabled:opacity-50 disabled:cursor-not-allowed">Generate payload</button>
                   </div>
-                  <div className="mt-1 rounded-2xl bg-slate-800 border border-slate-700 p-3 text-[11px] text-slate-300 whitespace-pre-wrap break-all min-h-28">{qrPayload || "Generate a payload to render with your QR provider."}</div>
+                  <div className="mt-1 rounded-2xl bg-secondary/20 border border-border/60 p-3 text-[11px] text-muted-foreground whitespace-pre-wrap break-all min-h-28">{qrPayload || "Generate a payload to render with your QR provider."}</div>
                 </div>
 
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-muted-foreground">
                   {t("deposit.instructions_title")}
                   <ol className="list-decimal pl-5 space-y-1 mt-1">
                     <li>{t("deposit.i1")}</li>
@@ -437,7 +437,7 @@ export default function PixPage() {
                   value={amountWdr}
                   onChange={(e) => setAmountWdr(e.target.value)}
                   placeholder={t("withdraw.placeholder_amount")}
-                  className="w-full max-w-xs rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
+                  className="w-full max-w-xs rounded-xl bg-secondary/30 px-3 py-2 text-sm outline-none border border-border/60 text-foreground placeholder:text-muted-foreground"
                   inputMode="decimal"
                 />
                 <div className="text-sm">{t("withdraw.to_which_key")}</div>
@@ -445,138 +445,138 @@ export default function PixPage() {
                   value={destKey}
                   onChange={(e) => setDestKey(e.target.value)}
                   placeholder={t("withdraw.placeholder_key")}
-                  className="w-full max-w-lg rounded-xl bg-slate-900/90 px-3 py-2 text-sm outline-none border border-slate-800 text-slate-100 placeholder:text-slate-600"
+                  className="w-full max-w-lg rounded-xl bg-secondary/30 px-3 py-2 text-sm outline-none border border-border/60 text-foreground placeholder:text-muted-foreground"
                 />
-                <div className="text-xs text-slate-500">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US", { maximumFractionDigits: 2 }), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
+                <div className="text-xs text-muted-foreground">{t("withdraw.balances", { balance: wallet.balanceBRL.toLocaleString("en-US", { maximumFractionDigits: 2 }), daily: wallet.dailyLimitBRL.toLocaleString("en-US"), fee: wallet.feePct })}</div>
                 <div className="flex gap-2 flex-wrap">
-                  <button onClick={onRequestWithdraw} className="px-3 py-2 rounded-full bg-primary text-black text-sm">{t("withdraw.request")}</button>
-                  <button onClick={() => confirm("OK?") && onRequestWithdraw()} className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">{t("withdraw.confirm")}</button>
+                  <button onClick={onRequestWithdraw} className="px-3 py-2 rounded-full bg-primary text-primary-foreground text-sm">{t("withdraw.request")}</button>
+                  <button onClick={() => confirm("OK?") && onRequestWithdraw()} className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground text-sm">{t("withdraw.confirm")}</button>
                 </div>
-                <div className="text-xs text-slate-500">Requests are prepared from your connected wallet context.</div>
+                <div className="text-xs text-muted-foreground">Requests are prepared from your connected wallet context.</div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>{t("x402.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-4">
-                <p className="text-sm text-slate-300">{t("x402.subtitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("x402.subtitle")}</p>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <span className={`rounded-full px-3 py-1 ${x402Status.mode === "live" ? "bg-emerald-900/40 text-emerald-300" : x402Status.mode === "stub" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+                  <span className={`rounded-full px-3 py-1 ${x402Status.mode === "live" ? "bg-primary/10 text-primary border border-primary/20" : x402Status.mode === "stub" ? "bg-secondary/20 text-muted-foreground border border-border/60" : "bg-destructive/10 text-destructive border border-destructive/30"}`}>
                     {t(`x402.mode_${x402Status.mode}`)}
                   </span>
-                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("x402.network")}: {x402Status.network}</span>
-                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("x402.asset")}: {x402Status.acceptedAsset}</span>
+                  <span className="rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-muted-foreground">{t("x402.network")}: {x402Status.network}</span>
+                  <span className="rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-muted-foreground">{t("x402.asset")}: {x402Status.acceptedAsset}</span>
                 </div>
-                <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300 space-y-2">
-                  <div>{t("x402.resource")}: <span className="text-slate-100">{x402Status.resource}</span></div>
-                  <div>{t("x402.provider")}: <span className="text-slate-100">{x402Status.providerContractId || "stub-provider-contract"}</span></div>
-                  <div>{t("x402.facilitator")}: <span className="text-slate-100 break-all">{x402Status.facilitatorUrl || "https://facilitator.stellaro.local"}</span></div>
+                <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground space-y-2">
+                  <div>{t("x402.resource")}: <span className="text-foreground">{x402Status.resource}</span></div>
+                  <div>{t("x402.provider")}: <span className="text-foreground">{x402Status.providerContractId || "stub-provider-contract"}</span></div>
+                  <div>{t("x402.facilitator")}: <span className="text-foreground break-all">{x402Status.facilitatorUrl || "https://facilitator.stellaro.local"}</span></div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={onGenerateX402Quote}
                     disabled={!x402Status.enabled || x402Loading}
-                    className={`px-3 py-2 rounded-full text-sm ${!x402Status.enabled || x402Loading ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-primary text-black"}`}
+                    className={`px-3 py-2 rounded-full text-sm ${!x402Status.enabled || x402Loading ? "bg-secondary/20 text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground"}`}
                   >
                     {x402Loading ? t("x402.loading") : t("x402.generate")}
                   </button>
-                  <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">
+                  <Link href="/docs" className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground text-sm">
                     {t("x402.docs")}
                   </Link>
                 </div>
-                {x402Error ? <p className="text-sm text-rose-300">{x402Error}</p> : null}
+                {x402Error ? <p className="text-sm text-destructive">{x402Error}</p> : null}
               </div>
 
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300">
+              <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground">
                 {x402Quote ? (
                   <div className="space-y-2">
-                    <div><span className="text-slate-500">{t("x402.quote_id")}:</span> <span className="text-slate-100 break-all">{x402Quote.sessionId}</span></div>
-                    <div><span className="text-slate-500">{t("x402.quote_total")}:</span> <span className="text-slate-100">{x402Quote.settlement.total} {x402Quote.settlement.asset}</span></div>
-                    <div><span className="text-slate-500">{t("x402.quote_expires")}:</span> <span className="text-slate-100">{new Date(x402Quote.settlement.expiresAt).toLocaleString("en-US")}</span></div>
-                    <div><span className="text-slate-500">{t("x402.quote_url")}:</span> <span className="text-slate-100 break-all">{x402Quote.headers["x402-payment-url"]}</span></div>
-                    <div><span className="text-slate-500">{t("x402.quote_wallet")}:</span> <span className="text-slate-100">{x402Quote.settlement.walletAddress || "not provided"}</span></div>
-                    <div><span className="text-slate-500">{t("x402.quote_memo")}:</span> <span className="text-slate-100 break-all">{x402Quote.settlement.memo}</span></div>
-                    <p className="pt-2 text-xs text-slate-400">{x402Quote.guidance}</p>
+                    <div><span className="text-muted-foreground">{t("x402.quote_id")}:</span> <span className="text-foreground break-all">{x402Quote.sessionId}</span></div>
+                    <div><span className="text-muted-foreground">{t("x402.quote_total")}:</span> <span className="text-foreground">{x402Quote.settlement.total} {x402Quote.settlement.asset}</span></div>
+                    <div><span className="text-muted-foreground">{t("x402.quote_expires")}:</span> <span className="text-foreground">{new Date(x402Quote.settlement.expiresAt).toLocaleString("en-US")}</span></div>
+                    <div><span className="text-muted-foreground">{t("x402.quote_url")}:</span> <span className="text-foreground break-all">{x402Quote.headers["x402-payment-url"]}</span></div>
+                    <div><span className="text-muted-foreground">{t("x402.quote_wallet")}:</span> <span className="text-foreground">{x402Quote.settlement.walletAddress || "not provided"}</span></div>
+                    <div><span className="text-muted-foreground">{t("x402.quote_memo")}:</span> <span className="text-foreground break-all">{x402Quote.settlement.memo}</span></div>
+                    <p className="pt-2 text-xs text-muted-foreground">{x402Quote.guidance}</p>
                   </div>
                 ) : (
-                  <div className="text-sm text-slate-400">{t("x402.empty")}</div>
+                  <div className="text-sm text-muted-foreground">{t("x402.empty")}</div>
                 )}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>{t("etherfuse.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-4">
-                <p className="text-sm text-slate-300">{t("etherfuse.subtitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("etherfuse.subtitle")}</p>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <span className={`rounded-full px-3 py-1 ${etherfuseStatus.mode === "live" ? "bg-emerald-900/40 text-emerald-300" : etherfuseStatus.mode === "stub" ? "bg-amber-900/40 text-amber-300" : "bg-rose-900/40 text-rose-300"}`}>
+                  <span className={`rounded-full px-3 py-1 ${etherfuseStatus.mode === "live" ? "bg-primary/10 text-primary border border-primary/20" : etherfuseStatus.mode === "stub" ? "bg-secondary/20 text-muted-foreground border border-border/60" : "bg-destructive/10 text-destructive border border-destructive/30"}`}>
                     {t(`etherfuse.mode_${etherfuseStatus.mode}`)}
                   </span>
-                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("etherfuse.network")}: {etherfuseStatus.blockchain}</span>
-                  <span className="rounded-full border border-slate-700 bg-slate-900/80 px-3 py-1 text-slate-300">{t("etherfuse.quote_type")}: {etherfuseStatus.defaultQuoteType}</span>
+                  <span className="rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-muted-foreground">{t("etherfuse.network")}: {etherfuseStatus.blockchain}</span>
+                  <span className="rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-muted-foreground">{t("etherfuse.quote_type")}: {etherfuseStatus.defaultQuoteType}</span>
                 </div>
 
-                <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300 space-y-2">
-                  <div>{t("etherfuse.api")}: <span className="text-slate-100 break-all">{etherfuseStatus.apiBaseUrl}</span></div>
-                  <div>{t("etherfuse.source_asset")}: <span className="text-slate-100 break-all">{etherfuseStatus.defaultSourceAsset}</span></div>
-                  <div>{t("etherfuse.target_asset")}: <span className="text-slate-100 break-all">{etherfuseStatus.defaultTargetAsset}</span></div>
+                <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground space-y-2">
+                  <div>{t("etherfuse.api")}: <span className="text-foreground break-all">{etherfuseStatus.apiBaseUrl}</span></div>
+                  <div>{t("etherfuse.source_asset")}: <span className="text-foreground break-all">{etherfuseStatus.defaultSourceAsset}</span></div>
+                  <div>{t("etherfuse.target_asset")}: <span className="text-foreground break-all">{etherfuseStatus.defaultTargetAsset}</span></div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={onGenerateEtherfuseQuote}
                     disabled={!etherfuseStatus.enabled || etherfuseLoading}
-                    className={`px-3 py-2 rounded-full text-sm ${!etherfuseStatus.enabled || etherfuseLoading ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "bg-primary text-black"}`}
+                    className={`px-3 py-2 rounded-full text-sm ${!etherfuseStatus.enabled || etherfuseLoading ? "bg-secondary/20 text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground"}`}
                   >
                     {etherfuseLoading ? t("etherfuse.loading") : t("etherfuse.generate")}
                   </button>
-                  <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80 text-slate-200 text-sm">
+                  <Link href="/docs" className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground text-sm">
                     {t("etherfuse.docs")}
                   </Link>
                   <button
                     onClick={onCreateEtherfuseOrder}
                     disabled={!etherfuseQuote || etherfuseOrderLoading}
-                    className={`px-3 py-2 rounded-full text-sm ${!etherfuseQuote || etherfuseOrderLoading ? "bg-slate-800 text-slate-500 cursor-not-allowed" : "border border-slate-700 bg-slate-900/80 text-slate-200"}`}
+                    className={`px-3 py-2 rounded-full text-sm ${!etherfuseQuote || etherfuseOrderLoading ? "bg-secondary/20 text-muted-foreground cursor-not-allowed" : "border border-border/60 bg-secondary/20 text-foreground"}`}
                   >
                     {etherfuseOrderLoading ? t("etherfuse.order_loading") : t("etherfuse.order_create")}
                   </button>
                 </div>
 
-                {etherfuseError ? <p className="text-sm text-rose-300">{etherfuseError}</p> : null}
+                {etherfuseError ? <p className="text-sm text-destructive">{etherfuseError}</p> : null}
               </div>
 
-              <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-300">
+              <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4 text-sm text-muted-foreground">
                 {etherfuseQuote ? (
                   <div className="space-y-2">
-                    <div><span className="text-slate-500">{t("etherfuse.quote_id")}:</span> <span className="text-slate-100 break-all">{etherfuseQuote.id}</span></div>
-                    <div><span className="text-slate-500">{t("etherfuse.quote_source")}:</span> <span className="text-slate-100">{etherfuseQuote.sourceAmount} {etherfuseQuote.sourceAsset}</span></div>
-                    <div><span className="text-slate-500">{t("etherfuse.quote_destination")}:</span> <span className="text-slate-100">{etherfuseQuote.destinationAmount} {etherfuseQuote.targetAsset}</span></div>
-                    <div><span className="text-slate-500">{t("etherfuse.quote_rate")}:</span> <span className="text-slate-100">{etherfuseQuote.exchangeRate}</span></div>
-                    <div><span className="text-slate-500">{t("etherfuse.quote_expires")}:</span> <span className="text-slate-100">{new Date(etherfuseQuote.expiresAt).toLocaleString("en-US")}</span></div>
-                    <p className="pt-2 text-xs text-slate-400">{etherfuseQuote.guidance}</p>
+                    <div><span className="text-muted-foreground">{t("etherfuse.quote_id")}:</span> <span className="text-foreground break-all">{etherfuseQuote.id}</span></div>
+                    <div><span className="text-muted-foreground">{t("etherfuse.quote_source")}:</span> <span className="text-foreground">{etherfuseQuote.sourceAmount} {etherfuseQuote.sourceAsset}</span></div>
+                    <div><span className="text-muted-foreground">{t("etherfuse.quote_destination")}:</span> <span className="text-foreground">{etherfuseQuote.destinationAmount} {etherfuseQuote.targetAsset}</span></div>
+                    <div><span className="text-muted-foreground">{t("etherfuse.quote_rate")}:</span> <span className="text-foreground">{etherfuseQuote.exchangeRate}</span></div>
+                    <div><span className="text-muted-foreground">{t("etherfuse.quote_expires")}:</span> <span className="text-foreground">{new Date(etherfuseQuote.expiresAt).toLocaleString("en-US")}</span></div>
+                    <p className="pt-2 text-xs text-muted-foreground">{etherfuseQuote.guidance}</p>
                     {etherfuseOrder ? (
-                      <div className="mt-3 rounded-xl border border-emerald-800/60 bg-emerald-900/20 p-3 text-xs text-emerald-200 space-y-1">
+                      <div className="mt-3 rounded-xl border border-primary/20 bg-primary/10 p-3 text-xs text-foreground space-y-1">
                         <div>{t("etherfuse.order_id")}: <span className="break-all">{etherfuseOrder.id}</span></div>
                         <div>{t("etherfuse.order_status")}: {etherfuseOrder.status}</div>
                         <div>{t("etherfuse.order_direction")}: {etherfuseOrder.direction}</div>
-                        <p className="text-emerald-300/80">{etherfuseOrder.guidance}</p>
+                        <p className="text-muted-foreground">{etherfuseOrder.guidance}</p>
                       </div>
                     ) : null}
                   </div>
                 ) : (
-                  <div className="text-sm text-slate-400">{t("etherfuse.empty")}</div>
+                  <div className="text-sm text-muted-foreground">{t("etherfuse.empty")}</div>
                 )}
               </div>
             </div>
@@ -584,21 +584,21 @@ export default function PixPage() {
         </Card>
 
         {/* Pix transaction history */}
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>{t("history.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             {historyLoading ? (
-              <div className="text-sm text-slate-400">Loading testnet history...</div>
+              <div className="text-sm text-muted-foreground">Loading testnet history...</div>
             ) : history.length === 0 ? (
-              <div className="text-sm text-slate-400">{t("history.empty")}</div>
+              <div className="text-sm text-muted-foreground">{t("history.empty")}</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                 {history.map((tItem, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl border border-slate-800/80 bg-slate-900/70 px-3 py-2">
-                    <div className="text-slate-300">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • {tItem.value} {tItem.asset}</div>
-                    <div className="text-xs text-slate-500">{tItem.date} • {t("history.status_done")} • {tItem.key}</div>
+                  <div key={i} className="flex items-center justify-between rounded-xl border border-border/60 bg-secondary/20 px-3 py-2">
+                    <div className="text-foreground">{tItem.type === "Deposit" ? t("history.type_deposit") : t("history.type_withdraw")} • {tItem.value} {tItem.asset}</div>
+                    <div className="text-xs text-muted-foreground">{tItem.date} • {t("history.status_done")} • {tItem.key}</div>
                   </div>
                 ))}
               </div>
@@ -607,12 +607,12 @@ export default function PixPage() {
         </Card>
 
         {/* Alerts and important messages */}
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>{t("alerts.title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-5 text-sm space-y-1 text-amber-300">
+            <ul className="list-disc pl-5 text-sm space-y-1 text-primary">
               <li>{t("alerts.a1")}</li>
               <li>{t("alerts.a2")}</li>
               <li>{t("alerts.a3")}</li>
@@ -621,14 +621,14 @@ export default function PixPage() {
         </Card>
 
         {/* Help and support */}
-        <Card className="border-slate-800/70 bg-slate-950/60 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <Card className="border-border/60 bg-card/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
           <CardHeader>
             <CardTitle>{t("help.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2 text-sm">
-              <Link href="/docs" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80">{t("help.faq_pix")}</Link>
-              <Link href="/help" className="px-3 py-2 rounded-full border border-slate-700 bg-slate-900/80">{t("help.support")}</Link>
+              <Link href="/docs" className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground">{t("help.faq_pix")}</Link>
+              <Link href="/help" className="px-3 py-2 rounded-full border border-border/60 bg-secondary/20 text-foreground">{t("help.support")}</Link>
             </div>
           </CardContent>
         </Card>

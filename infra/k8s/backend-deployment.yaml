@@ -69,10 +69,18 @@ spec:
             secretKeyRef:
               name: stellaro-secrets
               key: stellar-secret-key
+        - name: STELLAR_PUBLIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: stellaro-secrets
+              key: stellar-public-key
+              optional: true
         - name: STELLAR_HORIZON
           value: "https://horizon.stellar.org"
         - name: SOROBAN_RPC_URL
-          value: "https://soroban-rpc.stellar.org"
+          value: "https://rpc.ankr.com/stellar_soroban"
+        - name: STELLAR_NETWORK_PASSPHRASE
+          value: "Public Global Stellar Network ; September 2015"
         - name: REFLECTOR_URL
           value: "https://api.reflector.network"
         - name: REDIS_URL
@@ -95,6 +103,28 @@ spec:
           valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: batch-executor-id } }
         - name: MEV_GUARD_CONTRACT_ID
           valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: mev-guard-id } }
+        - name: VC_REGISTRY_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: vc-registry-id } }
+        - name: RWA_TOKENIZER_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: rwa-tokenizer-id } }
+        - name: DAO_GOVERNANCE_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: dao-governance-id } }
+        - name: RECURRING_PAYMENTS_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: recurring-payments-id } }
+        - name: INSURANCE_POOL_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: insurance-pool-id } }
+        - name: BRIDGE_ADAPTER_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: bridge-adapter-id } }
+        - name: RWA_MARKETPLACE_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: rwa-marketplace-id } }
+        - name: INSTITUTIONAL_VAULT_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: institutional-vault-id } }
+        - name: LIQUID_STAKING_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: liquid-staking-id } }
+        - name: MULTISIG_ADAPTER_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: multisig-adapter-id } }
+        - name: REFERRAL_SYSTEM_ID
+          valueFrom: { configMapKeyRef: { name: stellaro-contracts, key: referral-system-id } }
 
         # PIX Integration
         - name: PIX_MODE
@@ -245,6 +275,32 @@ metadata:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/StellaroBackendRole
 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stellaro-contracts
+  namespace: production
+data:
+  portfolio-id: CDW75QCGLFDFSE326JYJSJG4R2YYPTDSLDWGZFXYLKZBQKSBUV5B5VF6
+  stablecoin-id: CCW7JVVL5JKESJHTMECOXCHPIFV7N4K3HDKSN67QUNB35B2HFLDI5AXL
+  risklock-id: CCEGNQ7RS5UB4PDTSHRZJRA26UNVROCRSEN6IV4US5W4LQHNDTALL4C3
+  loanspool-id: CAWB5URQB6AL6YV5ASI7WHHMPDC6SGWYBY5X656PIPXT5OECAYSGPTUI
+  governance-id: CBB3FGR6CJAAXPDHQDJOW54RAEQ35SWMULMDFV4KO73ZTJMWZ2M6YAWH
+  zk-verifier-id: CCX7LH2BQUV35ALSGQPP3N7ZNLZVJQJVXSAPJELHOPWWAQ3DZ3XP4HIQ
+  batch-executor-id: CC6CREAKIXSX24DHY3LSNYGO322XJHP5BOUFYGLKKJEDFCO2LDZCZ747
+  mev-guard-id: CBCB3CH6V6UUN6SID374CP3VHHFV5M55R5F6H6WTRFH3X3EVT6HIMIHZ
+  vc-registry-id: CAQBZTC53L4CO7LQQ72XLQG7NYYG5JWMH6BER4IFVKAWUM5IYNB7IJSN
+  rwa-tokenizer-id: CD37GRKZCESRVUFDSTMMQZGUUJ2HWBWLR52AR4MRJFJQPFQ5IL7MRCFN
+  dao-governance-id: CDOVGJQOQ22YOAUMK5DBELHJXJEN5MO4LVAQUDJULSHE7OI63HNEEGOH
+  recurring-payments-id: CDESEWHWPTTEDWF7PNYW23RKNBV4NTW3U6456OICDLD3FCRL7Y33LGBB
+  insurance-pool-id: CCSNWO2PZFZ6OUMTGRRBT23X5BOW22JU32E6VYJFHLJHWLQLZPH7YUPZ
+  bridge-adapter-id: CDWIGKW2VVA7YZUCTRDSGCZ3AI2XNKMLFBRWT65OWHUXMF5BVSBRPDOB
+  rwa-marketplace-id: CBRCT3YLI47EUSOGLORVO5NZVBRVEHMVDFY4ORGABKAUOWFJHYOI45YQ
+  institutional-vault-id: CDA4EO7THZDQGKEVNTVID4EOLBYWUWXFF7IOOWCYGWATUUPJHCSHNSB2
+  liquid-staking-id: CBXIENCX2GW7N76HXW7YWLU4NHHBVATPPAIBINV5EY7NNA7NT4JYAY4N
+  multisig-adapter-id: CCL3OD6EMUFBET7V6SBAFY7QAAXS2NZDSZBJJXATXROGCONRJKPMT7JW
+  referral-system-id: CCJ3KSRDCBKE5MURRJTB4AD7657WNQK4YIJDDXAQJXLH5VTJ65ZYYN72
 ---
 apiVersion: v1
 kind: ConfigMap

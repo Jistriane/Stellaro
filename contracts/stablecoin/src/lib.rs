@@ -47,6 +47,11 @@ pub struct UnlockEvent {
     pub owner: Address,
 }
 
+#[contractevent]
+pub struct UpgradeEvent {
+    pub new_wasm_hash: soroban_sdk::BytesN<32>,
+}
+
 #[contracterror]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(u32)]
@@ -114,12 +119,12 @@ mod test {
 
         // init configura thresholds e flags iniciais - 4000 bps = 40% risk threshold for mainnet
         client.init(&admin, &4000u32);
-        assert_eq!(client.risk_threshold(), 4000u32);
-        assert_eq!(client.paused(), false);
+        assert!(client.risk_threshold() == 4000u32);
+        assert!(!client.paused());
 
         // Admin pode pausar
         client.set_pause(&admin, &true);
-        assert_eq!(client.paused(), true);
+        assert!(client.paused());
     }
 
     #[test]
@@ -268,7 +273,7 @@ mod test {
         
         // Lock user1
         client.lock(&admin, &user1);
-        assert_eq!(client.is_locked(&user1), true);
+        assert!(client.is_locked(&user1));
         
         // Try to mint to locked address (should error)
         expect_err(|| client.mint_guarded(&admin, &user1, &1_000_000_000_000u128, &2000u32));
@@ -645,5 +650,16 @@ impl StablecoinContract {
 
     pub fn symbol(env: Env) -> Symbol {
         Symbol::new(&env, "USTEL")
+    }
+
+    pub fn upgrade(env: Env, caller: Address, new_wasm_hash: soroban_sdk::BytesN<32>) -> Result<(), Error> {
+        let admin = get_admin(&env)?;
+        caller.require_auth();
+        if caller != admin {
+            return Err(Error::Unauthorized);
+        }
+        env.deployer().update_current_contract_wasm(new_wasm_hash.clone());
+        env.events().publish_event(&UpgradeEvent { new_wasm_hash });
+        Ok(())
     }
 }

@@ -45,19 +45,31 @@ describe('ElizaController', () => {
 
     const result = await controller.triggerRiskAnalysis('G1');
 
-    expect(service.triggerAgentAction).toHaveBeenCalledWith('stellaro', 'analyze_portfolio', {
-      userAddress: 'G1',
-    });
+    expect(service.triggerAgentAction).toHaveBeenCalledWith(
+      'stellaro',
+      'analyze_portfolio',
+      {
+        userAddress: 'G1',
+      },
+    );
     expect(result).toEqual({ ok: true });
   });
 
   it('orchestrates transaction compliance workflow', async () => {
-    const payload = { userAddress: 'G2', amountUSD: 10, asset: 'USDC', destination: 'G3' };
+    const payload = {
+      userAddress: 'G2',
+      amountUSD: 10,
+      asset: 'USDC',
+      destination: 'G3',
+    };
     service.orchestrateWorkflow.mockResolvedValue({ status: 'ok' } as any);
 
     const result = await controller.orchestrateTransactionCompliance(payload);
 
-    expect(service.orchestrateWorkflow).toHaveBeenCalledWith('transaction_compliance', payload);
+    expect(service.orchestrateWorkflow).toHaveBeenCalledWith(
+      'transaction_compliance',
+      payload,
+    );
     expect(result).toEqual({ status: 'ok' });
   });
 });

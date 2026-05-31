@@ -93,34 +93,32 @@ export function ReflectorDashboard() {
 
   return (
     <div className="w-full space-y-6 p-6">
-      {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold">Stellaro DeFi Dashboard</h1>
-        <p className="text-gray-600">
+        <h1 className="text-4xl font-bold text-foreground">Stellaro DeFi Dashboard</h1>
+        <p className="text-muted-foreground">
           Powered by Reflector Network - Real-time Prices
         </p>
       </div>
 
-      {/* Key metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {metrics.map((metric) => (
           <Card key={metric.label}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 {metric.label}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-bold text-foreground">
                   {metric.value.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  <span className="text-sm font-normal ml-1">{metric.unit}</span>
+                  <span className="text-sm font-normal ml-1 text-muted-foreground">{metric.unit}</span>
                 </div>
                 {metric.changePercent !== undefined && (
-                  <p className="text-xs text-green-600 font-medium">
+                  <p className="text-xs text-primary font-medium">
                     +{metric.changePercent.toFixed(1)}% vs. previous week
                   </p>
                 )}
@@ -130,7 +128,6 @@ export function ReflectorDashboard() {
         ))}
       </div>
 
-      {/* Anomaly alerts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {btcAnomaly?.isAnomaly && (
           <Alert variant={btcAnomaly.severity === 'CRITICAL' ? 'destructive' : 'default'}>
@@ -150,7 +147,6 @@ export function ReflectorDashboard() {
         )}
       </div>
 
-      {/* Prices Section */}
       <Card>
         <CardHeader>
           <CardTitle>Real-time Prices (Reflector Network)</CardTitle>
@@ -159,39 +155,39 @@ export function ReflectorDashboard() {
         <CardContent>
           {pricesLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-              <span className="ml-2">Loading prices...</span>
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <span className="ml-2 text-muted-foreground">Loading prices...</span>
             </div>
           ) : pricesError ? (
-            <div className="text-red-600">Error loading prices: {pricesError.message}</div>
+            <div className="text-destructive">Error loading prices: {pricesError.message}</div>
           ) : (
             <div className="space-y-2">
               {Array.from(prices.entries()).map(([asset, price]) => (
                 <div
                   key={asset}
                   onClick={() => setSelectedAsset(asset)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                  className={`p-3 rounded-lg cursor-pointer transition-colors border ${
                     selectedAsset === asset
-                      ? 'bg-blue-50 border-2 border-blue-500'
-                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                      ? 'bg-primary/10 border-primary/40'
+                      : 'bg-secondary/30 hover:bg-secondary/50 border-border/60'
                   }`}
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-bold text-lg">{asset}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-bold text-lg text-foreground">{asset}</p>
+                      <p className="text-xs text-muted-foreground">
                         Updated: {new Date(price.timestamp).toLocaleTimeString('en-US')}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-mono font-bold text-xl">
+                      <p className="font-mono font-bold text-xl text-foreground">
                         ${price.price.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
                       </p>
                       {price.confidence && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           Confidence: {(price.confidence * 100).toFixed(0)}%
                         </p>
                       )}
@@ -204,7 +200,6 @@ export function ReflectorDashboard() {
         </CardContent>
       </Card>
 
-      {/* APY chart */}
       <Card>
         <CardHeader>
           <CardTitle>Historical APY</CardTitle>
@@ -214,28 +209,36 @@ export function ReflectorDashboard() {
           {isMounted ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={apyChartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip formatter={(value) => [`${value}%`, 'APY']} />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="apy"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-              />
+                <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
+                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
+                <Tooltip
+                  formatter={(value) => [`${value}%`, 'APY']}
+                  contentStyle={{
+                    backgroundColor: 'rgba(10, 12, 16, 0.85)',
+                    border: '1px solid rgba(244, 236, 220, 0.10)',
+                    borderRadius: 14,
+                    color: 'rgb(244, 236, 220)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="apy"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                  dot={{ r: 4, stroke: 'hsl(var(--primary))', fill: 'rgba(0,0,0,0)' }}
+                  activeDot={{ r: 6, stroke: 'hsl(var(--primary))', fill: 'hsl(var(--primary))' }}
+                />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[300px] rounded-lg border border-dashed border-gray-200" />
+            <div className="h-[300px] rounded-lg border border-dashed border-border/60" />
           )}
         </CardContent>
       </Card>
 
-      {/* User Portfolio */}
       <Card>
         <CardHeader>
           <CardTitle>Your Portfolio</CardTitle>
@@ -244,38 +247,38 @@ export function ReflectorDashboard() {
         <CardContent>
           {valuationLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-              <span className="ml-2">Calculating valuation...</span>
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <span className="ml-2 text-muted-foreground">Calculating valuation...</span>
             </div>
           ) : valuationError ? (
-            <div className="text-red-600">
+            <div className="text-destructive">
               Error calculating valuation: {valuationError.message}
             </div>
           ) : valuation ? (
             <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
-                <p className="text-sm text-gray-600">Total value</p>
-                <p className="text-2xl font-bold">
+              <div className="bg-primary/10 p-4 rounded-lg border border-primary/30">
+                <p className="text-sm text-muted-foreground">Total value</p>
+                <p className="text-2xl font-bold text-foreground">
                   ${valuation.totalUSD.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Updated {new Date(valuation.lastUpdate).toLocaleTimeString('en-US')}
                 </p>
               </div>
 
               <div className="space-y-2">
                 {Array.from(valuation.assets.entries()).map(([asset, data]) => (
-                  <div key={asset} className="flex justify-between items-center border border-gray-100 rounded-lg p-3">
+                  <div key={asset} className="flex justify-between items-center border border-border/60 bg-secondary/20 rounded-lg p-3">
                     <div>
-                      <p className="font-semibold">{asset}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-semibold text-foreground">{asset}</p>
+                      <p className="text-sm text-muted-foreground">
                         {data.quantity.toFixed(4)} {asset} @ ${data.price.toFixed(2)}
                       </p>
                     </div>
-                    <p className="font-bold">
+                    <p className="font-bold text-foreground">
                       ${data.value.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -286,20 +289,19 @@ export function ReflectorDashboard() {
               </div>
             </div>
           ) : (
-            <div className="text-sm text-gray-500">No portfolio data available.</div>
+            <div className="text-sm text-muted-foreground">No portfolio data available.</div>
           )}
         </CardContent>
       </Card>
 
-      {/* Footer */}
-      <div className="text-center text-sm text-gray-500 pt-4 border-t">
+      <div className="text-center text-sm text-muted-foreground pt-4 border-t border-border/60">
         <p>
           Dashboard powered by{' '}
           <a
             href="https://reflector.network"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
+            className="text-primary hover:underline"
           >
             Reflector Network
           </a>{' '}

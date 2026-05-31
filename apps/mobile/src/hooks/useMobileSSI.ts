@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { ensureWalletSession, getMyKyc, submitBasicKyc } from '../lib/backend';
 
 export function useMobileSSI() {
   const [hasKyc, setHasKyc] = useState<boolean | null>(null);
@@ -8,9 +8,13 @@ export function useMobileSSI() {
   const checkKycStatus = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Simulação: Verifica no armazenamento seguro do dispositivo
-      const kycFlag = await SecureStore.getItemAsync('stellaro_kyc_verified');
-      setHasKyc(kycFlag === 'true');
+      const session = await ensureWalletSession();
+      if (!session.ok) {
+        setHasKyc(false);
+        return;
+      }
+      const kyc = await getMyKyc();
+      setHasKyc(kyc?.status === 'Approved');
     } catch (error) {
       console.error('Mobile SSI Error:', error);
       setHasKyc(false);
@@ -19,19 +23,17 @@ export function useMobileSSI() {
     }
   }, []);
 
-  const requestKyc = async () => {
+  const requestKyc = async (params: { document: string; name: string }) => {
     setIsLoading(true);
     try {
-      // Simulação de fluxo de emissão de VC (Verifiable Credential) nativa
-      // Em produção, isso poderia abrir um WebView ou um fluxo de OCR/Liveness
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      
-      await SecureStore.setItemAsync('stellaro_kyc_verified', 'true');
-      setHasKyc(true);
-      return true;
+      const session = await ensureWalletSession();
+      if (!session.ok) return { ok: false };
+      const res = await submitBasicKyc(params);
+      await checkKycStatus();
+      return res;
     } catch (error) {
       console.error('Mobile KYC Request Error:', error);
-      return false;
+      return { ok: false };
     } finally {
       setIsLoading(false);
     }

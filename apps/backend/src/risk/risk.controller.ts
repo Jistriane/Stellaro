@@ -30,13 +30,15 @@ export class RiskController {
       },
     },
   })
-  ingestSignals(@Body() body: IngestSignalsDto): {
-    ok: boolean;
-    received: IngestSignalsDto;
-  } | Promise<{
-    ok: boolean;
-    received: IngestSignalsDto;
-  }> {
+  ingestSignals(@Body() body: IngestSignalsDto):
+    | {
+        ok: boolean;
+        received: IngestSignalsDto;
+      }
+    | Promise<{
+        ok: boolean;
+        received: IngestSignalsDto;
+      }> {
     return this.riskService.ingestSignals(body);
   }
 

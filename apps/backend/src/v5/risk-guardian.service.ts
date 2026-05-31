@@ -76,11 +76,14 @@ export class RiskGuardianService implements OnModuleInit, OnModuleDestroy {
 
     const contractsToPause = [
       this.configService.get('STABLECOIN_CONTRACT_ID'),
-      this.configService.get('LOANS_POOL_CONTRACT_ID'),
+      this.configService.get('LOANSPOOL_CONTRACT_ID') ??
+        this.configService.get('LOANS_POOL_CONTRACT_ID'),
       this.configService.get('RECURRING_PAYMENTS_ID')
     ];
 
-    const adminSecret = this.configService.get('MASTER_SECRET_KEY');
+    const adminSecret =
+      this.configService.get('MASTER_SECRET_KEY') ??
+      this.configService.get('STELLAR_SECRET_KEY');
 
     for (const contractId of contractsToPause) {
       if (!contractId) continue;

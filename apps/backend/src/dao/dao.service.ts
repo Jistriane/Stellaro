@@ -51,7 +51,10 @@ export class DaoService {
 
   private parsePagination(query: DaoListQuery) {
     const page = Math.max(1, Number(query.page ?? 1) || 1);
-    const pageSize = Math.min(100, Math.max(1, Number(query.pageSize ?? 20) || 20));
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(query.pageSize ?? 20) || 20),
+    );
     return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };
   }
 
@@ -86,10 +89,21 @@ export class DaoService {
     });
   }
 
-  async createProposal(input: { target: string; action: string; description: string; creatorSecret: string; title: string }) {
+  async createProposal(input: {
+    target: string;
+    action: string;
+    description: string;
+    creatorSecret: string;
+    title: string;
+  }) {
     if (this.soroban) {
       // Proposta on-chain
-      await this.soroban.createProposal(input.target, input.action, input.description, input.creatorSecret);
+      await this.soroban.createProposal(
+        input.target,
+        input.action,
+        input.description,
+        input.creatorSecret,
+      );
     }
 
     if (this.prisma) {
@@ -165,7 +179,12 @@ export class DaoService {
           }),
         ]);
 
-        return { proposals: rows.map((row) => this.toView(row)), total, page, pageSize };
+        return {
+          proposals: rows.map((row) => this.toView(row)),
+          total,
+          page,
+          pageSize,
+        };
       } catch {
         // Fallback
       }

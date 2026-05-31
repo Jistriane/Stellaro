@@ -37,7 +37,7 @@ else
     echo ""
     echo "💡 Then run:"
     echo "   git commit --allow-empty -m 'trigger: enable github pages'"
-    echo "   git push origin master"
+    echo "   git push origin master  # or main"
     echo ""
     echo "Or immediately trigger workflow:"
     echo "   gh workflow run github-pages-deploy.yml"

@@ -7,7 +7,9 @@ describe('NotificationsController', () => {
   let service: jest.Mocked<NotificationsService>;
 
   beforeEach(() => {
-    service = { send: jest.fn() } as unknown as jest.Mocked<NotificationsService>;
+    service = {
+      send: jest.fn(),
+    } as unknown as jest.Mocked<NotificationsService>;
     controller = new NotificationsController(service);
   });
 
@@ -27,7 +29,12 @@ describe('NotificationsController', () => {
 
   it('rejeita payload invalido', async () => {
     await expect(
-      controller.send({ channel: 'email', to: '', subject: '', message: '' } as any),
+      controller.send({
+        channel: 'email',
+        to: '',
+        subject: '',
+        message: '',
+      } as any),
     ).rejects.toBeInstanceOf(HttpException);
   });
 });

@@ -2,10 +2,41 @@
 
 # Smart Contract Deployment Registry
 
-Version: 2026-05-11
-Status: Active (Testnet)
+Version: 2026-05-30
+Status: Active (Mainnet + Testnet)
 
 This document is the canonical English registry for smart contract deployment data in this repository, including Contract IDs and Stellar Expert links.
+
+## 0) Mainnet Deployment (Confirmed)
+
+Deployment source:
+- Script: `tools/deploy_v4.sh`
+- Network: Stellar mainnet (Public Global Stellar Network ; September 2015)
+- Output registry: `mainnet_deployment_registry.json`
+
+Confirmed deployed contracts:
+
+| Contract Module | Contract ID | Stellar Expert |
+| :--- | :--- | :--- |
+| portfolio | CDW75QCGLFDFSE326JYJSJG4R2YYPTDSLDWGZFXYLKZBQKSBUV5B5VF6 | https://stellar.expert/explorer/public/contract/CDW75QCGLFDFSE326JYJSJG4R2YYPTDSLDWGZFXYLKZBQKSBUV5B5VF6 |
+| stablecoin | CCW7JVVL5JKESJHTMECOXCHPIFV7N4K3HDKSN67QUNB35B2HFLDI5AXL | https://stellar.expert/explorer/public/contract/CCW7JVVL5JKESJHTMECOXCHPIFV7N4K3HDKSN67QUNB35B2HFLDI5AXL |
+| risklock | CCEGNQ7RS5UB4PDTSHRZJRA26UNVROCRSEN6IV4US5W4LQHNDTALL4C3 | https://stellar.expert/explorer/public/contract/CCEGNQ7RS5UB4PDTSHRZJRA26UNVROCRSEN6IV4US5W4LQHNDTALL4C3 |
+| loans_pool | CAWB5URQB6AL6YV5ASI7WHHMPDC6SGWYBY5X656PIPXT5OECAYSGPTUI | https://stellar.expert/explorer/public/contract/CAWB5URQB6AL6YV5ASI7WHHMPDC6SGWYBY5X656PIPXT5OECAYSGPTUI |
+| governance | CBB3FGR6CJAAXPDHQDJOW54RAEQ35SWMULMDFV4KO73ZTJMWZ2M6YAWH | https://stellar.expert/explorer/public/contract/CBB3FGR6CJAAXPDHQDJOW54RAEQ35SWMULMDFV4KO73ZTJMWZ2M6YAWH |
+| zk_verifier | CCX7LH2BQUV35ALSGQPP3N7ZNLZVJQJVXSAPJELHOPWWAQ3DZ3XP4HIQ | https://stellar.expert/explorer/public/contract/CCX7LH2BQUV35ALSGQPP3N7ZNLZVJQJVXSAPJELHOPWWAQ3DZ3XP4HIQ |
+| batch_executor | CC6CREAKIXSX24DHY3LSNYGO322XJHP5BOUFYGLKKJEDFCO2LDZCZ747 | https://stellar.expert/explorer/public/contract/CC6CREAKIXSX24DHY3LSNYGO322XJHP5BOUFYGLKKJEDFCO2LDZCZ747 |
+| mev_guard | CBCB3CH6V6UUN6SID374CP3VHHFV5M55R5F6H6WTRFH3X3EVT6HIMIHZ | https://stellar.expert/explorer/public/contract/CBCB3CH6V6UUN6SID374CP3VHHFV5M55R5F6H6WTRFH3X3EVT6HIMIHZ |
+| vc_registry | CAQBZTC53L4CO7LQQ72XLQG7NYYG5JWMH6BER4IFVKAWUM5IYNB7IJSN | https://stellar.expert/explorer/public/contract/CAQBZTC53L4CO7LQQ72XLQG7NYYG5JWMH6BER4IFVKAWUM5IYNB7IJSN |
+| rwa_tokenizer | CD37GRKZCESRVUFDSTMMQZGUUJ2HWBWLR52AR4MRJFJQPFQ5IL7MRCFN | https://stellar.expert/explorer/public/contract/CD37GRKZCESRVUFDSTMMQZGUUJ2HWBWLR52AR4MRJFJQPFQ5IL7MRCFN |
+| dao_governance | CDOVGJQOQ22YOAUMK5DBELHJXJEN5MO4LVAQUDJULSHE7OI63HNEEGOH | https://stellar.expert/explorer/public/contract/CDOVGJQOQ22YOAUMK5DBELHJXJEN5MO4LVAQUDJULSHE7OI63HNEEGOH |
+| recurring_payments | CDESEWHWPTTEDWF7PNYW23RKNBV4NTW3U6456OICDLD3FCRL7Y33LGBB | https://stellar.expert/explorer/public/contract/CDESEWHWPTTEDWF7PNYW23RKNBV4NTW3U6456OICDLD3FCRL7Y33LGBB |
+| insurance_pool | CCSNWO2PZFZ6OUMTGRRBT23X5BOW22JU32E6VYJFHLJHWLQLZPH7YUPZ | https://stellar.expert/explorer/public/contract/CCSNWO2PZFZ6OUMTGRRBT23X5BOW22JU32E6VYJFHLJHWLQLZPH7YUPZ |
+| bridge_adapter | CDWIGKW2VVA7YZUCTRDSGCZ3AI2XNKMLFBRWT65OWHUXMF5BVSBRPDOB | https://stellar.expert/explorer/public/contract/CDWIGKW2VVA7YZUCTRDSGCZ3AI2XNKMLFBRWT65OWHUXMF5BVSBRPDOB |
+| rwa_marketplace | CBRCT3YLI47EUSOGLORVO5NZVBRVEHMVDFY4ORGABKAUOWFJHYOI45YQ | https://stellar.expert/explorer/public/contract/CBRCT3YLI47EUSOGLORVO5NZVBRVEHMVDFY4ORGABKAUOWFJHYOI45YQ |
+| institutional_vault | CDA4EO7THZDQGKEVNTVID4EOLBYWUWXFF7IOOWCYGWATUUPJHCSHNSB2 | https://stellar.expert/explorer/public/contract/CDA4EO7THZDQGKEVNTVID4EOLBYWUWXFF7IOOWCYGWATUUPJHCSHNSB2 |
+| liquid_staking | CBXIENCX2GW7N76HXW7YWLU4NHHBVATPPAIBINV5EY7NNA7NT4JYAY4N | https://stellar.expert/explorer/public/contract/CBXIENCX2GW7N76HXW7YWLU4NHHBVATPPAIBINV5EY7NNA7NT4JYAY4N |
+| multisig_adapter | CCL3OD6EMUFBET7V6SBAFY7QAAXS2NZDSZBJJXATXROGCONRJKPMT7JW | https://stellar.expert/explorer/public/contract/CCL3OD6EMUFBET7V6SBAFY7QAAXS2NZDSZBJJXATXROGCONRJKPMT7JW |
+| referral_system | CCJ3KSRDCBKE5MURRJTB4AD7657WNQK4YIJDDXAQJXLH5VTJ65ZYYN72 | https://stellar.expert/explorer/public/contract/CCJ3KSRDCBKE5MURRJTB4AD7657WNQK4YIJDDXAQJXLH5VTJ65ZYYN72 |
 
 ## 1) Latest Automated Testnet Deployment (Confirmed)
 
@@ -67,9 +98,9 @@ The repository currently contains the following contract modules:
 - zk_verifier
 
 Deployment coverage status:
-- Confirmed in latest automated deployment (Section 1): 9 modules
-- Additional operational IDs from project manifest (Section 2): 4 modules
-- Remaining modules do not currently have a public Contract ID recorded in canonical docs.
+- Confirmed in mainnet deployment (Section 0): 19 modules
+- Confirmed in latest automated testnet deployment (Section 1): 9 modules
+- Additional operational testnet IDs from project manifest (Section 2): 4 modules
 
 ## 4) Source of Truth
 
