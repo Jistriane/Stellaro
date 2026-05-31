@@ -32,9 +32,6 @@ const securityHeaders = [
 
 const nextConfig = {
   poweredByHeader: false,
-  turbopack: {
-    root: workspaceRoot,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

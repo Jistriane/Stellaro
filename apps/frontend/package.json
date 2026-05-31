@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "build:pages": "DEPLOY_TARGET=github-pages next build && node tools/fix-pages-asset-paths.mjs",
-    "start": "next start",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "build:pages": "DEPLOY_TARGET=github-pages next build --webpack && node tools/fix-pages-asset-paths.mjs",
+    "start": "next start --webpack",
     "lint": "eslint",
     "test": "vitest run"
   },
