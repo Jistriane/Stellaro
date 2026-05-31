@@ -4,14 +4,18 @@ Official site:
 
 - https://www.stellaro.com.br/
 
-![Stellaro Logo](stellaro-logo.png)
+![Stellaro Logo](https://raw.githubusercontent.com/Jistriane/Stellaro/main/stellaro-logo.png)
 
 <p align="center">
-	<img src="Home.png" alt="Stellaro Home Preview" style="width:100%; max-width:1200px; height:auto;" />
+	<img src="https://raw.githubusercontent.com/Jistriane/Stellaro/main/Stellaro-Capa.png" alt="Stellaro Hero Banner" style="width:100%; max-width:1200px; height:auto;" />
 </p>
 
 <p align="center">
-	<img src="Dashboard%20Stellaro.png" alt="Stellaro Dashboard Preview" style="width:100%; max-width:1200px; height:auto;" />
+	<img src="https://raw.githubusercontent.com/Jistriane/Stellaro/main/Home.png" alt="Stellaro Home Preview" style="width:100%; max-width:1200px; height:auto;" />
+</p>
+
+<p align="center">
+	<img src="https://raw.githubusercontent.com/Jistriane/Stellaro/main/Dashboard%20Stellaro.png" alt="Stellaro Dashboard Preview" style="width:100%; max-width:1200px; height:auto;" />
 </p>
 
 ## DeFi Credit Infrastructure on Stellar
