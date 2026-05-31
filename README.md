@@ -241,51 +241,71 @@ Expected behavior:
 
 ```mermaid
 flowchart LR
-	U[User and Operators]
+	U[Usuário e Operações]
 
-	subgraph UX[Experience Layer]
-		WEB[Web App\nNext.js 16]
-		MOB[Mobile App\nExpo/React Native]
-		ADM[Admin and Ops Views]
+	subgraph UX[Camada de Experiência]
+		WEB[Web App\nNext.js (App Router)]
+		MOB[Mobile App\nExpo / React Native]
+		ADM[Admin / Ops UI]
+		WALLET[Wallets\nFreighter / Ledger / Albedo]
+		ZKGEN[ZK Proof (cliente)\nSnarkJS + Groth16]
 	end
 
-	subgraph API[Application Layer - NestJS]
-		GW[API Gateway]
-		AUTH[Auth and Passkeys]
-		RISK[Risk and Compliance]
-		PAY[Payments Core]
-		X402[x402 Rail]
-		EF[Etherfuse Rail]
+	subgraph API[Camada de Aplicação (NestJS)]
+		GW[Backend API]
+		AUTH[Auth + Passkeys + Sessions]
+		RISK[Risk + Compliance]
+		PAY[Payments]
 		GOV[Governance]
-		RWA[RWA and SSI]
+		RWA[RWA + SSI]
 	end
 
-	subgraph Intelligence[Intelligence Layer]
-		AI[ElizaOS RiskGuardian]
-		ZK[ZK Credit Scoring]
-		ORC[Reflector Oracle Adapter]
+	subgraph Integrations[Integrações Externas]
+		PIX[Celcoin\nPIX / BaaS]
+		CARDS[Dock\nCards]
+		KYC[Sumsub\nKYC]
+		X402[x402 Facilitator]
+		EF[Etherfuse API]
 	end
 
-	subgraph Chain[Stellar and Soroban Contracts]
+	subgraph ChainAccess[Infra de Chain]
+		RPC[Soroban RPC]
+		HZN[Horizon]
+	end
+
+	subgraph Chain[Stellar + Soroban (Contratos)]
 		CST[Stablecoin]
 		CLN[LoansPool]
 		CDAO[DAO Governance]
 		CREC[Recurring Payments]
-		CRWA[RWA Tokenizer and Marketplace]
+		CRWA[RWA Tokenizer / Marketplace]
 		CVC[VC Registry]
-		CMEV[MEV Guard and Batch Executor]
+		CMEV[Batch Executor + MEV Guard]
+		CZK[ZK Verifier]
 	end
 
-	subgraph Data[Data and Operations]
+	subgraph Data[Dados e Operação]
 		PG[(PostgreSQL)]
 		RD[(Redis)]
-		OBS[Logs, Metrics, Traces]
-		AUD[Compliance and Audit Evidence]
+	end
+
+	subgraph Obs[Observabilidade]
+		OTEL[OpenTelemetry\nLogs / Metrics / Traces]
+		SEN[Sentry]
+		IDX[Chain Event Ingestor]
+		AUD[Compliance / Audit Evidence]
 	end
 
 	U --> WEB
 	U --> MOB
 	U --> ADM
+
+	WEB <--> WALLET
+	MOB <--> WALLET
+
+	WEB --> ZKGEN
+	MOB --> ZKGEN
+	ZKGEN --> GW
 
 	WEB --> GW
 	MOB --> GW
@@ -297,41 +317,40 @@ flowchart LR
 	GW --> GOV
 	GW --> RWA
 
+	PAY --> PIX
+	PAY --> CARDS
 	PAY --> X402
 	PAY --> EF
-	PAY --> CST
-	PAY --> CREC
+	RISK --> KYC
 
-	RISK --> AI
-	AI --> ZK
-	RISK --> ORC
-	ORC --> CLN
-	ORC --> CST
-
-	GOV --> CDAO
-	RWA --> CRWA
-	RWA --> CVC
-	AI --> CMEV
-
-	AUTH --> PG
-	RISK --> PG
-	PAY --> PG
-	GOV --> PG
-	RWA --> PG
+	GW --> PG
 	GW --> RD
 
-	X402 --> OBS
-	EF --> OBS
-	CST --> OBS
-	CLN --> OBS
-	CDAO --> OBS
-	CREC --> OBS
-	CRWA --> OBS
-	CVC --> OBS
-	CMEV --> OBS
-	PG --> OBS
-	RD --> OBS
-	OBS --> AUD
+	WALLET --> RPC
+	GW --> RPC
+	GW --> HZN
+
+	RPC --> CST
+	RPC --> CLN
+	RPC --> CDAO
+	RPC --> CREC
+	RPC --> CRWA
+	RPC --> CVC
+	RPC --> CMEV
+	RPC --> CZK
+
+	HZN --> IDX
+	RPC --> IDX
+	IDX --> PG
+
+	RISK --> OTEL
+	PAY --> OTEL
+	AUTH --> OTEL
+	GW --> OTEL
+	GW --> SEN
+
+	PG --> AUD
+	OTEL --> AUD
 ```
 
 ## Deployment Registry and Explorer Links
