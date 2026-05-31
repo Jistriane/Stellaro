@@ -7,7 +7,7 @@ Official site:
 ![Stellaro Logo](stellaro-logo.png)
 
 <p align="center">
-	<img src="Stellaro-Capa.png" alt="Stellaro Hero Banner" style="width:100%; max-width:1200px; height:auto;" />
+	<img src="Home.png" alt="Stellaro Home Preview" style="width:100%; max-width:1200px; height:auto;" />
 </p>
 
 <p align="center">
