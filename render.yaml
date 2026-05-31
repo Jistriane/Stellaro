@@ -4,8 +4,8 @@ services:
     runtime: node
     plan: free
     branch: main
-    buildCommand: npm ci && cd apps/backend && npx prisma generate && npm run build
-    startCommand: cd apps/backend && npx prisma migrate deploy && npm run start:prod
+    buildCommand: npm ci --workspaces --include-workspace-root && npm -w apps/backend run prisma:generate && npm -w apps/backend run build
+    startCommand: npm -w apps/backend exec -- prisma migrate deploy && npm -w apps/backend run start:prod
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -46,8 +46,8 @@ services:
     runtime: node
     plan: free
     branch: main
-    buildCommand: npm ci && cd apps/frontend && npm run build
-    startCommand: cd apps/frontend && npm run start
+    buildCommand: npm ci --workspaces --include-workspace-root && NODE_ENV=production npm -w apps/frontend run build
+    startCommand: npm -w apps/frontend run start
     envVars:
       - key: NODE_ENV
         value: production
