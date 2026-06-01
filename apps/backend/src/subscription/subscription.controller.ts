@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Post, Query } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 
 @Controller('subscriptions')
@@ -30,6 +30,10 @@ export class SubscriptionController {
       frequencyLedgers: number;
     },
   ) {
+    const nodeEnv = process.env.NODE_ENV ?? 'development';
+    if (nodeEnv.toLowerCase() === 'production') {
+      throw new ForbiddenException('Direct secret submission is disabled in production.');
+    }
     return this.service.authorizeSubscription(body);
   }
 

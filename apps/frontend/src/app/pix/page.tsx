@@ -52,9 +52,9 @@ export default function PixPage() {
   const [x402Status, setX402Status] = useState<X402Status>({
     enabled: false,
     mode: "disabled",
-    network: "stellar:testnet",
-    acceptedAsset: "STLT",
-    resource: "/payments/x402/settle",
+    network: "unknown",
+    acceptedAsset: "",
+    resource: "",
     facilitatorUrl: null,
     providerContractId: null,
     recipient: null,
@@ -66,11 +66,11 @@ export default function PixPage() {
   const [etherfuseStatus, setEtherfuseStatus] = useState<EtherfuseStatus>({
     enabled: false,
     mode: "disabled",
-    apiBaseUrl: "https://api.sand.etherfuse.com",
+    apiBaseUrl: "",
     blockchain: "stellar",
     defaultQuoteType: "onramp",
-    defaultSourceAsset: "MXN",
-    defaultTargetAsset: "USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
+    defaultSourceAsset: "",
+    defaultTargetAsset: "",
     customerIdConfigured: false,
     walletAddressConfigured: false,
     apiKeyConfigured: false,
@@ -85,10 +85,10 @@ export default function PixPage() {
     if (!walletConnected || !walletAddress) {
       return { status: "Unavailable" as const, note: "Connect your wallet to enable Pix." };
     }
-    if (walletNetwork !== "testnet") {
-      return { status: "Maintenance" as const, note: "Switch to testnet wallet network." };
+    if (walletNetwork !== "public") {
+      return { status: "Maintenance" as const, note: "Switch to Stellar public network." };
     }
-    return { status: "Available" as const, note: "Connected to Stellar testnet." };
+    return { status: "Available" as const, note: "Connected to Stellar public network." };
   }, [walletConnected, walletAddress, walletNetwork]);
 
   const dailyLimitBRL = Number(process.env.NEXT_PUBLIC_PIX_DAILY_LIMIT_BRL ?? "0");
@@ -186,7 +186,7 @@ export default function PixPage() {
         setHistory(parsed);
       } catch {
         if (!active) return;
-        setWalletError("Failed to load wallet data from testnet.");
+        setWalletError("Failed to load wallet data from Stellar public network.");
         setHistory([]);
       } finally {
         if (!active) return;
@@ -213,13 +213,13 @@ export default function PixPage() {
 
   function onGenerateQR() {
     if (!walletConnected || !walletAddress || !pixKey) {
-      alert("Connect a testnet wallet before generating Pix data.");
+      alert("Connect a wallet on Stellar public network before generating Pix data.");
       return;
     }
     const amount = tab === "deposit" ? (amountDep || "0") : (amountWdr || "0");
     const payload = JSON.stringify(
       {
-        network: "stellar:testnet",
+        network: "stellar:public",
         walletAddress,
         pixKey,
         amount,
@@ -233,7 +233,7 @@ export default function PixPage() {
 
   function onRequestWithdraw() {
     if (!walletConnected || !walletAddress) {
-      alert("Connect a testnet wallet before requesting withdrawal.");
+      alert("Connect a wallet on Stellar public network before requesting withdrawal.");
       return;
     }
     if (!amountWdr || Number(amountWdr) <= 0 || !destKey) {
@@ -590,7 +590,7 @@ export default function PixPage() {
           </CardHeader>
           <CardContent>
             {historyLoading ? (
-              <div className="text-sm text-muted-foreground">Loading testnet history...</div>
+              <div className="text-sm text-muted-foreground">Loading history...</div>
             ) : history.length === 0 ? (
               <div className="text-sm text-muted-foreground">{t("history.empty")}</div>
             ) : (

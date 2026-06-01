@@ -51,9 +51,9 @@ export async function getX402Status(): Promise<X402Status> {
     return {
       enabled: false,
       mode: 'disabled',
-      network: 'stellar:testnet',
-      acceptedAsset: 'STLT',
-      resource: '/payments/x402/settle',
+      network: 'unknown',
+      acceptedAsset: '',
+      resource: '',
       facilitatorUrl: null,
       providerContractId: null,
       recipient: null,

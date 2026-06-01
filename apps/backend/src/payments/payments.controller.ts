@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { PixService } from './pix.service';
 import { CardService } from './card.service';
 import { ComplianceGuard } from './payments.guard';
@@ -24,5 +24,10 @@ export class PaymentsController {
   @Post('card/charge')
   async chargeCard(@Body() body: any) {
     return await this.cardService.chargeCard(body);
+  }
+
+  @Get('card/status')
+  getCardStatus() {
+    return this.cardService.getStatus();
   }
 }

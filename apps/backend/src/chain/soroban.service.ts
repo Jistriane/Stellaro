@@ -32,10 +32,16 @@ export class SorobanService {
 
   constructor() {
     const baseURL = process.env.SOROBAN_RPC_URL;
+    const network = process.env.STELLAR_NETWORK ?? 'testnet';
+    const isMainnet = network === 'mainnet' || network === 'public';
     this.horizonUrl =
-      process.env.HORIZON_URL || 'https://horizon-testnet.stellar.org';
+      process.env.HORIZON_URL ||
+      (isMainnet
+        ? 'https://horizon.stellar.org'
+        : 'https://horizon-testnet.stellar.org');
     this.networkPassphrase =
-      process.env.STELLAR_NETWORK_PASSPHRASE || StellarSdk.Networks.TESTNET;
+      process.env.STELLAR_NETWORK_PASSPHRASE ||
+      (isMainnet ? StellarSdk.Networks.PUBLIC : StellarSdk.Networks.TESTNET);
 
     if (!baseURL) {
       this.logger.warn(

@@ -107,7 +107,7 @@ FACILITATOR_PROVIDER_CONTRACT_ID=CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 FACILITATOR_API_KEY=replace-with-real-key
 
 # Optional tuning
-X402_NETWORK=stellar:testnet
+X402_NETWORK=stellar:public
 X402_ACCEPTED_ASSET=STLT
 X402_RESOURCE=/payments/x402/settle
 X402_RECIPIENT=GC5LQLM7IOEC7IDE27CXOS2SH4ZXXNN7NJS3BJOZKAFSPAC2PZ34J4XX
@@ -168,10 +168,10 @@ Set the following variables in `apps/backend/.env`:
 
 ```env
 # etherfuse mode: disabled | stub | live
-ETHERFUSE_MODE=stub
+ETHERFUSE_MODE=live
 
-# Sandbox or production API base
-ETHERFUSE_API_BASE_URL=https://api.sand.etherfuse.com
+# Production API base
+ETHERFUSE_API_BASE_URL=https://<etherfuse-production-api-base>
 
 # API key must be passed as raw Authorization header (no Bearer prefix)
 ETHERFUSE_API_KEY=replace-with-real-key
@@ -370,7 +370,7 @@ flowchart LR
 Canonical source for contract deployment data:
 - `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`
 
-### Testnet V5 Manifest
+### Testnet V5 Manifest (legacy)
 
 | Contract | Contract ID | Stellar Expert |
 | :--- | :--- | :--- |
@@ -379,7 +379,7 @@ Canonical source for contract deployment data:
 | **Institutional Vault** | `CA2VG7TADA2JQQICK43Q33XYF5T6YMHUTM3CMKKGUJV5HFVTGCNQCWAH` | https://stellar.expert/explorer/testnet/contract/CA2VG7TADA2JQQICK43Q33XYF5T6YMHUTM3CMKKGUJV5HFVTGCNQCWAH |
 | **Insurance Pool** | `CCIX35HUAEROVZR6WI76YB5IPDD3SN4EQFGWFHL4ZSO6FOKNNYJWI6XS` | https://stellar.expert/explorer/testnet/contract/CCIX35HUAEROVZR6WI76YB5IPDD3SN4EQFGWFHL4ZSO6FOKNNYJWI6XS |
 
-### Testnet Deployment Snapshot (2026-05-11)
+### Testnet Deployment Snapshot (legacy, 2026-05-11)
 
 Sources:
 - `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`
@@ -397,7 +397,7 @@ Sources:
 | Batch Executor | `BATCH_EXECUTOR_CONTRACT_ID` | `CATVMEW7IXDGXZ333K3YWOXAHX3FXZ3CTWNRYZQUJTPK2SISTOFXFGP2` | https://stellar.expert/explorer/testnet/contract/CATVMEW7IXDGXZ333K3YWOXAHX3FXZ3CTWNRYZQUJTPK2SISTOFXFGP2 |
 | MEV Guard | `MEV_GUARD_CONTRACT_ID` | `CCNXG3ZSXVI6X7MTCNYMYCNDP3TH43PQNZUKZHCFAQ72RXSEQNWK6L4J` | https://stellar.expert/explorer/testnet/contract/CCNXG3ZSXVI6X7MTCNYMYCNDP3TH43PQNZUKZHCFAQ72RXSEQNWK6L4J |
 
-### Strict Testnet Validation Snapshot (2026-04-20)
+### Strict Testnet Validation Snapshot (legacy, 2026-04-20)
 
 Source: `contracts/reports/20260420_rc_strict/evidence_report.md`.
 

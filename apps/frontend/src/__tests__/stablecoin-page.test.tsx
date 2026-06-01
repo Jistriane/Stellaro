@@ -24,15 +24,18 @@ vi.mock('@/lib/soroban', () => ({
     STABLECOIN_CONTRACT_ID: 'stablecoin-789',
   })),
   viewStablecoin: vi.fn(async () => ({
+    contractId: null,
     symbol: 'STLT',
     asset: 'BRL',
-    paused: false,
-    supply: '12345.67',
+    decimals: 7,
+    supply: 12345.67,
+    timestamp: '2026-01-01T00:00:00.000Z',
   })),
   getWalletBalances: vi.fn(async () => ({
     stlt: '42.5',
     xlm: '8.125',
   })),
+  getHorizonBaseUrl: vi.fn(() => 'https://horizon.stellar.org'),
 }));
 
 import StablecoinPage from '@/app/stablecoin/page';
@@ -58,11 +61,10 @@ describe('StablecoinPage', () => {
     expect(screen.getAllByText('stablecoin-789')).toHaveLength(2);
     expect(screen.getByText('contract.symbol:')).toBeInTheDocument();
     expect(screen.getByText('STLT')).toBeInTheDocument();
-    expect(screen.getByText('balances.brl.value {"value":"R$ 42.5"}')).toBeInTheDocument();
-    expect(screen.getByText('balances.usd.value {"value":"$ 8.5"}')).toBeInTheDocument();
-    expect(screen.getByText('status.supply_mock:')).toBeInTheDocument();
+    expect(screen.getByText(/42\.5\s+STLT/i)).toBeInTheDocument();
+    expect(screen.getByText(/12,345\.67/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'actions.mint' })).toBeDisabled();
     expect(screen.getByRole('link', { name: 'edu.docs' })).toHaveAttribute('href', '/docs');
-    expect(screen.getAllByRole('link', { name: 'movements.view_wallet' })).toHaveLength(3);
+    expect(screen.getByText('wallet.login_to_view')).toBeInTheDocument();
   });
 });

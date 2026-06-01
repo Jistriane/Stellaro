@@ -10,6 +10,12 @@ import type { Request } from 'express';
 @Injectable()
 export class JwtGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
+    const nodeEnv = process.env.NODE_ENV ?? 'development';
+    const jwtSecret = process.env.JWT_SECRET;
+    if (nodeEnv.toLowerCase() === 'production' && !jwtSecret) {
+      throw new UnauthorizedException('JWT_SECRET is required in production.');
+    }
+
     const req = context.switchToHttp().getRequest<Request>();
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -19,7 +25,7 @@ export class JwtGuard implements CanActivate {
     const token = authHeader.substring('Bearer '.length);
     try {
       const jwt = new JwtService({
-        secret: process.env.JWT_SECRET || 'dev-secret',
+        secret: jwtSecret || 'dev-secret',
       });
       const payload: unknown = jwt.verify(token);
       // @ts-expect-error extend request typing with user payload

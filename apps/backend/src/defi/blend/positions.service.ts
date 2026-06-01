@@ -111,9 +111,9 @@ export class BlendPositionsService {
       let price = 0;
       try {
         const { data } = await priceClient.get('/oracles/price', {
-          params: { asset, quote },
+          params: { base: asset, quote },
         });
-        price = Number(data?.price || 0);
+        price = Number(data?.value || 0);
       } catch {
         price = 0;
       }

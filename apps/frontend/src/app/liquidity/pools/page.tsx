@@ -1,101 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Plus, Minus, TrendingUp } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-} from "recharts";
+import { Droplet, Plus } from "lucide-react";
 
 export default function LiquidityPoolsPage() {
   const t = useTranslations("liquidity");
-  const [pools, setPools] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedPool, setSelectedPool] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    const mockPools = [
-      {
-        id: "pool-1",
-        pair: "STLT-XLM",
-        tvl: 2500000,
-        volume24h: 156000,
-        fee: "0.3%",
-        apy: 45.2,
-        yourLiquidity: 45000,
-        share: 1.8,
-        token0: { symbol: "STLT", amount: 125000, price: 2.5 },
-        token1: { symbol: "XLM", amount: 100000, price: 0.125 },
-        reserves: { token0: 6944444, token1: 5555556 },
-      },
-      {
-        id: "pool-2",
-        pair: "STLT-USDC",
-        tvl: 3800000,
-        volume24h: 248000,
-        fee: "0.3%",
-        apy: 38.5,
-        yourLiquidity: 75000,
-        share: 1.97,
-        token0: { symbol: "STLT", amount: 180000, price: 2.5 },
-        token1: { symbol: "USDC", amount: 450000, price: 1.0 },
-        reserves: { token0: 9127000, token1: 22835000 },
-      },
-      {
-        id: "pool-3",
-        pair: "XLM-USDC",
-        tvl: 5200000,
-        volume24h: 312000,
-        fee: "0.05%",
-        apy: 22.3,
-        yourLiquidity: 125000,
-        share: 2.4,
-        token0: { symbol: "XLM", amount: 800000, price: 0.125 },
-        token1: { symbol: "USDC", amount: 100000, price: 1.0 },
-        reserves: { token0: 41600000, token1: 5200000 },
-      },
-    ];
-
-    setPools(mockPools);
-    setSelectedPool("pool-1");
-    setLoading(false);
-  }, []);
-
-  const currentPool = pools.find((p) => p.id === selectedPool);
-
-  const chartData = [
-    { time: "Mon", tvl: 2100000, volume: 120000 },
-    { time: "Tue", tvl: 2250000, volume: 135000 },
-    { time: "Wed", tvl: 2350000, volume: 142000 },
-    { time: "Thu", tvl: 2400000, volume: 138000 },
-    { time: "Fri", tvl: 2480000, volume: 156000 },
-    { time: "Sat", tvl: 2500000, volume: 148000 },
-    { time: "Sun", tvl: 2500000, volume: 145000 },
-  ];
-
-  const impermanentLossData = [
-    { day: "Day 1", loss: 0.0 },
-    { day: "Day 7", loss: 2.3 },
-    { day: "Day 30", loss: 5.1 },
-    { day: "Day 90", loss: 7.8 },
-  ];
-
-  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
-
   return (
     <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <Image src="/capa.png" alt="Stellaro background" fill priority sizes="100vw" className="object-cover object-center opacity-25" />
@@ -107,255 +20,32 @@ export default function LiquidityPoolsPage() {
             <h1 className="text-2xl font-semibold mb-1">{t("pools.title")}</h1>
             <p className="text-xs text-muted-foreground">{t("pools.subtitle")}</p>
           </div>
-          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button disabled size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 opacity-60">
             <Plus className="w-4 h-4 mr-2" />
             Add Liquidity
           </Button>
         </div>
-
-        {/* Overall Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Total Liquidity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">
-                ${(pools.reduce((sum, p) => sum + p.yourLiquidity, 0) / 1000).toFixed(0)}K
-              </p>
-              <p className="text-xs text-primary mt-1">+12.5% this week</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Total Volume (24h)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">
-                ${(pools.reduce((sum, p) => sum + p.volume24h, 0) / 1000).toFixed(0)}K
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">All your pools</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Average APY</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">
-                {(pools.reduce((sum, p) => sum + p.apy, 0) / pools.length).toFixed(1)}%
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">Farm rewards included</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Total Pools</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{pools.length}</p>
-              <p className="text-xs text-muted-foreground mt-1">Active positions</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Pool Selector Tabs */}
-        <div className="flex gap-2 flex-wrap">
-          {pools.map((pool) => (
-            <button
-              key={pool.id}
-              onClick={() => setSelectedPool(pool.id)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                selectedPool === pool.id
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary/30 border border-border/60 text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {pool.pair}
-            </button>
-          ))}
-        </div>
-
-        {currentPool && (
-          <>
-            {/* Pool Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs text-muted-foreground">Pool TVL</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold">
-                    ${(currentPool.tvl / 1000000).toFixed(1)}M
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">Total Locked Value</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs text-muted-foreground">Your Share</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold">{currentPool.share.toFixed(2)}%</p>
-                  <p className="text-xs text-primary mt-1">
-                    ${(currentPool.yourLiquidity / 1000).toFixed(0)}K value
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs text-muted-foreground">APY</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold text-primary">
-                    {currentPool.apy.toFixed(1)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">Fee {currentPool.fee}</p>
-                </CardContent>
-              </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Droplet className="w-5 h-5 text-primary" />
+              Pools
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-muted-foreground">
+              Para evitar dados simulados, esta tela depende de indexação on-chain (DEX/AMM) e de endpoints de listagem no backend.
             </div>
-
-            {/* Token Composition */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pool Composition</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span>{currentPool.token0.symbol}</span>
-                      <span className="text-sm text-muted-foreground">50%</span>
-                    </div>
-                    <div className="h-2 bg-secondary/40 rounded-full overflow-hidden">
-                      <div className="h-full w-1/2 bg-primary" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {currentPool.token0.amount.toLocaleString()} {currentPool.token0.symbol}
-                      {" "}
-                      @ ${currentPool.token0.price}
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span>{currentPool.token1.symbol}</span>
-                      <span className="text-sm text-muted-foreground">50%</span>
-                    </div>
-                    <div className="h-2 bg-secondary/40 rounded-full overflow-hidden">
-                      <div className="h-full w-1/2 bg-primary/70" />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {currentPool.token1.amount.toLocaleString()} {currentPool.token1.symbol}
-                      {" "}
-                      @ ${currentPool.token1.price}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* TVL & Volume Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle>7-Day Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isMounted ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="tvlGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.7} />
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "rgba(10, 12, 16, 0.85)",
-                        border: "1px solid rgba(255,255,255,0.10)",
-                        backdropFilter: "blur(12px)",
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="tvl"
-                      stroke="hsl(var(--primary))"
-                      fillOpacity={1}
-                      fill="url(#tvlGradient)"
-                    />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-[300px] rounded-lg border border-dashed border-border/60" />
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Impermanent Loss Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Impermanent Loss Risk
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isMounted ? (
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={impermanentLossData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "rgba(10, 12, 16, 0.85)",
-                        border: "1px solid rgba(255,255,255,0.10)",
-                        backdropFilter: "blur(12px)",
-                      }}
-                    />
-                    <Bar
-                      dataKey="loss"
-                      fill="hsl(var(--destructive))"
-                      name="IL Risk %"
-                      radius={[8, 8, 0, 0]}
-                    />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-[250px] rounded-lg border border-dashed border-border/60" />
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-              <Button
-                size="lg"
-                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Liquidity
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="flex-1"
-              >
-                <Minus className="w-4 h-4 mr-2" />
-                Remove Liquidity
-              </Button>
+            <div className="mt-4 flex flex-wrap gap-2 text-sm">
+              <Link href="/liquidity/manage" className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">
+                Gerenciar liquidez
+              </Link>
+              <Link href="/docs" className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">
+                Docs
+              </Link>
             </div>
-          </>
-        )}
+          </CardContent>
+        </Card>
     </div>
       </div>
   );

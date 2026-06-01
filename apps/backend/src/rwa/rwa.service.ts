@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SorobanService } from '../chain/soroban.service';
 import { SsiService } from '../ssi/ssi.service';
 import { IpfsService } from './ipfs.service';
-import { ForbiddenException, Logger } from '@nestjs/common';
+import { ForbiddenException, Logger, ServiceUnavailableException } from '@nestjs/common';
 
 type RwaListQuery = {
   page?: string | number;
@@ -34,13 +34,17 @@ type RwaListResult = {
 @Injectable()
 export class RwaService {
   private readonly logger = new Logger(RwaService.name);
+  private readonly allowInMemoryFallback: boolean;
 
   constructor(
     @Optional() private readonly prisma?: PrismaService,
     private readonly soroban?: SorobanService,
     private readonly ssiService?: SsiService,
     private readonly ipfsService?: IpfsService,
-  ) {}
+  ) {
+    const nodeEnv = process.env.NODE_ENV ?? 'development';
+    this.allowInMemoryFallback = nodeEnv.toLowerCase() !== 'production';
+  }
 
   private items = [
     {
@@ -82,6 +86,9 @@ export class RwaService {
   }
 
   private async ensureSeeded() {
+    if (!this.allowInMemoryFallback) {
+      return;
+    }
     if (!this.prisma) {
       return;
     }
@@ -134,8 +141,17 @@ export class RwaService {
         });
         return this.toView(created);
       } catch {
-        // Continue to in-memory fallback when DB is unavailable.
+        if (!this.allowInMemoryFallback) {
+          throw new ServiceUnavailableException(
+            'RWA database is unavailable in production.',
+          );
+        }
       }
+    }
+    if (!this.prisma && !this.allowInMemoryFallback) {
+      throw new ServiceUnavailableException(
+        'RWA database is not configured in production.',
+      );
     }
 
     const asset: RwaAssetView = {
@@ -188,8 +204,17 @@ export class RwaService {
           pageSize,
         };
       } catch {
-        // Continue to in-memory fallback when DB is unavailable.
+        if (!this.allowInMemoryFallback) {
+          throw new ServiceUnavailableException(
+            'RWA database is unavailable in production.',
+          );
+        }
       }
+    }
+    if (!this.prisma && !this.allowInMemoryFallback) {
+      throw new ServiceUnavailableException(
+        'RWA database is not configured in production.',
+      );
     }
 
     const search = query.search?.toLowerCase().trim();
@@ -216,16 +241,18 @@ export class RwaService {
     return {
       module: 'rwa',
       status: 'integrated-with-soroban',
-      readiness: 0.75,
+      readiness: this.allowInMemoryFallback ? 0.75 : 0,
       items: paged.items,
       total: paged.total,
       page: paged.page,
       pageSize: paged.pageSize,
-      nextSteps: [
-        'Implementar upload de documentos legais para IPFS/Arweave',
-        'Refinar whitelist dinâmica baseada em múltiplos emissores',
-        'Adicionar auditoria automática via ElizaOS',
-      ],
+      nextSteps: this.allowInMemoryFallback
+        ? [
+            'Implementar upload de documentos legais para IPFS/Arweave',
+            'Refinar whitelist dinâmica baseada em múltiplos emissores',
+            'Adicionar auditoria automática via ElizaOS',
+          ]
+        : [],
     };
   }
 

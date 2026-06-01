@@ -25,32 +25,23 @@ export default function LiquidityManagePage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Mock pool card */}
           <div className="bg-card/50 border border-border/60 rounded-2xl p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-foreground">STLT-BRL / XLM</h3>
-                <p className="text-sm text-muted-foreground">Fee: 0.3%</p>
-              </div>
-              <div className="px-3 py-1 bg-primary/10 border border-primary/25 text-primary rounded-full text-xs font-bold">
-                12.5% APY
+                <h3 className="text-lg font-semibold text-foreground">Liquidity Management</h3>
+                <p className="text-sm text-muted-foreground">Sem dados de pools disponíveis.</p>
               </div>
             </div>
             <div className="space-y-4 mb-6">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">TVL</span>
-                <span className="text-foreground font-mono">$1,240,500</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Your Position</span>
-                <span className="text-foreground font-mono">$0.00</span>
+              <div className="text-sm text-muted-foreground">
+                Para evitar dados simulados, esta tela depende de um endpoint de listagem de pools (AMM/DEX) no backend e/ou indexação on-chain.
               </div>
             </div>
             <div className="flex gap-3">
-              <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary/10 border border-primary/25 text-primary hover:bg-primary/15 rounded-lg font-medium transition-colors">
+              <button disabled className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary/10 border border-primary/25 text-primary rounded-lg font-medium transition-colors opacity-60">
                 <Plus className="w-4 h-4" /> Deposit
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 py-2 bg-secondary/30 border border-border/60 text-foreground hover:bg-secondary/40 rounded-lg font-medium transition-colors">
+              <button disabled className="flex-1 flex items-center justify-center gap-2 py-2 bg-secondary/30 border border-border/60 text-foreground rounded-lg font-medium transition-colors opacity-60">
                 <ArrowDownToLine className="w-4 h-4" /> Withdraw
               </button>
             </div>

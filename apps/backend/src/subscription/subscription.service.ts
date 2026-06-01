@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@nestjs/common';
+import { Injectable, Optional, ServiceUnavailableException } from '@nestjs/common';
 import { Prisma, SubscriptionPlan } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SorobanService } from '../chain/soroban.service';
@@ -29,10 +29,15 @@ type SubscriptionListResult = {
 
 @Injectable()
 export class SubscriptionService {
+  private readonly allowInMemoryFallback: boolean;
+
   constructor(
     @Optional() private readonly prisma?: PrismaService,
     private readonly soroban?: SorobanService,
-  ) {}
+  ) {
+    const nodeEnv = process.env.NODE_ENV ?? 'development';
+    this.allowInMemoryFallback = nodeEnv.toLowerCase() !== 'production';
+  }
 
   private plans = [
     {
@@ -75,8 +80,17 @@ export class SubscriptionService {
         });
         return this.toView(created as any);
       } catch {
-        // fallback
+        if (!this.allowInMemoryFallback) {
+          throw new ServiceUnavailableException(
+            'Subscriptions database is unavailable in production.',
+          );
+        }
       }
+    }
+    if (!this.prisma && !this.allowInMemoryFallback) {
+      throw new ServiceUnavailableException(
+        'Subscriptions database is not configured in production.',
+      );
     }
 
     const plan = {
@@ -113,6 +127,9 @@ export class SubscriptionService {
   }
 
   private async ensureSeeded() {
+    if (!this.allowInMemoryFallback) {
+      return;
+    }
     if (!this.prisma) {
       return;
     }
@@ -191,8 +208,17 @@ export class SubscriptionService {
           pageSize,
         };
       } catch {
-        // Fallback
+        if (!this.allowInMemoryFallback) {
+          throw new ServiceUnavailableException(
+            'Subscriptions database is unavailable in production.',
+          );
+        }
       }
+    }
+    if (!this.prisma && !this.allowInMemoryFallback) {
+      throw new ServiceUnavailableException(
+        'Subscriptions database is not configured in production.',
+      );
     }
 
     const search = query.search?.toLowerCase().trim();
@@ -218,16 +244,18 @@ export class SubscriptionService {
     return {
       module: 'subscription',
       status: 'integrated-with-soroban',
-      readiness: 0.8,
+      readiness: this.allowInMemoryFallback ? 0.8 : 0,
       plans: paged.plans,
       total: paged.total,
       page: paged.page,
       pageSize: paged.pageSize,
-      nextSteps: [
-        'Dashboard de monitoramento RiskGuardian para falhas em massa',
-        'Suporte a pagamentos variáveis baseados em consumo',
-        'Interface de gestão de assinaturas para merchants',
-      ],
+      nextSteps: this.allowInMemoryFallback
+        ? [
+            'Dashboard de monitoramento RiskGuardian para falhas em massa',
+            'Suporte a pagamentos variáveis baseados em consumo',
+            'Interface de gestão de assinaturas para merchants',
+          ]
+        : [],
     };
   }
 

@@ -15,12 +15,11 @@ vi.mock('@/hooks/useRealTimeUpdates', () => ({
   useRealTimeUpdates: () => undefined,
 }));
 
-vi.stubGlobal('fetch', fetchSpy);
-
 import ProfilePage from '@/app/profile/page';
 
 describe('ProfilePage', () => {
   beforeEach(() => {
+    vi.stubGlobal('fetch', fetchSpy);
     fetchSpy.mockReset();
     fetchSpy.mockResolvedValue({ status: 401, ok: false } as Response);
   });

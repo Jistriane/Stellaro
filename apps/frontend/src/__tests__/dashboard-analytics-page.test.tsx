@@ -11,43 +11,26 @@ vi.mock('next-intl', () => ({
     subtitle: 'Performance and protocol trends',
     loading: 'Loading analytics...',
     tvl: 'Total value locked',
-    apy: 'APY',
-    loans: 'Active loans',
-    defaultRate: 'Default rate',
-    tvlHistory: 'TVL history',
-    assetDistribution: 'Asset distribution',
     performanceMetrics: 'Performance metrics',
-    utilization: 'Utilization',
-    liquidationRatio: 'Liquidation ratio',
-    healthyStatus: 'Healthy status',
-    reserveRatio: 'Reserve ratio',
-    surplusCollateral: 'Surplus collateral',
   }[key] ?? key),
 }));
-
-vi.mock('recharts', () => {
-  const MockChart = () => <div />;
-  return {
-    ResponsiveContainer: MockChart,
-    LineChart: MockChart,
-    Line: MockChart,
-    BarChart: MockChart,
-    Bar: MockChart,
-    XAxis: MockChart,
-    YAxis: MockChart,
-    CartesianGrid: MockChart,
-    Tooltip: MockChart,
-    Legend: MockChart,
-    PieChart: MockChart,
-    Pie: MockChart,
-    Cell: MockChart,
-  };
-});
 
 import DashboardAnalyticsPage from '@/app/dashboard/analytics/page';
 
 describe('DashboardAnalyticsPage', () => {
   it('renders KPIs and keeps timeframe actions interactive', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        json: async () => ({
+          tvl: '$275.0K',
+          volume24h: '$1.2M',
+          mintBurnRatio: '0.98',
+        }),
+      })) as any,
+    );
+
     render(<DashboardAnalyticsPage />);
 
     await waitFor(() => {
@@ -56,14 +39,13 @@ describe('DashboardAnalyticsPage', () => {
 
     expect(screen.getByText('Performance and protocol trends')).toBeInTheDocument();
     expect(screen.getByText('$275.0K')).toBeInTheDocument();
-    expect(screen.getByText('8.3%')).toBeInTheDocument();
-    expect(screen.getByText('42')).toBeInTheDocument();
+    expect(screen.getByText('$1.2M')).toBeInTheDocument();
+    expect(screen.getByText('0.98')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '7D' }));
     fireEvent.click(screen.getByRole('button', { name: '90D' }));
 
     expect(screen.getByRole('button', { name: '30D' })).toBeInTheDocument();
-    expect(screen.getByText('TVL history')).toBeInTheDocument();
     expect(screen.getByText('Performance metrics')).toBeInTheDocument();
   });
 });

@@ -19,11 +19,14 @@ export class ElizaService implements OnModuleInit {
   private running = false;
   private timer: NodeJS.Timeout | null = null;
   private agentServiceUrl: string;
+  private readonly allowSimulation: boolean;
 
   constructor(
     private readonly memory: MemoryService,
     private readonly actions: ActionsService,
   ) {
+    const nodeEnv = (process.env.NODE_ENV ?? '').toLowerCase();
+    this.allowSimulation = nodeEnv !== 'production';
     // URL do serviço Python multi-agente
     this.agentServiceUrl =
       process.env.AGENT_SERVICE_URL ?? 'http://localhost:8000';
@@ -94,22 +97,24 @@ export class ElizaService implements OnModuleInit {
       status: 'ACTIVE',
     });
 
-    // 2) Simulação de Auditoria de RWA (Automática)
-    if (Math.random() > 0.7) {
-      await this.orchestrateWorkflow('rwa_audit_ai', {
-        assetId: `RWA-${Math.floor(Math.random() * 1000)}`,
-        trigger: 'periodic_audit',
-      });
-      this.logger.log('Eliza: RWA Audit performed automatically.');
-    }
+    if (this.allowSimulation) {
+      // 2) Simulação de Auditoria de RWA (Automática)
+      if (Math.random() > 0.7) {
+        await this.orchestrateWorkflow('rwa_audit_ai', {
+          assetId: `RWA-${Math.floor(Math.random() * 1000)}`,
+          trigger: 'periodic_audit',
+        });
+        this.logger.log('Eliza: RWA Audit performed automatically.');
+      }
 
-    // 3) Simulação de Monitoramento de DAO
-    if (Math.random() > 0.8) {
-      await this.orchestrateWorkflow('dao_governance_monitor', {
-        proposalId: `dao-${Math.floor(Math.random() * 100)}`,
-        trigger: 'new_proposal_detected',
-      });
-      this.logger.log('Eliza: DAO Governance monitoring active.');
+      // 3) Simulação de Monitoramento de DAO
+      if (Math.random() > 0.8) {
+        await this.orchestrateWorkflow('dao_governance_monitor', {
+          proposalId: `dao-${Math.floor(Math.random() * 100)}`,
+          trigger: 'new_proposal_detected',
+        });
+        this.logger.log('Eliza: DAO Governance monitoring active.');
+      }
     }
   }
 

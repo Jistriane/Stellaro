@@ -32,6 +32,7 @@ const securityHeaders = [
 
 const nextConfig = {
   poweredByHeader: false,
+  outputFileTracingRoot: workspaceRoot,
   typescript: {
     ignoreBuildErrors: true,
   },

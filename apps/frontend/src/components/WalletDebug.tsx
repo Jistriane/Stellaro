@@ -75,28 +75,6 @@ export default function WalletDebug() {
         >
           Debug Window
         </button>
-        <button 
-          onClick={() => {
-            if (typeof window !== 'undefined') {
-              const windowRecord = window as unknown as Record<string, unknown> & {
-                xbullWallet?: {
-                  getPublicKey?: () => Promise<string>;
-                  connect?: () => Promise<{ publicKey: string }>;
-                };
-              };
-              // Simulate xBull presence for testing
-              windowRecord.xbullWallet = {
-                getPublicKey: async () => 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789',
-                connect: async () => ({ publicKey: 'GDUMMY1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789' })
-              };
-              console.log('🎭 Simulated xBull wallet injected into window.xbullWallet');
-              updateWallets();
-            }
-          }}
-          className="px-3 py-1 bg-secondary/30 text-foreground border border-border/60 rounded text-sm hover:bg-secondary/50"
-        >
-          Simulate xBull
-        </button>
       </div>
 
       {lastUpdate && (
@@ -148,7 +126,6 @@ export default function WalletDebug() {
           <li><strong>xBull:</strong> Check if xBull shows as &quot;xbullWallet&quot; or &quot;xBull&quot; in window</li>
           <li>Run <code>window.debugXBull()</code> in console for xBull troubleshooting</li>
           <li>Try <code>Object.keys(window).filter(k =&gt; k.includes(&apos;bull&apos;))</code> in console</li>
-          <li><strong>Testing:</strong> Click &quot;Simulate xBull&quot; to test detection without real extension</li>
           <li><strong>Installation:</strong> If xBull not found, install from Chrome Web Store</li>
         </ul>
       </div>

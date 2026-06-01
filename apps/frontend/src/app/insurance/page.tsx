@@ -1,6 +1,5 @@
 import Image from "next/image";
 import ModuleLaunchPage from "@/components/ModuleLaunchPage";
-import QuickCreateForm from "@/components/QuickCreateForm";
 
 export default async function InsurancePage() {
   return (
@@ -31,16 +30,10 @@ export default async function InsurancePage() {
         ]}
       />
         <div className="mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
-        <QuickCreateForm
-          title="Deposit into the Insurance Pool"
-          description="Increase Stellaro protocol collateralization and receive coverage shares."
-          endpoint="/insurance/deposit"
-          fields={[
-            { name: "amount", label: "Amount (STLT)", placeholder: "100.00" },
-            { name: "userSecret", label: "Your Secret Key (Test)", placeholder: "S..." },
-          ]}
-          submitLabel="Deposit"
-        />
+          <div className="rounded-xl border border-border/60 bg-secondary/10 p-4 text-sm text-muted-foreground">
+            Depósitos no pool de seguro estão desabilitados via API para evitar envio de Secret Key em produção.
+            O fluxo correto é assinatura via wallet (Freighter / mobile wallet) e submissão on-chain.
+          </div>
         </div>
       </div>
     </div>

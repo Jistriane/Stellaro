@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
@@ -14,19 +14,11 @@ vi.mock('next-intl', () => ({
 import SettingsAdvancedPage from '@/app/settings/advanced/page';
 
 describe('SettingsAdvancedPage', () => {
-  it('renders tabs and allows key interactions in security/api tabs', async () => {
+  it('renders without mocked api keys or private key controls', async () => {
     render(<SettingsAdvancedPage />);
 
     expect(screen.getByText('Advanced settings')).toBeInTheDocument();
-    expect(screen.getByText('Two-Factor Authentication')).toBeInTheDocument();
-    expect(screen.getByText('Wallet Address & Keys')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'API Keys' }));
-    await waitFor(() => {
-      expect(screen.getByText('Trading Bot')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getAllByRole('button', { name: 'Revoke' })[0]);
-    expect(screen.queryByText('Trading Bot')).not.toBeInTheDocument();
+    expect(screen.getByText('Carteira')).toBeInTheDocument();
+    expect(screen.getByText(/gestão de api keys/i)).toBeInTheDocument();
   });
 });

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Vote, Sparkles, AlertCircle, Clock, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
+import { Vote, AlertCircle, Clock, CheckCircle2, XCircle } from "lucide-react";
 
 type Proposal = {
   id: string;
@@ -15,60 +14,7 @@ type Proposal = {
 };
 
 export default function DaoGovernanceDashboard({ initialProposals }: { initialProposals: Proposal[] }) {
-  const [proposals, setProposals] = useState<Proposal[]>(initialProposals);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isDrafting, setIsDrafting] = useState(false);
-  const [formData, setFormData] = useState({ title: "", action: "", target: "", description: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleAiDraft = async () => {
-    setIsDrafting(true);
-    // Simulate AI generation delay
-    await new Promise(r => setTimeout(r, 2000));
-    setFormData({
-      title: "Automatic Risk Threshold Optimization",
-      action: "update_risk_params",
-      target: "CBRX...9F8A",
-      description: "ElizaOS recommendation: reduce risk tolerance in the main vault by 5% due to increased external market volatility over the last 48 hours. This will protect LP funds."
-    });
-    setIsDrafting(false);
-  };
-
-  const handleCreateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise(r => setTimeout(r, 1500));
-    
-    const newProposal: Proposal = {
-      id: `P-${Date.now().toString().slice(-4)}`,
-      title: formData.title,
-      action: formData.action,
-      target: formData.target,
-      status: "Active",
-      votesFor: 0,
-      votesAgainst: 0,
-      endLedger: 120000 + 4000
-    };
-    
-    setProposals([newProposal, ...proposals]);
-    setShowCreateModal(false);
-    setIsSubmitting(false);
-    setFormData({ title: "", action: "", target: "", description: "" });
-  };
-
-  const handleVote = async (id: string, support: boolean) => {
-    // Optimistic UI Update
-    setProposals(current => current.map(p => {
-      if (p.id === id) {
-        return {
-          ...p,
-          votesFor: support ? p.votesFor + 1000 : p.votesFor,
-          votesAgainst: !support ? p.votesAgainst + 1000 : p.votesAgainst
-        };
-      }
-      return p;
-    }));
-  };
+  const proposals = initialProposals;
 
   return (
     <div className="min-h-screen bg-transparent text-foreground p-6 md:p-12 font-sans selection:bg-primary/20">
@@ -92,14 +38,20 @@ export default function DaoGovernanceDashboard({ initialProposals }: { initialPr
               </p>
             </div>
 
-            <button 
-              onClick={() => setShowCreateModal(true)}
-              className="px-6 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-colors shrink-0"
+            <button
+              disabled
+              className="px-6 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl transition-colors shrink-0 opacity-60"
+              title="Criação/voto de propostas requer assinatura via wallet e fluxo on-chain."
             >
               Create New Proposal
             </button>
           </div>
         </header>
+
+        <div className="rounded-2xl border border-border/60 bg-secondary/10 p-4 text-sm text-muted-foreground">
+          Para evitar dados simulados e envio de secrets via API, este painel é somente leitura.
+          Criação e votação exigem assinatura via wallet e submissão on-chain.
+        </div>
 
         {/* Proposals Grid */}
         <div className="space-y-6">
@@ -141,14 +93,14 @@ export default function DaoGovernanceDashboard({ initialProposals }: { initialPr
 
                   <div className="flex items-center gap-3">
                     <button 
-                      onClick={() => handleVote(proposal.id, true)}
-                      className="flex-1 py-2.5 bg-primary/10 hover:bg-primary/15 text-primary font-semibold rounded-xl border border-primary/30 transition-colors flex items-center justify-center gap-2"
+                      disabled
+                      className="flex-1 py-2.5 bg-primary/10 text-primary font-semibold rounded-xl border border-primary/30 transition-colors flex items-center justify-center gap-2 opacity-60"
                     >
                       <CheckCircle2 className="w-4 h-4" /> Vote For
                     </button>
                     <button 
-                      onClick={() => handleVote(proposal.id, false)}
-                      className="flex-1 py-2.5 bg-destructive/10 hover:bg-destructive/15 text-destructive font-semibold rounded-xl border border-destructive/30 transition-colors flex items-center justify-center gap-2"
+                      disabled
+                      className="flex-1 py-2.5 bg-destructive/10 text-destructive font-semibold rounded-xl border border-destructive/30 transition-colors flex items-center justify-center gap-2 opacity-60"
                     >
                       <XCircle className="w-4 h-4" /> Vote Against
                     </button>
@@ -156,104 +108,17 @@ export default function DaoGovernanceDashboard({ initialProposals }: { initialPr
                 </div>
               );
             })}
+            {proposals.length === 0 ? (
+              <div className="col-span-full p-10 rounded-3xl bg-card/30 border border-border/60 text-center">
+                <AlertCircle className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                <div className="text-lg font-semibold text-foreground">Sem propostas</div>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Nenhuma proposta retornada pela API.
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
-
-        {/* Create Proposal Modal */}
-        {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCreateModal(false)} />
-            <div className="relative w-full max-w-lg bg-card/70 border border-border/60 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-200">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-foreground">New Proposal</h3>
-                  <button 
-                    onClick={handleAiDraft}
-                    disabled={isDrafting}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/20 text-foreground text-sm font-medium border border-border/60 hover:bg-secondary/40 transition-colors"
-                  >
-                    {isDrafting ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : <Sparkles className="w-4 h-4 text-primary" />}
-                    Draft with ElizaOS
-                  </button>
-                </div>
-
-                <form onSubmit={handleCreateSubmit} className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Proposal Title</label>
-                    <input 
-                      type="text" 
-                      required
-                      placeholder="e.g. Risk parameter adjustment"
-                      title="Proposal title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({...formData, title: e.target.value})}
-                      className="w-full mt-1.5 bg-secondary/30 border border-border/60 rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Target Contract</label>
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="e.g. CBRX...9F8A"
-                        title="Target contract for the proposal"
-                        value={formData.target}
-                        onChange={(e) => setFormData({...formData, target: e.target.value})}
-                        className="w-full mt-1.5 bg-secondary/30 border border-border/60 rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 font-mono text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Action (Method)</label>
-                      <input 
-                        type="text" 
-                        required
-                        placeholder="e.g. update_risk_params"
-                        title="Action or method to execute"
-                        value={formData.action}
-                        onChange={(e) => setFormData({...formData, action: e.target.value})}
-                        className="w-full mt-1.5 bg-secondary/30 border border-border/60 rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 font-mono text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Detailed Description</label>
-                    <textarea 
-                      required
-                      rows={4}
-                      placeholder="Explain the proposal and the expected impact"
-                      title="Detailed proposal description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      className="w-full mt-1.5 bg-secondary/30 border border-border/60 rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 resize-none"
-                    />
-                  </div>
-
-                  <div className="pt-4 flex gap-3">
-                    <button 
-                      type="button"
-                      onClick={() => setShowCreateModal(false)}
-                      className="flex-1 px-4 py-3 rounded-xl border border-border/60 text-foreground font-medium hover:bg-secondary/40 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex-1 px-4 py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
-                    >
-                      {isSubmitting ? (
-                        <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                      ) : (
-                        "Publish On-chain"
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

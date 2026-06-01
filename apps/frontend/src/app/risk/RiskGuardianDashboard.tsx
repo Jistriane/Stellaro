@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Shield, BrainCircuit, Activity, AlertTriangle, ShieldCheck, Cpu, Radar, Zap, Lock, Smartphone, Fingerprint, RefreshCw } from "lucide-react";
-import { RadarChart, Radar as RechartsRadar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { useWalletStore } from "@/state/wallet";
 
 type ThreatLog = {
@@ -16,20 +15,33 @@ type ThreatLog = {
 
 export default function RiskGuardianDashboard() {
   const [isAgentActive, setIsAgentActive] = useState(true);
-  const [riskScore, setRiskScore] = useState(92);
   const [threatLogs, setThreatLogs] = useState<ThreatLog[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
   const [isZkGenerating, setIsZkGenerating] = useState(false);
   const [zkProof, setZkProof] = useState<string | null>(null);
   const walletAddress = useWalletStore(s => s.address);
-  const chartContainerRef = useRef<HTMLDivElement | null>(null);
-  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const liveUpdatesEnabled = process.env.NEXT_PUBLIC_ENABLE_RISK_LIVE_UPDATES === "true";
+
+  const riskScore = useMemo(() => {
+    if (!threatLogs.length) {
+      return null;
+    }
+    let score = 100;
+    for (const log of threatLogs.slice(0, 10)) {
+      if (log.severity === "high") score -= 10;
+      else if (log.severity === "medium") score -= 3;
+      else score -= 1;
+    }
+    return Math.max(0, Math.min(100, score));
+  }, [threatLogs]);
 
   const generateZkScoreProof = async () => {
     if (!walletAddress) {
       alert("Conecte sua carteira para gerar uma prova ZK.");
+      return;
+    }
+    if (riskScore === null) {
+      alert("Risk score indisponível. Ative o agente e aguarde sinais de risco reais.");
       return;
     }
 
@@ -58,10 +70,8 @@ export default function RiskGuardianDashboard() {
       alert("Prova ZK de Solvência gerada com sucesso utilizando o circuito Groth16. Seu score real permanece privado.");
     } catch (err) {
       console.error("ZK Error:", err);
-      // Fallback para mock se os arquivos .wasm/.zkey não estiverem no /public do Next.js
-      const mockProof = "0x" + Math.random().toString(16).slice(2, 66);
-      setZkProof(mockProof);
-      alert("Prova ZK gerada (Modo Lite). Para produção completa, certifique-se de que os artefatos do circom estão na pasta /public.");
+      setZkProof(null);
+      alert("Falha ao gerar prova ZK. Verifique se os artefatos do circuito estão disponíveis e se o ambiente suporta snarkjs.");
     } finally {
       setIsZkGenerating(false);
     }
@@ -87,10 +97,6 @@ export default function RiskGuardianDashboard() {
   };
 
   useEffect(() => {
-    const mountRaf = requestAnimationFrame(() => {
-      setIsMounted(true);
-    });
-
     if (!liveUpdatesEnabled) {
       setThreatLogs([
         {
@@ -102,9 +108,7 @@ export default function RiskGuardianDashboard() {
           origin: "system",
         },
       ]);
-      return () => {
-        cancelAnimationFrame(mountRaf);
-      };
+      return;
     }
 
     let isMounted = true;
@@ -142,12 +146,6 @@ export default function RiskGuardianDashboard() {
         else log.timestamp = new Date(log.timestamp);
         
         setThreatLogs(prev => [log, ...prev].slice(0, 10));
-        
-        // Dynamic Risk Score recalculation based on actual severity
-        setRiskScore(prev => {
-          const change = log.severity === 'high' ? -10 : (log.severity === 'medium' ? -3 : 1);
-          return Math.min(100, Math.max(0, prev + change));
-        });
       } catch (err) {
         void err;
       }
@@ -158,46 +156,10 @@ export default function RiskGuardianDashboard() {
     };
 
     return () => {
-      cancelAnimationFrame(mountRaf);
       isMounted = false;
       eventSource.close();
     };
   }, [apiBaseUrl, liveUpdatesEnabled]);
-
-  useEffect(() => {
-    const el = chartContainerRef.current;
-    if (!el) return;
-
-    const updateSize = () => {
-      const nextWidth = Math.max(280, Math.floor(el.clientWidth));
-      const nextHeight = Math.max(320, Math.floor(el.clientHeight));
-      setChartSize((prev) => (
-        prev.width === nextWidth && prev.height === nextHeight
-          ? prev
-          : { width: nextWidth, height: nextHeight }
-      ));
-    };
-
-    updateSize();
-
-    const observer = new ResizeObserver(() => {
-      updateSize();
-    });
-
-    observer.observe(el);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  const riskFactors = [
-    { name: "Compliance", value: 95 },
-    { name: "Liquidity", value: 88 },
-    { name: "Contratos", value: 98 },
-    { name: "Mercado", value: 85 },
-    { name: "Volatilidade", value: 90 },
-  ];
 
   return (
     <div className="min-h-screen bg-transparent text-foreground p-6 md:p-12 font-sans selection:bg-primary/20">
@@ -232,13 +194,13 @@ export default function RiskGuardianDashboard() {
 
             <div className="flex flex-col gap-4 min-w-[280px]">
               <div className="p-6 rounded-3xl bg-card/50 border border-border/60 backdrop-blur-md relative overflow-hidden group">
-                <div className={`absolute top-0 left-0 w-1 h-full ${riskScore > 80 ? 'bg-primary' : riskScore > 50 ? 'bg-secondary' : 'bg-destructive'}`} />
+                <div className={`absolute top-0 left-0 w-1 h-full ${riskScore === null ? 'bg-secondary' : riskScore > 80 ? 'bg-primary' : riskScore > 50 ? 'bg-secondary' : 'bg-destructive'}`} />
                 <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
                   <Shield className="w-4 h-4" /> Health Score
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className={`text-4xl font-black tracking-tighter ${riskScore > 80 ? 'text-primary' : riskScore > 50 ? 'text-foreground' : 'text-destructive'}`}>
-                    {riskScore}
+                  <span className={`text-4xl font-black tracking-tighter ${riskScore === null ? 'text-muted-foreground' : riskScore > 80 ? 'text-primary' : riskScore > 50 ? 'text-foreground' : 'text-destructive'}`}>
+                    {riskScore ?? "—"}
                   </span>
                   <span className="text-muted-foreground">/ 100</span>
                 </div>
@@ -340,24 +302,11 @@ export default function RiskGuardianDashboard() {
               Risk Matrix
             </h2>
 
-            <div ref={chartContainerRef} className="bg-card/40 border border-border/60 rounded-3xl p-6 h-[400px] min-w-0 flex items-center justify-center">
-              {isMounted && chartSize.width > 0 && chartSize.height > 0 ? (
-                <RadarChart width={chartSize.width} height={chartSize.height} cx="50%" cy="50%" outerRadius="70%" data={riskFactors}>
-                  <PolarGrid stroke="hsl(var(--border))" />
-                  <PolarAngleAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} stroke="hsl(var(--border))" />
-                  <RechartsRadar
-                    name="Risk"
-                    dataKey="value"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    fill="hsl(var(--primary))"
-                    fillOpacity={0.3}
-                  />
-                  </RadarChart>
-              ) : (
-                <div className="h-full w-full rounded-lg border border-dashed border-border/60" />
-              )}
+            <div className="bg-card/40 border border-border/60 rounded-3xl p-6 h-[400px] min-w-0 flex items-center justify-center">
+              <div className="text-sm text-muted-foreground text-center max-w-xl">
+                A matriz de risco detalhada (fatores de compliance/liquidez/mercado) depende de um endpoint específico no backend.
+                Para evitar valores simulados, este painel não exibe fatores hardcoded.
+              </div>
             </div>
           </div>
         </div>

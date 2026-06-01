@@ -8,39 +8,15 @@ export default async function DaoPage() {
   const overview = await getDaoOverview({ page, pageSize });
 
   const proposals = overview.proposals.map((p: any) => ({
-    id: p.id,
-    title: p.title || 'Generic Proposal',
-    action: 'update_params',
-    target: 'CBRX...9F8A',
-    status: p.status || 'Active',
-    votesFor: p.votesFor || 45000,
-    votesAgainst: p.votesAgainst || 12000,
-    endLedger: 140000
+    id: String(p.id ?? ''),
+    title: String(p.title ?? '—'),
+    action: String(p.action ?? '—'),
+    target: String(p.target ?? ''),
+    status: String(p.status ?? '—'),
+    votesFor: Number(p.votesFor ?? 0),
+    votesAgainst: Number(p.votesAgainst ?? 0),
+    endLedger: Number(p.endLedger ?? 0),
   }));
-
-  // Add mocked proposals when the backend has none so the richer UI can still render
-  if (proposals.length === 0) {
-    proposals.push({
-      id: 'P-9901',
-      title: 'Increase stability fee by 0.5%',
-      action: 'set_stability_fee',
-      target: 'C10A...110B',
-      status: 'Active',
-      votesFor: 850000,
-      votesAgainst: 125000,
-      endLedger: 180000
-    });
-    proposals.push({
-      id: 'P-9902',
-      title: 'Approve RWA liquidity partnership',
-      action: 'whitelist_rwa_provider',
-      target: 'C20B...890C',
-      status: 'Active',
-      votesFor: 410000,
-      votesAgainst: 405000,
-      endLedger: 185000
-    });
-  }
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">

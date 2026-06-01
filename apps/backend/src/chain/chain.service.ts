@@ -32,7 +32,10 @@ export class ChainService {
           : 'https://horizon-testnet.stellar.org'),
       passphrase:
         process.env.STELLAR_NETWORK_PASSPHRASE ??
-        process.env.SOROBAN_NETWORK_PASSPHRASE,
+        process.env.SOROBAN_NETWORK_PASSPHRASE ??
+        (isMainnet
+          ? StellarSdk.Networks.PUBLIC
+          : StellarSdk.Networks.TESTNET),
       secretKey:
         process.env.STELLAR_SECRET_KEY ??
         process.env.MASTER_SECRET_KEY ??

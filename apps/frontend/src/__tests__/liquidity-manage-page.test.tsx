@@ -12,8 +12,8 @@ describe('LiquidityManagePage', () => {
     render(<LiquidityManagePage />);
 
     expect(screen.getByAltText('Stellaro background')).toBeInTheDocument();
-    expect(screen.getByText('Liquidity Management')).toBeInTheDocument();
-    expect(screen.getByText('STLT-BRL / XLM')).toBeInTheDocument();
+    expect(screen.getAllByText('Liquidity Management').length).toBeGreaterThan(0);
+    expect(screen.getByText(/Sem dados de pools disponíveis/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'New Position' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Deposit' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();

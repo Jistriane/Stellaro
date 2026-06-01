@@ -4,14 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getContractIds, viewLoansPool, getWalletBalances } from "@/lib/soroban";
-import LoanSimulator from "./LoanSimulator";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 import { useEffect, useState } from "react";
+import { useWalletStore } from "@/state/wallet";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function LoansPage() {
   const t = useTranslations("loans");
-  const tc = useTranslations("common");
+  const tw = useTranslations("wallet");
   
   // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
@@ -19,23 +21,37 @@ export default function LoansPage() {
   const [data, setData] = useState<{
     pool: any;
     wallet: any;
+    positions?: { address: string; positions: Array<{ asset: string; balance: string; valueUSD: number; apy?: number; poolId?: string }>; totalUSD: number };
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const address = useWalletStore((s) => s.address);
   
   useEffect(() => {
     async function loadData() {
-      const ids = getContractIds();
-      const [pool, wallet] = await Promise.all([
-        viewLoansPool(),
-        getWalletBalances(),
-      ]);
-      
-      setData({ pool, wallet });
-      setLoading(false);
+      try {
+        const [pool, wallet] = await Promise.all([
+          viewLoansPool(),
+          getWalletBalances(address ?? undefined),
+        ]);
+
+        let positions:
+          | { address: string; positions: Array<{ asset: string; balance: string; valueUSD: number; apy?: number; poolId?: string }>; totalUSD: number }
+          | undefined;
+        if (address) {
+          const res = await fetch(`${apiUrl}/defi/blend/positions/${encodeURIComponent(address)}?quote=USD`, { cache: "no-store" });
+          if (res.ok) {
+            positions = (await res.json()) as any;
+          }
+        }
+
+        setData({ pool, wallet, positions });
+      } finally {
+        setLoading(false);
+      }
     }
     
     loadData();
-  }, []);
+  }, [address]);
 
   if (loading) {
     return (
@@ -60,39 +76,9 @@ export default function LoansPage() {
   const { pool, wallet } = data;
   const ids = getContractIds();
 
-  // Mock active user loans
-  const activeLoans = [
-    {
-      id: "L-001",
-      date: "2025-08-12",
-      principal: 5000,
-      currency: "BRL",
-      collateralXLM: 300,
-      balanceDue: 2890,
-      interest_apr_bps: pool.interest_bps ?? 0, // use pool as reference with fallback
-      dueInDays: 12,
-      status: "Up to Date",
-    },
-    {
-      id: "L-002",
-      date: "2025-07-10",
-      principal: 1000,
-      currency: "USD",
-      collateralXLM: 150,
-      balanceDue: 450,
-      interest_apr_bps: pool.interest_bps ?? 0,
-      dueInDays: 2,
-      status: "Next Due",
-    },
-  ];
-
-  // History (paid off/liquidated)
-  const historyLoans = [
-    { id: "H-101", start: "2025-06-01", amount: 800, paidAt: "2025-06-28", status: "Paid" },
-  ];
-
-  const ltvPct = ((pool.ltv_bps ?? 0) / 100).toFixed(0); // friendly display
-  const interestPct = ((pool.interest_bps ?? 0) / 100).toFixed(2);
+  const ltvPct = (Number(pool.ltv_bps ?? 0) / 100).toFixed(2);
+  const interestPct = (Number(pool.interest_bps ?? 0) / 100).toFixed(2);
+  const positions = data.positions?.positions ?? [];
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
@@ -143,35 +129,39 @@ export default function LoansPage() {
           <CardTitle>{t("active.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          {activeLoans.length === 0 ? (
+          {!address ? (
+            <div className="text-sm text-muted-foreground">{tw("login_to_view")}</div>
+          ) : positions.length === 0 ? (
             <div className="text-sm text-muted-foreground">{t("active.none")}</div>
           ) : (
             <div className="space-y-3">
-              {activeLoans.map((l) => (
-                <div key={l.id} className="rounded border border-border/60 bg-card/50 p-3">
+              {positions.map((p) => (
+                <div key={`${p.asset}-${p.balance}`} className="rounded border border-border/60 bg-card/50 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="text-sm">
-                      <div className="text-foreground">{l.date} • <b>{l.id}</b></div>
-                      <div className="text-muted-foreground text-xs">{t("active.effective_rate", { apr: (l.interest_apr_bps/100).toFixed(2) })}</div>
+                      <div className="text-foreground"><b>{p.asset}</b></div>
+                      <div className="text-muted-foreground text-xs">
+                        {typeof p.apy === "number" ? t("active.effective_rate", { apr: p.apy.toFixed(2) }) : null}
+                      </div>
                     </div>
-                    <div className="text-xs px-2 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{l.status}</div>
+                    <div className="text-xs px-2 py-1 rounded bg-secondary/30 border border-border/60 text-foreground">{t("pool.title")}</div>
                   </div>
                   <div className="mt-2 grid grid-cols-2 sm:grid-cols-6 gap-3 text-sm">
                     <div>
                       <div className="text-muted-foreground text-xs">{t("active.value")}</div>
-                      <div className="text-foreground">{l.currency === "USD" ? "$" : "R$"} {l.principal.toLocaleString("pt-BR")}</div>
+                      <div className="text-foreground">{Number(p.balance || 0).toLocaleString("pt-BR", { maximumFractionDigits: 7 })}</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground text-xs">{t("active.collateral")}</div>
-                      <div className="text-foreground">{l.collateralXLM} XLM</div>
+                      <div className="text-foreground">—</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground text-xs">{t("active.balance_due")}</div>
-                      <div className="text-foreground">{l.currency === "USD" ? "$" : "R$"} {l.balanceDue.toLocaleString("pt-BR")}</div>
+                      <div className="text-foreground">US$ {Number(p.valueUSD || 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground text-xs">{t("active.due_in")}</div>
-                      <div className="text-foreground">{t("active.days", { days: l.dueInDays })}</div>
+                      <div className="text-foreground">—</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground text-xs">{t("active.risk")}</div>
@@ -179,51 +169,14 @@ export default function LoansPage() {
                     </div>
                     <div className="flex items-end">
                       <div className="flex gap-2">
-                        <button disabled className="px-3 py-2 rounded bg-secondary/20 border border-border/60 text-muted-foreground text-xs cursor-not-allowed" title={tc("soon")}>{t("active.pay")}</button>
-                        <button disabled className="px-3 py-2 rounded bg-secondary/20 border border-border/60 text-muted-foreground text-xs cursor-not-allowed" title={tc("soon")}>{t("active.add_collateral")}</button>
-                        <Link href={`/loans/${l.id}`} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-xs">{t("active.details")}</Link>
+                        <Link href="/wallet" className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-xs">{t("active.details")}</Link>
                       </div>
                     </div>
                   </div>
-                  {/* Summary details */}
-                  <div className="mt-2 text-xs text-muted-foreground">{t("active.summary_mock")}</div>
                 </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Loan History */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("history.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {historyLoans.length === 0 ? (
-            <div className="text-sm text-muted-foreground">{t("history.none")}</div>
-          ) : (
-            <div className="space-y-2">
-              {historyLoans.map((h) => (
-                <div key={h.id} className="flex items-center justify-between rounded border border-border/60 bg-card/50 px-3 py-2 text-sm">
-                  <div className="text-foreground">{h.start} • {h.amount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>
-                  <div className="text-muted-foreground text-xs">{t("history.paid_at", { date: h.paidAt, status: h.status })}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Loan Simulator (interactive) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("simulator.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground mb-2">{t("simulator.subtitle")}</div>
-          <LoanSimulator ltvBps={pool.ltv_bps ?? 0} interestAprBps={pool.interest_bps ?? 0} wallet={{ xlm: wallet?.xlm ?? 0, stlt: wallet?.stlt }} />
-          <div className="text-xs text-muted-foreground mt-3">{t("simulator.balance", { xlm: wallet?.xlm, stlt: Number(wallet?.stlt || 0).toLocaleString("pt-BR") })}</div>
         </CardContent>
       </Card>
 
@@ -268,8 +221,15 @@ export default function LoansPage() {
             <li>{t("steps.s4")}</li>
           </ol>
           <div className="mt-3 flex gap-2">
-            <button className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm" title="Mock">{t("steps.apply")}</button>
-            <button className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm" title="Mock">{t("steps.track")}</button>
+            <button disabled className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm opacity-60">
+              {t("steps.apply")}
+            </button>
+            <button disabled className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm opacity-60">
+              {t("steps.track")}
+            </button>
+          </div>
+          <div className="mt-2 text-xs text-muted-foreground">
+            Operações de contratação e acompanhamento exigem fluxo on-chain e endpoints dedicados no backend.
           </div>
         </CardContent>
       </Card>
@@ -280,24 +240,13 @@ export default function LoansPage() {
           <CardTitle>{t("collateral.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div>
-              <div className="text-muted-foreground">{t("collateral.limit_available")}</div>
-              <div className="text-foreground">R$ 12.000</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">{t("collateral.deposited")}</div>
-              <div className="text-foreground">450 XLM • 2.000 STLT</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">{t("collateral.avg_ltv")}</div>
-              <div className="text-primary">{t("collateral.risk_attention")}</div>
-            </div>
+          <div className="text-sm text-muted-foreground">
+            Para evitar dados simulados, limites e colateral exibidos aqui dependem de leitura on-chain das suas posições e/ou indexação no backend.
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-sm">
-            <button className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("collateral.add")}</button>
-            <button className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("collateral.remove")}</button>
-            <button className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("collateral.renegotiate")}</button>
+            <button disabled className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground opacity-60">{t("collateral.add")}</button>
+            <button disabled className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground opacity-60">{t("collateral.remove")}</button>
+            <button disabled className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground opacity-60">{t("collateral.renegotiate")}</button>
           </div>
           <div className="mt-2 text-xs text-muted-foreground">{t("collateral.note_ltv")}</div>
         </CardContent>
@@ -362,11 +311,11 @@ export default function LoansPage() {
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-2">
-        <button className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm">{t("quick.apply")}</button>
-        <button className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm">{t("quick.simulate")}</button>
-        <button className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm">{t("quick.track")}</button>
-        <button className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm">{t("quick.prepay")}</button>
-        <button className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm">{t("quick.support")}</button>
+        <button disabled className="px-4 py-2 rounded bg-primary text-primary-foreground text-sm opacity-60">{t("quick.apply")}</button>
+        <button disabled className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm opacity-60">{t("quick.simulate")}</button>
+        <button disabled className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm opacity-60">{t("quick.track")}</button>
+        <button disabled className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm opacity-60">{t("quick.prepay")}</button>
+        <button disabled className="px-4 py-2 rounded bg-secondary/30 border border-border/60 text-foreground text-sm opacity-60">{t("quick.support")}</button>
       </div>
       </div>
     </div>

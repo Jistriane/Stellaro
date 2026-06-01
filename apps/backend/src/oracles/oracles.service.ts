@@ -48,6 +48,9 @@ export class OraclesService {
    */
   async getPrice(base: string, quote: string): Promise<PriceData> {
     const cacheKey = `${this.cachePrefix}${base}/${quote}`;
+    const nodeEnv =
+      this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+    const allowFallback = nodeEnv.toLowerCase() !== 'production';
 
     // Check cache primeiro
     const cached = await this.redis.get<PriceData>(cacheKey);
@@ -62,12 +65,15 @@ export class OraclesService {
       // Cache e retorna
       await this.redis.set(cacheKey, reflectorPrice, this.cacheTTL);
       return reflectorPrice;
-    } catch {
+    } catch (error) {
       this.logger.warn(
         `Reflector Network failed for ${base}/${quote}, using fallback`,
       );
 
-      // Fallback para preços determinísticos (dev/test)
+      if (!allowFallback) {
+        throw error;
+      }
+
       return this.getFallbackPrice(base, quote);
     }
   }

@@ -1,9 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { getContractIds, viewPortfolio, getWalletBalances } = vi.hoisted(() => ({
-  getContractIds: vi.fn(),
-  viewPortfolio: vi.fn(),
+const { getWalletBalances } = vi.hoisted(() => ({
   getWalletBalances: vi.fn(),
 }));
 
@@ -27,8 +25,6 @@ vi.mock('@/hooks/useRealTimeUpdates', () => ({
 }));
 
 vi.mock('@/lib/soroban', () => ({
-  getContractIds,
-  viewPortfolio,
   getWalletBalances,
 }));
 
@@ -36,15 +32,6 @@ import PortfolioPage from '@/app/portfolio/page';
 
 describe('PortfolioPage', () => {
   beforeEach(() => {
-    getContractIds.mockReturnValue({
-      PORTFOLIO_CONTRACT_ID: 'portfolio-xyz',
-    });
-    viewPortfolio.mockResolvedValue({
-      allocation: [
-        { asset: 'STLT', pct_bps: 7400 },
-        { asset: 'XLM', pct_bps: 2600 },
-      ],
-    });
     getWalletBalances.mockResolvedValue({
       stlt: '100',
       xlm: '20',
@@ -64,14 +51,8 @@ describe('PortfolioPage', () => {
       expect(screen.getByText('header.title')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('portfolio-xyz')).toBeInTheDocument();
-    expect(screen.getByText('R$ 135')).toBeInTheDocument();
-    expect(screen.getByText('$ 27')).toBeInTheDocument();
-    expect(screen.getByText('distribution.protocol_ref_title')).toBeInTheDocument();
-    expect(screen.getByText('distribution.qty_label {"qty":"100","brl":"100","usd":"20"}')).toBeInTheDocument();
-    expect(screen.getByText('distribution.qty_label {"qty":"20","brl":"35","usd":"7"}')).toBeInTheDocument();
+    expect(screen.getByText('$ 0')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'reports.view_full' })).toHaveAttribute('href', '/wallet');
-    expect(viewPortfolio).toHaveBeenCalled();
     expect(getWalletBalances).toHaveBeenCalled();
   });
 });

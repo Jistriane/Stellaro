@@ -84,21 +84,19 @@ export class EtherfuseService {
   constructor(private readonly configService: ConfigService) {}
 
   getStatus(): EtherfuseStatus {
+    const nodeEnv =
+      this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+    const allowStub = nodeEnv.toLowerCase() !== 'production';
     const configuredMode =
       this.getString('ETHERFUSE_MODE')?.toLowerCase() ?? null;
     const resolved = this.resolveMode();
     const mode = resolved.mode;
-    const apiBaseUrl =
-      this.getString('ETHERFUSE_API_BASE_URL') ??
-      'https://api.sand.etherfuse.com';
+    const apiBaseUrl = this.getString('ETHERFUSE_API_BASE_URL') ?? (allowStub ? 'https://api.sand.etherfuse.com' : '');
     const blockchain = this.getBlockchain();
     const defaultQuoteType =
       this.getQuoteType('ETHERFUSE_DEFAULT_QUOTE_TYPE') ?? 'onramp';
-    const defaultSourceAsset =
-      this.getString('ETHERFUSE_SOURCE_ASSET') ?? 'MXN';
-    const defaultTargetAsset =
-      this.getString('ETHERFUSE_TARGET_ASSET') ??
-      'USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN';
+    const defaultSourceAsset = this.getString('ETHERFUSE_SOURCE_ASSET') ?? (allowStub ? 'MXN' : '');
+    const defaultTargetAsset = this.getString('ETHERFUSE_TARGET_ASSET') ?? (allowStub ? 'USDC:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN' : '');
 
     return {
       enabled: mode !== 'disabled',
@@ -416,6 +414,9 @@ export class EtherfuseService {
   }
 
   private resolveMode(): { mode: EtherfuseMode; reason: string | null } {
+    const nodeEnv =
+      this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+    const allowStub = nodeEnv.toLowerCase() !== 'production';
     const configuredMode = this.getString('ETHERFUSE_MODE')?.toLowerCase();
     const apiBaseUrl = this.getString('ETHERFUSE_API_BASE_URL');
     const apiKey = this.getString('ETHERFUSE_API_KEY');
@@ -440,11 +441,25 @@ export class EtherfuseService {
     }
 
     if (configuredMode === 'stub') {
+      if (!allowStub) {
+        return {
+          mode: 'disabled',
+          reason: 'ETHERFUSE_MODE=stub is not allowed in production',
+        };
+      }
       return { mode: 'stub', reason: 'ETHERFUSE_MODE=stub' };
     }
 
     if (liveReady) {
       return { mode: 'live', reason: null };
+    }
+
+    if (!allowStub) {
+      return {
+        mode: 'disabled',
+        reason:
+          'ETHERFUSE_API_BASE_URL/ETHERFUSE_API_KEY missing in production',
+      };
     }
 
     return {

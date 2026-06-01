@@ -3,52 +3,69 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
-  getContractIds,
   viewLoansPool,
-  viewPortfolio,
-  viewGovernance,
   getWalletBalances,
+  hasValidVc,
 } from "@/lib/soroban";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 import { useEffect, useState } from "react";
+import { useWalletStore } from "@/state/wallet";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
-  type PortfolioAllocation = {
-    asset: string;
-    pct_bps: number;
-  };
 
   // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
   
   const [data, setData] = useState<{
     loans: any;
-    portfolio: any;
-    gov: any;
     balances: any;
+    totalUSD: number;
+    daoTotal: number;
+    isCompliant: boolean | null;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const address = useWalletStore((s) => s.address);
   
   useEffect(() => {
     async function loadData() {
-      const ids = getContractIds();
-      const [loans, portfolio, gov, balances] = await Promise.all([
-        viewLoansPool(),
-        viewPortfolio(),
-        viewGovernance(),
-        getWalletBalances(),
-      ]);
-      
-      setData({ loans, portfolio, gov, balances });
-      setLoading(false);
+      try {
+        const loans = await viewLoansPool();
+        const balances = await getWalletBalances(address ?? undefined);
+
+        let totalUSD = 0;
+        let daoTotal = 0;
+        let isCompliant: boolean | null = null;
+
+        if (address) {
+          const [posRes, daoRes, vc] = await Promise.all([
+            fetch(`${apiUrl}/defi/blend/positions/${encodeURIComponent(address)}?quote=USD`, { cache: "no-store" }),
+            fetch(`${apiUrl}/chain/dao/proposals?start=1&limit=1`, { cache: "no-store" }),
+            hasValidVc(address),
+          ]);
+          if (posRes.ok) {
+            const pos = (await posRes.json()) as any;
+            totalUSD = Number(pos?.totalUSD ?? 0) || 0;
+          }
+          if (daoRes.ok) {
+            const body = (await daoRes.json()) as any;
+            daoTotal = Number(body?.total ?? 0) || 0;
+          }
+          isCompliant = vc;
+        }
+
+        setData({ loans, balances, totalUSD, daoTotal, isCompliant });
+      } finally {
+        setLoading(false);
+      }
     }
     
     loadData();
-  }, []);
+  }, [address]);
 
   if (loading) {
     return (
@@ -70,46 +87,9 @@ export default function DashboardPage() {
     );
   }
 
-  const { loans, portfolio, gov, balances } = data;
-  const ids = getContractIds();
-
-  // Local mocks for UI (i18n)
-  const recentActivities = [
-    {
-      date: "2025-08-20",
-      desc: t("recent.items.received_stlt_brl", { amount: 200, asset: "STLT-BRL" }),
-      amount: "+200",
-      status: t("status.completed"),
-    },
-    {
-      date: "2025-08-18",
-      desc: t("recent.items.requested_loan"),
-      amount: "-12.000",
-      status: t("status.pending"),
-    },
-    {
-      date: "2025-08-15",
-      desc: t("recent.items.voted_proposal", { id: 22 }),
-      amount: "—",
-      status: t("status.completed"),
-    },
-  ];
-  const loansActive = [
-    { id: "LN-001", principal: 12000, asset: "STLT-BRL", due: "2025-09-20", status: t("loans.on_time"), collateral: "USDC/T-BILL" },
-  ];
-  const notifications = [
-    { kind: "governance", text: t("notifications.items.open_proposal") },
-    { kind: "kyc", text: t("notifications.items.kyc_selfie_pending") },
-    { kind: "risk", text: t("notifications.items.review_collateral") },
-  ];
-
-  // Estimated conversions (mock)
+  const { loans, balances } = data;
   const stlt = Number.parseFloat(balances.stlt || "0");
   const xlm = Number.parseFloat(balances.xlm || "0");
-  const rateBRL = 1.0; // 1 STLT ~= 1 BRL (mock)
-  const rateUSD = 0.2; // mock
-  const stltBRL = stlt * rateBRL;
-  const stltUSD = stlt * rateUSD;
 
   function truncatePubKey(pk?: string) {
     if (!pk) return "—";
@@ -127,7 +107,7 @@ export default function DashboardPage() {
           <div className="w-10 h-10 rounded-full bg-secondary/20 border border-border/60 flex items-center justify-center text-primary font-bold">S</div>
           <div>
             <h1 className="text-2xl font-semibold">{t("greeting.welcome_back")}</h1>
-            <div className="text-xs text-muted-foreground">{t("greeting.stellar_key")} {truncatePubKey(ids.STELLAR_PUBLIC_KEY)}</div>
+            <div className="text-xs text-muted-foreground">{t("greeting.stellar_key")} {truncatePubKey(address ?? undefined)}</div>
           </div>
         </div>
         <div className="text-xs text-muted-foreground">{t("greeting.updated_now")}</div>
@@ -137,20 +117,22 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>STLT-BRL</CardTitle>
+            <CardTitle>STLT</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">R$ {stltBRL.toLocaleString("en-US", { maximumFractionDigits: 2 })}</div>
-            <div className="text-xs text-muted-foreground">{t("balances.estimated_stlt_balance", { amount: stlt.toLocaleString("en-US", { maximumFractionDigits: 4 }) })}</div>
+            <div className="text-2xl font-semibold">{stlt.toLocaleString("en-US", { maximumFractionDigits: 7 })}</div>
+            <div className="text-xs text-muted-foreground">{t("balances.available")}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>STLT-USD</CardTitle>
+            <CardTitle>Total (USD)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">$ {stltUSD.toLocaleString("en-US", { maximumFractionDigits: 2 })}</div>
-            <div className="text-xs text-muted-foreground">{t("balances.estimated_mock")}</div>
+            <div className="text-2xl font-semibold">
+              $ {data.totalUSD.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
+            <div className="text-xs text-muted-foreground">{address ? t("balances.available") : "—"}</div>
           </CardContent>
         </Card>
         <Card>
@@ -180,112 +162,67 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Recent activities + Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("recent.title")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {recentActivities.map((a) => (
-                <li key={a.date + a.desc} className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2 text-sm">
-                  <div>
-                    <div className="text-foreground">{a.desc}</div>
-                    <div className="text-xs text-muted-foreground">{a.date} • {a.status}</div>
-                  </div>
-                  <div className="text-muted-foreground">{a.amount}</div>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-3">
-              <Link className="text-sm underline text-primary" href="/wallet">{t("recent.view_all")}</Link>
-            </div>
-          </CardContent>
-        </Card>
         <Card>
           <CardHeader>
             <CardTitle>{t("notifications.title")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
-              {notifications.map((n, i) => (
-                <li key={i} className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-2 h-2 rounded-full bg-primary" />
-                    <span>{n.text}</span>
-                  </div>
-                  <Link className="text-xs underline text-primary" href={n.kind === "kyc" ? "/profile" : n.kind === "governance" ? "/governance" : "/risk"}>{t("notifications.view")}</Link>
-                </li>
-              ))}
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2">
+                <span>SSI: {data.isCompliant ? "ok" : "pendente"}</span>
+                <Link className="text-xs underline text-primary" href="/profile">{t("notifications.view")}</Link>
+              </li>
+              <li className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2">
+                <span>DAO: {data.daoTotal.toLocaleString("pt-BR")} propostas</span>
+                <Link className="text-xs underline text-primary" href="/governance">{t("notifications.view")}</Link>
+              </li>
             </ul>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("recent.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-muted-foreground">Histórico e movimentos via Horizon na página da wallet.</div>
+            <div className="mt-3">
+              <Link className="text-sm underline text-primary" href="/wallet">{t("recent.view_all")}</Link>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Loans */}
       <Card>
         <CardHeader>
           <CardTitle>{t("loans.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-xs text-muted-foreground mb-2">{t("loans.pool_ltv_interest", { ltv: loans.ltv_bps ?? 0, interest: loans.interest_bps ?? 0 })}</div>
-          <ul className="space-y-2">
-            {loansActive.map((l) => (
-              <li key={l.id} className="bg-secondary/20 border border-border/60 rounded p-3 text-sm">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="font-medium">{l.principal.toLocaleString("pt-BR")} {l.asset}</div>
-                  <div className="text-xs text-muted-foreground">{t("loans.status")}: <b className="text-foreground">{l.status}</b></div>
-                </div>
-                <div className="text-xs text-muted-foreground">{t("loans.collateral_due", { collateral: l.collateral, due: l.due })}</div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Link className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground" href={`/loans/${l.id}`}>{t("loans.view_details")}</Link>
-                  <Link className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground" href={`/loans/${l.id}?action=renegotiate`}>{t("loans.renegotiate")}</Link>
-                  <Link className="px-3 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground" href={`/loans/${l.id}?action=prepay`}>{t("loans.prepay")}</Link>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="text-sm text-muted-foreground">{address ? "Detalhes e simulação na página Loans." : "Conecte a wallet para ver dados."}</div>
+          <div className="mt-3">
+            <Link className="text-sm underline text-primary" href="/loans">{t("quick_access.request_loan")}</Link>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Portfolio */}
       <Card>
         <CardHeader>
           <CardTitle>{t("portfolio.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-muted-foreground mb-2">{t("portfolio.contract")}: <span className="text-foreground">{ids.PORTFOLIO_CONTRACT_ID || "—"}</span></div>
-          <ul className="space-y-2">
-            {(portfolio.allocation as PortfolioAllocation[]).map((a) => (
-              <li key={a.asset} className="text-sm">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-foreground">{a.asset}</span>
-                  <span className="text-muted-foreground">{(a.pct_bps/100).toFixed(2)}%</span>
-                </div>
-                <Progress value={a.pct_bps / 100} className="mt-1" />
-              </li>
-            ))}
-          </ul>
-          <div className="text-xs text-muted-foreground mt-2">{t("portfolio.history_mock")}</div>
-        </CardContent>
-      </Card>
-
-      {/* Governance */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("governance.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm mb-2">{t("governance.open_proposals", { count: gov.proposals_open ?? 0 })}</div>
-          <div className="text-xs text-muted-foreground">Admin: <span className="text-foreground">{gov.admin}</span></div>
+          <div className="text-sm text-muted-foreground">
+            Total (USD):{" "}
+            <b className="text-foreground">
+              $ {data.totalUSD.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </b>
+          </div>
           <div className="mt-3">
-            <Link className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-sm text-foreground" href="/governance">{t("governance.view_proposals")}</Link>
+            <Link className="text-sm underline text-primary" href="/portfolio">{t("portfolio.title")}</Link>
           </div>
         </CardContent>
       </Card>
 
-      {/* Profile */}
       <Card>
         <CardHeader>
           <CardTitle>{t("profile.title")}</CardTitle>
@@ -295,7 +232,7 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-full bg-secondary/20 border border-border/60 flex items-center justify-center">👤</div>
             <div>
               <div className="text-sm">{t("profile.user")}</div>
-              <div className="text-xs text-muted-foreground">KYC: <b className="text-primary">{t("profile.kyc_pending")}</b></div>
+              <div className="text-xs text-muted-foreground">KYC: <b className="text-primary">{data.isCompliant ? "verificado" : "pendente"}</b></div>
             </div>
           </div>
           <div className="mt-3">

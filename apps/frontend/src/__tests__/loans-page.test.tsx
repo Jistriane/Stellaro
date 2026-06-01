@@ -1,10 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { getContractIds, viewLoansPool, getWalletBalances } = vi.hoisted(() => ({
-  getContractIds: vi.fn(),
+const { viewLoansPool, getWalletBalances, getContractIds } = vi.hoisted(() => ({
   viewLoansPool: vi.fn(),
   getWalletBalances: vi.fn(),
+  getContractIds: vi.fn(),
 }));
 
 vi.mock('next/image', () => ({
@@ -25,18 +25,15 @@ vi.mock('@/hooks/useRealTimeUpdates', () => ({
 }));
 
 vi.mock('@/lib/soroban', () => ({
-  getContractIds,
   viewLoansPool,
   getWalletBalances,
+  getContractIds,
 }));
 
 import LoansPage from '@/app/loans/page';
 
 describe('LoansPage', () => {
   beforeEach(() => {
-    getContractIds.mockReturnValue({
-      LOANSPOOL_CONTRACT_ID: 'loans-pool-456',
-    });
     viewLoansPool.mockResolvedValue({
       ltv_bps: 6500,
       interest_bps: 1200,
@@ -47,6 +44,9 @@ describe('LoansPage', () => {
     getWalletBalances.mockResolvedValue({
       xlm: '15.5',
       stlt: '2500',
+    });
+    getContractIds.mockReturnValue({
+      LOANSPOOL_CONTRACT_ID: 'C_LOANSPOOL_MAINNET',
     });
   });
 
@@ -63,11 +63,7 @@ describe('LoansPage', () => {
       expect(screen.getByText('header.title')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('loans-pool-456')).toBeInTheDocument();
-      expect(screen.getByText('Desired amount (BRL)')).toBeInTheDocument();
-      expect(screen.getByText('Simulate')).toBeInTheDocument();
-      expect(screen.getByText('Start Loan')).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: 'active.details' })).toHaveLength(2);
+    expect(screen.getByText('pool.title')).toBeInTheDocument();
     expect(viewLoansPool).toHaveBeenCalled();
     expect(getWalletBalances).toHaveBeenCalled();
   });

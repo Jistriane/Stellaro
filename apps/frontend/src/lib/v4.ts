@@ -77,7 +77,7 @@ export type V4Overview = V4ModuleData & {
 export async function getV4Overview(): Promise<V4Overview> {
   return readJson<V4Overview>('/v4', {
     module: 'v4',
-    status: 'frontend-and-api-scaffold',
+    status: 'unavailable',
     readiness: 0,
     modules: [],
     nextSteps: [],
@@ -87,8 +87,8 @@ export async function getV4Overview(): Promise<V4Overview> {
 export async function getRwaOverview(query?: QueryParams): Promise<RwaOverview> {
   return readJson<RwaOverview>('/rwa', {
     module: 'rwa',
-    status: 'integrated-with-soroban',
-    readiness: 0.75,
+    status: 'unavailable',
+    readiness: 0,
     items: [],
     total: 0,
     page: 1,
@@ -100,8 +100,8 @@ export async function getRwaOverview(query?: QueryParams): Promise<RwaOverview> 
 export async function getSsiOverview(query?: QueryParams): Promise<SsiOverview> {
   return readJson<SsiOverview>('/ssi', {
     module: 'ssi',
-    status: 'integrated-with-soroban',
-    readiness: 0.8,
+    status: 'unavailable',
+    readiness: 0,
     credentials: [],
     total: 0,
     page: 1,
@@ -113,8 +113,8 @@ export async function getSsiOverview(query?: QueryParams): Promise<SsiOverview> 
 export async function getSubscriptionOverview(query?: QueryParams): Promise<SubscriptionOverview> {
   return readJson<SubscriptionOverview>('/subscriptions', {
     module: 'subscription',
-    status: 'integrated-with-soroban',
-    readiness: 0.8,
+    status: 'unavailable',
+    readiness: 0,
     plans: [],
     total: 0,
     page: 1,
@@ -126,8 +126,8 @@ export async function getSubscriptionOverview(query?: QueryParams): Promise<Subs
 export async function getDaoOverview(query?: QueryParams): Promise<DaoOverview> {
   return readJson<DaoOverview>('/dao', {
     module: 'dao',
-    status: 'integrated-with-soroban',
-    readiness: 0.85,
+    status: 'unavailable',
+    readiness: 0,
     proposals: [],
     total: 0,
     page: 1,

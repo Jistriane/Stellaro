@@ -46,9 +46,5 @@ describe('RecurringPaymentsPage', () => {
     expect(payload).toContain('weekly');
     expect(payload).toContain('paused');
     expect(payload).toContain('Fallback Plan');
-    expect(payload).toContain('25');
-    expect(payload).toContain('STLT');
-    expect(payload).toContain('monthly');
-    expect(payload).toContain('active');
   });
 });

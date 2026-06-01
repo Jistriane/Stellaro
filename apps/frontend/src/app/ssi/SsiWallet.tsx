@@ -60,8 +60,8 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
       setMintError("Conecte uma carteira Stellar antes de emitir uma credencial.");
       return;
     }
-    if (walletNetwork !== "testnet") {
-      setMintError("Troque a carteira para a Stellar testnet antes de emitir a credencial.");
+    if (walletNetwork !== "public") {
+      setMintError("Troque a carteira para a Stellar public network antes de emitir a credencial.");
       return;
     }
     if (issuanceStatus && !issuanceStatus.available) {
@@ -124,7 +124,7 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
       setShowKycForm(false);
     } catch (err) {
       console.error(err);
-      const message = err instanceof Error ? err.message : "Nao foi possivel emitir a credencial na testnet.";
+      const message = err instanceof Error ? err.message : "Nao foi possivel emitir a credencial na public network.";
       setMintError(message);
     } finally {
       setIsMinting(false);
@@ -251,7 +251,7 @@ export default function SsiWallet({ initialCredentials }: { initialCredentials: 
                     isMinting ||
                     !walletConnected ||
                     !walletAddress ||
-                    walletNetwork !== "testnet" ||
+                    walletNetwork !== "public" ||
                     (issuanceStatus ? !issuanceStatus.available : false)
                   }
                   className="relative inline-flex items-center justify-center gap-2 px-8 py-2.5 font-semibold text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all disabled:opacity-70 disabled:cursor-wait"

@@ -19,17 +19,25 @@ export class CardService {
   private readonly logger = new Logger(CardService.name);
   private readonly client: AxiosInstance | null = null;
   private readonly enabled: boolean;
+  private readonly allowStub: boolean;
+  private readonly apiKeyConfigured: boolean;
+  private readonly apiUrlConfigured: boolean;
 
   constructor(
     private config: ConfigService,
     private prisma: PrismaService,
     private actions: ActionsService,
   ) {
+    const nodeEnv =
+      this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+    this.allowStub = nodeEnv.toLowerCase() !== 'production';
     const apiKey =
       this.config.get<string>('CARD_API_KEY') || process.env.CARD_API_KEY;
     const apiUrl =
       this.config.get<string>('CARD_API_URL') || process.env.CARD_API_URL;
-    this.enabled = !!apiKey && !!apiUrl;
+    this.apiKeyConfigured = !!apiKey;
+    this.apiUrlConfigured = !!apiUrl;
+    this.enabled = this.apiKeyConfigured && this.apiUrlConfigured;
 
     if (this.enabled && apiUrl) {
       this.client = axios.create({
@@ -44,6 +52,23 @@ export class CardService {
     }
   }
 
+  getStatus() {
+    const mode = this.enabled ? 'live' : this.allowStub ? 'stub' : 'disabled';
+    const fallbackActive = !this.enabled;
+    const fallbackReason = fallbackActive
+      ? 'Card integration not configured'
+      : null;
+
+    return {
+      enabled: this.enabled,
+      mode,
+      apiKeyConfigured: this.apiKeyConfigured,
+      apiUrlConfigured: this.apiUrlConfigured,
+      fallbackActive,
+      fallbackReason,
+    };
+  }
+
   async tokenizeCard(params: {
     userId: string;
     number: string;
@@ -56,28 +81,10 @@ export class CardService {
       this.logger.log(`Tokenizing card for user: ${params.userId}`);
 
       if (!this.enabled || !this.client) {
-        // Stub: simular tokenização local
-        const token: CardToken = {
-          id: `card_tok_${Math.random().toString(36).substring(7)}`,
-          last4: params.number.slice(-4),
-          brand: 'Visa', // Mock
-          holderName: params.holderName,
-          expiryMonth: params.expiryMonth,
-          expiryYear: params.expiryYear,
-          status: 'active',
-        };
-
-        // Salvar no banco (criptografado em prod)
-        await this.prisma.auditLog.create({
-          data: {
-            userId: params.userId,
-            action: 'CARD_TOKENIZED',
-            level: 'INFO',
-            metadata: { last4: token.last4, brand: token.brand, stub: true },
-          },
-        });
-
-        return { ok: true, token };
+        if (!this.allowStub) {
+          return { ok: false, error: 'Card integration not configured' };
+        }
+        return { ok: false, error: 'Card integration not configured (stub disabled for UI)' };
       }
 
       // Chamada real ao gateway (Dock/Stripe/etc)
@@ -121,20 +128,10 @@ export class CardService {
       );
 
       if (!this.enabled || !this.client) {
-        // Stub: sucesso simulado
-        await this.prisma.auditLog.create({
-          data: {
-            userId: params.userId,
-            action: 'CARD_CHARGED',
-            level: 'INFO',
-            metadata: {
-              amount: params.amount,
-              currency: params.currency,
-              stub: true,
-            },
-          },
-        });
-        return { ok: true, txHash: 'stub_charge_hash' };
+        if (!this.allowStub) {
+          return { ok: false, error: 'Card integration not configured' };
+        }
+        return { ok: false, error: 'Card integration not configured (stub disabled for UI)' };
       }
 
       const response = await this.client.post<{ txHash: string }>(

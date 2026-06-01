@@ -10,46 +10,34 @@ vi.mock('next-intl', () => ({
     'stats.title': 'DeFi stats',
     'stats.subtitle': 'Protocol and lending performance',
     'stats.tvl': 'TVL',
-    'stats.loans': 'Loans',
-    'stats.apy': 'APY',
-    'stats.utilization': 'Utilization',
   }[key] ?? key),
 }));
-
-vi.mock('recharts', () => {
-  const MockChart = () => <div />;
-  return {
-    ResponsiveContainer: MockChart,
-    BarChart: MockChart,
-    Bar: MockChart,
-    LineChart: MockChart,
-    Line: MockChart,
-    XAxis: MockChart,
-    YAxis: MockChart,
-    CartesianGrid: MockChart,
-    Tooltip: MockChart,
-    Legend: MockChart,
-    AreaChart: MockChart,
-    Area: MockChart,
-  };
-});
 
 import DefiStatsPage from '@/app/defi/stats/page';
 
 describe('DefiStatsPage', () => {
-  it('renders mocked protocol stats cards and summary blocks', async () => {
+  it('renders stats backed by /analytics/overview', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        json: async () => ({
+          tvl: '$275.0K',
+          volume24h: '$1.2M',
+          mintBurnRatio: '0.98',
+        }),
+      })) as any,
+    );
+
     render(<DefiStatsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('DeFi stats')).toBeInTheDocument();
+      expect(screen.getAllByText('DeFi stats').length).toBeGreaterThan(0);
     });
 
     expect(screen.getByText('Protocol and lending performance')).toBeInTheDocument();
     expect(screen.getByText('$275.0K')).toBeInTheDocument();
-    expect(screen.getByText('42')).toBeInTheDocument();
-    expect(screen.getByText('8.3%')).toBeInTheDocument();
-    expect(screen.getByText('73.5%')).toBeInTheDocument();
-    expect(screen.getByText('Loan Types Distribution')).toBeInTheDocument();
-    expect(screen.getByText('Pool Health Summary')).toBeInTheDocument();
+    expect(screen.getByText('$1.2M')).toBeInTheDocument();
+    expect(screen.getByText('0.98')).toBeInTheDocument();
   });
 });

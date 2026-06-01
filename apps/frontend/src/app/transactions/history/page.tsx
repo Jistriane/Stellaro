@@ -1,95 +1,124 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-import { Download, Search, Filter } from "lucide-react";
+import { Search } from "lucide-react";
+import { useWalletStore } from "@/state/wallet";
+import { getHorizonBaseUrl } from "@/lib/soroban";
+
+type HorizonOperationsResponse = {
+  _embedded?: {
+    records?: Array<Record<string, unknown>>;
+  };
+};
+
+type TxRow = {
+  id: string;
+  type: string;
+  createdAt: string;
+  txHash: string;
+  asset: string;
+  amount: string;
+};
 
 export default function TransactionHistoryPage() {
   const t = useTranslations("transactions");
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const address = useWalletStore((s) => s.address);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all");
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
+  const [rows, setRows] = useState<TxRow[]>([]);
 
   useEffect(() => {
-    const mockTransactions = [
-      {
-        id: "TXN-001",
-        type: "Borrow",
-        asset: "STLT",
-        amount: 1000,
-        date: "2025-12-06",
-        time: "14:30",
-        status: "Completed",
-        hash: "a1b2c3d4...",
-      },
-      {
-        id: "TXN-002",
-        type: "Deposit",
-        asset: "XLM",
-        amount: 500,
-        date: "2025-12-05",
-        time: "10:15",
-        status: "Completed",
-        hash: "e5f6g7h8...",
-      },
-      {
-        id: "TXN-003",
-        type: "Withdraw",
-        asset: "STLT",
-        amount: 500,
-        date: "2025-12-04",
-        time: "16:45",
-        status: "Completed",
-        hash: "i9j0k1l2...",
-      },
-      {
-        id: "TXN-004",
-        type: "Repay",
-        asset: "STLT",
-        amount: 250,
-        date: "2025-12-03",
-        time: "09:20",
-        status: "Completed",
-        hash: "m3n4o5p6...",
-      },
-      {
-        id: "TXN-005",
-        type: "Add Liquidity",
-        asset: "STLT-XLM",
-        amount: 300,
-        date: "2025-12-02",
-        time: "11:00",
-        status: "Completed",
-        hash: "q7r8s9t0...",
-      },
-      {
-        id: "TXN-006",
-        type: "Swap",
-        asset: "XLM → USDC",
-        amount: 100,
-        date: "2025-12-01",
-        time: "15:30",
-        status: "Completed",
-        hash: "u1v2w3x4...",
-      },
-    ];
+    let active = true;
+    const horizon = getHorizonBaseUrl();
 
-    setTransactions(mockTransactions);
-    setLoading(false);
-  }, [filter]);
+    (async () => {
+      if (!address) {
+        if (!active) return;
+        setRows([]);
+        setError(null);
+        setLoading(false);
+        return;
+      }
 
-  const getTypeBadge = (type: string): { variant: "default" | "secondary" | "outline" | "destructive"; className?: string } => {
-    switch (type) {
-      default:
-        return { variant: "secondary", className: "text-primary" };
-    }
-  };
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`${horizon}/accounts/${address}/operations?order=desc&limit=25`, {
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          throw new Error(`Horizon error: ${res.status}`);
+        }
+        const body = (await res.json()) as HorizonOperationsResponse;
+        const records = body?._embedded?.records ?? [];
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
+        const mapped: TxRow[] = records.map((r) => {
+          const record = r as Record<string, unknown>;
+          const id = String(record.id ?? "");
+          const type = String(record.type ?? record.type_i ?? "unknown");
+          const createdAt = String(record.created_at ?? "");
+          const txHash = String(record.transaction_hash ?? "");
+
+          const amount = typeof record.amount === "string" ? record.amount : "";
+          const assetCode =
+            typeof record.asset_code === "string"
+              ? record.asset_code
+              : typeof record.asset_type === "string"
+                ? record.asset_type
+                : "";
+
+          return {
+            id,
+            type,
+            createdAt,
+            txHash,
+            asset: assetCode,
+            amount,
+          };
+        });
+
+        if (!active) return;
+        setRows(mapped);
+      } catch (e) {
+        if (!active) return;
+        const msg = e instanceof Error ? e.message : "Falha ao carregar histórico";
+        setError(msg);
+        setRows([]);
+      } finally {
+        if (!active) return;
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [address]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) => {
+      const matchesFilter = filter === "all" ? true : r.type === filter;
+      const matchesSearch = !q
+        ? true
+        : r.id.toLowerCase().includes(q) || r.txHash.toLowerCase().includes(q);
+      return matchesFilter && matchesSearch;
+    });
+  }, [rows, filter, search]);
+
+  const availableTypes = useMemo(() => {
+    const types = new Set<string>();
+    rows.forEach((r) => {
+      if (r.type) types.add(r.type);
+    });
+    return Array.from(types).sort();
+  }, [rows]);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent px-4 py-6 sm:px-6 lg:px-8">
@@ -101,34 +130,24 @@ export default function TransactionHistoryPage() {
             <h1 className="text-2xl font-semibold mb-1">{t("history.title")}</h1>
             <p className="text-xs text-muted-foreground">{t("history.subtitle")}</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-            <Button size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-          </div>
         </div>
 
-        {/* Search & Filters */}
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 space-y-4">
             <div className="flex gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search transaction ID or hash..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-secondary/30 border border-border/60 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/20"
                 />
               </div>
             </div>
 
-            {/* Type Filter */}
-            <div className="flex gap-2 mt-4 flex-wrap">
+            <div className="flex gap-2 flex-wrap">
               <Badge
                 variant={filter === "all" ? "default" : "outline"}
                 className="cursor-pointer"
@@ -136,110 +155,67 @@ export default function TransactionHistoryPage() {
               >
                 All
               </Badge>
-              {["Borrow", "Deposit", "Withdraw", "Repay", "Swap"].map(
-                (type) => (
-                  <Badge
-                    key={type}
-                    variant={filter === type ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setFilter(type)}
-                  >
-                    {type}
-                  </Badge>
-                )
-              )}
+              {availableTypes.slice(0, 8).map((type) => (
+                <Badge
+                  key={type}
+                  variant={filter === type ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => setFilter(type)}
+                >
+                  {type}
+                </Badge>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        {/* Transactions Table */}
         <Card>
           <CardHeader>
             <CardTitle>Transaction History</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b border-border/60">
-                  <tr>
-                    <th className="text-left py-2 px-2">ID</th>
-                    <th className="text-left py-2 px-2">Type</th>
-                    <th className="text-left py-2 px-2">Asset</th>
-                    <th className="text-left py-2 px-2">Amount</th>
-                    <th className="text-left py-2 px-2">Date & Time</th>
-                    <th className="text-left py-2 px-2">Status</th>
-                    <th className="text-left py-2 px-2">Hash</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => {
-                    const typeBadge = getTypeBadge(tx.type);
-                    return (
-                    <tr key={tx.id} className="border-b border-border/60 hover:bg-secondary/20">
-                      <td className="font-mono text-xs py-2 px-2">{tx.id}</td>
-                      <td className="py-2 px-2">
-                        <Badge variant={typeBadge.variant} className={typeBadge.className}>
-                          {tx.type}
-                        </Badge>
-                      </td>
-                      <td className="py-2 px-2">{tx.asset}</td>
-                      <td className="font-bold py-2 px-2">
-                        {tx.amount.toLocaleString()}
-                      </td>
-                      <td className="text-xs text-muted-foreground py-2 px-2">
-                        {tx.date} {tx.time}
-                      </td>
-                      <td className="py-2 px-2">
-                        <Badge variant="secondary" className="text-primary">
-                          ✓ {tx.status}
-                        </Badge>
-                      </td>
-                      <td className="font-mono text-xs text-muted-foreground hover:text-foreground cursor-pointer py-2 px-2">
-                        {tx.hash}
-                      </td>
+            {!address ? (
+              <div className="text-sm text-muted-foreground">Conecte uma carteira para carregar histórico real via Horizon.</div>
+            ) : loading ? (
+              <div className="text-sm text-muted-foreground">Loading...</div>
+            ) : error ? (
+              <div className="text-sm text-muted-foreground">{error}</div>
+            ) : filtered.length === 0 ? (
+              <div className="text-sm text-muted-foreground">Nenhuma transação encontrada.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-border/60">
+                    <tr>
+                      <th className="text-left py-2 px-2">ID</th>
+                      <th className="text-left py-2 px-2">Type</th>
+                      <th className="text-left py-2 px-2">Asset</th>
+                      <th className="text-left py-2 px-2">Amount</th>
+                      <th className="text-left py-2 px-2">Created</th>
+                      <th className="text-left py-2 px-2">Hash</th>
                     </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filtered.map((tx) => (
+                      <tr key={tx.id} className="border-b border-border/60 hover:bg-secondary/20">
+                        <td className="font-mono text-xs py-2 px-2">{tx.id}</td>
+                        <td className="py-2 px-2">
+                          <Badge variant="outline" className="text-primary">
+                            {tx.type}
+                          </Badge>
+                        </td>
+                        <td className="py-2 px-2">{tx.asset || "—"}</td>
+                        <td className="font-bold py-2 px-2">{tx.amount || "—"}</td>
+                        <td className="text-xs text-muted-foreground py-2 px-2">{tx.createdAt || "—"}</td>
+                        <td className="font-mono text-xs text-muted-foreground py-2 px-2 break-all">{tx.txHash || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
-
-        {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Total Transactions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{transactions.length}</p>
-              <p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Total Volume</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">
-                ${transactions.reduce((sum, tx) => sum + tx.amount, 0).toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">Moved this month</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs text-muted-foreground">Success Rate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-primary">100%</p>
-              <p className="text-xs text-muted-foreground mt-1">All transactions succeeded</p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );

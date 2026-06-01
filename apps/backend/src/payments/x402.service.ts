@@ -71,7 +71,8 @@ export class X402Service {
     const recipient = this.getString('X402_RECIPIENT');
     const network =
       this.getString('X402_NETWORK') ??
-      (process.env.STELLAR_NETWORK === 'mainnet'
+      (process.env.STELLAR_NETWORK === 'mainnet' ||
+      process.env.STELLAR_NETWORK === 'public'
         ? 'stellar:mainnet'
         : 'stellar:testnet');
     const acceptedAsset = this.getString('X402_ACCEPTED_ASSET') ?? 'STLT';
@@ -169,6 +170,9 @@ export class X402Service {
   }
 
   private resolveMode(): { mode: X402Mode; reason: string | null } {
+    const nodeEnv =
+      this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+    const allowStub = nodeEnv.toLowerCase() !== 'production';
     const configuredMode = this.getString('X402_MODE')?.toLowerCase();
     const facilitatorUrl = this.getString('X402_FACILITATOR_URL');
     const providerContractId = this.getString(
@@ -196,11 +200,25 @@ export class X402Service {
     }
 
     if (configuredMode === 'stub') {
+      if (!allowStub) {
+        return {
+          mode: 'disabled',
+          reason: 'X402_MODE=stub is not allowed in production',
+        };
+      }
       return { mode: 'stub', reason: 'X402_MODE=stub' };
     }
 
     if (liveReady) {
       return { mode: 'live', reason: null };
+    }
+
+    if (!allowStub) {
+      return {
+        mode: 'disabled',
+        reason:
+          'Facilitator config missing in production (X402_FACILITATOR_URL/FACILITATOR_PROVIDER_CONTRACT_ID/FACILITATOR_API_KEY)',
+      };
     }
 
     return {

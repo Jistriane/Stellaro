@@ -1,8 +1,14 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
   default: (props: { alt?: string; src?: string }) => <img alt={props.alt ?? ''} src={props.src ?? ''} />,
+}));
+
+vi.mock('next/link', () => ({
+  default: (props: { href: string; children: React.ReactNode; className?: string }) => (
+    <a href={props.href} className={props.className}>{props.children}</a>
+  ),
 }));
 
 vi.mock('next-intl', () => ({
@@ -29,18 +35,17 @@ vi.mock('next-intl', () => ({
 import GovernanceVotePage from '@/app/governance/vote/page';
 
 describe('GovernanceVotePage', () => {
-  it('renders proposals and updates vote state on user action', async () => {
+  it('renders vote page with voting disabled to avoid simulated votes', async () => {
     render(<GovernanceVotePage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Governance voting')).toBeInTheDocument();
+      expect(screen.getAllByText('Governance voting').length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText('Increase APY to 9% for 90 days')).toBeInTheDocument();
-    expect(screen.getAllByText('Enable flash loan feature').length).toBeGreaterThan(0);
-
-    fireEvent.click(screen.getAllByRole('button', { name: 'Vote for' })[0]);
-    expect(screen.getAllByText('You voted for').length).toBeGreaterThan(0);
-    expect(screen.getByText('Voting history')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Voting está desabilitado neste build para evitar votos simulados/i),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ver propostas' })).toHaveAttribute('href', '/governance');
+    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute('href', '/docs');
   });
 });

@@ -10,6 +10,8 @@ export type ContractIds = {
   STELLAR_PUBLIC_KEY?: string;
 };
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
 export function getContractIds(): ContractIds {
   return {
     STABLECOIN_CONTRACT_ID: process.env.NEXT_PUBLIC_STABLECOIN_CONTRACT_ID || process.env.STABLECOIN_CONTRACT_ID,
@@ -21,67 +23,128 @@ export function getContractIds(): ContractIds {
   };
 }
 
+type StellarNetworkEnv = "public" | "mainnet" | "testnet";
+
+function normalizeNetwork(value?: string | null): "public" | "testnet" {
+  const v = String(value || "").toLowerCase() as StellarNetworkEnv | string;
+  if (v === "public" || v === "mainnet") return "public";
+  return "testnet";
+}
+
 export function getHorizonBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_HORIZON_URL || process.env.HORIZON_URL;
   if (configured) return configured;
 
-  const network = process.env.NEXT_PUBLIC_STELLAR_NETWORK || process.env.STELLAR_NETWORK;
+  const raw = process.env.NEXT_PUBLIC_STELLAR_NETWORK || process.env.STELLAR_NETWORK;
+  const network = normalizeNetwork(raw);
   return network === "public" ? "https://horizon.stellar.org" : "https://horizon-testnet.stellar.org";
 }
 
-// View stubs. Avoid fictitious values.
-export async function viewStablecoin() {
-  return {
-    risk_threshold_bps: undefined,
-    paused: undefined,
-    supply: undefined,
-    symbol: "STLT",
-    asset: "STLT-BRL",
-  } as {
-    risk_threshold_bps?: number;
-    paused?: boolean;
-    supply?: string;
-    symbol: string;
-    asset: string;
+export async function getChainConfig(): Promise<{
+  network: string;
+  rpcUrl: string;
+  horizonUrl: string;
+  networkPassphrase: string;
+  contracts: Record<string, string | null>;
+}> {
+  const response = await fetch(`${apiUrl}/chain/config`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Falha ao carregar configuração da chain no backend");
+  }
+  return (await response.json()) as {
+    network: string;
+    rpcUrl: string;
+    horizonUrl: string;
+    networkPassphrase: string;
+    contracts: Record<string, string | null>;
   };
 }
 
-export async function viewLoansPool() {
+export async function viewStablecoin(): Promise<{
+  contractId: string | null;
+  supply: number | null;
+  decimals: number | null;
+  symbol: string;
+  asset: string;
+  timestamp: string | null;
+}> {
+  const response = await fetch(`${apiUrl}/chain/stablecoin/state`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Falha ao carregar estado da stablecoin no backend");
+  }
+  const body = (await response.json()) as {
+    contractId: string | null;
+    supply: number;
+    decimals: number;
+    timestamp: string;
+  };
   return {
-    ltv_bps: undefined,
-    interest_bps: undefined,
-    total_deposits: undefined,
-    total_borrowed: undefined,
-    accounts: undefined,
-  } as {
-    ltv_bps?: number;
-    interest_bps?: number;
-    total_deposits?: string;
-    total_borrowed?: string;
-    accounts?: number;
+    contractId: body.contractId ?? null,
+    supply: typeof body.supply === "number" ? body.supply : null,
+    decimals: typeof body.decimals === "number" ? body.decimals : null,
+    symbol: "STLT",
+    asset: "STLT",
+    timestamp: body.timestamp ?? null,
+  };
+}
+
+export async function viewLoansPool(): Promise<{
+  contractId: string | null;
+  ltv_bps: number | null;
+  interest_bps: number | null;
+  max_loan_amount: string | null;
+  total_liquidity: string | null;
+  timestamp: string | null;
+}> {
+  const response = await fetch(`${apiUrl}/chain/loans-pool/params`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Falha ao carregar parâmetros do LoansPool no backend");
+  }
+  const body = (await response.json()) as {
+    contractId: string | null;
+    params: Record<string, unknown> | null;
+    totalLiquidity: unknown;
+    timestamp: string;
+  };
+  const params = body.params ?? {};
+  const ltv_bps =
+    typeof params.ltv_bps === "number"
+      ? params.ltv_bps
+      : typeof params.ltv_bps === "string"
+        ? Number(params.ltv_bps)
+        : null;
+  const interest_bps =
+    typeof params.interest_bps === "number"
+      ? params.interest_bps
+      : typeof params.interest_bps === "string"
+        ? Number(params.interest_bps)
+        : null;
+  const max_loan_amount =
+    typeof params.max_loan_amount === "string"
+      ? params.max_loan_amount
+      : params.max_loan_amount != null
+        ? String(params.max_loan_amount)
+        : null;
+  return {
+    contractId: body.contractId ?? null,
+    ltv_bps: Number.isFinite(ltv_bps) ? (ltv_bps as number) : null,
+    interest_bps: Number.isFinite(interest_bps) ? (interest_bps as number) : null,
+    max_loan_amount,
+    total_liquidity: body.totalLiquidity != null ? String(body.totalLiquidity) : null,
+    timestamp: body.timestamp ?? null,
   };
 }
 
 export async function viewPortfolio() {
-  return {
-    allocation: [],
-    limit_bps: undefined,
-  } as {
-    allocation: { asset: string; pct_bps: number }[];
-    limit_bps?: number;
-  };
+  throw new Error("Portfolio deve ser carregado via backend (sem dados mockados).");
 }
 
 export async function viewGovernance() {
-  return {
-    admin: getContractIds().STELLAR_PUBLIC_KEY,
-    proposals_open: 2,
-    compliance_required: true,
-  } as {
-    admin?: string;
-    proposals_open?: number;
-    compliance_required: boolean;
-  };
+  throw new Error("Governança deve ser carregada via backend (sem dados mockados).");
 }
 
 /**
@@ -89,11 +152,14 @@ export async function viewGovernance() {
  */
 export async function hasValidVc(pubkey: string): Promise<boolean> {
   if (!pubkey) return false;
-  
-  // Em produção, isso chamaria o VcRegistry via Soroban RPC
-  // Simulamos a validação baseada na existência da chave (mock)
-  console.log("Checking compliance for:", pubkey);
-  return pubkey.startsWith("G"); // Simula que qualquer chave válida Stellar tem KYC para o demo
+  const response = await fetch(`${apiUrl}/ssi/verify/${encodeURIComponent(pubkey)}`, { cache: "no-store" });
+  if (!response.ok) return false;
+  const payload = (await response.json()) as unknown;
+  if (typeof payload === "boolean") return payload;
+  if (payload && typeof payload === "object" && "valid" in payload) {
+    return Boolean((payload as any).valid);
+  }
+  return Boolean(payload);
 }
 
 // Returns real balances via Horizon when pubkey is provided. Otherwise, returns zeros without making up data.
@@ -132,28 +198,25 @@ export async function createProposal(
   target: string,
   description: string
 ) {
-  const ids = getContractIds();
-  if (!ids.GOVERNANCE_CONTRACT_ID) throw new Error("Governance contract not configured");
-
-  console.log("Creating proposal:", { title, action, target, description });
-  
-  // In a real implementation, this would use Freighter/Albedo to sign
-  // for now we simulate the intent
-  return { success: true, txHash: "simulated_hash_" + Date.now() };
+  void title;
+  void action;
+  void target;
+  void description;
+  throw new Error("Criação de proposta requer transação real assinada pela wallet (sem simulações).");
 }
 
 /**
  * Enfileira uma proposta aprovada para execução (Timelock).
  */
 export async function queueProposal(proposalId: string) {
-  console.log("Queuing proposal for execution:", proposalId);
-  return { success: true, txHash: "simulated_queue_" + Date.now() };
+  void proposalId;
+  throw new Error("Queue de proposta requer transação real assinada pela wallet (sem simulações).");
 }
 
 /**
  * Executa uma proposta que já passou pelo período de Timelock.
  */
 export async function executeProposal(proposalId: string) {
-  console.log("Executing proposal:", proposalId);
-  return { success: true, txHash: "simulated_execute_" + Date.now() };
+  void proposalId;
+  throw new Error("Execução de proposta requer transação real assinada pela wallet (sem simulações).");
 }

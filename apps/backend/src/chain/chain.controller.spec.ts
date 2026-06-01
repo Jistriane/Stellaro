@@ -1,9 +1,11 @@
 import { ChainController } from './chain.controller';
 import { ChainService } from './chain.service';
+import { SorobanService } from './soroban.service';
 
 describe('ChainController', () => {
   let controller: ChainController;
   let service: jest.Mocked<ChainService>;
+  let soroban: jest.Mocked<SorobanService>;
 
   beforeEach(() => {
     service = {
@@ -11,6 +13,7 @@ describe('ChainController', () => {
       simulateContractCallReal: jest.fn(),
       simulateContractCall: jest.fn(),
     } as unknown as jest.Mocked<ChainService>;
+    soroban = {} as unknown as jest.Mocked<SorobanService>;
 
     service.getConfig.mockReturnValue({
       network: 'testnet',
@@ -25,7 +28,7 @@ describe('ChainController', () => {
       estimatedFee: 456,
     } as any);
 
-    controller = new ChainController(service);
+    controller = new ChainController(service, soroban);
   });
 
   it('reports health using real and stub simulations', async () => {
@@ -37,7 +40,7 @@ describe('ChainController', () => {
       method: 'ping',
       args: [],
     });
-    expect(service.simulateContractCall).toHaveBeenCalled();
+    expect(service.simulateContractCall).not.toHaveBeenCalled();
     expect(result).toEqual({
       network: 'testnet',
       rpcUrl: 'rpc',

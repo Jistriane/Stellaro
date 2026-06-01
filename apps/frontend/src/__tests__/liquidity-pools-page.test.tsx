@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
@@ -12,39 +12,18 @@ vi.mock('next-intl', () => ({
   }[key] ?? key),
 }));
 
-vi.mock('recharts', () => {
-  const MockChart = () => <div />;
-  return {
-    ResponsiveContainer: MockChart,
-    AreaChart: MockChart,
-    Area: MockChart,
-    XAxis: MockChart,
-    YAxis: MockChart,
-    CartesianGrid: MockChart,
-    Tooltip: MockChart,
-    BarChart: MockChart,
-    Bar: MockChart,
-  };
-});
-
 import LiquidityPoolsPage from '@/app/liquidity/pools/page';
 
 describe('LiquidityPoolsPage', () => {
-  it('renders pool KPIs and switches selected pool tab', async () => {
+  it('renders pools screen without simulated pool data', async () => {
     render(<LiquidityPoolsPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Liquidity pools')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Total Liquidity')).toBeInTheDocument();
-    expect(screen.getByText('STLT-XLM')).toBeInTheDocument();
-    expect(screen.getByText('XLM-USDC')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'XLM-USDC' }));
-    expect(screen.getByText('Pool TVL')).toBeInTheDocument();
-    expect(screen.getByText('Your Share')).toBeInTheDocument();
-    expect(screen.getByText('Fee 0.05%')).toBeInTheDocument();
-    expect(screen.getByText('22.3%')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add Liquidity' })).toBeDisabled();
+    expect(screen.getByText(/Para evitar dados simulados/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Gerenciar liquidez' })).toHaveAttribute('href', '/liquidity/manage');
   });
 });

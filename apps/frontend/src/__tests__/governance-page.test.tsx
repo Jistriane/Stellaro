@@ -1,12 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useWalletStore } from '@/state/wallet';
 
-const { getContractIds, viewGovernance, createProposal, queueProposal, executeProposal } = vi.hoisted(() => ({
+const { getContractIds, hasValidVc } = vi.hoisted(() => ({
   getContractIds: vi.fn(),
-  viewGovernance: vi.fn(),
-  createProposal: vi.fn(),
-  queueProposal: vi.fn(),
-  executeProposal: vi.fn(),
+  hasValidVc: vi.fn(),
 }));
 
 vi.mock('next/image', () => ({
@@ -30,26 +28,23 @@ vi.mock('@/hooks/useRealTimeUpdates', () => ({
 
 vi.mock('@/lib/soroban', () => ({
   getContractIds,
-  viewGovernance,
-  createProposal,
-  queueProposal,
-  executeProposal,
+  hasValidVc,
 }));
 
 import GovernancePage from '@/app/governance/page';
 
 describe('GovernancePage', () => {
   beforeEach(() => {
+    useWalletStore.setState({ address: 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' });
     getContractIds.mockReturnValue({
       GOVERNANCE_CONTRACT_ID: 'gov-contract-321',
       LOANSPOOL_CONTRACT_ID: 'loans-pool-456',
     });
-    viewGovernance.mockResolvedValue({
-      admin: 'G' + 'F'.repeat(55),
-    });
+    hasValidVc.mockResolvedValue(true);
   });
 
   afterEach(() => {
+    useWalletStore.setState({ address: null });
     vi.clearAllMocks();
   });
 
@@ -63,13 +58,10 @@ describe('GovernancePage', () => {
     });
 
     expect(screen.getByText('SSI Compliant')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'New Proposal' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'New Proposal' })).toBeDisabled();
     expect(screen.getByText('gov-contract-321')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('Change STLT-BRL mint fee to 0.05%')).toBeInTheDocument();
-    expect(screen.getByText('Adjust Pix limit to R$ 50k')).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: 'open.details' })).toHaveLength(2);
+    expect(screen.getByText(/Falha ao carregar propostas/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'summary.docs' })).toHaveAttribute('href', '/docs');
-    expect(viewGovernance).toHaveBeenCalled();
+    expect(hasValidVc).toHaveBeenCalled();
   });
 });

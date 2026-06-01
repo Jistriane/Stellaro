@@ -54,6 +54,9 @@ export class PixService {
     private prisma: PrismaService,
     private actions: ActionsService,
   ) {
+    const nodeEnv =
+      this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+    const allowStub = nodeEnv.toLowerCase() !== 'production';
     const apiKey =
       this.configService.get<string>('PIX_API_KEY') || process.env.PIX_API_KEY;
     const apiUrl =
@@ -83,15 +86,32 @@ export class PixService {
           'PIX_MODE=live but PIX_API_KEY/PIX_API_URL is missing';
       }
     } else if (configuredMode === 'stub') {
-      this.mode = 'stub';
-      this.stubMode = true;
-      this.fallbackReason = null;
+      if (!allowStub) {
+        this.mode = 'disabled';
+        this.stubMode = false;
+        this.fallbackReason = 'PIX_MODE=stub is not allowed in production';
+      } else {
+        this.mode = 'stub';
+        this.stubMode = true;
+        this.fallbackReason = null;
+      }
     } else {
-      this.mode = this.enabled ? 'live' : 'stub';
-      this.stubMode = !this.enabled;
-      this.fallbackReason = this.stubMode
-        ? 'PIX credentials not configured; using implicit stub mode'
-        : null;
+      if (this.enabled) {
+        this.mode = 'live';
+        this.stubMode = false;
+        this.fallbackReason = null;
+      } else {
+        if (!allowStub) {
+          this.mode = 'disabled';
+          this.stubMode = false;
+          this.fallbackReason = 'PIX credentials missing in production';
+        } else {
+          this.mode = 'stub';
+          this.stubMode = true;
+          this.fallbackReason =
+            'PIX credentials not configured; using implicit stub mode';
+        }
+      }
     }
 
     if (this.mode === 'live' && this.enabled && apiUrl) {
@@ -160,25 +180,16 @@ export class PixService {
       if (isNaN(amountVal) || amountVal <= 0) {
         return { ok: false, error: 'Invalid amount' };
       }
-      if (!this.enabled || !this.client) {
-        if (!this.stubMode) {
-          throw new Error('PIX integration not configured');
-        }
-        this.logger.warn(
-          `[PIX_FALLBACK] action=generate_charge mode=stub txScope=user:${params.userId}`,
-        );
-        // STUB: simular falhas por valor extremo
+      if (this.stubMode || this.mode === 'stub') {
         if (amountVal > 500000) {
-          return { ok: false, error: 'Provider error: amount too high' };
+          return { ok: false, error: 'amount too high' };
         }
-        // STUB: gerar cobrança localmente sem provider externo
+
         const txId = `STLT${Date.now()}${randomBytes(4)
           .toString('hex')
           .toUpperCase()}`;
-        const qrCode = `00020126STLT${txId}520400005303986540${params.amountBRL.replace(
-          '.',
-          '',
-        )}5802BR5920STELLARO PIX CHARGE6009STELLARO6210TXID${txId}`;
+        const expiresAt = new Date(Date.now() + 3600 * 1000);
+
         const payment = await this.prisma.pixPayment.create({
           data: {
             userId: params.userId,
@@ -187,11 +198,13 @@ export class PixService {
             cpf: params.cpf,
             name: params.name,
             stellarAddress: params.stellarAddress,
-            qrCode,
+            qrCode: `pix://stub/${txId}`,
+            pixKey: null,
             status: 'pending',
-            expiresAt: new Date(Date.now() + 3600_000),
+            expiresAt,
           },
         });
+
         return {
           ok: true,
           payment: {
@@ -200,13 +213,16 @@ export class PixService {
             amount: payment.amount,
             cpf: payment.cpf,
             name: payment.name,
-            key: undefined,
+            key: payment.pixKey ?? undefined,
             qrCode: payment.qrCode ?? undefined,
-            status: payment.status as any,
+            status: payment.status as 'pending' | 'confirmed' | 'failed',
             createdAt: payment.createdAt,
             expiresAt: payment.expiresAt ?? undefined,
           },
         };
+      }
+      if (!this.enabled || !this.client) {
+        return { ok: false, error: 'PIX integration not configured' };
       }
 
       const txId = `STLT${Date.now()}${randomBytes(4)

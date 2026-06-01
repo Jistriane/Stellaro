@@ -1,74 +1,60 @@
 services:
   - type: web
     name: stellaro-backend
-    runtime: node
-    plan: free
-    branch: main
-    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci --workspaces --include-workspace-root && npm -w apps/backend run prisma:generate && npm -w apps/backend run build
-    startCommand: npm -w apps/backend exec -- prisma migrate deploy && npm -w apps/backend run start:prod
+    env: node
+    rootDir: apps/backend
+    plan: starter
+    buildCommand: npm ci && npm run prisma:generate && npm run build
+    preDeployCommand: npx prisma migrate deploy
+    startCommand: npm run start:prod
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NPM_CONFIG_PRODUCTION
-        value: "false"
+      - key: STELLAR_NETWORK
+        value: public
+      - key: SOROBAN_RPC_URL
+        value: https://rpc.ankr.com/stellar_soroban
+      - key: HORIZON_URL
+        value: https://horizon.stellar.org
+      - key: STELLAR_NETWORK_PASSPHRASE
+        value: Public Global Stellar Network ; September 2015
+      - key: JWT_SECRET
+        generateValue: true
       - key: DATABASE_URL
         fromDatabase:
           name: stellaro-postgres
           property: connectionString
-      - key: REDIS_HOST
+      - key: REDIS_URL
         fromService:
-          type: keyvalue
+          type: redis
           name: stellaro-redis
-          property: host
-      - key: REDIS_PORT
-        fromService:
-          type: keyvalue
-          name: stellaro-redis
-          property: port
-      - key: JWT_SECRET
-        generateValue: true
+          property: connectionString
       - key: CORS_ORIGINS
         value: https://stellaro-frontend.onrender.com
-      - key: STELLAR_NETWORK
-        value: mainnet
-      - key: STELLAR_HORIZON
-        value: https://horizon.stellar.org
-      - key: HORIZON_URL
-        value: https://horizon.stellar.org
-      - key: SOROBAN_RPC_URL
-        value: https://rpc.ankr.com/stellar_soroban
-      - key: STELLAR_SECRET_KEY
-        sync: false
-      - key: MASTER_SECRET_KEY
-        sync: false
 
   - type: web
     name: stellaro-frontend
-    runtime: node
-    plan: free
-    branch: main
-    buildCommand: NPM_CONFIG_PRODUCTION=false npm ci --workspaces --include-workspace-root && NODE_ENV=production npm -w apps/frontend run build
-    startCommand: npm -w apps/frontend run start
+    env: node
+    rootDir: apps/frontend
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
     envVars:
       - key: NODE_ENV
         value: production
-      - key: NPM_CONFIG_PRODUCTION
-        value: "false"
-      - key: NEXT_PUBLIC_API_URL
-        value: https://stellaro-backend.onrender.com
       - key: NEXT_PUBLIC_STELLAR_NETWORK
-        value: mainnet
+        value: public
       - key: NEXT_PUBLIC_HORIZON_URL
         value: https://horizon.stellar.org
+      - key: NEXT_PUBLIC_API_URL
+        value: https://stellaro-backend.onrender.com
 
-  - type: keyvalue
+  - type: redis
     name: stellaro-redis
-    plan: free
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: everywhere
+    plan: starter
 
 databases:
   - name: stellaro-postgres
-    plan: free
+    plan: starter

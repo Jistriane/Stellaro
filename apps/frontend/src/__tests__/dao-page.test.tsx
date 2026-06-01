@@ -25,7 +25,7 @@ vi.mock('@/app/dao/DaoGovernanceDashboard', () => ({
 import DaoPage from '@/app/dao/page';
 
 describe('DaoPage', () => {
-  it('loads DAO overview and falls back to mock proposals when backend returns none', async () => {
+  it('loads DAO overview without injecting mock proposals', async () => {
     getDaoOverview.mockResolvedValue({ proposals: [] });
 
     const Page = await DaoPage();
@@ -36,10 +36,6 @@ describe('DaoPage', () => {
     expect(screen.getByText('DaoGovernanceDashboard Mock')).toBeInTheDocument();
 
     const payload = screen.getByTestId('dao-proposals-json').textContent ?? '';
-    expect(payload).toContain('Increase stability fee by 0.5%');
-    expect(payload).toContain('Approve RWA liquidity partnership');
-    expect(payload).toContain('set_stability_fee');
-    expect(payload).toContain('whitelist_rwa_provider');
-    expect(payload).toContain('Active');
+    expect(payload).toBe('[]');
   });
 });

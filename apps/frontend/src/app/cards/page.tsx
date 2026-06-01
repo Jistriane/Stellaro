@@ -1,23 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { useRealTimeUpdates } from "@/hooks/useRealTimeUpdates";
 
-type CardItem = {
-  id: string;
-  holder: string;
-  type: "Virtual" | "Physical";
-  status: "Active" | "Blocked" | "Pending" | "Canceled";
-  masked: string; // 1234 **** **** 9876
-  number: string; // 16 digits
-  expiry: string; // MM/YY
-  cvv: string;
-  balance: number; // card-linked balance (mock)
-  dailyLimit: number;
-};
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function CardsPage() {
   const t = useTranslations("cards");
@@ -25,84 +14,39 @@ export default function CardsPage() {
   // Enable real-time updates when the wallet connects
   useRealTimeUpdates();
 
-  const [showDetails, setShowDetails] = useState<Record<string, boolean>>({});
-  const [cards, setCards] = useState<CardItem[]>([
-    {
-      id: "c1",
-      holder: "Jistriane Silva",
-      type: "Virtual",
-      status: "Active",
-      masked: "1234 **** **** 9876",
-      number: "1234 5678 9012 9876",
-      expiry: "12/28",
-      cvv: "842",
-      balance: 2200,
-      dailyLimit: 1000,
-    },
-    {
-      id: "c2",
-      holder: "Jistriane Silva",
-      type: "Physical",
-      status: "Pending",
-      masked: "2233 **** **** 4455",
-      number: "2233 9900 1100 4455",
-      expiry: "08/29",
-      cvv: "315",
-      balance: 800,
-      dailyLimit: 1500,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<{
+    enabled: boolean;
+    mode: string;
+    apiKeyConfigured: boolean;
+    apiUrlConfigured: boolean;
+    fallbackActive: boolean;
+    fallbackReason: string | null;
+  } | null>(null);
 
-  const transactions = useMemo(
-    () => [
-      { date: "2025-08-13 09:40", value: 100, merchant: "Uber", status: "Approved", intl: false },
-      { date: "2025-08-12 18:05", value: 250, merchant: "Market", status: "Approved", intl: false },
-      { date: "2025-08-10 22:11", value: 8, merchant: "Online", status: "Denied", intl: true },
-    ],
-    []
-  );
-
-  function toggleDetails(id: string) {
-    setShowDetails((prev) => ({ ...prev, [id]: !prev[id] }));
-  }
-
-  function onCopy(text: string) {
-    navigator.clipboard.writeText(text).catch(() => {});
-  }
-
-  function toggleBlock(id: string) {
-    setCards((list) =>
-      list.map((c) =>
-        c.id === id
-          ? { ...c, status: c.status === "Blocked" ? "Active" : "Blocked" }
-          : c
-      )
-    );
-  }
-
-  function requestNewCard(kind: "Virtual" | "Physical") {
-    const kindLabel = kind === "Virtual" ? t("card.type_virtual") : t("card.type_physical");
-    alert(t("actions.request_sent", { kind: kindLabel }));
-  }
-
-  function typeLabel(type: "Virtual" | "Physical") {
-    return type === "Virtual" ? t("card.type_virtual") : t("card.type_physical");
-  }
-
-  function statusLabel(status: "Active" | "Blocked" | "Pending" | "Canceled") {
-    switch (status) {
-      case "Active":
-        return t("card.status_active");
-      case "Blocked":
-        return t("card.status_blocked");
-      case "Pending":
-        return t("card.status_pending");
-      case "Canceled":
-        return t("card.status_canceled");
-      default:
-        return status;
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      try {
+        const res = await fetch(`${apiUrl}/payments/card/status`, { cache: "no-store" });
+        if (!active) return;
+        if (res.ok) {
+          setStatus((await res.json()) as any);
+        } else {
+          setStatus(null);
+        }
+      } catch {
+        if (!active) return;
+        setStatus(null);
+      } finally {
+        if (active) setLoading(false);
+      }
     }
-  }
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -112,100 +56,37 @@ export default function CardsPage() {
         <div className="text-xs text-muted-foreground">{t("header.subtitle")}</div>
       </div>
 
-      {/* Cards summary */}
+      {/* Integration status */}
       <Card>
         <CardHeader>
           <CardTitle>{t("summary.title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2 text-sm">
-            <button onClick={() => requestNewCard("Virtual")} className="px-3 py-2 rounded bg-primary text-primary-foreground">{t("summary.request_virtual")}</button>
-            <button onClick={() => requestNewCard("Physical")} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("summary.request_physical")}</button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {cards.map((c) => (
-              <div key={c.id} className="rounded-xl border border-border/60 bg-card/40 backdrop-blur-xl overflow-hidden">
-                {/* Stylized card */}
-                <div className="bg-gradient-to-br from-secondary/40 to-background/40 p-4 relative overflow-hidden">
-                  <div className="text-xs text-muted-foreground">{typeLabel(c.type)} • {statusLabel(c.status)}</div>
-                  <div className="mt-1 text-lg tracking-wider">{c.masked}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{c.holder}</div>
-                  <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full opacity-20 bg-primary" />
-                </div>
-
-                {/* Quick actions */}
-                <div className="p-4 space-y-3">
-                  <div className="flex flex-wrap gap-2 text-sm">
-                    <button onClick={() => toggleDetails(c.id)} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">
-                      {showDetails[c.id] ? t("card.hide_data") : t("card.show_data")}
-                    </button>
-                    <button onClick={() => toggleBlock(c.id)} className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">
-                      {c.status === "Blocked" ? t("card.unblock") : t("card.block")}
-                    </button>
-                    {c.type === "Virtual" && (
-                      <button onClick={() => alert(t("actions.virtual_canceled")) } className="px-3 py-2 rounded bg-destructive/10 border border-destructive/30 text-destructive">
-                        {t("card.cancel_virtual")}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Protected details */}
-                  {showDetails[c.id] && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <div className="text-muted-foreground text-xs">{t("card.number")}</div>
-                        <div className="flex items-center gap-2">
-                          <span>{c.number}</span>
-                          <button onClick={() => onCopy(c.number)} className="px-2 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground">{t("card.copy")}</button>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground text-xs">{t("card.expiry")}</div>
-                        <div>{c.expiry}</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground text-xs">{t("card.cvv")}</div>
-                        <div className="flex items-center gap-2">
-                          <span>***</span>
-                          <button onClick={() => alert(`${t("card.cvv")}: ${c.cvv} (mock)`)} className="px-2 py-1 rounded bg-secondary/30 border border-border/60 text-xs text-foreground">{t("card.show")}</button>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {t("card.security_note")}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Balance and limits */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                    <div>{t("card.available_balance")}: <b>R$ {c.balance.toLocaleString("en-US")}</b></div>
-                    <div>{t("card.daily_limit")}: <b>R$ {c.dailyLimit.toLocaleString("en-US")}</b></div>
-                    <div>{t("card.status")}: <b>{statusLabel(c.status)}</b></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent transactions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("transactions.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {transactions.length === 0 ? (
-            <div className="text-sm text-muted-foreground">{t("transactions.empty")}</div>
+          {loading ? (
+            <div className="text-sm text-muted-foreground">Loading…</div>
+          ) : !status ? (
+            <div className="text-sm text-muted-foreground">Indisponível: não foi possível consultar o backend.</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-              {transactions.map((tItem, i) => (
-                <div key={i} className="flex items-center justify-between bg-secondary/20 border border-border/60 rounded px-3 py-2">
-                  <div className="text-muted-foreground">{tItem.date} • R$ {tItem.value.toLocaleString("en-US")}</div>
-                  <div className="text-xs text-muted-foreground">{tItem.merchant} • {tItem.status}{tItem.intl ? ` • ${t("transactions.intl")}` : ""}</div>
+            <div className="space-y-2 text-sm">
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 rounded bg-secondary/30 border border-border/60">
+                  mode: <b>{status.mode}</b>
+                </span>
+                <span className="px-2 py-1 rounded bg-secondary/30 border border-border/60">
+                  apiKey: <b>{String(status.apiKeyConfigured)}</b>
+                </span>
+                <span className="px-2 py-1 rounded bg-secondary/30 border border-border/60">
+                  apiUrl: <b>{String(status.apiUrlConfigured)}</b>
+                </span>
+              </div>
+              {status.fallbackActive && (
+                <div className="text-xs text-muted-foreground">
+                  {status.fallbackReason ?? "Integração não configurada."}
                 </div>
-              ))}
+              )}
+              <div className="text-xs text-muted-foreground">
+                Para tokenização/cobrança, é necessário fluxo autenticado e integração do provedor.
+              </div>
             </div>
           )}
         </CardContent>
@@ -218,9 +99,7 @@ export default function CardsPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.instant_lock")}</button>
-            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.toggle_international")}</button>
-            <button onClick={() => alert("OK") } className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.notifications")}</button>
+            <Link href="/settings" className="px-3 py-2 rounded bg-secondary/30 border border-border/60 text-foreground">{t("settings.notifications")}</Link>
           </div>
           <div className="text-xs text-primary">
             {t("settings.tip")}
