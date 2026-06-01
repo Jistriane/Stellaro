@@ -24,10 +24,6 @@ Welcome to the Stellaro project. This monorepo contains the complete architectur
 
 The deployment links below point to Mainnet (production).
 
-Frontend deployment (GitHub Pages):
-
-- https://jistriane.github.io/Stellaro/
-
 Frontend deployment (Render):
 
 - https://stellaro-frontend-qh1a.onrender.com/
