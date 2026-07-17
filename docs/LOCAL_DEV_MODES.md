@@ -81,15 +81,16 @@ npm install
 
 ### Modo padrão: `public-testnet`
 
-Suba infraestrutura de suporte:
+Atalho recomendado no root:
+
+```bash
+npm run dev:stack
+```
+
+Fluxo equivalente explícito:
 
 ```bash
 docker compose up -d postgres redis prometheus grafana
-```
-
-Suba backend e frontend:
-
-```bash
 docker compose up -d backend frontend
 ```
 
@@ -108,21 +109,28 @@ npm run dev
 
 ### Modo opcional: `local-chain`
 
-Suba a chain local oficial:
+Atalho recomendado no root:
+
+```bash
+npm run dev:stack:local-chain
+```
+
+Fluxo equivalente explícito:
 
 ```bash
 docker compose --profile local-chain up -d quickstart
-```
-
-Suba backend e frontend apontando para modo local:
-
-```bash
 CHAIN_PROVIDER_MODE=local \
 NEXT_PUBLIC_CHAIN_PROVIDER_MODE=local \
 docker compose up -d backend frontend
 ```
 
 Suba o mobile em terminal dedicado com modo local no Expo:
+
+```bash
+npm run dev:mobile:local-chain
+```
+
+Fluxo equivalente explícito:
 
 ```bash
 cd apps/mobile
@@ -181,6 +189,7 @@ npm run dev
 
 - `public-testnet` é o default oficial do projeto para desenvolvimento normal.
 - `local-chain` existe para validação específica de integração.
+- Use `npm run dev:stack` e `npm run dev:stack:local-chain` como interface operacional preferencial.
 - Não suba paralelamente outra stack local de Horizon/Soroban fora do `quickstart`.
 - Se a porta `8000` estiver ocupada, trate isso como conflito de infraestrutura e não como bug de aplicação.
 
