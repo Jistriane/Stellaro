@@ -67,3 +67,7 @@ mainnet_deployment_registry.json
 STELLARO ARQUITETURA TÉCNICA COMPLETA.md
 MODO ARQUITETO  RULES.md
 Links Stellar.md
+
+# Local debug artifacts
+.dbg/
+debug-*.md
