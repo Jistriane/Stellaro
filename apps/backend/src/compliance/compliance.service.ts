@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma, TravelRuleStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SorobanService } from '../chain/soroban.service';
 import * as StellarSdk from '@stellar/stellar-sdk';
+import { TravelRuleProviderService } from './travel-rule-provider.service';
 
 export interface KycResult {
   ok: boolean;
@@ -59,6 +61,7 @@ export class ComplianceService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly sorobanService: SorobanService,
+    private readonly travelRuleProvider: TravelRuleProviderService,
   ) {}
 
   kycCheck(document: string, name: string): Promise<KycResult> {
@@ -365,6 +368,58 @@ export class ComplianceService {
       allowed: isApproved,
       level: isApproved ? 'basic' : 'pending',
     };
+  }
+
+  async checkTravelRule(params: {
+    userId: string;
+    walletAddress?: string | null;
+    vaspCode?: string | null;
+    direction: 'OUTBOUND' | 'INBOUND';
+    asset?: string | null;
+    amount?: string | null;
+  }) {
+    const nonTravelRuleAssets = new Set(['BRL', 'USD', 'EUR']);
+    if (params.asset && nonTravelRuleAssets.has(params.asset.toUpperCase())) {
+      return {
+        ok: true,
+        status: TravelRuleStatus.NOT_REQUIRED,
+        allowed: true,
+        reason: 'fiat_pair_not_subject_to_travel_rule',
+      };
+    }
+
+    const result = await this.travelRuleProvider.checkTransfer(params);
+    await this.prisma.travelRuleCheck.create({
+      data: {
+        userId: params.userId,
+        walletAddress: params.walletAddress ?? null,
+        vaspCode: params.vaspCode ?? null,
+        direction: params.direction,
+        asset: params.asset ?? null,
+        amount: params.amount ?? null,
+        status: result.status,
+        providerRef: result.providerRef ?? null,
+        reason: result.reason ?? null,
+        payload: result.payload as Prisma.InputJsonValue | undefined,
+      },
+    });
+
+    const allowed =
+      result.status === TravelRuleStatus.CLEARED ||
+      result.status === TravelRuleStatus.NOT_REQUIRED;
+
+    return {
+      ok: allowed,
+      allowed,
+      status: result.status,
+      reason: result.reason ?? null,
+      providerRef: result.providerRef ?? null,
+      payload: result.payload ?? null,
+    };
+  }
+
+  getTravelRuleProviderStatus() {
+    return this.travelRuleProvider.getStatus();
   }
 
   getLimits(userId: string) {

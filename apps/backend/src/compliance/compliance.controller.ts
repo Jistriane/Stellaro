@@ -261,4 +261,30 @@ export class ComplianceController {
     }
     return this.compliance.canRoutePixOrCard(body.userId);
   }
+
+  @Get('travel-rule/status')
+  getTravelRuleStatus() {
+    return this.compliance.getTravelRuleProviderStatus();
+  }
+
+  @Post('travel-rule/check')
+  async travelRuleCheck(
+    @Body()
+    body: {
+      userId: string;
+      walletAddress?: string;
+      vaspCode?: string;
+      direction: 'OUTBOUND' | 'INBOUND';
+      asset?: string;
+      amount?: string;
+    },
+  ) {
+    if (!body?.userId || !body?.direction) {
+      throw new HttpException(
+        'userId e direction são obrigatórios',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return this.compliance.checkTravelRule(body);
+  }
 }

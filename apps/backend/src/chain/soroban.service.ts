@@ -102,7 +102,9 @@ export class SorobanService {
         return null;
       }
       const contract = new StellarSdk.Contract(contractId);
-      const server = new rpc.Server(this.client.defaults.baseURL || '');
+      const baseUrl = this.client.defaults.baseURL || '';
+      const allowHttp = baseUrl.startsWith('http://');
+      const server = new rpc.Server(baseUrl, allowHttp ? { allowHttp: true } : undefined);
 
       // Construir operação de invocação
       const operation = contract.call(method, ...args);
@@ -235,7 +237,9 @@ export class SorobanService {
         throw new Error('Soroban RPC unavailable');
       }
 
-      const server = new rpc.Server(this.client.defaults.baseURL || '');
+      const baseUrl = this.client.defaults.baseURL || '';
+      const allowHttp = baseUrl.startsWith('http://');
+      const server = new rpc.Server(baseUrl, allowHttp ? { allowHttp: true } : undefined);
       const keypair = StellarSdk.Keypair.fromSecret(signerSecret);
       const contract = new StellarSdk.Contract(contractId);
       const operation = contract.call(method, ...args);

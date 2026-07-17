@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { ArrowUpRight, Wallet, ShieldCheck, ArrowDownLeft } from 'lucide-react-native';
 import { StellarWallet } from '../lib/stellar-wallet';
 import { getHorizonUrl } from '../lib/stellar';
+import { getPortfolio } from '../lib/backend';
+import { notify } from '../lib/notify';
 import { theme } from '../lib/theme';
 
 // Removed hardcoded TEST_PUBLIC_KEY
 
 export default function Dashboard() {
+  const navigation = useNavigation<any>();
   const [balance, setBalance] = useState<number>(0);
   const [balances, setBalances] = useState<Array<{ code: string; issuer?: string; balance: string }>>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const [language, setLanguage] = useState<'PT' | 'EN' | 'ES'>('PT');
   const [showCard, setShowCard] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
   const [accountStatus, setAccountStatus] = useState<'unknown' | 'active' | 'unfunded'>('unknown');
+  const [fiatAvailable, setFiatAvailable] = useState<string>('0.00');
+  const [portfolioBalances, setPortfolioBalances] = useState<Array<{ asset: string; amount: string }>>([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   const t = {
     PT: { greeting: 'Olá, Investidor', balance: 'Patrimônio Total', privacy: 'Shield' },
@@ -25,17 +32,56 @@ export default function Dashboard() {
 
   const [publicKey, setPublicKey] = useState<string>('');
 
+  const handleSendPress = () => {
+    navigation.navigate('Trade');
+  };
+
+  const handleReceivePress = () => {
+    if (!publicKey) {
+      notify('Carteira indisponível', 'Conecte ou gere uma carteira antes de receber ativos.');
+      return;
+    }
+    notify(
+      'Receber ativos',
+      `Use este endereço para receber ativos na Stellar:\n\n${publicKey}`,
+    );
+  };
+
+  const handleInsurancePress = () => {
+    navigation.navigate('Suporte');
+    notify(
+      'Seguro Stellaro',
+      'Abra uma thread no suporte para acionar cobertura, revisar elegibilidade ou acompanhar sinistros.',
+    );
+  };
+
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    setLoading(true);
     try {
       const pk = await StellarWallet.getPublicKey();
       setPublicKey(pk);
       
       if (pk) {
+        try {
+          const portfolio = await getPortfolio();
+          setFiatAvailable(String(portfolio?.portfolio?.fiatAvailable ?? '0.00'));
+          setPortfolioBalances(
+            Array.isArray(portfolio?.portfolio?.balances)
+              ? portfolio.portfolio.balances
+              : [],
+          );
+          setRecentOrders(
+            Array.isArray(portfolio?.portfolio?.recentOrders)
+              ? portfolio.portfolio.recentOrders
+              : [],
+          );
+        } catch (error) {
+          console.warn('Failed to load backend portfolio:', error);
+        }
+
         const horizonUrl = getHorizonUrl();
         const response = await fetch(`${horizonUrl}/accounts/${pk}`);
         if (response.status === 404) {
@@ -73,8 +119,6 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error('Failed to load wallet data:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -120,23 +164,26 @@ export default function Dashboard() {
           <Text style={styles.balanceValue}>
             {isPrivate ? '••••' : `${balance.toFixed(2)} XLM`}
           </Text>
+          <Text style={styles.balanceHint}>
+            {isPrivate ? '••••' : `Disponível em BRL: ${fiatAvailable}`}
+          </Text>
         </View>
 
         {/* Quick Actions */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={handleSendPress}>
             <View style={styles.actionIconContainer}>
               <ArrowUpRight size={24} color={theme.colors.bg} />
             </View>
             <Text style={styles.actionText}>Enviar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={handleReceivePress}>
             <View style={[styles.actionIconContainer, { backgroundColor: theme.colors.aurora }]}>
               <Wallet size={24} color={theme.colors.bg} />
             </View>
             <Text style={styles.actionText}>Receber</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={handleInsurancePress}>
             <View style={[styles.actionIconContainer, { backgroundColor: theme.colors.nebula }]}>
               <ShieldCheck size={24} color={theme.colors.bg} />
             </View>
@@ -173,6 +220,23 @@ export default function Dashboard() {
           </TouchableOpacity>
         </View>
 
+        {portfolioBalances.length > 0 ? (
+          portfolioBalances.map((asset, index) => (
+            <View key={`portfolio-${index}`} style={styles.assetItem}>
+              <View style={styles.assetIcon}>
+                <Text style={styles.assetIconText}>{asset.asset[0]}</Text>
+              </View>
+              <View style={styles.assetInfo}>
+                <Text style={styles.assetCode}>{asset.asset}</Text>
+                <Text style={styles.assetName}>Saldo referencial do exchange</Text>
+              </View>
+              <View style={styles.assetValues}>
+                <Text style={styles.assetBalance}>{asset.amount}</Text>
+              </View>
+            </View>
+          ))
+        ) : null}
+
         {balances.map((asset, index) => (
           <View key={index} style={styles.assetItem}>
             <View style={styles.assetIcon}>
@@ -193,7 +257,22 @@ export default function Dashboard() {
           <Text style={styles.sectionTitle}>Atividade Recente</Text>
         </View>
 
-        {history.length === 0 ? (
+        {recentOrders.length > 0 ? (
+          recentOrders.map((item, index) => (
+            <View key={`order-${index}`} style={styles.historyItem}>
+              <View style={styles.historyIcon}>
+                <ArrowDownLeft size={20} color={theme.colors.gold} />
+              </View>
+              <View style={styles.historyInfo}>
+                <Text style={styles.historyType}>{item.pair}</Text>
+                <Text style={styles.historyDate}>{String(item.status)} · {String(item.route)}</Text>
+              </View>
+              <Text style={styles.historyAmount}>{item.amountIn}</Text>
+            </View>
+          ))
+        ) : null}
+
+        {history.length === 0 && recentOrders.length === 0 ? (
           <Text style={styles.noHistoryText}>Nenhuma transação recente encontrada.</Text>
         ) : (
           history.map((item, index) => (
@@ -221,6 +300,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.bg,
+  },
+  balanceHint: {
+    color: theme.colors.gold,
+    fontSize: 13,
+    fontFamily: theme.fonts.sansRegular,
   },
   scrollContent: {
     padding: 20,

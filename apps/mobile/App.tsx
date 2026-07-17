@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import { Jost_300Light, Jost_400Regular, Jost_500Medium } from '@expo-google-fonts/jost';
 import { CormorantGaramond_300Light_Italic } from '@expo-google-fonts/cormorant-garamond';
 import { JetBrainsMono_400Regular } from '@expo-google-fonts/jetbrains-mono';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { theme } from './src/lib/theme';
 
 export default function App() {
@@ -20,12 +21,14 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <NavigationContainer>
-      <View style={styles.container}>
-        <RootNavigator />
-        <StatusBar style="light" />
-      </View>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <View style={styles.container}>
+          <RootNavigator />
+          <StatusBar style="light" />
+        </View>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

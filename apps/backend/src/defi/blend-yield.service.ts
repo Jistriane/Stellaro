@@ -89,7 +89,11 @@ export class BlendYieldService {
     );
     this.networkName = this.config.get<string>('STELLAR_NETWORK', 'testnet');
 
-    this.rpcServer = new StellarSdk.rpc.Server(this.rpcUrl);
+    const allowHttp = this.rpcUrl.startsWith('http://');
+    this.rpcServer = new StellarSdk.rpc.Server(
+      this.rpcUrl,
+      allowHttp ? { allowHttp: true } : undefined,
+    );
     this.networkPassphrase =
       this.networkName === 'testnet'
         ? StellarSdk.Networks.TESTNET

@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "turbo dev",
+    "dev:mobile": "turbo dev --filter=stellaro-backend --filter=mobile",
     "build": "turbo build",
     "lint": "turbo lint",
     "test": "turbo test",

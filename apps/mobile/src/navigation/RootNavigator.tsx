@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { LayoutDashboard, Landmark, Store, Users } from 'lucide-react-native';
+import { ArrowLeftRight, History, LayoutDashboard, MessageCircle } from 'lucide-react-native';
 import Dashboard from '../screens/Dashboard';
-import Lending from '../screens/Lending';
-import Marketplace from '../screens/Marketplace';
-import DAO from '../screens/DAO';
+import Trade from '../screens/Trade';
+import HistoryScreen from '../screens/History';
+import Support from '../screens/Support';
 import { theme } from '../lib/theme';
 
 const Tab = createBottomTabNavigator();
@@ -39,24 +39,24 @@ export default function RootNavigator() {
         }}
       />
       <Tab.Screen 
-        name="Lending" 
-        component={Lending} 
+        name="Trade" 
+        component={Trade} 
         options={{
-          tabBarIcon: ({ color, size }) => <Landmark size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <ArrowLeftRight size={size} color={color} />
         }}
       />
       <Tab.Screen 
-        name="Mercado" 
-        component={Marketplace} 
+        name="Histórico" 
+        component={HistoryScreen} 
         options={{
-          tabBarIcon: ({ color, size }) => <Store size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <History size={size} color={color} />
         }}
       />
       <Tab.Screen 
-        name="DAO" 
-        component={DAO} 
+        name="Suporte" 
+        component={Support} 
         options={{
-          tabBarIcon: ({ color, size }) => <Users size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <MessageCircle size={size} color={color} />
         }}
       />
     </Tab.Navigator>

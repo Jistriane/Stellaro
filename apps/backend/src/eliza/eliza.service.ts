@@ -12,6 +12,20 @@ export interface ElizaConfig {
   [key: string]: unknown;
 }
 
+export type ElizaSupportContext = {
+  userId: string;
+  threadId?: string;
+  message: string;
+  subject?: string;
+  statuses?: {
+    kycStatus?: string;
+    latestOrderId?: string | null;
+    latestOrderStatus?: string | null;
+    latestPixDepositStatus?: string | null;
+    latestPixWithdrawalStatus?: string | null;
+  };
+};
+
 @Injectable()
 export class ElizaService implements OnModuleInit {
   private readonly logger = new Logger(ElizaService.name);
@@ -247,6 +261,60 @@ export class ElizaService implements OnModuleInit {
       }
 
       throw error;
+    }
+  }
+
+  async assistSupport(
+    context: ElizaSupportContext,
+  ): Promise<{ reply: string; sources: string[]; mocked?: boolean }> {
+    try {
+      const response = await this.triggerAgentAction(
+        'stellaro',
+        'support_assist',
+        context as unknown as Record<string, unknown>,
+      );
+
+      const result = response?.result ?? response;
+      const reply =
+        result?.reply ??
+        result?.message ??
+        'Recebi sua solicitacao e estou analisando o status para orientar o proximo passo.';
+      const sources = Array.isArray(result?.sources)
+        ? result.sources.map(String)
+        : ['eliza_support_assist'];
+
+      return {
+        reply: String(reply),
+        sources,
+        mocked: Boolean(response?.mocked || result?.mock),
+      };
+    } catch (error) {
+      this.logger.error('Support assistance failed', error as Error);
+
+      const statuses = context.statuses ?? {};
+      const hints = [
+        statuses.kycStatus ? `KYC: ${statuses.kycStatus}` : null,
+        statuses.latestOrderStatus
+          ? `ordem: ${statuses.latestOrderStatus}`
+          : null,
+        statuses.latestPixDepositStatus
+          ? `deposito PIX: ${statuses.latestPixDepositStatus}`
+          : null,
+        statuses.latestPixWithdrawalStatus
+          ? `saque PIX: ${statuses.latestPixWithdrawalStatus}`
+          : null,
+      ].filter(Boolean);
+
+      const reply =
+        hints.length > 0
+          ? `Consultei seu contexto atual. ${hints.join(', ')}. Se quiser, posso te orientar no proximo passo sem executar nenhuma acao financeira.`
+          : 'Nao consegui consultar o agente agora, mas posso continuar com suporte read-only usando o contexto local da sua conta.';
+
+      return {
+        reply,
+        sources: ['support_fallback_context'],
+        mocked: true,
+      };
     }
   }
 

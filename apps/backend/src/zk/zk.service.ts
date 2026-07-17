@@ -25,7 +25,11 @@ export class ZkService {
     const network =
       this.configService.get<string>('STELLAR_NETWORK', 'testnet') || 'testnet';
 
-    this.rpcServer = new StellarSdk.rpc.Server(rpcUrl);
+    const allowHttp = rpcUrl.startsWith('http://');
+    this.rpcServer = new StellarSdk.rpc.Server(
+      rpcUrl,
+      allowHttp ? { allowHttp: true } : undefined,
+    );
     this.networkPassphrase =
       network === 'testnet'
         ? StellarSdk.Networks.TESTNET

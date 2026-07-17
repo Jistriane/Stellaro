@@ -53,7 +53,11 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
       maxLatency: 500, // 500ms SLA
     };
 
-    this.server = new StellarSdk.Horizon.Server(this.config.stellarHorizon);
+    const allowHttp = this.config.stellarHorizon.startsWith('http://');
+    this.server = new StellarSdk.Horizon.Server(
+      this.config.stellarHorizon,
+      allowHttp ? { allowHttp: true } : undefined,
+    );
 
     if (useStub) {
       this.logger.log('Running in STUB mode - returning fixed prices');
@@ -62,7 +66,13 @@ export class ReflectorOracleService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit() {
     this.logger.log('Initializing Reflector Oracle Service...');
-    await this.healthCheck();
+    try {
+      await this.healthCheck();
+    } catch (error: any) {
+      this.logger.warn(
+        `Oracle health check failed; continuing without warm cache: ${error?.message || error}`,
+      );
+    }
     this.startCacheWarmer();
   }
 

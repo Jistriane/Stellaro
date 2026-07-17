@@ -1,7 +1,6 @@
 import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
-import * as StellarSdk from '@stellar/stellar-sdk';
 import { StellarWallet } from './stellar-wallet';
 
 const TOKEN_KEY = 'stellaro_jwt_token';
@@ -11,13 +10,55 @@ export type BackendConfig = {
   telemetryUrl: string;
 };
 
+function getWebApiBaseUrlOverride(): string | null {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return null;
+  try {
+    const fromStorage =
+      typeof window.localStorage !== 'undefined'
+        ? window.localStorage.getItem('stellaro_backend_api_url')
+        : null;
+    if (fromStorage) return fromStorage;
+
+    const url = new URL(window.location.href);
+    const qs = url.searchParams;
+    return (
+      qs.get('apiBaseUrl') ||
+      qs.get('backendApiUrl') ||
+      qs.get('backend') ||
+      qs.get('api') ||
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
 export function getBackendConfig(): BackendConfig {
+  const explicitApiBaseUrl = Constants.expoConfig?.extra?.BACKEND_API_URL as
+    | string
+    | undefined;
+  const webOverrideApiBaseUrl = getWebApiBaseUrlOverride();
+
+  const devHostUri =
+    (Constants.expoConfig as any)?.hostUri ||
+    (Constants as any)?.expoGoConfig?.debuggerHost ||
+    (Constants as any)?.manifest?.debuggerHost;
+
+  const devHost =
+    typeof devHostUri === 'string' && devHostUri.length
+      ? devHostUri.split(':')[0]
+      : Platform.OS === 'web' && typeof window !== 'undefined'
+        ? window.location.hostname
+        : null;
+
   const apiBaseUrl =
-    (Constants.expoConfig?.extra?.BACKEND_API_URL as string | undefined) ||
-    'https://api.stellaro.io';
+    explicitApiBaseUrl ||
+    webOverrideApiBaseUrl ||
+    (__DEV__ && devHost ? `http://${devHost}:3001` : 'https://api.stellaro.io');
   const telemetryUrl =
     (Constants.expoConfig?.extra?.BACKEND_TELEMETRY_URL as string | undefined) ||
     `${apiBaseUrl.replace(/\/$/, '')}/v5/risk/telemetry`;
+
   return { apiBaseUrl: apiBaseUrl.replace(/\/$/, ''), telemetryUrl };
 }
 
@@ -83,7 +124,25 @@ async function backendFetch(
   const token = await getToken();
   if (token) headers.set('Authorization', `Bearer ${token}`);
 
-  return await fetch(url, { ...init, headers });
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12_000);
+    const res = await fetch(url, {
+      ...init,
+      headers,
+      signal: init?.signal ?? controller.signal,
+    });
+    clearTimeout(timeout);
+    return res;
+  } catch (error: any) {
+    const isAbort = String(error?.name || '').toLowerCase() === 'aborterror';
+    if (isAbort) {
+      throw new Error('Tempo esgotado ao chamar o backend. Verifique se o backend está rodando.');
+    }
+    throw new Error(
+      'Backend indisponível. Inicie o serviço apps/backend na porta 3001. Se estiver no celular ou em outra máquina, aponte o app para http://<IP-DO-BACKEND>:3001 (query ?apiBaseUrl=... no Web ou localStorage stellaro_backend_api_url).',
+    );
+  }
 }
 
 export async function ensureWalletSession(): Promise<{
@@ -140,6 +199,19 @@ export async function getChainConfig(): Promise<any> {
   return await res.json();
 }
 
+async function backendJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await backendFetch(path, init);
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const message =
+      payload?.message ||
+      payload?.error?.message ||
+      `Falha na requisição ${path} (${res.status})`;
+    throw new Error(message);
+  }
+  return payload as T;
+}
+
 export async function getMyKyc(): Promise<any> {
   const res = await backendFetch('/compliance/kyc/me', { method: 'GET' });
   return await res.json();
@@ -165,5 +237,140 @@ export async function reportTelemetry(event: {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(event),
+  });
+}
+
+export type ExchangeQuoteResponse = {
+  ok: boolean;
+  quote: {
+    id: string;
+    pair: string;
+    baseAsset: string;
+    quoteAsset: string;
+    amountIn: string;
+    amountOut: string;
+    rate: string;
+    feeAmount: string;
+    source: string;
+    expiresAt: string;
+  };
+};
+
+export type ExchangeOrderResponse = {
+  ok: boolean;
+  order: {
+    id: string;
+    pair: string;
+    status: string;
+    route: string;
+    amountIn: string;
+    amountOut?: string | null;
+    createdAt?: string;
+  };
+};
+
+export async function getExchangeProviderStatus(): Promise<any> {
+  await ensureWalletSession();
+  return backendJson('/exchange/status', { method: 'GET' });
+}
+
+export async function getExchangeQuote(params: {
+  from: string;
+  to: string;
+  amount: string;
+  side: 'BUY' | 'SELL';
+}): Promise<ExchangeQuoteResponse> {
+  await ensureWalletSession();
+  const search = new URLSearchParams(params).toString();
+  return backendJson(`/exchange/quotes?${search}`, { method: 'GET' });
+}
+
+export async function createExchangeOrder(params: {
+  quoteId: string;
+  walletId?: string;
+  clientRequestId?: string;
+}): Promise<ExchangeOrderResponse> {
+  await ensureWalletSession();
+  return backendJson('/exchange/orders', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function getExchangeOrders(): Promise<{ ok: boolean; orders: any[] }> {
+  await ensureWalletSession();
+  return backendJson('/exchange/orders', { method: 'GET' });
+}
+
+export async function getExchangeOrder(
+  orderId: string,
+): Promise<{ ok: boolean; order: any }> {
+  await ensureWalletSession();
+  return backendJson(`/exchange/orders/${orderId}`, { method: 'GET' });
+}
+
+export async function getSettlements(
+  limit = 20,
+): Promise<{ ok: boolean; settlements: any[] }> {
+  await ensureWalletSession();
+  return backendJson(`/settlements?limit=${limit}`, { method: 'GET' });
+}
+
+export async function retrySettlement(
+  settlementId: string,
+): Promise<{ ok: boolean; settlement: any }> {
+  await ensureWalletSession();
+  return backendJson(`/settlements/${settlementId}/retry`, {
+    method: 'POST',
+  });
+}
+
+export async function getSettlementProviderStatus(): Promise<any> {
+  await ensureWalletSession();
+  return backendJson('/settlements/status', { method: 'GET' });
+}
+
+export async function getPortfolio(): Promise<{ ok: boolean; portfolio: any }> {
+  await ensureWalletSession();
+  return backendJson('/portfolio/me', { method: 'GET' });
+}
+
+export async function getUnifiedHistory(limit = 20): Promise<{ ok: boolean; history: any }> {
+  await ensureWalletSession();
+  return backendJson(`/history/me?limit=${limit}`, { method: 'GET' });
+}
+
+export async function startSupportChat(params: {
+  message: string;
+  subject?: string;
+  threadId?: string;
+}): Promise<{ ok: boolean; thread: any }> {
+  await ensureWalletSession();
+  return backendJson('/support/chat', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+}
+
+export async function getSupportThread(
+  threadId: string,
+): Promise<{ ok: boolean; thread: any }> {
+  await ensureWalletSession();
+  return backendJson(`/support/threads/${threadId}`, { method: 'GET' });
+}
+
+export async function getSupportThreads(
+  limit = 20,
+): Promise<{ ok: boolean; threads: any[] }> {
+  await ensureWalletSession();
+  return backendJson(`/support/threads?limit=${limit}`, { method: 'GET' });
+}
+
+export async function escalateSupportThread(
+  threadId: string,
+): Promise<{ ok: boolean; thread: any }> {
+  await ensureWalletSession();
+  return backendJson(`/support/threads/${threadId}/escalate`, {
+    method: 'POST',
   });
 }

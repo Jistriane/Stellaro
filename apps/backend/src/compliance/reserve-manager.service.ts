@@ -57,7 +57,11 @@ export class ReserveManagerService implements OnModuleInit {
     const horizonUrl =
       this.configService.get<string>('STELLAR_HORIZON') ||
       'https://horizon-testnet.stellar.org';
-    this.server = new StellarSdk.Horizon.Server(horizonUrl);
+    const allowHttp = horizonUrl.startsWith('http://');
+    this.server = new StellarSdk.Horizon.Server(
+      horizonUrl,
+      allowHttp ? { allowHttp: true } : undefined,
+    );
 
     this.reserveAccount =
       this.configService.get<string>('RESERVE_ACCOUNT') ||
@@ -67,7 +71,13 @@ export class ReserveManagerService implements OnModuleInit {
 
   async onModuleInit() {
     this.logger.log('Initializing Reserve Manager...');
-    await this.checkCollateralization();
+    try {
+      await this.checkCollateralization();
+    } catch (error: any) {
+      this.logger.warn(
+        `Reserve manager preflight failed; continuing without enforcement: ${error?.message || error}`,
+      );
+    }
     this.startMonitoring();
   }
 

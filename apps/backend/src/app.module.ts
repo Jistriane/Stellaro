@@ -33,6 +33,12 @@ import { ZkModule } from './zk/zk.module';
 import { RedisModule } from './redis/redis.module';
 import { InsuranceModule } from './insurance/insurance.module';
 import { ReflectorModule } from './reflector/reflector.module';
+import { ExchangeModule } from './exchange/exchange.module';
+import { SettlementModule } from './settlement/settlement.module';
+import { LedgerModule } from './ledger/ledger.module';
+import { HistoryModule } from './history/history.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
+import { SupportModule } from './support/support.module';
 // ReflectorModule optionally loaded in non-test env to avoid optional deps during E2E
 
 const isTest = process.env.NODE_ENV === 'test';
@@ -73,6 +79,12 @@ const optionalReflectorModules = isTest ? [] : [ReflectorModule];
     RedisModule,
     ZkModule,
     InsuranceModule,
+    ExchangeModule,
+    SettlementModule,
+    LedgerModule,
+    HistoryModule,
+    PortfolioModule,
+    SupportModule,
     ...optionalReflectorModules,
   ],
   controllers: [AppController, MetricsController, HealthController],

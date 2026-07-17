@@ -8,6 +8,7 @@ import { ChainModule } from '../chain/chain.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { AuthModule } from '../auth/auth.module';
+import { TravelRuleProviderService } from './travel-rule-provider.service';
 
 @Module({
   imports: [
@@ -17,8 +18,16 @@ import { AuthModule } from '../auth/auth.module';
     NotificationsModule,
     AuthModule,
   ],
-  providers: [ComplianceService, ReserveManagerService],
+  providers: [
+    ComplianceService,
+    ReserveManagerService,
+    TravelRuleProviderService,
+  ],
   controllers: [ComplianceController, ReservesController],
-  exports: [ComplianceService, ReserveManagerService],
+  exports: [
+    ComplianceService,
+    ReserveManagerService,
+    TravelRuleProviderService,
+  ],
 })
 export class ComplianceModule {}

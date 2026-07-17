@@ -38,6 +38,11 @@ model User {
   wallets    Wallet[]
   kycProfiles KycProfile[]
   auditLogs   AuditLog[]
+  quotes      Quote[]
+  exchangeOrders ExchangeOrder[]
+  travelRuleChecks TravelRuleCheck[]
+  ledgerEntries LedgerEntry[]
+  supportThreads SupportThread[]
 }
 
 model Passkey {
@@ -62,6 +67,7 @@ model Wallet {
   createdAt  DateTime @default(now())
 
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exchangeOrders ExchangeOrder[]
   @@index([userId])
 }
 
@@ -135,6 +141,56 @@ enum KycProvider {
   SUMSUB
   MANUAL
   OTHER
+}
+
+enum QuoteSide {
+  BUY
+  SELL
+}
+
+enum QuoteSource {
+  EXCHANGE_PARTNER
+  AGGREGATOR
+  OTC
+}
+
+enum OrderStatus {
+  SUBMITTED
+  ROUTED
+  EXECUTING
+  SETTLING
+  SETTLED
+  FAILED
+  EXPIRED
+  MANUAL_REVIEW
+  CANCELLED
+}
+
+enum SettlementStatus {
+  PENDING
+  BROADCASTED
+  CONFIRMED
+  FAILED
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+enum TravelRuleStatus {
+  NOT_REQUIRED
+  PENDING
+  CLEARED
+  BLOCKED
+  MANUAL_REVIEW
+}
+
+enum SupportThreadStatus {
+  OPEN
+  WAITING_USER
+  ESCALATED
+  RESOLVED
 }
 
 enum AuditChannel {
@@ -341,4 +397,151 @@ model DaoProposal {
 
   @@index([status])
   @@index([createdAt])
+}
+
+model Quote {
+  id         String      @id @default(uuid())
+  userId     String
+  pair       String
+  baseAsset  String
+  quoteAsset String
+  side       QuoteSide
+  amountIn   String
+  amountOut  String
+  rate       String
+  feeAmount  String      @default("0")
+  spreadBps  Int         @default(0)
+  source     QuoteSource
+  expiresAt  DateTime
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders     ExchangeOrder[]
+
+  @@index([userId, createdAt])
+  @@index([pair, expiresAt])
+}
+
+model ExchangeOrder {
+  id                    String      @id @default(uuid())
+  userId                String
+  walletId              String?
+  quoteId               String
+  pair                  String
+  baseAsset             String
+  quoteAsset            String
+  side                  QuoteSide
+  status                OrderStatus @default(SUBMITTED)
+  route                 QuoteSource
+  providerOrderRef      String?
+  amountIn              String
+  amountOut             String?
+  platformFee           String      @default("0")
+  networkFee            String      @default("0")
+  slippageBps           Int?
+  complianceBlockReason String?
+  metadata              Json?
+  submittedAt           DateTime    @default(now())
+  settledAt             DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wallet      Wallet?     @relation(fields: [walletId], references: [id], onDelete: SetNull)
+  quote       Quote       @relation(fields: [quoteId], references: [id], onDelete: Restrict)
+  settlements Settlement[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([quoteId])
+}
+
+model Settlement {
+  id                 String           @id @default(uuid())
+  orderId            String
+  chain              String
+  asset              String
+  destinationAddress String
+  txHash             String?          @unique
+  status             SettlementStatus @default(PENDING)
+  confirmations      Int              @default(0)
+  broadcastedAt      DateTime?
+  confirmedAt        DateTime?
+  metadata           Json?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  order ExchangeOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model TravelRuleCheck {
+  id            String           @id @default(uuid())
+  userId        String
+  walletAddress String?
+  vaspCode      String?
+  direction     String
+  asset         String?
+  amount        String?
+  status        TravelRuleStatus @default(PENDING)
+  providerRef   String?
+  reason        String?
+  payload       Json?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model LedgerEntry {
+  id            String          @id @default(uuid())
+  userId        String
+  referenceType String
+  referenceId   String
+  currency      String
+  direction     LedgerDirection
+  amount        String
+  description   String?
+  metadata      Json?
+  createdAt     DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([referenceType, referenceId])
+}
+
+model SupportThread {
+  id        String              @id @default(uuid())
+  userId    String
+  channel   String              @default("elizaos")
+  status    SupportThreadStatus @default(OPEN)
+  subject   String?
+  metadata  Json?
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages SupportMessage[]
+
+  @@index([userId, createdAt])
+}
+
+model SupportMessage {
+  id          String   @id @default(uuid())
+  threadId    String
+  senderType  String
+  messageText String
+  sources     Json?
+  createdAt   DateTime @default(now())
+
+  thread SupportThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
 }

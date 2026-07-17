@@ -44,11 +44,10 @@ services:
     image: stellar/stellar-horizon:latest
     container_name: stellaro-horizon
     environment:
-      DATABASE_URL: postgres://stellar:${DB_PASSWORD:-stellaro_dev_pass}@postgres/horizon
-      STELLAR_CORE_DATABASE_URL: postgres://stellar:${DB_PASSWORD:-stellaro_dev_pass}@postgres/stellar_core
+      DATABASE_URL: postgres://user:pass@postgres/horizon
       NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
       HISTORY_ARCHIVE_URLS: https://history.stellar.org/prd/core-testnet/core_testnet_001
-      INGEST: "true"
+      INGEST: "false"
       PER_HOUR_RATE_LIMIT: 72000
       APPLY_MIGRATIONS: "true"
     ports:
@@ -85,11 +84,12 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      DATABASE_URL: postgresql://stellar:${DB_PASSWORD:-stellaro_dev_pass}@postgres:5432/stellaro
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8083,https://dev.stellaro.com.br
+      DATABASE_URL: postgresql://user:pass@postgres:5432/stellaro
       REDIS_URL: redis://:${REDIS_PASSWORD:-stellaro_redis_pass}@redis:6379
       STELLAR_NETWORK: testnet
-      STELLAR_HORIZON: http://horizon:8000
-      SOROBAN_RPC_URL: http://soroban-rpc:8001
+      STELLAR_HORIZON: https://horizon-testnet.stellar.org
+      SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
       REFLECTOR_URL: https://api.reflector.network
       JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_prod}
     ports:
@@ -102,10 +102,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      horizon:
-        condition: service_started
-      soroban-rpc:
-        condition: service_started
     networks:
       - stellaro-network
     restart: unless-stopped
