@@ -6,6 +6,7 @@ Official site: https://www.stellaro.com.br/
 
 - [START_HERE.md](START_HERE.md)
 - [DEV_ENVIRONMENT_SETUP.md](DEV_ENVIRONMENT_SETUP.md)
+- [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
 
 ## Architecture and Design
 

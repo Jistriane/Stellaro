@@ -30,6 +30,7 @@ Site oficial: https://www.stellaro.com.br/
 3. [QUICK_DEPLOY_GUIDE.md](QUICK_DEPLOY_GUIDE.md)
 4. [CONTRACT_DEPLOYMENT_GUIDE.md](CONTRACT_DEPLOYMENT_GUIDE.md)
 5. [SMART_CONTRACT_DEPLOYMENT_REGISTRY.md](SMART_CONTRACT_DEPLOYMENT_REGISTRY.md)
+6. [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
 
 ### Desenvolvedores (contracts/backend/web)
 
@@ -37,6 +38,7 @@ Site oficial: https://www.stellaro.com.br/
 2. [BACKEND_INTEGRATION_POINTS.md](BACKEND_INTEGRATION_POINTS.md)
 3. [TESTING.md](TESTING.md)
 4. [E2E_TESTING.md](E2E_TESTING.md)
+5. [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
 
 ### Suporte / Troubleshooting
 
