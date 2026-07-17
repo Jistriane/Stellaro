@@ -87,6 +87,12 @@ Atalho recomendado no root:
 npm run dev:stack
 ```
 
+Preflight explícito opcional:
+
+```bash
+npm run preflight:local-dev
+```
+
 Fluxo equivalente explícito:
 
 ```bash
@@ -113,6 +119,12 @@ Atalho recomendado no root:
 
 ```bash
 npm run dev:stack:local-chain
+```
+
+Preflight explícito opcional:
+
+```bash
+npm run preflight:local-chain
 ```
 
 Fluxo equivalente explícito:
@@ -190,6 +202,7 @@ npm run dev
 - `public-testnet` é o default oficial do projeto para desenvolvimento normal.
 - `local-chain` existe para validação específica de integração.
 - Use `npm run dev:stack` e `npm run dev:stack:local-chain` como interface operacional preferencial.
+- Os atalhos de stack executam preflight de portas antes do `docker compose`.
 - Não suba paralelamente outra stack local de Horizon/Soroban fora do `quickstart`.
 - Se a porta `8000` estiver ocupada, trate isso como conflito de infraestrutura e não como bug de aplicação.
 
@@ -200,6 +213,13 @@ npm run dev
 ```bash
 docker compose ps
 docker compose --profile local-chain ps
+```
+
+### Rodar preflight manual
+
+```bash
+npm run preflight:local-dev
+npm run preflight:local-chain
 ```
 
 ### Validar chain local

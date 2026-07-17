@@ -10,8 +10,10 @@
   "scripts": {
     "dev": "turbo dev",
     "dev:mobile": "turbo dev --filter=stellaro-backend --filter=mobile",
-    "dev:stack": "docker compose up -d postgres redis prometheus grafana backend frontend",
-    "dev:stack:local-chain": "CHAIN_PROVIDER_MODE=local NEXT_PUBLIC_CHAIN_PROVIDER_MODE=local docker compose --profile local-chain up -d postgres redis quickstart prometheus grafana backend frontend",
+    "preflight:local-dev": "bash tools/preflight_local_dev.sh public-testnet",
+    "preflight:local-chain": "bash tools/preflight_local_dev.sh local-chain",
+    "dev:stack": "npm run preflight:local-dev && docker compose up -d postgres redis prometheus grafana backend frontend",
+    "dev:stack:local-chain": "npm run preflight:local-chain && CHAIN_PROVIDER_MODE=local NEXT_PUBLIC_CHAIN_PROVIDER_MODE=local docker compose --profile local-chain up -d postgres redis quickstart prometheus grafana backend frontend",
     "dev:mobile:local-chain": "cd apps/mobile && CHAIN_PROVIDER_MODE=local HORIZON_URL=http://localhost:8000 BACKEND_API_URL=http://localhost:3001 npm run dev",
     "dev:stack:stop": "docker compose --profile local-chain down",
     "build": "turbo build",
