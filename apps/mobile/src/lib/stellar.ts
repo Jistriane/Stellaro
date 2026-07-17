@@ -1,9 +1,40 @@
 import { Horizon, Networks } from '@stellar/stellar-sdk';
 import Constants from 'expo-constants';
 
-// Em produção, o valor virá das variáveis de ambiente do Expo/EAS
-const HORIZON_URL = Constants.expoConfig?.extra?.HORIZON_URL || 'https://horizon.stellar.org';
-const STELLAR_NETWORK_PASSPHRASE = Constants.expoConfig?.extra?.STELLAR_NETWORK_PASSPHRASE || Networks.PUBLIC;
+type ChainProviderMode = 'public-testnet' | 'local';
+type StellarNetwork = 'public' | 'testnet';
+
+function getChainProviderMode(): ChainProviderMode {
+  return String(Constants.expoConfig?.extra?.CHAIN_PROVIDER_MODE || '').toLowerCase() === 'local'
+    ? 'local'
+    : 'public-testnet';
+}
+
+function getStellarNetwork(): StellarNetwork {
+  const explicit = String(Constants.expoConfig?.extra?.STELLAR_NETWORK || '').toLowerCase();
+  if (explicit === 'public' || explicit === 'mainnet') return 'public';
+  return 'testnet';
+}
+
+function resolveHorizonUrl(): string {
+  const explicit = Constants.expoConfig?.extra?.HORIZON_URL as string | undefined;
+  if (explicit) return explicit;
+  if (getChainProviderMode() === 'local') return 'http://localhost:8000';
+  return getStellarNetwork() === 'public'
+    ? 'https://horizon.stellar.org'
+    : 'https://horizon-testnet.stellar.org';
+}
+
+function resolvePassphrase(): string {
+  const explicit = Constants.expoConfig?.extra?.STELLAR_NETWORK_PASSPHRASE as
+    | string
+    | undefined;
+  if (explicit) return explicit;
+  return getStellarNetwork() === 'public' ? Networks.PUBLIC : Networks.TESTNET;
+}
+
+const HORIZON_URL = resolveHorizonUrl();
+const STELLAR_NETWORK_PASSPHRASE = resolvePassphrase();
 
 export const horizon = new Horizon.Server(HORIZON_URL);
 

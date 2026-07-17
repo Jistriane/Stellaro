@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import * as StellarSdk from '@stellar/stellar-sdk';
+import { getChainRuntimeConfig } from './chain-env';
 
 const getRpcNamespace = () =>
   (StellarSdk as any).rpc ?? (StellarSdk as any).SorobanRpc;
@@ -31,17 +32,10 @@ export class SorobanService {
   private readonly networkPassphrase: string;
 
   constructor() {
-    const baseURL = process.env.SOROBAN_RPC_URL;
-    const network = process.env.STELLAR_NETWORK ?? 'testnet';
-    const isMainnet = network === 'mainnet' || network === 'public';
-    this.horizonUrl =
-      process.env.HORIZON_URL ||
-      (isMainnet
-        ? 'https://horizon.stellar.org'
-        : 'https://horizon-testnet.stellar.org');
-    this.networkPassphrase =
-      process.env.STELLAR_NETWORK_PASSPHRASE ||
-      (isMainnet ? StellarSdk.Networks.PUBLIC : StellarSdk.Networks.TESTNET);
+    const runtime = getChainRuntimeConfig();
+    const baseURL = runtime.sorobanRpcUrl;
+    this.horizonUrl = runtime.horizonUrl;
+    this.networkPassphrase = runtime.passphrase;
 
     if (!baseURL) {
       this.logger.warn(

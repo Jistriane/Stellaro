@@ -26,6 +26,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "extra": {
+      "CHAIN_PROVIDER_MODE": "public-testnet",
+      "STELLAR_NETWORK": "testnet",
+      "HORIZON_URL": "https://horizon-testnet.stellar.org",
+      "STELLAR_NETWORK_PASSPHRASE": "Test SDF Network ; September 2015",
+      "BACKEND_API_URL": "http://localhost:3001"
+    },
     "plugins": [
       "expo-secure-store",
       "expo-font",

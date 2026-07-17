@@ -1,14 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
+import { getChainRuntimeConfig } from './chain-env';
 
 @Injectable()
 export class HorizonService {
-  private readonly logger = new Logger(HorizonService.name);
   private readonly client: AxiosInstance;
 
   constructor() {
-    const baseURL =
-      process.env.HORIZON_URL || 'https://horizon-testnet.stellar.org';
+    const { horizonUrl } = getChainRuntimeConfig();
+    const baseURL = horizonUrl;
     this.client = axios.create({ baseURL, timeout: 10000 });
   }
 

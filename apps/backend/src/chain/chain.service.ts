@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as StellarSdk from '@stellar/stellar-sdk';
+import { getChainRuntimeConfig } from './chain-env';
 
 export interface ChainConfig {
   network: string;
@@ -14,28 +15,13 @@ export class ChainService {
   private readonly logger = new Logger(ChainService.name);
 
   getConfig(): ChainConfig {
-    const network = process.env.STELLAR_NETWORK ?? 'testnet';
-    const isMainnet = network === 'mainnet' || network === 'public';
+    const runtime = getChainRuntimeConfig();
 
     return {
-      network,
-      sorobanRpcUrl:
-        process.env.SOROBAN_RPC_URL ??
-        (isMainnet
-          ? 'https://rpc.ankr.com/stellar_soroban'
-          : 'https://soroban-testnet.stellar.org'),
-      horizonUrl:
-        process.env.STELLAR_HORIZON ??
-        process.env.HORIZON_URL ??
-        (isMainnet
-          ? 'https://horizon.stellar.org'
-          : 'https://horizon-testnet.stellar.org'),
-      passphrase:
-        process.env.STELLAR_NETWORK_PASSPHRASE ??
-        process.env.SOROBAN_NETWORK_PASSPHRASE ??
-        (isMainnet
-          ? StellarSdk.Networks.PUBLIC
-          : StellarSdk.Networks.TESTNET),
+      network: runtime.network,
+      sorobanRpcUrl: runtime.sorobanRpcUrl,
+      horizonUrl: runtime.horizonUrl,
+      passphrase: runtime.passphrase,
       secretKey:
         process.env.STELLAR_SECRET_KEY ??
         process.env.MASTER_SECRET_KEY ??

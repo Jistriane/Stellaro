@@ -24,6 +24,7 @@ export function getContractIds(): ContractIds {
 }
 
 type StellarNetworkEnv = "public" | "mainnet" | "testnet";
+type ChainProviderMode = "public-testnet" | "local";
 
 function normalizeNetwork(value?: string | null): "public" | "testnet" {
   const v = String(value || "").toLowerCase() as StellarNetworkEnv | string;
@@ -31,9 +32,19 @@ function normalizeNetwork(value?: string | null): "public" | "testnet" {
   return "testnet";
 }
 
+function getChainProviderMode(): ChainProviderMode {
+  return String(process.env.NEXT_PUBLIC_CHAIN_PROVIDER_MODE || "").toLowerCase() === "local"
+    ? "local"
+    : "public-testnet";
+}
+
 export function getHorizonBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_HORIZON_URL || process.env.HORIZON_URL;
   if (configured) return configured;
+
+  if (getChainProviderMode() === "local") {
+    return "http://localhost:8000";
+  }
 
   const raw = process.env.NEXT_PUBLIC_STELLAR_NETWORK || process.env.STELLAR_NETWORK;
   const network = normalizeNetwork(raw);

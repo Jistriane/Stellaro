@@ -2,6 +2,7 @@
 // Avoids breaking the build when SDK is not installed.
 
 export type SorobanNetwork = "public" | "testnet";
+type ChainProviderMode = "public-testnet" | "local";
 
 // Minimal types for SorobanRpc
 interface SorobanRpcServerOptions { allowHttp?: boolean }
@@ -16,9 +17,16 @@ interface SorobanRpcNS {
 }
 type SdkWithSorobanRpc = typeof import("@stellar/stellar-sdk") & { SorobanRpc?: SorobanRpcNS };
 
+function getChainProviderMode(): ChainProviderMode {
+  return String(process.env.NEXT_PUBLIC_CHAIN_PROVIDER_MODE || "").toLowerCase() === "local"
+    ? "local"
+    : "public-testnet";
+}
+
 export function getRpcUrl(network: SorobanNetwork): string {
   const override = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL;
   if (override) return override;
+  if (getChainProviderMode() === "local") return "http://localhost:8001";
   return network === "testnet"
     ? "https://soroban-testnet.stellar.org"
     : "https://rpc.ankr.com/stellar_soroban";
