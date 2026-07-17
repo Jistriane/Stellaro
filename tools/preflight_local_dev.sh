@@ -17,6 +17,11 @@ if [[ "$MODE" != "public-testnet" && "$MODE" != "local-chain" ]]; then
   exit 1
 fi
 
+HELP_SCRIPT="npm run help:ports:local-dev"
+if [[ "$MODE" == "local-chain" ]]; then
+  HELP_SCRIPT="npm run help:ports:local-chain"
+fi
+
 echo "🔍 Starting Stellaro local dev preflight for mode: $MODE"
 
 declare -a REQUIRED_PORTS=("3000:frontend" "3001:backend" "3003:grafana" "5433:postgres" "6379:redis" "9090:prometheus")
@@ -66,6 +71,7 @@ done
 if [[ "$FAILURES" -gt 0 ]]; then
   echo "--------------------------------------------------"
   echo -e "${RED}🚫 PRE-FLIGHT FAILED. Resolva os conflitos de porta antes de subir o stack automatizado.${NC}"
+  echo -e "${YELLOW}Ajuda guiada:${NC} rode ${HELP_SCRIPT}"
   exit 1
 fi
 

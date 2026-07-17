@@ -93,10 +93,22 @@ Preflight explícito opcional:
 npm run preflight:local-dev
 ```
 
+Doctor consolidado recomendado:
+
+```bash
+npm run doctor:local-dev
+```
+
 Status explícito opcional:
 
 ```bash
 npm run status:local-dev
+```
+
+Ajuda guiada para conflitos de porta:
+
+```bash
+npm run help:ports:local-dev
 ```
 
 Fluxo equivalente explícito:
@@ -133,10 +145,22 @@ Preflight explícito opcional:
 npm run preflight:local-chain
 ```
 
+Doctor consolidado recomendado:
+
+```bash
+npm run doctor:local-chain
+```
+
 Status explícito opcional:
 
 ```bash
 npm run status:local-chain
+```
+
+Ajuda guiada para conflitos de porta:
+
+```bash
+npm run help:ports:local-chain
 ```
 
 Fluxo equivalente explícito:
@@ -214,7 +238,9 @@ npm run dev
 - `public-testnet` é o default oficial do projeto para desenvolvimento normal.
 - `local-chain` existe para validação específica de integração.
 - Use `npm run dev:stack` e `npm run dev:stack:local-chain` como interface operacional preferencial.
+- Use `npm run doctor:local-dev` e `npm run doctor:local-chain` como diagnóstico consolidado antes de troubleshooting manual mais específico.
 - Os atalhos de stack executam preflight de portas antes do `docker compose`.
+- Se o preflight falhar, use `npm run help:ports:local-dev` ou `npm run help:ports:local-chain` para inspecionar o conflito sem ações destrutivas automáticas.
 - Use `npm run status:local-dev` e `npm run status:local-chain` para consolidar processos, containers e URLs ativas.
 - Não suba paralelamente outra stack local de Horizon/Soroban fora do `quickstart`.
 - Se a porta `8000` estiver ocupada, trate isso como conflito de infraestrutura e não como bug de aplicação.
@@ -235,11 +261,31 @@ npm run preflight:local-dev
 npm run preflight:local-chain
 ```
 
+### Rodar doctor consolidado
+
+```bash
+npm run doctor:local-dev
+npm run doctor:local-chain
+```
+
 ### Rodar status manual
 
 ```bash
 npm run status:local-dev
 npm run status:local-chain
+```
+
+### Explicar conflitos de porta
+
+```bash
+npm run help:ports:local-dev
+npm run help:ports:local-chain
+```
+
+Opcionalmente, filtre por uma porta específica:
+
+```bash
+npm run help:ports:local-chain -- 3001
 ```
 
 ### Validar chain local
