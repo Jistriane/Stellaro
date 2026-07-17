@@ -37,42 +37,15 @@ services:
     networks:
       - stellaro-network
 
-  # Stellar Horizon (Testnet)
-  horizon:
-    image: stellar/stellar-horizon:latest
-    container_name: stellaro-horizon
+  # Stellar Quickstart (Horizon + Soroban RPC local)
+  quickstart:
+    image: stellar/quickstart:testing
+    container_name: stellaro-quickstart
     profiles:
       - local-chain
-    environment:
-      DATABASE_URL: postgres://user:pass@postgres/horizon
-      NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
-      HISTORY_ARCHIVE_URLS: https://history.stellar.org/prd/core-testnet/core_testnet_001
-      INGEST: "false"
-      PER_HOUR_RATE_LIMIT: 72000
-      APPLY_MIGRATIONS: "true"
+    command: ["--local"]
     ports:
       - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - stellaro-network
-    restart: unless-stopped
-
-  # Soroban RPC Server
-  soroban-rpc:
-    image: stellar/soroban-rpc:latest
-    container_name: stellaro-soroban-rpc
-    profiles:
-      - local-chain
-    environment:
-      NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
-      STELLAR_CAPTIVE_CORE_HTTP_PORT: 11626
-      ENDPOINT: "http://horizon:8000"
-    ports:
-      - "8001:8001"
-    depends_on:
-      - horizon
     networks:
       - stellaro-network
     restart: unless-stopped

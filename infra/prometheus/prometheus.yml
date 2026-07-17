@@ -28,17 +28,10 @@ scrape_configs:
         target_label: instance
         replacement: 'stellaro-backend'
 
-  # Stellar Horizon
-  - job_name: 'stellar-horizon'
+  # Stellar Quickstart local chain
+  - job_name: 'stellar-quickstart'
     static_configs:
-      - targets: ['horizon:8000']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  # Soroban RPC
-  - job_name: 'soroban-rpc'
-    static_configs:
-      - targets: ['soroban-rpc:8001']
+      - targets: ['quickstart:8000']
     metrics_path: '/metrics'
     scrape_interval: 30s
 

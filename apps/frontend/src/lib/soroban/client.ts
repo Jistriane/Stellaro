@@ -26,7 +26,7 @@ function getChainProviderMode(): ChainProviderMode {
 export function getRpcUrl(network: SorobanNetwork): string {
   const override = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL;
   if (override) return override;
-  if (getChainProviderMode() === "local") return "http://localhost:8001";
+  if (getChainProviderMode() === "local") return "http://localhost:8000/rpc";
   return network === "testnet"
     ? "https://soroban-testnet.stellar.org"
     : "https://rpc.ankr.com/stellar_soroban";

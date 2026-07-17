@@ -23,7 +23,7 @@ export function getChainRuntimeConfig() {
   const sorobanRpcUrl =
     process.env.SOROBAN_RPC_URL ||
     (mode === 'local'
-      ? 'http://soroban-rpc:8001'
+      ? 'http://quickstart:8000/rpc'
       : isPublic
         ? 'https://rpc.ankr.com/stellar_soroban'
         : 'https://soroban-testnet.stellar.org');
@@ -32,7 +32,7 @@ export function getChainRuntimeConfig() {
     process.env.STELLAR_HORIZON ||
     process.env.HORIZON_URL ||
     (mode === 'local'
-      ? 'http://horizon:8000'
+      ? 'http://quickstart:8000'
       : isPublic
         ? 'https://horizon.stellar.org'
         : 'https://horizon-testnet.stellar.org');
