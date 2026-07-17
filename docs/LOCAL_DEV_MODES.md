@@ -93,6 +93,12 @@ Preflight explícito opcional:
 npm run preflight:local-dev
 ```
 
+Status explícito opcional:
+
+```bash
+npm run status:local-dev
+```
+
 Fluxo equivalente explícito:
 
 ```bash
@@ -125,6 +131,12 @@ Preflight explícito opcional:
 
 ```bash
 npm run preflight:local-chain
+```
+
+Status explícito opcional:
+
+```bash
+npm run status:local-chain
 ```
 
 Fluxo equivalente explícito:
@@ -203,6 +215,7 @@ npm run dev
 - `local-chain` existe para validação específica de integração.
 - Use `npm run dev:stack` e `npm run dev:stack:local-chain` como interface operacional preferencial.
 - Os atalhos de stack executam preflight de portas antes do `docker compose`.
+- Use `npm run status:local-dev` e `npm run status:local-chain` para consolidar processos, containers e URLs ativas.
 - Não suba paralelamente outra stack local de Horizon/Soroban fora do `quickstart`.
 - Se a porta `8000` estiver ocupada, trate isso como conflito de infraestrutura e não como bug de aplicação.
 
@@ -220,6 +233,13 @@ docker compose --profile local-chain ps
 ```bash
 npm run preflight:local-dev
 npm run preflight:local-chain
+```
+
+### Rodar status manual
+
+```bash
+npm run status:local-dev
+npm run status:local-chain
 ```
 
 ### Validar chain local
