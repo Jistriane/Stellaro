@@ -14,7 +14,7 @@ This service implements Stellaro's core backend APIs, orchestration routines, an
 
 ## Local Development
 
-1. Work from the monorepo root: `/home/jistriane/Stellaro/Stellaro`
+1. Work from the monorepo root: `Stellaro/`
 2. Install dependencies with `npm install`
 3. Validate the environment with `npm run doctor:local-dev`
 4. Start the official local stack with `npm run dev:stack`

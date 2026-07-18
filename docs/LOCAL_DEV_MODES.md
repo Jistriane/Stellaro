@@ -75,7 +75,7 @@ Trade-off:
 No diretório raiz do monorepo:
 
 ```bash
-cd /home/jistriane/Stellaro/Stellaro
+cd Stellaro
 npm install
 ```
 

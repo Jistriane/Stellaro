@@ -11,7 +11,7 @@
 1. Clone the repository:
    `git clone https://github.com/Jistriane/Stellaro.git`
 2. Enter the monorepo root:
-   `cd /home/jistriane/Stellaro/Stellaro`
+   `cd Stellaro`
 3. Install dependencies:
    `npm install`
 4. Validate the local environment before boot:

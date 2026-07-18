@@ -47,7 +47,7 @@ Site oficial: [stellaro.com.br](https://www.stellaro.com.br/)
 
 ## Baseline Operacional (Local Development)
 
-- Entre sempre pela raiz do monorepo: `/home/jistriane/Stellaro/Stellaro`
+- Entre sempre pela raiz do monorepo: `Stellaro/`
 - Fluxo padrão recomendado:
   - `npm install`
   - `npm run doctor:local-dev`

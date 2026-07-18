@@ -39,7 +39,7 @@ Frontend deployment (Render):
 ### Install and Run
 
 ```bash
-cd /home/jistriane/Stellaro/Stellaro
+cd Stellaro
 npm install
 npm run doctor:local-dev
 npm run dev:stack
