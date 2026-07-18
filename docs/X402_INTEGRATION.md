@@ -10,12 +10,14 @@ This document defines the canonical x402 integration surface currently implement
 ## Architecture Surface
 
 Backend:
+
 - Status endpoint: `GET /payments/x402/status`
 - Quote endpoint: `POST /payments/x402/quote`
 - Service: `apps/backend/src/payments/x402.service.ts`
 - Controller: `apps/backend/src/payments/x402.controller.ts`
 
 Frontend:
+
 - API client: `apps/frontend/src/lib/x402.ts`
 - UI surface: Pix page (`/pix`) with the x402 Settlement Rail card
 

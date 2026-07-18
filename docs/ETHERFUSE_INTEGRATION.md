@@ -10,6 +10,7 @@ This document defines the canonical Etherfuse integration surface currently impl
 ## Architecture Surface
 
 Backend:
+
 - Status endpoint: `GET /payments/etherfuse/status`
 - Quote endpoint: `POST /payments/etherfuse/quote`
 - Order endpoint: `POST /payments/etherfuse/order`
@@ -17,6 +18,7 @@ Backend:
 - Controller: `apps/backend/src/payments/etherfuse.controller.ts`
 
 Frontend:
+
 - API client: `apps/frontend/src/lib/etherfuse.ts`
 - UI surface: Pix page (`/pix`) with the Etherfuse FX Rail card
 
