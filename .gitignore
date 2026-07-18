@@ -63,11 +63,6 @@ contracts/target/flycheck0/
 MAINNET_KEYS_REQUIRED.env
 mainnet_deployment_registry.json
 
-# Stellaro Private Docs
-STELLARO ARQUITETURA TÉCNICA COMPLETA.md
-MODO ARQUITETO  RULES.md
-Links Stellar.md
-
 # Local debug artifacts
 .dbg/
 debug-*.md
