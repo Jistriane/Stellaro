@@ -4,14 +4,14 @@ This document describes the automated deployment workflows for the Stellaro proj
 
 Official site:
 
-- https://www.stellaro.com.br/
+- [stellaro.com.br](https://www.stellaro.com.br/)
 
 ## Overview
 
 Stellaro has two main deployment paths:
 
 | Target | Workflow | Trigger | Environment |
-|--------|----------|---------|-------------|
+| :--- | :--- | :--- | :--- |
 | **GitHub Pages** | `github-pages-deploy.yml` | Push to master/main | Static/Documentation |
 | **Stellar Testnet** | `deploy-contracts.yml` | Manual (`workflow_dispatch`) or tags | Testing |
 
@@ -19,25 +19,29 @@ Stellaro has two main deployment paths:
 
 ### GitHub Pages Static Export
 
-Pages automatically publishes a static version of the frontend on push to master/main.
+Pages automatically publishes a static version of the frontend on push to `master` or `main`.
 
-- **Branch**: Automatically uses `gh-pages` branch
+- **Publish mode**: GitHub Actions artifact deployment via `actions/deploy-pages`
 - **Preview URL (GitHub Pages)**: `https://jistriane.github.io/Stellaro/`
 - **Trigger paths**: `apps/frontend/**`, `packages/ui/**`
-- **Latest successful run**: `#17` (April 20, 2026)
-- **Latest run link**: `https://github.com/Jistriane/Stellaro/actions/runs/24685608906`
+- **Manual trigger**: `workflow_dispatch` is enabled
 
 **Setup:**
+
 1. Go to Repository Settings > Pages
-2. Select "GitHub Actions" as the source
-3. Builds are automatic - no manual trigger needed
+2. Select `GitHub Actions` as the source
+3. Use the workflow history in GitHub Actions to inspect the latest deployment status
 
 **Local Testing:**
+
 ```bash
 cd apps/frontend
 npm run build:pages
-# Outputs static HTML to ./out/
 ```
+
+Expected output:
+
+- static export in `apps/frontend/out/`
 
 ## Smart Contract Deployments
 
@@ -56,25 +60,30 @@ gh workflow run deploy-contracts.yml
 ```
 
 **Or deploy via git tags:**
+
 ```bash
 git tag deploy-testnet-v1.0.0
 git push --tags
 ```
 
 **Requirements:**
+
 - `SOROBAN_PUBLIC_KEY` - Public key of deployment account
 - `SOROBAN_SECRET_KEY` - Secret key (NEVER commit this!)
 - `soroban-cli` - Installed automatically by workflow
 - Funded deployment account on Stellar Testnet
 
 **Setup:**
+
 1. Create a funded account on Stellar Testnet (get XLM from faucet)
 2. Get your public/secret keys
 3. Go to Repository Settings > Secrets and variables > Actions
 4. Add `SOROBAN_PUBLIC_KEY` and `SOROBAN_SECRET_KEY`
 
 **Deploy Script Details:**
+
 The workflow runs `./deploy-testnet.sh` which:
+
 - Verifies Soroban CLI is installed
 - Checks deployment key exists
 - Builds all contracts in release mode
@@ -150,19 +159,22 @@ Key environment variables used in deployments:
 ## Troubleshooting
 
 ### Pages deployment shows 404
+
 - Check GitHub Pages settings: Repository > Settings > Pages
 - Ensure source is set to "GitHub Actions"
 - View build logs: Actions > Deploy to GitHub Pages
 
 ### Contract deployment fails
+
 - Ensure account has sufficient XLM balance on testnet
 - Check public/secret keys are valid
 - Verify `soroban-cli` version: `soroban --version` (>= 23 recommended)
 - Check deployment key: `soroban keys show stellaro-testnet-deploy`
 
-### Build fails with "node_modules not found"
+### Build fails with `node_modules not found`
+
 - Clear npm cache: `npm cache clean --force`
-- Reinstall: `rm -rf node_modules && npm ci`
+- Reinstall dependencies from the repository root: `npm ci`
 - Check lockfile: `package-lock.json` should be committed
 
 ## Related Files

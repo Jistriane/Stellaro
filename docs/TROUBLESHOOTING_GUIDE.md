@@ -128,12 +128,14 @@ Symptom:
 
 Cause:
 
-- `deploy-testnet.sh` and `infra/deploy_soroban.sh` currently deploy only six contracts.
+- Deployment expectations may not match the current automated set.
+- The current canonical automated testnet deployment covers nine core contracts; additional modules may still require separate operational handling.
 
 Fix:
 
-1. Deploy `batch_executor` and `mev_guard` manually.
-2. Add them to scripts if full automation is needed.
+1. Compare expected outputs with `docs/SMART_CONTRACT_DEPLOYMENT_REGISTRY.md`.
+2. Confirm whether the target release requires only the core automated set or additional modules.
+3. Extend scripts only when the release scope truly requires full automation.
 
 ## 8. Backend action endpoint returns placeholder-style success
 

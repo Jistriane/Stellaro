@@ -1,5 +1,3 @@
-# markdownlint-disable-file MD025 MD032 MD012
-
 <!-- markdownlint-disable-file MD025 MD032 MD012 -->
 
 # Weekly Priority Checklist - Production Readiness

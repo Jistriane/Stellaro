@@ -1,4 +1,4 @@
-# markdownlint-disable-file MD025 MD032 MD012
+<!-- markdownlint-disable-file MD025 MD032 MD012 -->
 
 # Backend Integration Points
 
@@ -291,17 +291,17 @@ Env keys used by this integration:
 - balance(owner) -> i128
 - transfer(from, to, amount) -> ()
 
-2. Stablecoin now exposes compatible methods for payment path:
+1. Stablecoin now exposes compatible methods for payment path:
 - balance(owner) -> i128
 - transfer(from, to, amount) -> Result<(), Error>
 
 Result:
 - Direct backend path to Batch Executor payment can use Stablecoin ABI without adapter.
 
-3. SorobanService.invokeContract decodes map-like responses with specific assumptions for params().
+1. SorobanService.invokeContract decodes map-like responses with specific assumptions for params().
 - If contract return type changes, this parser must be updated.
 
-4. Some action flows are intentionally scaffolded and still return simulated/placeholder paths.
+1. Some action flows are intentionally scaffolded and still return simulated or placeholder paths.
 
 
 ## 5) Environment contract keys used across backend

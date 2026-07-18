@@ -1,6 +1,6 @@
 # Mainnet Onboarding Guide
 
-Official site: https://www.stellaro.com.br/
+Official site: [stellaro.com.br](https://www.stellaro.com.br/)
 
 ## Purpose
 

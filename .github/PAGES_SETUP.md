@@ -4,16 +4,16 @@
 
 GitHub Pages is enabled and deploying via GitHub Actions.
 
-- Official site: https://www.stellaro.com.br/
-- **Site URL**: https://jistriane.github.io/Stellaro/
-- **Latest successful deploy**: Run #17 (April 20, 2026)
-- **Run link**: https://github.com/Jistriane/Stellaro/actions/runs/24685608906
+- Official site: [stellaro.com.br](https://www.stellaro.com.br/)
+- **Site URL**: [https://jistriane.github.io/Stellaro/](https://jistriane.github.io/Stellaro/)
+- **Deployment mode**: GitHub Actions artifact upload + `actions/deploy-pages`
+- **Manual trigger**: `workflow_dispatch`
 
 ## ✅ Quick Setup (3 steps)
 
 ### Step 1: Verify GitHub Pages Settings
 
-1. Go to: https://github.com/Jistriane/Stellaro/settings/pages
+1. Go to: [GitHub Pages settings](https://github.com/Jistriane/Stellaro/settings/pages)
 2. Under **Build and deployment** section:
    - **Source**: Select `GitHub Actions` (not "Deploy from a branch")
 3. Click **Save**
@@ -36,9 +36,9 @@ gh workflow run github-pages-deploy.yml
 
 ### Step 3: Verify Deployment
 
-1. Go to: https://github.com/Jistriane/Stellaro/actions
+1. Go to: [GitHub Actions](https://github.com/Jistriane/Stellaro/actions)
 2. Watch `Deploy to GitHub Pages` workflow run
-3. Once complete, visit: https://jistriane.github.io/Stellaro/
+3. Once complete, visit: [https://jistriane.github.io/Stellaro/](https://jistriane.github.io/Stellaro/)
 
 ---
 
@@ -47,24 +47,29 @@ gh workflow run github-pages-deploy.yml
 ### Still seeing 404?
 
 **Check 1: Is Pages enabled?**
+
 ```bash
 gh api repos/Jistriane/Stellaro/pages
 # Should return configuration when authenticated
 ```
 
 **Check 2: Did the workflow run successfully?**
+
 ```bash
 gh run list --workflow=github-pages-deploy.yml -L 5
 gh run view <run-id> --log
 ```
 
 **Check 3: Was artifact uploaded?**
+
 - Go to Actions > Deploy to GitHub Pages > Latest run
 - Look for "Upload Pages artifact" step
 - Should show: `Uploaded artifact 'github-pages'`
 
 **Check 4: Is basePath correct?**
+
 - If repo is NOT at user root, update `next.config.mjs`:
+
   ```javascript
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/Stellaro';
   ```
@@ -75,6 +80,7 @@ The Next.js static export might have failed. Check:
 
 1. Build logs in GitHub Actions
 2. Test locally first:
+
    ```bash
    cd apps/frontend
    npm run build:pages
@@ -110,7 +116,7 @@ Your GitHub Pages site:
 
 - **Auto-deploy** on every push to master (frontend changes)
 - **Auto-rebuild** static export with `DEPLOY_TARGET=github-pages`
-- **Live at**: https://jistriane.github.io/Stellaro/
+- **Live at**: [https://jistriane.github.io/Stellaro/](https://jistriane.github.io/Stellaro/)
 - **Update within**: 1-2 minutes after push
 
 ---

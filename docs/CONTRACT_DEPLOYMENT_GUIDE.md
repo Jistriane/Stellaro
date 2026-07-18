@@ -1,3 +1,5 @@
+<!-- markdownlint-disable-file MD012 MD029 MD032 MD033 MD034 -->
+
 # Contract Deployment Guide
 
 Version: 2026-05-30
@@ -187,7 +189,7 @@ Network:
 - Stellar mainnet (Public Global Stellar Network ; September 2015)
 
 
-## 8) Safe extension plan for automation
+## 9) Safe extension plan for automation
 
 Current extension already implemented in both scripts.
 
@@ -197,7 +199,7 @@ Future safe extension topics:
 3. Add structured JSON output for CI parsing of contract IDs.
 
 
-## 9) Troubleshooting quick notes
+## 10) Troubleshooting quick notes
 
 Deploy key not found:
 - soroban keys generate stellaro-testnet-deploy --network testnet
@@ -212,7 +214,7 @@ Missing wasm file:
 - rerun build in contracts workspace and verify file path
 
 
-## 10) Source of truth
+## 11) Source of truth
 
 Scripts used as source:
 - deploy-testnet.sh
@@ -222,7 +224,7 @@ Contract workspace:
 - contracts/Cargo.toml
 - contracts/*/src/lib.rs
 
-## 11) ABI compatibility note
+## 12) ABI compatibility note
 
 Current `loans_pool.init` requires:
 - admin
