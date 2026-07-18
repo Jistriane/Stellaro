@@ -1,12 +1,13 @@
 # Documentation Index
 
-Official site: https://www.stellaro.com.br/
+Official site: [stellaro.com.br](https://www.stellaro.com.br/)
 
 ## Core Documents
 
 - [START_HERE.md](START_HERE.md)
 - [DEV_ENVIRONMENT_SETUP.md](DEV_ENVIRONMENT_SETUP.md)
 - [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
+- [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md)
 
 ## Architecture and Design
 
@@ -39,6 +40,18 @@ Official site: https://www.stellaro.com.br/
 - [WEEK1_PR_PLAN.md](WEEK1_PR_PLAN.md)
 - [CI_MANDATORY_CHECKS.md](CI_MANDATORY_CHECKS.md)
 - [DAILY_RISK_MATRIX.md](DAILY_RISK_MATRIX.md)
+
+## Local Development Operations
+
+- [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
+- [DEV_ENVIRONMENT_SETUP.md](DEV_ENVIRONMENT_SETUP.md)
+- [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md)
+
+Official local workflow:
+
+- `npm run doctor:local-dev` before boot
+- `npm run dev:stack` for daily development
+- `npm run dev:stack:local-chain` only when local Horizon/Soroban validation is required
 
 ## Performance and Monitoring
 

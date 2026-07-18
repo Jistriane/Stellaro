@@ -39,17 +39,27 @@ Frontend deployment (Render):
 ### Install and Run
 
 ```bash
+cd /home/jistriane/Stellaro/Stellaro
 npm install
-docker compose up -d postgres redis
-
-cd apps/backend && npm run dev
-cd apps/frontend && npm run dev
+npm run doctor:local-dev
+npm run dev:stack
 ```
 
 Default local URLs:
 
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:3001`
+- Swagger: `http://localhost:3001/docs`
+- Backend health: `http://localhost:3001/health`
+- Grafana: `http://localhost:3003`
+- Prometheus: `http://localhost:9090`
+
+Operational notes:
+
+- Default mode for daily development: `public-testnet`
+- Local chain integration mode: `npm run dev:stack:local-chain`
+- Consolidated diagnostics: `npm run doctor:local-dev` and `npm run doctor:local-chain`
+- Local development source of truth: `docs/LOCAL_DEV_MODES.md`
 
 ### Core Health Checks
 
@@ -122,14 +132,8 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 ### 3. Run local services
 
 ```bash
-docker compose up -d postgres redis
-```
-
-Then start backend and frontend in separate terminals:
-
-```bash
-cd apps/backend && npm run dev
-cd apps/frontend && npm run dev
+npm run doctor:local-dev
+npm run dev:stack
 ```
 
 ### 4. Verify integration
@@ -191,6 +195,13 @@ ETHERFUSE_STUB_FEE_BPS=35
 ```
 
 ### 2. Verify integration
+
+Recommended local bring-up:
+
+```bash
+npm run doctor:local-dev
+npm run dev:stack
+```
 
 Status endpoint:
 

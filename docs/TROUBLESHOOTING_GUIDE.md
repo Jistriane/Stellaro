@@ -151,7 +151,43 @@ Fix:
 - GET /chain/health
 
 
-## 10) Escalation targets
+## 10) Local stack fails with port conflicts
+
+Symptom:
+- `npm run preflight:local-dev` or `npm run doctor:local-dev` fails before `docker compose up`.
+- Ports `3000` and `3001` appear occupied by `node` or `next-server`.
+
+Cause:
+- Hybrid environment: frontend/backend running outside Docker while Compose tries to own the same ports.
+
+Fix:
+1. Inspect conflicts with:
+- `npm run help:ports:local-dev`
+- `npm run help:ports:local-chain`
+2. If the processes are local leftovers, stop them consciously.
+3. Re-run:
+- `npm run preflight:local-dev`
+- `npm run dev:stack`
+
+
+## 11) Backend not ready immediately after docker compose up
+
+Symptom:
+- `docker compose ps` shows backend container as up, but `GET /health` still fails for a few seconds.
+
+Cause:
+- Application readiness lag during NestJS startup after Compose finishes container startup.
+
+Fix:
+1. Wait a few seconds.
+2. Re-run:
+- `npm run status:local-dev`
+- `npm run doctor:local-dev`
+3. If it still fails, inspect:
+- `docker compose logs backend --tail=200`
+
+
+## 12) Escalation targets
 
 When blocked:
 1. ABI mismatch issues: contract layer owners

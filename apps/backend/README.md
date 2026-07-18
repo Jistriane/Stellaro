@@ -14,10 +14,13 @@ This service implements Stellaro's core backend APIs, orchestration routines, an
 
 ## Local Development
 
-1. Install dependencies.
-2. Configure environment variables.
-3. Run development server.
-4. Execute tests and smoke checks.
+1. Work from the monorepo root: `/home/jistriane/Stellaro/Stellaro`
+2. Install dependencies with `npm install`
+3. Validate the environment with `npm run doctor:local-dev`
+4. Start the official local stack with `npm run dev:stack`
+5. Use `npm run dev:stack:local-chain` only when local Horizon/Soroban validation is required
+
+The canonical local operations guide is `docs/LOCAL_DEV_MODES.md`.
 
 ## Key Quality Rules
 

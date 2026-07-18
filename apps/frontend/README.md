@@ -8,9 +8,12 @@
 
 ## Development
 
-1. `cd apps/frontend`
-2. `npm install`
-3. `npm run dev`
+1. Work from the monorepo root: `/home/jistriane/Stellaro/Stellaro`
+2. Install dependencies with `npm install`
+3. Validate the environment with `npm run doctor:local-dev`
+4. Start the official local stack with `npm run dev:stack`
+
+For the canonical local workflow, use `docs/LOCAL_DEV_MODES.md`.
 
 ## Tests
 

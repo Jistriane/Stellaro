@@ -141,22 +141,23 @@ Response shape:
 
 ## Local Bring-up
 
-1. Start required infrastructure:
+1. Validate the local environment:
 
 ```bash
-docker compose up -d postgres redis
+npm run doctor:local-dev
 ```
 
-2. Start backend:
+1. Start the official local stack:
 
 ```bash
-cd apps/backend && npm run dev
+npm run dev:stack
 ```
 
-3. Start frontend:
+1. Optional: use local chain only when you need local Horizon/Soroban validation:
 
 ```bash
-cd apps/frontend && npm run dev
+npm run doctor:local-chain
+npm run dev:stack:local-chain
 ```
 
 ## Validation Checklist
@@ -167,7 +168,7 @@ cd apps/frontend && npm run dev
 curl -s http://localhost:3001/payments/etherfuse/status
 ```
 
-2. Quote endpoint returns valid quote payload:
+1. Quote endpoint returns valid quote payload:
 
 ```bash
 curl -s -X POST http://localhost:3001/payments/etherfuse/quote \
@@ -175,7 +176,7 @@ curl -s -X POST http://localhost:3001/payments/etherfuse/quote \
   -d '{"amount":"150","quoteType":"onramp"}'
 ```
 
-3. Order endpoint creates stub/live order from quoteId:
+1. Order endpoint creates stub/live order from quoteId:
 
 ```bash
 curl -s -X POST http://localhost:3001/payments/etherfuse/order \
@@ -183,7 +184,7 @@ curl -s -X POST http://localhost:3001/payments/etherfuse/order \
   -d '{"quoteId":"<quote-id>"}'
 ```
 
-4. Frontend `/pix` renders mode, quote generation, and order creation actions.
+1. Frontend `/pix` renders mode, quote generation, and order creation actions.
 
 ## Notes and Guardrails
 

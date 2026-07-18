@@ -1,6 +1,6 @@
 # Stellaro — Start Here
 
-Site oficial: https://www.stellaro.com.br/
+Site oficial: [stellaro.com.br](https://www.stellaro.com.br/)
 
 ## Status
 
@@ -31,6 +31,7 @@ Site oficial: https://www.stellaro.com.br/
 4. [CONTRACT_DEPLOYMENT_GUIDE.md](CONTRACT_DEPLOYMENT_GUIDE.md)
 5. [SMART_CONTRACT_DEPLOYMENT_REGISTRY.md](SMART_CONTRACT_DEPLOYMENT_REGISTRY.md)
 6. [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
+7. [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md)
 
 ### Desenvolvedores (contracts/backend/web)
 
@@ -44,6 +45,19 @@ Site oficial: https://www.stellaro.com.br/
 
 1. [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md)
 
+## Baseline Operacional (Local Development)
+
+- Entre sempre pela raiz do monorepo: `/home/jistriane/Stellaro/Stellaro`
+- Fluxo padrão recomendado:
+  - `npm install`
+  - `npm run doctor:local-dev`
+  - `npm run dev:stack`
+- Fluxo opcional para chain local:
+  - `npm run doctor:local-chain`
+  - `npm run dev:stack:local-chain`
+- Guia oficial do ambiente local: [LOCAL_DEV_MODES.md](LOCAL_DEV_MODES.md)
+- Guia resumido de setup: [DEV_ENVIRONMENT_SETUP.md](DEV_ENVIRONMENT_SETUP.md)
+
 ## Baseline Operacional (Mainnet)
 
 - Antes de qualquer mudança de mainnet, rode o preflight local: `tools/preflight_mainnet.sh`
@@ -53,4 +67,4 @@ Site oficial: https://www.stellaro.com.br/
 
 ## Última Atualização
 
-- 2026-05-30
+- 2026-07-18

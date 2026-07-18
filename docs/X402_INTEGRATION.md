@@ -101,22 +101,23 @@ Response shape:
 
 ## Local Bring-up
 
-1. Start required infrastructure:
+1. Validate the local environment:
 
 ```bash
-docker compose up -d postgres redis
+npm run doctor:local-dev
 ```
 
-2. Start backend:
+1. Start the official local stack:
 
 ```bash
-cd apps/backend && npm run dev
+npm run dev:stack
 ```
 
-3. Start frontend:
+1. Optional: use local chain only when you need local Horizon/Soroban validation:
 
 ```bash
-cd apps/frontend && npm run dev
+npm run doctor:local-chain
+npm run dev:stack:local-chain
 ```
 
 ## Validation Checklist
@@ -127,7 +128,7 @@ cd apps/frontend && npm run dev
 curl -s http://localhost:3001/payments/x402/status
 ```
 
-2. Quote endpoint returns payload with `sessionId`, settlement totals, and x402 headers:
+1. Quote endpoint returns payload with `sessionId`, settlement totals, and x402 headers:
 
 ```bash
 curl -s -X POST http://localhost:3001/payments/x402/quote \
@@ -135,7 +136,7 @@ curl -s -X POST http://localhost:3001/payments/x402/quote \
   -d '{"amount":"25.00","asset":"STLT","intent":"deposit","memo":"stellaro:deposit"}'
 ```
 
-3. Frontend `/pix` renders mode, metadata, and allows quote generation.
+1. Frontend `/pix` renders mode, metadata, and allows quote generation.
 
 ## Notes and Guardrails
 
