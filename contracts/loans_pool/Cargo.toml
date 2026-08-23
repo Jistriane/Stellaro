@@ -7,9 +7,9 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-soroban-sdk = { version = "23.0.0" }
+soroban-sdk = { version = "27.0.6" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+soroban-sdk = { version = "27.0.6", features = ["testutils"] }
 zk_verifier = { path = "../zk_verifier" }
 vc_registry = { path = "../vc_registry" }
